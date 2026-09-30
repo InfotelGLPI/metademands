@@ -110,12 +110,8 @@ class Text extends CommonDBTM
         foreach ($fields as $f) {
             $arrayAvailable[$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
         }
-        ob_start();
-        \Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
-        $link_to_user_html = ob_get_clean();
-
         $show_user_info = $params['link_to_user'] > 0;
-        $user_info_html = '';
+        $options = [];
         if ($show_user_info) {
             $options = [
                 0  => \Dropdown::EMPTY_VALUE,
@@ -123,20 +119,17 @@ class Text extends CommonDBTM
                 11 => __('Mobile phone'),
                 22 => _x('infocom', 'Administrative number'),
             ];
-            ob_start();
-            \Dropdown::showFromArray('used_by_ticket', $options, ['value' => $params["used_by_ticket"]]);
-            $user_info_html = ob_get_clean();
         }
-
-        $regex_html = Html::input('regex', ['value' => $params["regex"], 'size' => 50]);
 
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_text.html.twig',
             [
-                'link_to_user_html' => $link_to_user_html,
+                'link_to_user'      => $params['link_to_user'],
+                'user_fields'       => $arrayAvailable,
                 'show_user_info'    => $show_user_info,
-                'user_info_html'    => $user_info_html,
-                'regex_html'        => $regex_html,
+                'used_by_ticket'    => $params['used_by_ticket'],
+                'user_info_options' => $options,
+                'regex'             => $params['regex'],
             ],
         );
     }
@@ -147,17 +140,14 @@ class Text extends CommonDBTM
         self::showValueToCheck($fieldoption, $params);
         $cell_content = ob_get_clean();
 
-        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
-        // the wrapping cell now carries its parameters as data-* attributes.
-        $valuetocheck_html = TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_value_to_check_cell.html.twig',
-            [
-                'option_id'       => $params['ID'],
-                'with_check_type' => false,
-                'with_tech_group' => false,
-                'content'         => $cell_content,
-            ],
-        );
+        // Value cell, included by the row template; its parameters are read by
+        // public/scripts/fieldoption_valuetocheck.js from data-* attributes.
+        $valuetocheck = [
+            'option_id'       => $params['ID'],
+            'with_check_type' => false,
+            'with_tech_group' => false,
+            'content'         => $cell_content,
+        ];
 
         if ($params['check_value'] == '') {
             $params['check_value'] = 1;
@@ -172,7 +162,7 @@ class Text extends CommonDBTM
                 'label'             => __('If field empty', 'metademands'),
                 'label_colspan'     => 2,
                 'regex_html'        => '',
-                'valuetocheck_html' => $valuetocheck_html,
+                'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
             ],
         );

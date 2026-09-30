@@ -271,13 +271,8 @@ class MetademandTask extends CommonDBChild
         $condition = $criteria;
         unset($condition['NOT']);
 
-        ob_start();
-        \Dropdown::show(Metademand::class, [
-            'name'      => 'link_metademands_id',
-            'used'      => $used,
-            'condition' => $condition,
-        ]);
-        $dropdown_html = ob_get_clean();
+        // $used loses the current metademand below, the dropdown still excludes it
+        $dropdown_used = $used;
 
         // Destination entity of the ticket created by the linked sub-metademand
         // (-1 = no override, use the active entity of the requester).
@@ -291,12 +286,6 @@ class MetademandTask extends CommonDBChild
         foreach (self::getAllowedDestinationEntities() as $entity_id) {
             $entities[$entity_id] = \Dropdown::getDropdownName('glpi_entities', $entity_id);
         }
-        ob_start();
-        \Dropdown::showFromArray('destination_entities_id', $entities, [
-            'value' => $selected_entity,
-        ]);
-        $entity_dropdown_html = ob_get_clean();
-
         unset($used[array_search($ID, $used)]);
 
         $ancestors = [];
@@ -308,9 +297,12 @@ class MetademandTask extends CommonDBChild
 
         TemplateRenderer::getInstance()->display('@metademands/metademandtask_form.html.twig', [
             'metademand_typename'  => Metademand::getTypeName(1),
-            'dropdown_html'        => $dropdown_html,
+            'metademand_itemtype'  => Metademand::class,
+            'dropdown_used'        => $dropdown_used,
+            'dropdown_condition'   => $condition,
             'entity_label'         => __('Destination entity', 'metademands'),
-            'entity_dropdown_html' => $entity_dropdown_html,
+            'entities'             => $entities,
+            'selected_entity'      => $selected_entity,
             'ancestors'            => $ancestors,
         ]);
     }

@@ -25,6 +25,17 @@
  # --------------------------------------------------------------------------
  #}
 
+{#
+ # Title card of a meta-demand, above its wizard.
+ #
+ # Expected context (built by Wizard::getMetademandTitleContext()):
+ #  - illustration:         name of the illustration, drawn by render_illustration()
+ #  - category_details_id:  service catalog category whose details open in a modal, 0 otherwise
+ #  - category_details_url: page loaded in that modal
+ #  - comment:              designer-defined rich HTML, sanitized by |safe_html
+ #  - models_and_drafts:    context of models_and_drafts.html.twig, null when not displayed
+ #}
+
 <div class="row">
     <div class="col-md-12 md-title">
         <div class="card mx-1 my-2 flex-grow-1" style="background-color: {{ background_color }}!important;">
@@ -33,7 +44,7 @@
                     <div class="aspect-ratio-1"
                          style="{{ margin_top }};margin-left: 10px;width: 70px;height: 70px;">
                         {% if illustration is not empty %}
-                            {{ illustration|raw }}
+                            {{ render_illustration(illustration) }}
                         {% elseif icon is not empty %}
                             <span class="md-cat-icon-stack" style="font-size:1.5em">
                                 <i class="ti ti-circle" style="{{ icon_color }};"></i>
@@ -56,7 +67,12 @@
                                          data-bs-toggle="modal"
                                          data-bs-target="#categorydetails{{ category_details_id }}"
                                          title="{{ __('More informations', 'servicecatalog') }}"></i>
-                                {{ category_details_modal|raw }}
+                                {# Iframe modal, no core macro: printed directly, as core templates do (§3.2). #}
+                                {% do call('Ajax::createIframeModalWindow', ['categorydetails' ~ category_details_id, category_details_url, {
+                                    'title': __('More informations', 'servicecatalog'),
+                                    'width': 1050,
+                                    'height': 500,
+                                }]) %}
                             {% endif %}
                             {% if settings_url is not empty %}
                                 &nbsp;<a href="{{ settings_url }}"><i class="ti ti-settings"></i></a>
@@ -65,13 +81,15 @@
                         <div class="text-secondary remove-last-tinymce-margin"
                              style="color:#7B7B7B;font-size:0.8rem;">
                             {% if comment is not empty %}
-                                {{ comment|raw }}
+                                {{ comment|safe_html }}
                             {% else %}
                                 {{ title }}
                             {% endif %}
                         </div>
                     </div>
-                    {{ models_and_drafts|raw }}
+                    {% if models_and_drafts is not null %}
+                        {% include '@metademands/wizard/models_and_drafts.html.twig' with models_and_drafts only %}
+                    {% endif %}
                 </div>
             </section>
         </div>

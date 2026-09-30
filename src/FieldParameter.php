@@ -35,7 +35,6 @@ use CommonGLPI;
 use DBConnection;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
-use Html;
 use Migration;
 use Plugin;
 use PluginFieldsContainer;
@@ -307,10 +306,6 @@ class FieldParameter extends CommonDBChild
 
         $params = Field::getAllParamsFromField($metademand_fields);
 
-        ob_start();
-        self::showFieldParameters($params);
-        $field_parameters_html = ob_get_clean();
-
         $field_example_html = '';
         if ($ID > 0) {
             ob_start();
@@ -325,7 +320,7 @@ class FieldParameter extends CommonDBChild
             'field_item'            => $metademand_fields->fields['item'],
             'field_id'              => $ID > 0 ? $ID : 0,
             'is_new'                => $ID <= 0,
-            'field_parameters_html' => $field_parameters_html,
+            'params'                => $params,
             'is_existing'           => $ID > 0,
             'field_type_name'       => $ID > 0 ? Field::getFieldTypesName($params['type']) : '',
             'field_example_html'    => $field_example_html,
@@ -424,17 +419,14 @@ class FieldParameter extends CommonDBChild
                     break;
                 default:
                     if (isset($PLUGIN_HOOKS['metademands'])) {
-                        ob_start();
-                        foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                            if (Plugin::isPluginActive($plug)) {
-                                self::showPluginCustomvalues($plug, $params);
-                            }
-                        }
-                        $plugin_html = ob_get_clean();
-                        if (!empty(trim($plugin_html))) {
-                            echo TemplateRenderer::getInstance()->render(
+                        $plugs = array_values(array_filter(
+                            array_keys($PLUGIN_HOOKS['metademands']),
+                            fn($plug) => Plugin::isPluginActive($plug) && self::hasPluginCustomvalues($plug),
+                        ));
+                        if ($plugs !== []) {
+                            TemplateRenderer::getInstance()->display(
                                 '@metademands/forms/field_parameter_plugin_values.html.twig',
-                                ['content' => $plugin_html],
+                                ['plugs' => $plugs, 'params' => $params],
                             );
                         }
                     }
@@ -455,57 +447,12 @@ class FieldParameter extends CommonDBChild
         $show_row_display = !in_array($type, ['title', 'title-block']);
         $show_is_basket  = $show_row_display && ($params['is_order'] ?? 0) == 1;
 
-        ob_start();
-        if ($show_mandatory) {
-            \Dropdown::showYesNo("is_mandatory", $params["is_mandatory"]);
-        }
-        $mandatory_html = ob_get_clean();
-
-        ob_start();
-        if ($show_hide_title) {
-            \Dropdown::showYesNo('hide_title', ($params['hide_title']));
-        }
-        $hide_title_html = ob_get_clean();
-
-        ob_start();
-        $icon_selector_id = 'icon_' . mt_rand();
-        echo Html::select('icon', [$params['icon'] => $params['icon']], [
-            'id'       => $icon_selector_id,
-            'selected' => $params['icon'],
-            'style'    => 'width:175px;',
-        ]);
-        echo Html::script('js/modules/Form/WebIconSelector.js');
-        echo Html::scriptBlock("$(function() {
-            import('/js/modules/Form/WebIconSelector.js').then((m) => {
-                var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-                icon_selector.init();
-            });
-        });");
-        echo TemplateRenderer::getInstance()->render(
-            '@metademands/forms/field_parameter_clear_picture.html.twig',
-            ['label' => __('Clear')],
-        );
-        $icon_html = ob_get_clean();
-
-        ob_start();
-        if ($show_row_display) {
-            \Dropdown::showYesNo('row_display', ($params['row_display']));
-        }
-        $row_display_html = ob_get_clean();
-
-        ob_start();
-        if ($show_is_basket) {
-            $basket_value = ($params['id'] ?? 0) > 0 ? $params["is_basket"] : 1;
-            \Dropdown::showYesNo("is_basket", $basket_value);
-        }
-        $is_basket_html = ob_get_clean();
-
         $excluded_for_ticket = [
             'title', 'title-block', 'informations', 'text', 'tel', 'email', 'url',
             'checkbox', 'yesno', 'radio', 'number', 'range', 'basket', 'link', 'freetable',
         ];
         $show_used_by_ticket = !in_array($type, $excluded_for_ticket);
-        $used_by_ticket_html = '';
+        $ticket_fields       = [];
 
         if ($show_used_by_ticket) {
             $ticket_fields[0] = \Dropdown::EMPTY_VALUE;
@@ -601,18 +548,14 @@ class FieldParameter extends CommonDBChild
                 }
             }
 
-            ob_start();
-            \Dropdown::showFromArray('used_by_ticket', $ticket_fields, ['value' => $params["used_by_ticket"]]);
-            $used_by_ticket_html = ob_get_clean();
         }
 
         $excluded_for_plugin = ['title', 'title-block', 'informations', 'link', 'freetable'];
         $show_plugin_fields  = !in_array($type, $excluded_for_plugin) && Plugin::isPluginActive('fields');
-        $plugin_fields_html  = '';
+        $plugin_fields       = [];
+        $plugin_fields_value = 0;
 
         if ($show_plugin_fields) {
-            ob_start();
-
             $arrayAvailableContainer = [];
             $fieldsContainer         = new PluginFieldsContainer();
             foreach ($fieldsContainer->find() as $container) {
@@ -623,40 +566,37 @@ class FieldParameter extends CommonDBChild
             }
 
             $pluginfield = new Pluginfields();
-            $opt         = ['display_emptychoice' => true];
             if ($pluginfield->getFromDBByCrit(['plugin_metademands_fields_id' => $params["id"]])) {
-                $opt["value"] = $pluginfield->fields["plugin_fields_fields_id"];
+                $plugin_fields_value = $pluginfield->fields["plugin_fields_fields_id"];
             }
             $condition = count($arrayAvailableContainer) > 0
                 ? ['plugin_fields_containers_id' => $arrayAvailableContainer]
                 : [];
 
-            $field        = new PluginFieldsField();
-            $datas        = [];
+            $field = new PluginFieldsField();
             foreach ($field->find($condition) as $fields_value) {
-                $datas[$fields_value['id']] = $fields_value['label'];
+                $plugin_fields[$fields_value['id']] = $fields_value['label'];
             }
-
-            \Dropdown::showFromArray('plugin_fields_fields_id', $datas, $opt);
-            echo Html::hidden('plugin_metademands_metademands_id', ['value' => $params["plugin_metademands_metademands_id"]]);
-
-            $plugin_fields_html = ob_get_clean();
         }
 
         return TemplateRenderer::getInstance()->render('@metademands/field_parameter_global.html.twig', [
             'show_mandatory'      => $show_mandatory,
-            'mandatory_html'      => $mandatory_html,
+            'is_mandatory'        => $params['is_mandatory'] ?? 0,
             'show_hide_title'     => $show_hide_title,
-            'hide_title_html'     => $hide_title_html,
-            'icon_html'           => $icon_html,
+            'hide_title'          => $params['hide_title'] ?? 0,
+            'icon'                => (string) ($params['icon'] ?? ''),
             'show_row_display'    => $show_row_display,
-            'row_display_html'    => $row_display_html,
+            'row_display'         => $params['row_display'] ?? 0,
             'show_is_basket'      => $show_is_basket,
-            'is_basket_html'      => $is_basket_html,
+            // A new field goes into the basket by default
+            'is_basket'           => ($params['id'] ?? 0) > 0 ? ($params['is_basket'] ?? 0) : 1,
             'show_used_by_ticket' => $show_used_by_ticket,
-            'used_by_ticket_html' => $used_by_ticket_html,
+            'ticket_fields'       => $ticket_fields,
+            'used_by_ticket'      => $params['used_by_ticket'] ?? 0,
             'show_plugin_fields'  => $show_plugin_fields,
-            'plugin_fields_html'  => $plugin_fields_html,
+            'plugin_fields'       => $plugin_fields,
+            'plugin_fields_value' => $plugin_fields_value,
+            'metademands_id'      => $params['plugin_metademands_metademands_id'] ?? 0,
         ]);
     }
 
@@ -665,6 +605,31 @@ class FieldParameter extends CommonDBChild
      *
      * @param $plug
      */
+    /**
+     * Whether a plugin registered through the `metademands` hook prints custom values.
+     *
+     * @param string $plug
+     *
+     * @return bool
+     */
+    public static function hasPluginCustomvalues($plug): bool
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        foreach ($PLUGIN_HOOKS['metademands'][$plug] ?? [] as $pluginclass) {
+            if (!class_exists($pluginclass)) {
+                continue;
+            }
+            $item = $dbu->getItemForItemtype($pluginclass);
+            if ($item && is_callable([$item, 'showCustomvalues'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static function showPluginCustomvalues($plug, $params)
     {
         global $PLUGIN_HOOKS;

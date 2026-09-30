@@ -25,22 +25,35 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Replace the custom values of a field by the rows of a CSV file. The form is
+ # toggled by Bootstrap, the confirmation is asked by public/scripts/wizard_form.js.
+ #
+ # Expected context:
+ #  - import_action: front/importcustomvalues.php
+ #  - fields_id:     id of the field
+-#}
 <tr class="tab_bg_1">
     <td align="right">
-        <a href="javascript:void(0);" class="btn btn-success" onclick='formToggle("importFrm");'>
+        <button type="button" class="btn btn-success" data-bs-toggle="collapse"
+                data-bs-target="#md-customvalue-import{{ fields_id }}" aria-expanded="false"
+                aria-controls="md-customvalue-import{{ fields_id }}">
             {{- __('Reset and import custom values', 'metademands') -}}
-        </a>
+        </button>
     </td>
     <td align="left" colspan="4">
-        <div class="col-md-12" id="importFrm" style="display: none;">
+        <div class="col-md-12 collapse" id="md-customvalue-import{{ fields_id }}">
             <form name="form" method="post" action="{{ import_action }}" enctype="multipart/form-data">
                 <input type="file" name="importFrm" id="importFrm">&nbsp;
-                {{ hidden_html|raw }}
-                {{ submit_html|raw }}
-                {{ tooltip_html|raw }}
+                <input type="hidden" name="plugin_metademands_fields_id" value="{{ fields_id }}">
+                <button type="submit" name="importreplacecsv" value="" class="btn btn-success"
+                        data-md-confirm="{{ __('Are you sure ? Custom values will be deleted !', 'metademands') }}">
+                    <i class="ti ti-upload"></i>
+                </button>
+                <span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top"
+                      data-bs-title="{{ __('Please respect this format : name; display by default(0|1); comment; - sorted by display order', 'metademands') }}">?</span>
                 <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
             </form>
         </div>
-        {{ script_html|raw }}
     </td>
 </tr>

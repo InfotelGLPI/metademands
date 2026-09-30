@@ -68,7 +68,6 @@ class Textarea extends CommonDBTM
             $comment = $data['comment'];
         }
         $self = new self();
-        $required = "";
         $cols = 20;
         $rows = 5;
 
@@ -102,27 +101,15 @@ class Textarea extends CommonDBTM
 
             $script_html = Html::scriptBlock("$('#$namedrop').hide();");
 
-            // Static style block kept verbatim (no user data) and injected raw.
-            $style_html = "<style>
-                        .fileupload.only-uploaded-files {
-                            display: none;
-                        }
-
-                     </style>";
-
             echo TemplateRenderer::getInstance()->render(
                 '@metademands/fields/field_textarea.html.twig',
                 [
                     'is_richtext'   => true,
                     'textarea_html' => $textarea_html,
                     'script_html'   => $script_html,
-                    'style_html'    => $style_html,
                 ],
             );
         } else {
-            if (isset($data['is_mandatory']) && $data['is_mandatory'] == 1) {
-                $required = "required='required'";
-            }
             if (!empty($comment)) {
                 $comment = RichText::getTextFromHtml($comment);
             }
@@ -131,7 +118,7 @@ class Textarea extends CommonDBTM
                 '@metademands/fields/field_textarea.html.twig',
                 [
                     'is_richtext' => false,
-                    'required'    => $required,
+                    'is_required' => isset($data['is_mandatory']) && $data['is_mandatory'] == 1,
                     'rows'        => $rows,
                     'cols'        => $cols,
                     // Auto-escaped: placeholder hardened, value byte-identical to legacy.
@@ -148,13 +135,9 @@ class Textarea extends CommonDBTM
 
     public static function showFieldParameters($params): string
     {
-        ob_start();
-        \Dropdown::showYesNo('use_richtext', $params['use_richtext']);
-        $use_richtext_html = ob_get_clean();
-
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_textarea.html.twig',
-            ['use_richtext_html' => $use_richtext_html],
+            ['use_richtext' => $params['use_richtext']],
         );
     }
 
@@ -169,17 +152,14 @@ class Textarea extends CommonDBTM
         }
         $cell_content = ob_get_clean();
 
-        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
-        // the wrapping cell now carries its parameters as data-* attributes.
-        $valuetocheck_html = TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_value_to_check_cell.html.twig',
-            [
-                'option_id'       => $params['ID'],
-                'with_check_type' => false,
-                'with_tech_group' => false,
-                'content'         => $cell_content,
-            ],
-        );
+        // Value cell, included by the row template; its parameters are read by
+        // public/scripts/fieldoption_valuetocheck.js from data-* attributes.
+        $valuetocheck = [
+            'option_id'       => $params['ID'],
+            'with_check_type' => false,
+            'with_tech_group' => false,
+            'content'         => $cell_content,
+        ];
 
         if ($params['check_value'] == '') {
             $params['check_value'] = 1;
@@ -194,7 +174,7 @@ class Textarea extends CommonDBTM
                 'label'             => __('If field empty', 'metademands'),
                 'label_colspan'     => 2,
                 'regex_html'        => '',
-                'valuetocheck_html' => $valuetocheck_html,
+                'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
             ],
         );

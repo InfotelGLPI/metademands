@@ -25,21 +25,31 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Filter form above the field list (Field::getSearchFormContext()).
+ #
+ # Expected context:
+ #  - block_options:       options of the "Block" number dropdown
+ #  - type, type_options:  selected type and choices of the "Field type" dropdown
+ #  - show_item, item:     whether the "Object" dropdown applies, and its value
+ #  - type_reload:         Ajax reload of the "Object" dropdown on a new type
+-#}
+
 <form name="form" method="post" action="{{ form_action }}">
     <div class="center">
         <table class="tab_cadre_fixe">
             <tr class="tab_bg_2">
                 <td class="center"><b>{{ __('Filter', 'glpi') }}&nbsp;</b></td>
                 <td class="center">
-                    {{ __('Block', 'metademands') }}&nbsp;{{ block_dropdown_html|raw }}
+                    {{ __('Block', 'metademands') }}&nbsp;{% do call('Dropdown::showNumber', ['block', block_options]) %}
                 </td>
                 <td class="center" data-md-reload-event="change" data-md-reload="{{ type_reload|json_encode }}">
-                    {{ __('Field type', 'metademands') }}&nbsp;{{ type_dropdown_html|raw }}
+                    {{ __('Field type', 'metademands') }}&nbsp;{% do call('Dropdown::showFromArray', ['type', type_options, {'value': type}]) %}
                 </td>
                 <td class="center">
                     <span id="plugin_metademands_item">
                         {%- if show_item -%}
-                            {{ __('Object', 'metademands') }}&nbsp;{{ item_dropdown_html|raw }}
+                            {{ __('Object', 'metademands') }}&nbsp;{% do call('GlpiPlugin\\Metademands\\Field::dropdownFieldItems', [type, {'value': item, 'with_empty_value': true}]) %}
                         {%- endif -%}
                     </span>
                 </td>

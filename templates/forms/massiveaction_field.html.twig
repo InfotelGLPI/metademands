@@ -25,14 +25,23 @@
  # --------------------------------------------------------------------------
  #}
 
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
 {#-
  # Widget and submit button of one of the massive actions of the plugin.
  #
  # Expected context:
- #  - field_html:  the widget itself (colour picker, web-icon selector…), if any
- #  - submit_html: the submit button
- #  - stacked:     true to put the button on its own line, false to keep it inline
+ #  - widget:       'color' (colour picker, "color"), 'icon' (web-icon selector,
+ #                  "icon") or none
+ #  - submit_label: label of the submit button
+ #  - stacked:      true to put the button on its own line, false to keep it inline
 -#}
-{{ field_html|default('')|raw }}
+{% if widget|default('') == 'color' %}
+    {% do call('Html::showColorField', ['color']) %}
+{% elseif widget|default('') == 'icon' %}
+    {{ fields.dropdownWebIcons('icon', '', '', {'no_label': true, 'field_class': 'd-inline-block', 'mb': '', 'width': '175px'}) }}
+{% endif %}
 {%- if stacked|default(false) %}<br>{% else %}&nbsp;{% endif -%}
-{{ submit_html|raw }}
+<button type="submit" name="massiveaction" value="{{ submit_label }}" class="btn">
+    <span>{{ submit_label }}</span>
+</button>

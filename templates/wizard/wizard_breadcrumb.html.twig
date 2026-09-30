@@ -29,11 +29,12 @@
     $(document).ready(function () {
         $('#title_cat').show();
         $('#categories_title').show();
+        {# raw: json_encode(JSON_HEX_TAG|JSON_HEX_AMP) in a script (§3.2); tree_name is the markup rendered by Category::getTreeCategoryFriendlyName() #}
         document.getElementById('title_cat').innerHTML = {{ tree_name|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }};
         let newScript = document.createElement('script');
         newScript.type = 'text/javascript';
-        {# tree_script is the JavaScript string literal produced by Category::getTreeCategoryFriendlyName(). #}
-        let scriptContent = document.createTextNode({{ tree_script|raw }});
+        {# raw: json_encode(JSON_HEX_TAG|JSON_HEX_AMP) in a script (§3.2); tree_script is the source built by Category::getTreeCategoryFriendlyName() #}
+        let scriptContent = document.createTextNode({{ tree_script|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }});
         newScript.appendChild(scriptContent);
         document.body.appendChild(newScript);
     });

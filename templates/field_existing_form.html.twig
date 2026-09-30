@@ -27,6 +27,15 @@
 
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
 
+{#-
+ # Form adding an existing field to a metademand (Field::showExistingForm()).
+ #
+ # Expected context, besides the plain values of the field:
+ #  - type_options, type_rand: "Field" dropdown, listing the field types
+ #  - rank, rank_rand, max_fields: "Block" dropdown
+ #  - order: {select, value} of the "Display field after" dropdown
+-#}
+
 <form name="form" method="post" action="{{ action }}">
     {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
     {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
@@ -38,7 +47,7 @@
             <div class="row mb-3">
                 <label class="col-4 col-form-label fw-bold">{{ __('Field', 'metademands') }}</label>
                 <div class="col-8">
-                    {{ type_html|raw }}
+                    {% do call('Dropdown::showFromArray', ['type', type_options, {'rand': type_rand}]) %}
                     {% do call('Ajax::updateItemOnEvent', [
                         'dropdown_type' ~ type_rand,
                         'show_listfields_by_type',
@@ -53,7 +62,7 @@
             <div class="row mb-3">
                 <label class="col-4 col-form-label fw-bold">{{ __('Block', 'metademands') }}</label>
                 <div class="col-8">
-                    {{ rank_html|raw }}
+                    {% do call('Dropdown::showNumber', ['rank', {'value': rank, 'min': 1, 'max': max_fields, 'rand': rank_rand}]) %}
                     {% do call('Ajax::updateItemOnSelectEvent', [
                         'dropdown_rank' ~ rank_rand,
                         'show_order',
@@ -68,7 +77,7 @@
                 <div class="row mb-3">
                     <label class="col-4 col-form-label fw-bold">{{ __('Display field after', 'metademands') }}</label>
                     <div class="col-8">
-                        <span id="show_order">{{ order_html|raw }}</span>
+                        <span id="show_order">{% do call('Dropdown::showFromArray', ['plugin_metademands_fields_id', order.select, {'value': order.value}]) %}</span>
                     </div>
                 </div>
             {% endif %}

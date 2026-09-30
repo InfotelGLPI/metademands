@@ -29,7 +29,6 @@
  #  preview, buttons, result span, hidden input, then the script/css asset tags.
  #  ids, name, labels, value and the data-md-signature-* attributes are data and are
  #  escaped; the pad is bound by public/scripts/wizard_form.js (initSignature).
- #  script_tag / css_tag are core Html::script() / Html::css() output injected raw.
  #  Escaping is byte-identical to the legacy htmlspecialchars(ENT_QUOTES) for valid UTF-8.
  #  One physical line so no inter-element whitespace enters the output. -#}
 <div class='wrapper'>
@@ -48,5 +47,5 @@
     <button type='button' id='{{ clear_id }}' class='btn btn-primary'>{{ label_clear }}</button>
 </div><br><span class='result' id='{{ result_id }}'></span><input type='hidden' id='{{ hidden_id }}'
                                                                       name='{{ name }}'
-                                                                      value='{{ value }}'>{{ script_tag|raw }}{{ css_tag|raw }}
+                                                                      value='{{ value }}'><script src="{{ js_path('/plugins/metademands/lib/signature/js/signature_pad.umd.min.js') }}"></script><link rel="stylesheet" type="text/css" href="{{ css_path('/plugins/metademands/lib/signature/css/signature_pad.umd.css') }}">
 {#- -#}

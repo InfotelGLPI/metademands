@@ -234,13 +234,6 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
     {
         $this->initForm($ID, $options);
 
-        ob_start();
-        \Dropdown::show(Basketobjecttype::class, [
-            'name'  => 'plugin_metademands_basketobjecttypes_id',
-            'value' => $this->fields['plugin_metademands_basketobjecttypes_id'],
-        ]);
-        $type_dropdown_html = ob_get_clean();
-
         TemplateRenderer::getInstance()->display('@metademands/basketobject_form.html.twig', [
             'action'             => Toolbox::getItemTypeFormURL(Basketobject::class),
             'item_id'            => $this->fields['id'] ?? 0,
@@ -249,7 +242,8 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
             'description'        => $this->fields['description'] ?? '',
             'reference'          => $this->fields['reference'] ?? '',
             'type_name'          => Basketobjecttype::getTypeName(),
-            'type_dropdown_html' => $type_dropdown_html,
+            'type_itemtype'      => Basketobjecttype::class,
+            'types_id'           => $this->fields['plugin_metademands_basketobjecttypes_id'],
         ]);
 
         return true;

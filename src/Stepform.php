@@ -695,33 +695,19 @@ class Stepform extends CommonDBTM
         $can_delete_any = Session::haveRight(self::$rightname, DELETE);
         $rows       = [];
         foreach ($stepforms as $id => $form) {
-            $delete_html = '';
-            if ($can_delete_any || self::canCancelForm($id)) {
-                $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
-                // showSimpleForm() prints its markup; the red wrapper around it now lives in
-                // the template, next to the cell it belongs to.
-                ob_start();
-                Html::showSimpleForm(
-                    $target,
-                    'delete_form_from_metademands',
-                    _sx('button', 'Delete form', 'metademands'),
-                    ['plugin_metademands_stepforms_id' => $id],
-                    'ti-trash',
-                );
-                $delete_html = ob_get_clean();
-            }
             $rows[] = [
                 'id'             => $id,
                 'publisher'      => getUserName($form['users_id'], 0, true),
                 'group'          => \Dropdown::getDropdownName('glpi_groups', $form['groups_id_dest']),
                 'user_dest'      => getUserName($form['users_id_dest'], 0, true),
                 'date'           => Html::convDateTime($form['date']),
-                'delete_html'    => $delete_html,
+                'can_delete'     => $can_delete_any || self::canCancelForm($id),
             ];
         }
 
         TemplateRenderer::getInstance()->display('@metademands/forms/stepform_list_from_metademand.html.twig', [
-            'rows' => $rows,
+            'rows'          => $rows,
+            'delete_action' => PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php",
         ]);
     }
     public function post_addItem()
@@ -831,23 +817,11 @@ class Stepform extends CommonDBTM
                 } else {
                     $name = $n;
                 }
-                $delete_html = '';
                 // Same predicate as front/stepform.form.php: the button used to be drawn on
                 // plugin_metademands_cancelform alone while the controller opened on
                 // plugin_metademands => UPDATE, so a profile holding only the dedicated
                 // right saw it and was systematically refused the action.
-                if (Session::haveRight(self::$rightname, DELETE) || self::canCancelForm($id)) {
-                    $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
-                    ob_start();
-                    Html::showSimpleForm(
-                        $target,
-                        'delete_form_from_list',
-                        _sx('button', 'Delete form', 'metademands'),
-                        ['plugin_metademands_stepforms_id' => $id],
-                        'ti-trash',
-                    );
-                    $delete_html = ob_get_clean();
-                }
+                $can_delete = Session::haveRight(self::$rightname, DELETE) || self::canCancelForm($id);
                 $cards[] = [
                     'id'          => $id,
                     'metaID'      => $metaID,
@@ -857,14 +831,14 @@ class Stepform extends CommonDBTM
                     'name'        => $name,
                     'editor'      => User::getFriendlyNameById($stepform['users_id']),
                     'date'        => Html::convDateTime($stepform['date']),
-                    'delete_html' => $delete_html,
+                    'can_delete'  => $can_delete,
                 ];
             }
         }
 
 
         TemplateRenderer::getInstance()->display('@metademands/forms/stepform_waiting_form.html.twig', [
-            'css_html'     => Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/wizard.css.php"),
+            'delete_action' => PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php",
             'cnt'          => $cnt,
             'header_icon'  => $icon,
             'header_is_fa' => str_contains($icon, 'fa-'),
@@ -935,20 +909,8 @@ class Stepform extends CommonDBTM
                 } else {
                     $name = $n;
                 }
-                $delete_html = '';
                 // Same predicate as front/stepform.form.php, see showWaitingForm().
-                if (Session::haveRight(self::$rightname, DELETE) || self::canCancelForm($id)) {
-                    $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
-                    ob_start();
-                    Html::showSimpleForm(
-                        $target,
-                        'delete_form_from_list',
-                        _sx('button', 'Delete form', 'metademands'),
-                        ['plugin_metademands_stepforms_id' => $id],
-                        'ti-trash',
-                    );
-                    $delete_html = ob_get_clean();
-                }
+                $can_delete = Session::haveRight(self::$rightname, DELETE) || self::canCancelForm($id);
                 $cards[] = [
                     'icon'            => $card_icon,
                     'is_fa'           => str_contains($card_icon, 'fa-'),
@@ -959,7 +921,7 @@ class Stepform extends CommonDBTM
                     'group_dest'      => $stepform['groups_id_dest'] > 0 ? \Group::getFriendlyNameById($stepform['groups_id_dest']) : '',
                     'has_user_dest'   => $stepform['users_id_dest'] > 0,
                     'user_dest'       => $stepform['users_id_dest'] > 0 ? getUserName($stepform['users_id_dest']) : '',
-                    'delete_html'     => $delete_html,
+                    'can_delete'      => $can_delete,
                 ];
             }
         }
@@ -969,6 +931,7 @@ class Stepform extends CommonDBTM
             'header_icon'  => $icon,
             'header_is_fa' => str_contains($icon, 'fa-'),
             'cards'        => $cards,
+            'delete_action' => PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php",
         ]);
     }
 

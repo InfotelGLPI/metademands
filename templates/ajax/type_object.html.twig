@@ -47,6 +47,7 @@
     {% elseif mode == 'category' %}
         {{ fields.htmlField('itilcategories_id', category_dropdown_html, __('Category')) }}
     {% elseif mode == 'plugin' %}
+        {# raw: getUniqueDropdown() markup contributed by another plugin through its hook (§3.2) #}
         {{ plugin_html|raw }}
     {% endif %}
 </div>

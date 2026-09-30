@@ -32,7 +32,6 @@ namespace GlpiPlugin\Metademands;
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QueryExpression;
-use Html;
 use CommonGLPI;
 
 class Tools extends CommonDBTM
@@ -99,13 +98,6 @@ class Tools extends CommonDBTM
     public static function showTools()
     {
         global $DB;
-
-        // Section 1: global status action
-        $global_status_form = Html::getSimpleForm(
-            self::getFormURL(),
-            'change_global_status',
-            _x('button', 'Verify metademands global status', 'metademands'),
-        );
 
         // Section 2: duplicate field options.
         // Several rows sharing the same (field, check_value) pair are NOT duplicates: the storage
@@ -230,13 +222,7 @@ class Tools extends CommonDBTM
                     "glpi_plugin_metademands_metademands",
                     $field->fields['plugin_metademands_metademands_id'],
                 ),
-                'purge_form' => Html::getSimpleForm(
-                    Tools::getFormURL(),
-                    'purge_emptyoptions',
-                    _x('button', 'Delete permanently'),
-                    ['id' => $array['id']],
-                    'fa-times-circle',
-                ),
+                'id'         => $array['id'],
             ];
         }
 
@@ -397,19 +383,14 @@ class Tools extends CommonDBTM
                         "glpi_plugin_metademands_metademands",
                         $field_to_order->fields['plugin_metademands_metademands_id'],
                     ),
-                    'fix_form'   => Html::getSimpleForm(
-                        FieldCustomvalue::getFormURL(),
-                        'fixranks',
-                        _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands'),
-                        ['plugin_metademands_fields_id' => $not_ordered_field],
-                        'ti-settings',
-                    ),
+                    'fields_id'  => $not_ordered_field,
                 ];
             }
         }
 
         TemplateRenderer::getInstance()->display('@metademands/tools_diagnostic.html.twig', [
-            'global_status_form' => $global_status_form,
+            'tools_url'          => self::getFormURL(),
+            'customvalue_url'    => FieldCustomvalue::getFormURL(),
             'duplicates_has'     => $duplicates_has,
             'duplicates_rows'    => $duplicates_rows,
             'empty_options_has'  => $empty_options_has,

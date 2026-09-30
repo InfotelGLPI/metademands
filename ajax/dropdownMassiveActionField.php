@@ -30,7 +30,7 @@
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\Exception\Http\BadRequestHttpException;
 use Glpi\Exception\Http\NotFoundHttpException;
-use GlpiPlugin\Metademands\Fields\Time;
+use GlpiPlugin\Metademands\TicketField;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
@@ -54,255 +54,32 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
     if (!isset($search[$_POST["id_field"]])) {
         throw new NotFoundHttpException();
     }
-    $search    = $search[$_POST["id_field"]];
-    $USE_TABLE = false;
+    $search = $search[$_POST["id_field"]];
 
-    // Every branch below writes its widget straight to the standard output. Capture it:
-    // the branches used to open a `<table><tr><td>` each and leave the tail of the file
-    // to close it, and the template now owns that wrapper.
-    ob_start();
-
-
-    if ($search["table"] == $dbu->getTableForItemType($_POST["itemtype"])) { // field type
-        switch ($search["table"] . "." . $search["linkfield"]) {
-            case "glpi_tickets.status":
-                \Ticket::dropdownStatus(['name'  => $search["linkfield"],
-                    'value' => $_POST["value"]]);
-                break;
-
-            case "glpi_tickets.items_id":
-                if (isset($_POST['itemtype_used']) && !empty($_POST['itemtype_used'])) {
-                    // Only the itemtypes that can actually be linked to a ticket are offered here:
-                    // the value comes from the browser and would otherwise let any dropdown be listed.
-                    if (!in_array($_POST['itemtype_used'], $CFG_GLPI['ticket_types'], true)) {
-                        throw new BadRequestHttpException();
-                    }
-                    if (!($linked_item = $dbu->getItemForItemtype($_POST['itemtype_used']))) {
-                        throw new BadRequestHttpException();
-                    }
-                    $linked_item->checkGlobal(READ);
-
-                    Dropdown::show($_POST['itemtype_used'], ['name' => $search["linkfield"], 'value' => $_POST["value"]]);
-                }
-                break;
-
-            case "glpi_tickets.type":
-                \Ticket::dropdownType($search["linkfield"], ['value' => $_POST["value"]]);
-                break;
-
-            case "glpi_tickets.priority":
-                \Ticket::dropdownPriority(['name' => $search["linkfield"], 'value' => $_POST["value"]]);
-                break;
-
-            case "glpi_tickets.impact":
-                \Ticket::dropdownImpact(['name' => $search["linkfield"], 'value' => $_POST["value"]]);
-                break;
-
-            case "glpi_tickets.urgency":
-                \Ticket::dropdownUrgency(['name' => $search["linkfield"], 'value' => $_POST["value"]]);
-                break;
-
-            case "glpi_tickets.global_validation":
-                \TicketValidation::dropdownStatus($search["linkfield"], ['value' => $_POST["value"]]);
-                break;
-            default:
-                // Specific plugin Type case
-                $plugdisplay = false;
-                if ($plug = isPluginItemType($_POST["itemtype"])) {
-                    $plugdisplay = Plugin::doOneHook(
-                        $plug['plugin'],
-                        'MassiveActionsFieldsDisplay',
-                        ['itemtype' => $_POST["itemtype"],
-                            'options'  => $search],
-                    );
-                }
-                $already_display = false;
-
-                if (isset($search['datatype'])) {
-                    switch ($search['datatype']) {
-                        case "date":
-                            Html::showDateField($search["linkfield"], ['value' => $_POST['value']]);
-                            $USE_TABLE       = true;
-                            $already_display = true;
-                            break;
-                        case "time":
-                            Time::showTimeField($search["linkfield"], ['value' => $_POST['value']]);
-                            $USE_TABLE       = true;
-                            $already_display = true;
-                            break;
-                        case "datetime":
-                            if (!isset($_POST['relative_dates']) || !$_POST['relative_dates']) {
-                                Html::showDateTimeField($search["linkfield"], ['value' => $_POST['value']]);
-                                $already_display = true;
-                                $USE_TABLE       = true;
-                            } else { // For ticket template
-                                Html::showGenericDateTimeSearch(
-                                    $search["linkfield"],
-                                    $_POST['value'],
-                                    ['with_time'          => true,
-                                        'with_future'
-                                                             => (isset($search['maybefuture'])
-                                                                 && $search['maybefuture']),
-                                        'with_days'          => false,
-                                        'with_specific_date' => false],
-                                );
-
-                                $already_display = true;
-                            }
-                            break;
-
-                            //                  case "itemtypename" :
-                            //                     if (isset($search['itemtype_list'])) {
-                            //                        \Dropdown::dropdownTypes($search["linkfield"], $_POST['value'], $CFG_GLPI[$search['itemtype_list']]);
-                            //                        $already_display = true;
-                            //                     }
-                            //                     break;
-
-                        case "bool":
-                            \Dropdown::showYesNo($search["linkfield"], $_POST['value']);
-                            $already_display = true;
-                            break;
-
-                        case "timestamp":
-                            \Dropdown::showTimeStamp($search["linkfield"], ['value' => $_POST['value']]);
-                            $already_display = true;
-                            break;
-
-                        case "text":
-                            Html::textarea(['name'              => $search["linkfield"],
-                                'cols'              => '45',
-                                'rows'              => '5',
-                                'value'             => stripslashes($_POST['value']),
-                                'enable_richtext'   => true,
-                                'enable_fileupload' => false]);
-                            $already_display = true;
-                            break;
-                    }
-                }
-
-                if (!$plugdisplay && !$already_display) {
-                    $newtype = $dbu->getItemTypeForTable($search["table"]);
-                    if ($newtype != $_POST["itemtype"]) {
-                        $item = new $newtype();
-                    }
-                    echo Html::input($search["linkfield"], ['value' => stripslashes($_POST['value']), 'size' => 40]);
-                }
+    // Only the itemtypes that can actually be linked to a ticket are offered for the linked
+    // item: the value comes from the browser and would otherwise let any dropdown be listed.
+    // Checked here so that the widget, printed by the template, never has to throw.
+    if (
+        $search["table"] == $dbu->getTableForItemType($_POST["itemtype"])
+        && $search["table"] . "." . $search["linkfield"] === "glpi_tickets.items_id"
+        && !empty($_POST['itemtype_used'])
+    ) {
+        if (!in_array($_POST['itemtype_used'], $CFG_GLPI['ticket_types'], true)) {
+            throw new BadRequestHttpException();
         }
-    } else {
-        switch ($search["table"]) {
-            case "glpi_users": // users
-                switch ($search["linkfield"]) {
-                    //                case "users_id_assign" :
-                    //                   User::dropdown(array('name'   => $search["linkfield"],
-                    //                                        'right'  => 'own_ticket',
-                    //                                        'entity' => $_SESSION["glpiactive_entity"]));
-                    //                   break;
-
-                    case "users_id_tech":
-                        User::dropdown(['name'   => $search["linkfield"],
-                            'value'  => $_POST["value"],
-                            'right'  => 'own_ticket',
-                            'entity' => $_SESSION["glpiactive_entity"]]);
-                        break;
-
-                    default:
-                        User::dropdown(['name'   => $search["linkfield"],
-                            'value'  => $_POST["value"],
-                            'entity' => $_SESSION["glpiactive_entity"],
-                            'right'  => 'all']);
-                }
-                break;
-
-                break;
-
-            case "glpi_softwareversions":
-                switch ($search["linkfield"]) {
-                    case "softwareversions_id_use":
-                    case "softwareversions_id_buy":
-                        $_POST['softwares_id'] = $_POST['extra_softwares_id'];
-                        $_POST['myname']       = $search['linkfield'];
-                        $inc = $CFG_GLPI["root_doc"] . '/ajax/dropdownInstallVersion.php';
-                        if (file_exists($inc)) {
-                            include($inc);
-                        }
-                        break;
-                }
-                break;
-
-            default: // dropdown case
-                $plugdisplay = false;
-                // Specific plugin Type case
-                if (($plug = isPluginItemType($_POST["itemtype"]))
-                // Specific for plugin which add link to core object
-                || ($plug = isPluginItemType($dbu->getItemTypeForTable($search['table'])))) {
-                    $plugdisplay = Plugin::doOneHook(
-                        $plug['plugin'],
-                        'MassiveActionsFieldsDisplay',
-                        ['itemtype' => $_POST["itemtype"],
-                            'options'  => $search],
-                    );
-                }
-                $already_display = false;
-
-                if (isset($search['datatype'])) {
-                    switch ($search['datatype']) {
-                        case "date":
-                            Html::showDateField($search["linkfield"], $_POST["value"]);
-                            $USE_TABLE       = true;
-                            $already_display = true;
-                            break;
-                        case "time":
-                            Time::showTimeField($search["linkfield"], $_POST["value"]);
-                            $USE_TABLE       = true;
-                            $already_display = true;
-                            break;
-                        case "datetime":
-                            Html::showDateTimeField($search["linkfield"], ['value' => $_POST["value"]]);
-                            $already_display = true;
-                            $USE_TABLE       = true;
-                            break;
-
-                        case "bool":
-                            Dropdown::showYesNo($search["linkfield"], $_POST["value"]);
-                            $already_display = true;
-                            break;
-
-                        case "text":
-                            Html::textarea(['name'             => $search["linkfield"],
-                                'value'           => htmlspecialchars($_POST["value"] ?? '', ENT_QUOTES, 'UTF-8'),
-                                'cols'            => 45,
-                                'rows'            => 5,
-                                'enable_richtext' => true]);
-                            $already_display = true;
-                            break;
-                    }
-                }
-
-                if (!$plugdisplay && !$already_display) {
-                    $cond = (isset($search['condition']) ? $search['condition'] : []);
-                    \Dropdown::show(
-                        $dbu->getItemTypeForTable($search["table"]),
-                        ['name'      => $search["linkfield"],
-                            'value'     => $_POST["value"],
-                            'entity'    => $_SESSION['glpiactiveentities'],
-                            'condition' => $cond],
-                    );
-                }
+        if (!($linked_item = $dbu->getItemForItemtype($_POST['itemtype_used']))) {
+            throw new BadRequestHttpException();
         }
+        $linked_item->checkGlobal(READ);
     }
 
-    $widget_html = ob_get_clean();
-
-    // $FIELDNAME_PRINTED was declared next to $USE_TABLE and never set: no branch of the
-    // switch printed the field name, so the hidden input was always emitted.
-    $hidden_html = Html::hidden(
-        'field',
-        ['value' => empty($search["linkfield"]) ? $search["field"] : $search["linkfield"]],
-    );
-
+    // $FIELDNAME_PRINTED was never set: no branch of the
+    // switch printed the field name, so the hidden input is always emitted.
     TemplateRenderer::getInstance()->display('@metademands/ajax/massiveaction_field.html.twig', [
-        'use_table'   => $USE_TABLE,
-        'widget_html' => $widget_html,
-        'hidden_html' => $hidden_html,
+        'use_table'   => TicketField::massiveActionFieldUsesTable($_POST['itemtype'], $search, $_POST),
+        'itemtype'    => $_POST['itemtype'],
+        'search'      => $search,
+        'input'       => $_POST,
+        'field_name'  => empty($search["linkfield"]) ? $search["field"] : $search["linkfield"],
     ]);
 }

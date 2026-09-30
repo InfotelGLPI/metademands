@@ -614,60 +614,35 @@ class Step extends CommonDBChild
         }
         ksort($blocks);
 
-        ob_start();
+        // A saved step targets one block, a new one may target several
         if ($this->fields['block_id']) {
-            \Dropdown::showFromArray('block_id', $blocks, [
+            $block_options = [
                 'value'  => $this->fields['block_id'],
                 'width'  => '100%',
                 'entity' => $_SESSION['glpiactiveentities'],
-            ]);
+            ];
         } else {
-            \Dropdown::showFromArray('block_id', $blocks, [
+            $block_options = [
                 'values'   => [$this->fields['block_id']],
                 'width'    => '100%',
                 'multiple' => true,
                 'entity'   => $_SESSION['glpiactiveentities'],
-            ]);
+            ];
         }
-        $block_dropdown_html = ob_get_clean();
 
         $supervisor_validation = isset($configStep->fields['supervisor_validation'])
             ? (int) $configStep->fields['supervisor_validation']
             : null;
 
-        $groups_dropdown_html     = '';
-        $supervisor_dropdown_html = '';
-
+        $groups = [];
         if ($supervisor_validation === 0) {
-            ob_start();
             $meta_group  = new Group();
             $meta_groups = $meta_group->find(['plugin_metademands_metademands_id' => $item->getID()]);
-            $groups = [];
             foreach ($meta_groups as $group) {
                 $gr = new \Group();
                 $gr->getFromDB($group['groups_id']);
                 $groups[$group['groups_id']] = $gr->getFriendlyName();
             }
-            if (!empty($groups)) {
-                \Dropdown::showFromArray('groups_id', $groups, [
-                    'value'    => $this->fields['groups_id'],
-                    'width'    => '100%',
-                    'multiple' => true,
-                    'entity'   => $_SESSION['glpiactiveentities'],
-                ]);
-            } else {
-                \Group::dropdown([
-                    'name'  => 'groups_id',
-                    'value' => $this->fields['groups_id'],
-                ]);
-            }
-            $groups_dropdown_html = ob_get_clean();
-        }
-
-        if ($supervisor_validation === 1) {
-            ob_start();
-            \Dropdown::showYesNo('only_by_supervisor', $this->fields['only_by_supervisor']);
-            $supervisor_dropdown_html = ob_get_clean();
         }
 
         TemplateRenderer::getInstance()->display('@metademands/step_form.html.twig', [
@@ -675,10 +650,13 @@ class Step extends CommonDBChild
             'metademand_id'            => $item->getID(),
             'step_id'                  => $this->fields['id'] ?? 0,
             'is_new'                   => $ID <= 0,
-            'block_dropdown_html'      => $block_dropdown_html,
+            'blocks'                   => $blocks,
+            'block_options'            => $block_options,
             'supervisor_validation'    => $supervisor_validation,
-            'groups_dropdown_html'     => $groups_dropdown_html,
-            'supervisor_dropdown_html' => $supervisor_dropdown_html,
+            'groups'                   => $groups,
+            'groups_id'                => $this->fields['groups_id'],
+            'active_entities'          => $_SESSION['glpiactiveentities'],
+            'only_by_supervisor'       => $this->fields['only_by_supervisor'],
             'message'                  => $this->fields['message'] ?? '',
         ]);
 
@@ -1070,14 +1048,7 @@ class Step extends CommonDBChild
         }
 
         TemplateRenderer::getInstance()->display('@metademands/forms/step_next_user.html.twig', [
-            'dropdown_html' => \Dropdown::showFromArray(
-                'next_users_id',
-                $users,
-                [
-                    'display_emptychoice' => true,
-                    'display' => false,
-                ],
-            ),
+            'users' => $users,
         ]);
     }
 

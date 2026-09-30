@@ -25,6 +25,11 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Public models of the meta-demand (Form::showPublicFormsForUserMetademand()).
+ #
+ #  - entries: {id, name, meta_name, date, created_by, url}, url being the getLink()
+ #    of the linked item or null
+ #  - meta_id, step, itilcategories_id, webdir -#}
 <span>
     {% if entries is not empty %}
         <table class="tab_cadre_fixe">
@@ -35,16 +40,17 @@
             </thead>
             <tbody id="bodyForm">
                 {% for entry in entries %}
-                    {% set tooltip_content %}
-                        {{ __('Name') }} : {{ entry.name }}<br>
-                        {{ __('Date') }} : {{ entry.date }}<br>
-                        {{ __('Created by', 'metademands') }} : {{ entry.created_by }}
-                        {% if entry.url %}<br>{{ __('URL') }} : {{ entry.url|raw }}{% endif %}
-                    {% endset %}
+                    {#- HTML of the tooltip, escaped as a whole into data-bs-title: the name,
+                        date and author are escaped here, entry.url is a getLink() output -#}
+                    {% set tooltip_content = __('Name') ~ ' : ' ~ entry.name|e ~ '<br>'
+                        ~ __('Date') ~ ' : ' ~ entry.date|e ~ '<br>'
+                        ~ __('Created by', 'metademands') ~ ' : ' ~ entry.created_by|e
+                        ~ (entry.url ? '<br>' ~ __('URL') ~ ' : ' ~ entry.url : '') %}
                     <tr>
                         <td>{{ entry.name }} ({{ entry.meta_name }})</td>
                         <td>
-                            {{ call('Html::showToolTip', [tooltip_content, {'awesome-class': 'ti ti-info-circle', 'display': false}])|raw }}
+                            <span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  data-bs-html="true" data-bs-title="{{ tooltip_content }}">?</span>
                         </td>
                         <td>
                             <button form="" class="submit btn btn-success btn-sm"

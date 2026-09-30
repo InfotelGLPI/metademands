@@ -545,82 +545,25 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             unset($_SESSION['glpi_plugin_metademands_fields']);
         }
 
-        ob_start();
-        $type_rand = self::dropdownFieldTypes(
-            self::$field_types,
-            ['metademands_id' => $this->fields["plugin_metademands_metademands_id"]],
-        );
-        $type_html = ob_get_clean();
-
-        ob_start();
-        $rank_rand = \Dropdown::showNumber('rank', [
-            'value' => $this->fields["rank"],
-            'min'   => 1,
-            'max'   => self::MAX_FIELDS,
-        ]);
-        $rank_html = ob_get_clean();
-
-        ob_start();
-        $this->showOrderDropdown($this->fields);
-        $order_html = ob_get_clean();
-
         TemplateRenderer::getInstance()->display('@metademands/field_existing_form.html.twig', [
             'action'         => Toolbox::getItemTypeFormURL(Field::class),
             'metademand_id'  => $this->fields['plugin_metademands_metademands_id'],
             'field_id'       => $this->fields['id'] ?? 0,
             'prev_fields_id' => $this->fields['plugin_metademands_fields_id'] ?? 0,
-            'type_html'      => $type_html,
-            'type_rand'      => $type_rand,
-            'rank_html'      => $rank_html,
-            'rank_rand'      => $rank_rand,
-            'order_html'     => $order_html,
+            'type_options'   => self::getFieldTypesOptions(
+                self::$field_types,
+                $this->fields["plugin_metademands_metademands_id"],
+            ),
+            'type_rand'      => mt_rand(),
+            'rank'           => $this->fields["rank"],
+            'rank_rand'      => mt_rand(),
+            'max_fields'     => self::MAX_FIELDS,
+            'order'          => $this->getOrderDropdownData($this->fields),
             'is_title_block' => ($this->fields['type'] ?? '') === 'title-block',
             'plugin_web_dir' => PLUGIN_METADEMANDS_WEBDIR,
         ]);
 
         return true;
-    }
-
-    /**
-     * Itemtype selector of the field form, wrapped in the <span> the "Type" dropdown
-     * reloads through Ajax. Three branches of showForm() used to inline the same
-     * three `echo`, the last of which opened a `<span id="show_item_title">` that was
-     * never closed and that nothing in the plugin ever targets.
-     *
-     * @param string $type             type of the field driving the available itemtypes
-     * @param array  $dropdown_options options forwarded to dropdownFieldItems()
-     * @param int    $type_rand        rand of the "Type" dropdown driving the reload
-     * @param string $ajax_url
-     * @param array  $params_item
-     *
-     * @return string
-     */
-    private function showItemSelector(
-        string $type,
-        array $dropdown_options,
-        $type_rand,
-        string $ajax_url,
-        array $params_item,
-    ): string {
-        // dropdownFieldItems() prints the selector: capture it and let the template own
-        // the <span> the Ajax reload targets.
-        ob_start();
-        self::dropdownFieldItems($type, $dropdown_options);
-        $dropdown_html = ob_get_clean();
-
-        return TemplateRenderer::getInstance()->render(
-            '@metademands/forms/field_item_selector.html.twig',
-            [
-                'dropdown_html' => $dropdown_html,
-                'script_html'   => Ajax::updateItemOnSelectEvent(
-                    'dropdown_type' . $type_rand,
-                    'show_item',
-                    $ajax_url,
-                    $params_item,
-                    false,
-                ),
-            ],
-        );
     }
 
     /**
@@ -713,7 +656,9 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
         }
 
-        // --- Type dropdown (logique conditionnelle complexe) ---
+        // --- Type dropdown ---
+        // Types the field may switch to, or null when the type is fixed
+        $type_list = null;
         $type_rand = null;
         $ajax_url  = PLUGIN_METADEMANDS_WEBDIR . "/ajax/viewtypefields.php?id=" . $this->fields['id'];
         $params_type = [
@@ -724,87 +669,41 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'change_type'   => 1,
         ];
 
-        ob_start();
         if ($ID < 1) {
-            $type_rand = self::dropdownFieldTypes(self::$field_types, [
-                'value'          => $this->fields["type"] ?? '',
-                'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-            ]);
-            Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
-        } else {
-            if (in_array($this->fields["type"], self::$field_title_types)) {
-                $type_rand = self::dropdownFieldTypes(self::$field_title_types, [
-                    'value'          => $this->fields["type"],
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                ]);
-                Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
-            } elseif (in_array($this->fields["type"], self::$field_customvalues_types)) {
-                if (in_array($this->fields["item"], Dropdownmultiple::$dropdown_multiple_objects)) {
-                    $type_rand = self::dropdownFieldTypes(["dropdown_multiple"], [
-                        'value'          => $this->fields["type"],
-                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                    ]);
-                    Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
-                } else {
-                    if ($this->fields["item"] == "other" || $this->fields["type"] == "radio" || $this->fields["type"] == "checkbox") {
-                        $type_rand = self::dropdownFieldTypes(self::$field_customvalues_types, [
-                            'value'          => $this->fields["type"],
-                            'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                        ]);
-                        Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
-                    } else {
-                        echo self::getFieldTypesName($this->fields['type']);
-                        echo Html::hidden('type', ['value' => $this->fields['type']]);
-                    }
-                }
-            } elseif (in_array($this->fields["type"], self::$field_text_types)) {
-                $type_rand = self::dropdownFieldTypes(self::$field_text_types, [
-                    'value'          => $this->fields["type"],
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                ]);
-                Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
-            } elseif (in_array($this->fields["type"], self::$field_date_types)) {
-                $type_rand = self::dropdownFieldTypes(self::$field_date_types, [
-                    'value'          => $this->fields["type"],
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                ]);
-                Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
-            } elseif (in_array($this->fields["type"], self::$field_dropdown_types)) {
-                $type_rand = self::dropdownFieldTypes(self::$field_dropdown_types, [
-                    'value'          => $this->fields["type"],
-                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                ]);
-                Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
-            } elseif ($this->fields["type"] == "dropdown_multiple") {
-                if (in_array($this->fields["item"], Dropdownmultiple::$dropdown_multiple_objects)) {
-                    echo self::getFieldTypesName($this->fields['type']);
-                    echo Html::hidden('type', ['value' => $this->fields['type']]);
-                    $type_rand = mt_rand();
-                } else {
-                    $type_rand = self::dropdownFieldTypes(["dropdown_multiple"], [
-                        'value'          => $this->fields["type"],
-                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                    ]);
-                    Ajax::updateItemOnSelectEvent('dropdown_type' . $type_rand, "show_values", $ajax_url, $params_type);
-                }
+            $type_list = self::$field_types;
+        } elseif (in_array($this->fields["type"], self::$field_title_types)) {
+            $type_list = self::$field_title_types;
+        } elseif (in_array($this->fields["type"], self::$field_customvalues_types)) {
+            if (in_array($this->fields["item"], Dropdownmultiple::$dropdown_multiple_objects)) {
+                $type_list = ["dropdown_multiple"];
+            } elseif ($this->fields["item"] == "other" || $this->fields["type"] == "radio" || $this->fields["type"] == "checkbox") {
+                $type_list = self::$field_customvalues_types;
+            }
+        } elseif (in_array($this->fields["type"], self::$field_text_types)) {
+            $type_list = self::$field_text_types;
+        } elseif (in_array($this->fields["type"], self::$field_date_types)) {
+            $type_list = self::$field_date_types;
+        } elseif (in_array($this->fields["type"], self::$field_dropdown_types)) {
+            $type_list = self::$field_dropdown_types;
+        } elseif ($this->fields["type"] == "dropdown_multiple") {
+            if (in_array($this->fields["item"], Dropdownmultiple::$dropdown_multiple_objects)) {
+                // Fixed type, but the object selector below still needs a rand to listen to
+                $type_rand = mt_rand();
             } else {
-                echo self::getFieldTypesName($this->fields['type']);
-                echo Html::hidden('type', ['value' => $this->fields['type']]);
+                $type_list = ["dropdown_multiple"];
             }
         }
-        $type_html = ob_get_clean();
 
-        // --- Rank ---
-        ob_start();
-        $rank_rand = \Dropdown::showNumber('rank', [
-            'value' => $this->fields["rank"],
-            'min'   => 1,
-            'max'   => self::MAX_FIELDS,
-        ]);
-        $rank_html = ob_get_clean();
+        $type_options = null;
+        if ($type_list !== null) {
+            $type_rand    = mt_rand();
+            $type_options = self::getFieldTypesOptions(
+                $type_list,
+                $this->fields["plugin_metademands_metademands_id"],
+            );
+        }
 
         // --- Item/Objet ---
-        $item_label_html = '';
         $params_item = [
             'value'          => '__VALUE__',
             'type'           => '__VALUE__',
@@ -817,69 +716,28 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             $params_item['rand'] = $type_rand;
         }
 
-        ob_start();
+        // Either the options of the object selector, or the fixed object, or nothing
+        $item_selector = null;
+        $item_fixed    = null;
         if ($ID < 1) {
-            $item_label_html = '<span id="show_item_object" style="display:none">'
-                . __('Object', 'metademands')
-                . '<span style="color:red">&nbsp;*&nbsp;</span></span>'
-                . '<span id="show_item_label_title" style="display:none"></span>';
-            echo $this->showItemSelector(
-                $this->fields["type"] ?? '',
-                ['value' => $this->fields["item"] ?? ''],
-                $type_rand,
-                $ajax_url,
-                $params_item,
-            );
-        } else {
-            $item_label_html = __('Object', 'metademands');
-            if ($this->fields["type"] == "dropdown_meta") {
-                $metademand_custom = new FieldCustomvalue();
-                if ($customs = $metademand_custom->find(["plugin_metademands_fields_id" => $this->fields['id']])) {
-                    if (count($customs) > 0) {
-                        echo htmlescape(self::getFieldItemsName($this->fields['type'], 'other'));
-                        echo Html::hidden('item', ['value' => 'other']);
-                    }
-                } else {
-                    echo htmlescape(self::getFieldItemsName($this->fields['type'], $this->fields['item']));
-                    echo Html::hidden('item', ['value' => $this->fields['item']]);
-                }
-            } elseif (in_array($this->fields["type"], self::$field_dropdown_types)) {
-                echo $this->showItemSelector(
-                    $this->fields["type"],
-                    ['value' => $this->fields["item"]],
-                    $type_rand,
-                    $ajax_url,
-                    $params_item,
-                );
-            } elseif ($this->fields["type"] == "dropdown_multiple") {
-                if ($this->fields["item"] == "other") {
-                    echo htmlescape(self::getFieldItemsName($this->fields['type'], $this->fields['item']));
-                    echo Html::hidden('item', ['value' => $this->fields['item'] ?? null]);
-                } else {
-                    echo $this->showItemSelector(
-                        $this->fields["type"],
-                        [
-                            'value'    => $this->fields["item"],
-                            'criteria' => Dropdownmultiple::$dropdown_multiple_items,
-                        ],
-                        $type_rand,
-                        $ajax_url,
-                        $params_item,
-                    );
-                }
+            $item_selector = ['value' => $this->fields["item"] ?? ''];
+        } elseif ($this->fields["type"] == "dropdown_meta") {
+            $metademand_custom = new FieldCustomvalue();
+            if ($metademand_custom->find(["plugin_metademands_fields_id" => $this->fields['id']])) {
+                $item_fixed = 'other';
             } else {
-                // The label may be a stored name (e.g. Basketobjecttype) and item_value_html is
-                // rendered raw: escape here, not at the source (showFromArray escapes its options).
-                echo htmlescape(self::getFieldItemsName($this->fields['type'], $this->fields['item']));
-                echo Html::hidden('item', ['value' => $this->fields['item'] ?? null]);
+                $item_fixed = $this->fields['item'];
             }
+        } elseif (in_array($this->fields["type"], self::$field_dropdown_types)) {
+            $item_selector = ['value' => $this->fields["item"]];
+        } elseif ($this->fields["type"] == "dropdown_multiple" && $this->fields["item"] != "other") {
+            $item_selector = [
+                'value'    => $this->fields["item"],
+                'criteria' => Dropdownmultiple::$dropdown_multiple_items,
+            ];
+        } else {
+            $item_fixed = $this->fields['item'] ?? '';
         }
-        $item_value_html = ob_get_clean();
-
-        // --- Ordre ---
-        ob_start();
-        $this->showOrderDropdown($this->fields);
-        $order_html = ob_get_clean();
 
         // --- Entités ---
         if ($ID < 1 && isset($item)) {
@@ -902,14 +760,22 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'comment'                => $this->fields['comment'] ?? '',
             'show_label2_required'   => $ID > 0 && in_array($this->fields['type'] ?? '', ['datetime_interval', 'date_interval']),
             'metafield_itil_warning' => $metafield_itil_warning,
-            'type_html'              => $type_html,
+            'type'                   => $this->fields['type'] ?? '',
+            'type_options'           => $type_options,
+            'type_name'              => $type_options === null ? self::getFieldTypesName($this->fields['type'] ?? '') : '',
+            'type_rand'              => $type_rand,
+            'ajax_url'               => $ajax_url,
+            'params_type'            => $params_type,
             'basket_warning'         => $basket_warning,
-            'rank_html'              => $rank_html,
-            'rank_rand'              => $rank_rand,
-            'item_label_html'        => $item_label_html,
-            'item_value_html'        => $item_value_html,
+            'rank'                   => $this->fields["rank"],
+            'rank_rand'              => mt_rand(),
+            'max_fields'             => self::MAX_FIELDS,
+            'item_selector'          => $item_selector,
+            'item_fixed'             => $item_fixed,
+            'item_fixed_name'        => $item_fixed === null ? '' : self::getFieldItemsName($this->fields['type'], $item_fixed),
+            'params_item'            => $params_item,
             'is_title_block'         => ($this->fields['type'] ?? '') === 'title-block',
-            'order_html'             => $order_html,
+            'order'                  => $this->getOrderDropdownData($this->fields),
             'customvalues_warning'   => $customvalues_warning,
             'prev_fields_id'         => $this->fields['plugin_metademands_fields_id'] ?? 0,
             'plugin_web_dir'         => PLUGIN_METADEMANDS_WEBDIR,
@@ -918,7 +784,6 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
         return true;
     }
-
     /**
      * Show the field list of a metademand, grouped in one tab per block.
      *
@@ -1274,13 +1139,25 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
      */
     public static function dropdownFieldTypes($type_fields, $param = [])
     {
-        global $PLUGIN_HOOKS;
+        return \Dropdown::showFromArray(
+            'type',
+            self::getFieldTypesOptions($type_fields, $param['metademands_id'] ?? 0),
+            $param,
+        );
+    }
 
-        $name = "type";
-        $p = [];
-        foreach ($param as $key => $val) {
-            $p[$key] = $val;
-        }
+    /**
+     * Choices of the field types dropdown, completed with the types of the plugins
+     * and without "parent field" when the metademand has no parent field to offer.
+     *
+     * @param array $type_fields    types to offer
+     * @param int   $metademands_id metademand the field belongs to
+     *
+     * @return array<int|string, string> type => name
+     */
+    public static function getFieldTypesOptions($type_fields, $metademands_id): array
+    {
+        global $PLUGIN_HOOKS;
 
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -1291,12 +1168,11 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
         }
 
+        $options = [];
         foreach ($type_fields as $key => $types) {
             //delete type parent_field if no parent metademand & not field
             if ($types == 'parent_field') {
-                $metademands_parent = MetademandTask::getAncestorOfMetademandTask(
-                    $p['metademands_id'],
-                );
+                $metademands_parent = MetademandTask::getAncestorOfMetademandTask($metademands_id);
                 $list_fields = [];
                 $field = new self();
                 foreach ($metademands_parent as $parent_id) {
@@ -1323,7 +1199,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
         }
 
-        return \Dropdown::showFromArray($name, $options, $p);
+        return $options;
     }
 
     /**
@@ -2196,7 +2072,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         $has_icon = false;
         $icon = "";
         $show_comment_tooltip = false;
-        $comment_tooltip_html = "";
+        $comment_tooltip = "";
         $is_mandatory_star = false;
 
         if ($render_label && $hide_title_zero && $hidden_zero) {
@@ -2217,11 +2093,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 && !empty($comment)) {
                 if ($data['use_richtext'] != 0) {
                     $show_comment_tooltip = true;
-                    // display => false makes showToolTip return the HTML instead of echoing it.
-                    $comment_tooltip_html = Html::showToolTip(RichText::getSafeHtml($comment), [
-                        'awesome-class' => 'ti ti-info-circle',
-                        'display' => false,
-                    ]);
+                    $comment_tooltip = RichText::getSafeHtml($comment);
                 }
             }
 
@@ -2258,11 +2130,6 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             && $data['type'] != 'informations'
             && $data['type'] != 'datetime_interval'
             && $data['type'] != 'date_interval');
-        $label2_alert_html = "";
-        if ($show_label2_alert) {
-            $label2_alert_html = RichText::getSafeHtml($label2);
-        }
-
         // Widget: getFieldInput() echoes the widget internally but the parent_field case
         // returns a string, so capture both the buffered output and the return value.
         ob_start();
@@ -2278,14 +2145,10 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         // Date-interval second widget.
         $is_interval = false;
         $interval_label_html = "";
-        $interval_required_class = "";
-        $interval_required_icon = "";
+        $interval_required = false;
         $interval_html = "";
         if ($has_label2) {
-            if ($data['is_mandatory']) {
-                $interval_required_class = "class='metademands_wizard_red'";
-                $interval_required_icon = " * ";
-            }
+            $interval_required = (bool) $data['is_mandatory'];
             if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
                 $is_interval = true;
                 // Plain text extracted from the stored HTML, escaped by Twig on render:
@@ -2327,18 +2190,17 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'upload'                  => $upload,
             'debug'                   => $debug,
             'preview'                 => (bool) $preview,
-            'config_link'             => $config_link,
+            'config_url'              => $config_link !== '' ? Toolbox::getItemTypeFormURL(Field::class) . '?id=' . $data['id'] : '',
             'show_comment_tooltip'    => $show_comment_tooltip,
-            'comment_tooltip_html'    => $comment_tooltip_html,
+            'comment_html'            => $comment_tooltip,
             'is_mandatory_star'       => $is_mandatory_star,
             'show_label2_alert'       => $show_label2_alert,
-            'label2_alert_html'       => $label2_alert_html,
+            'label2'                  => $show_label2_alert ? (string) $label2 : '',
             'field_html'              => $field_html,
             'close_hidetitle_div'     => $close_hidetitle_div,
             'is_interval'             => $is_interval,
             'interval_label_html'     => $interval_label_html,
-            'interval_required_class' => $interval_required_class,
-            'interval_required_icon'  => $interval_required_icon,
+            'interval_required'       => $interval_required,
             'interval_html'           => $interval_html,
         ]);
     }
@@ -3049,44 +2911,21 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
     {
         switch ($ma->getAction()) {
             case 'change_color':
-                echo TemplateRenderer::getInstance()->render(
+                TemplateRenderer::getInstance()->display(
                     '@metademands/forms/massiveaction_field.html.twig',
                     [
-                        'field_html'  => Html::showColorField('color', ['display' => false]),
-                        'submit_html' => Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']),
-                        'stacked'     => true,
+                        'widget'       => 'color',
+                        'submit_label' => _x('button', 'Post'),
+                        'stacked'      => true,
                     ],
                 );
                 return true;
             case 'change_icon':
-                $icon_selector_id = 'icon_' . mt_rand();
-                $return = Html::select(
-                    'icon',
-                    [],
-                    [
-                        'id' => $icon_selector_id,
-                        'display' => false,
-                        'style' => 'width:175px;',
-                    ],
-                );
-
-                $return .= Html::script('js/modules/Form/WebIconSelector.js');
-                $return .= Html::scriptBlock(
-                    "$(
-            function() {
-            import('/js/modules/Form/WebIconSelector.js').then((m) => {
-               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-               icon_selector.init();
-               });
-            }
-         );",
-                );
-
-                echo TemplateRenderer::getInstance()->render(
+                TemplateRenderer::getInstance()->display(
                     '@metademands/forms/massiveaction_field.html.twig',
                     [
-                        'field_html'  => $return,
-                        'submit_html' => Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']),
+                        'widget'       => 'icon',
+                        'submit_label' => _x('button', 'Post'),
                     ],
                 );
                 return true;
@@ -3242,6 +3081,20 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
      */
     public function showOrderDropdown($params)
     {
+        $order = $this->getOrderDropdownData($params);
+        \Dropdown::showFromArray('plugin_metademands_fields_id', $order['select'], ['value' => $order['value']]);
+    }
+
+    /**
+     * Choices of the "Display field after" dropdown: the other fields of the block.
+     *
+     * @param array $params rank, id, order, plugin_metademands_fields_id and
+     *                      plugin_metademands_metademands_id of the field
+     *
+     * @return array{select: array<int, string>, value: mixed} choices and selected field
+     */
+    public function getOrderDropdownData($params): array
+    {
         if (empty($params['rank'])) {
             $params['rank'] = 1;
         }
@@ -3249,7 +3102,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'rank' => $params['rank'],
             'plugin_metademands_metademands_id' => $params['plugin_metademands_metademands_id'],
         ];
-        if (!empty($fields['id'])) {
+        if (!empty($params['id'])) {
             $restrict += ['NOT' => ['id' => $params['id']]];
         }
 
@@ -3275,7 +3128,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
         }
 
-        \Dropdown::showFromArray('plugin_metademands_fields_id', $select, ['value' => $previous_fields_id]);
+        return ['select' => $select, 'value' => $previous_fields_id];
     }
 
     /**
@@ -4287,39 +4140,19 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
         }
 
-        $show_item = in_array($p['type'], self::$field_withobjects);
-        $item_dropdown_html = '';
-        if ($show_item) {
-            // Belt and braces: the plugin branch of dropdownFieldItems() may write to the
-            // output buffer rather than honour 'display'.
-            ob_start();
-            $returned = self::dropdownFieldItems($p['type'], ['value' => $p["item"],
-                'with_empty_value' => true,
-                'display' => false,
-            ]);
-            $item_dropdown_html = ob_get_clean() . (is_string($returned) ? $returned : '');
-        }
-
         return [
             'form_action' => PLUGIN_METADEMANDS_WEBDIR . '/front/field.php',
             'metademands_id' => $item->getID(),
-            'block_dropdown_html' => \Dropdown::showNumber('block', [
+            'block_options' => [
                 'value' => $p['rank'],
                 'min' => 1,
                 'max' => $max,
                 'toadd' => [0 => \Dropdown::EMPTY_VALUE],
-                'display' => false,
-            ]),
-            'type_dropdown_html' => self::dropdownFieldTypes(
-                self::$field_types,
-                [
-                    'value' => $p['type'],
-                    'metademands_id' => $item->getID(),
-                    'display' => false,
-                ],
-            ),
-            'show_item' => $show_item,
-            'item_dropdown_html' => $item_dropdown_html,
+            ],
+            'type' => $p['type'],
+            'type_options' => self::getFieldTypesOptions(self::$field_types, $item->getID()),
+            'show_item' => in_array($p['type'], self::$field_withobjects),
+            'item' => $p['item'],
             // Read by public/scripts/metademands_reload.js: a new type reloads the object dropdown
             'type_reload' => [[
                 'target' => 'plugin_metademands_item',

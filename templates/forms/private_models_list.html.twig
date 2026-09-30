@@ -25,6 +25,11 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Private models of the current user (Form::showPrivateFormsForUserMetademand()).
+ #
+ #  - entries: {id, name, meta_name, date, url, is_private}, url being the getLink()
+ #    of the linked item or null
+ #  - rand, can_public, form_id, users_id, meta_id, step, itilcategories_id, webdir -#}
 <span>
     <div class="card-header">
         {{ __('New model', 'metademands') }} <span class="red">*</span>
@@ -33,25 +38,18 @@
         <tr>
             <td colspan="4" class="center">
                 <br>
-                {{ call('Html::input', ['form_name', {
-                    'maxlength': 250,
-                    'size': 40,
-                    'placeholder': __('Form name', 'metademands')
-                }])|raw }}
+                <input type="text" name="form_name" maxlength="250" size="40"
+                       placeholder="{{ __('Form name', 'metademands') }}" class="form-control">
                 <br>
-                {{ call('Html::submit', [_x('button', 'Save as model', 'metademands'), {
-                    'name': 'save_form',
-                    'form': '',
-                    'id': 'FormAdd' ~ rand,
-                    'icon': 'ti ti-cloud-upload pointer',
-                    'class': 'btn btn-success btn-sm'
-                }])|raw }}
+                <button type="submit" value="{{ _x('button', 'Save as model', 'metademands') }}" name="save_form" form=""
+                        id="FormAdd{{ rand }}" class="btn btn-success btn-sm">
+                    <i class="ti ti-cloud-upload pointer"></i>&nbsp;<span>{{ _x('button', 'Save as model', 'metademands') }}</span>
+                </button>
                 &nbsp;
-                {{ call('Html::submit', [_x('button', 'Clean form', 'metademands'), {
-                    'name': 'clean_form',
-                    'icon': 'ti ti-playlist-x pointer',
-                    'class': 'btn btn-warning btn-sm'
-                }])|raw }}
+                <button type="submit" value="{{ _x('button', 'Clean form', 'metademands') }}" name="clean_form"
+                        class="btn btn-warning btn-sm">
+                    <i class="ti ti-playlist-x pointer"></i>&nbsp;<span>{{ _x('button', 'Clean form', 'metademands') }}</span>
+                </button>
             </td>
         </tr>
     </table>
@@ -65,15 +63,16 @@
             </thead>
             <tbody id="bodyForm">
                 {% for entry in entries %}
-                    {% set tooltip_content %}
-                        {{ __('Name') }} : {{ entry.name }}<br>
-                        {{ __('Date') }} : {{ entry.date }}
-                        {% if entry.url %}<br>{{ __('URL') }} : {{ entry.url|raw }}{% endif %}
-                    {% endset %}
+                    {#- HTML of the tooltip, escaped as a whole into data-bs-title: the name
+                        and date are escaped here, entry.url is a getLink() output -#}
+                    {% set tooltip_content = __('Name') ~ ' : ' ~ entry.name|e ~ '<br>'
+                        ~ __('Date') ~ ' : ' ~ entry.date|e
+                        ~ (entry.url ? '<br>' ~ __('URL') ~ ' : ' ~ entry.url : '') %}
                     <tr>
                         <td>{{ entry.meta_name }} / {{ entry.date }}</td>
                         <td>
-                            {{ call('Html::showToolTip', [tooltip_content, {'awesome-class': 'ti ti-info-circle', 'display': false}])|raw }}
+                            <span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  data-bs-html="true" data-bs-title="{{ tooltip_content }}">?</span>
                         </td>
                         <td>
                             {% if can_public %}

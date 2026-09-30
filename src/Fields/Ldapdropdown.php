@@ -262,31 +262,13 @@ class Ldapdropdown extends CommonDBTM
 
     public static function showFieldParameters($params): string
     {
-        $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-        ob_start();
-        AuthLDAP::dropdown([
-            'name'      => 'authldaps_id',
-            'value'     => $params['authldaps_id'],
-            'condition' => ['is_active' => 1],
-            'on_change' => "plugin_metademands_changeLDAP('$root_doc', this)",
-        ]);
-        $authldaps_html = ob_get_clean();
-
-        $ldap_filter_html = Html::input('ldap_filter', ['value' => $params["ldap_filter"], 'size' => 50]);
-
-        ob_start();
-        RuleRightParameter::dropdown([
-            'name'  => 'ldap_attribute',
-            'value' => $params['ldap_attribute'],
-        ]);
-        $ldap_attribute_html = ob_get_clean();
-
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_ldapdropdown.html.twig',
             [
-                'authldaps_html'      => $authldaps_html,
-                'ldap_filter_html'    => $ldap_filter_html,
-                'ldap_attribute_html' => $ldap_attribute_html,
+                'authldaps_id'   => $params['authldaps_id'],
+                'ldap_filter'    => $params['ldap_filter'],
+                'ldap_attribute' => $params['ldap_attribute'],
+                'webdir'         => PLUGIN_METADEMANDS_WEBDIR,
             ],
         );
     }
@@ -297,17 +279,14 @@ class Ldapdropdown extends CommonDBTM
         self::showValueToCheck($fieldoption, $params);
         $cell_content = ob_get_clean();
 
-        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
-        // the wrapping cell now carries its parameters as data-* attributes.
-        $valuetocheck_html = TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_value_to_check_cell.html.twig',
-            [
-                'option_id'       => $params['ID'],
-                'with_check_type' => false,
-                'with_tech_group' => false,
-                'content'         => $cell_content,
-            ],
-        );
+        // Value cell, included by the row template; its parameters are read by
+        // public/scripts/fieldoption_valuetocheck.js from data-* attributes.
+        $valuetocheck = [
+            'option_id'       => $params['ID'],
+            'with_check_type' => false,
+            'with_tech_group' => false,
+            'content'         => $cell_content,
+        ];
 
         $link_html = FieldOption::showLinkHtml($item->getID(), $params);
 
@@ -318,7 +297,7 @@ class Ldapdropdown extends CommonDBTM
                 'label'             => __('Value to check', 'metademands'),
                 'label_colspan'     => 2,
                 'regex_html'        => '',
-                'valuetocheck_html' => $valuetocheck_html,
+                'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
             ],
         );

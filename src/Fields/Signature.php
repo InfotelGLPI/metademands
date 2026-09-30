@@ -32,7 +32,6 @@ namespace GlpiPlugin\Metademands\Fields;
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Field;
-use Html;
 use Toolbox;
 
 /**
@@ -91,9 +90,6 @@ class Signature extends CommonDBTM
         $label_add   = __('Add your signature', 'metademands');
         $label_clear = __('Clear', 'metademands');
 
-        $script_tag = Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/js/signature_pad.umd.min.js");
-        $css_tag    = Html::css(PLUGIN_METADEMANDS_WEBDIR . "/lib/signature/css/signature_pad.umd.css");
-
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_signature.html.twig',
             [
@@ -109,8 +105,6 @@ class Signature extends CommonDBTM
                 'hidden_id'     => $hidden_id,
                 'name'          => $name,
                 'value'         => $value ?? '',
-                'script_tag'    => $script_tag,
-                'css_tag'       => $css_tag,
                 // Read by public/scripts/wizard_form.js (initSignature).
                 'metademands_id' => $metademands_id,
                 'is_mandatory'   => $is_mandatory,

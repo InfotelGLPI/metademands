@@ -290,6 +290,18 @@ class Draft extends CommonDBTM
      */
     public static function showDraftsForUserMetademand($users_id, $plugin_metademands_metademands_id)
     {
+        $list = self::getUserDraftsContext($users_id, $plugin_metademands_metademands_id);
+
+        return TemplateRenderer::getInstance()->render($list['template'], $list['context']);
+    }
+
+    /**
+     * Template and context of the list, for a caller including it (wizard/models_and_drafts.html.twig).
+     *
+     * @return array{template: string, context: array<string, mixed>}
+     */
+    public static function getUserDraftsContext($users_id, $plugin_metademands_metademands_id): array
+    {
         $self = new self();
         $drafts = $self->find([
             'users_id' => $users_id,
@@ -311,14 +323,17 @@ class Draft extends CommonDBTM
             ];
         }
 
-        return TemplateRenderer::getInstance()->render('@metademands/forms/drafts_list.html.twig', [
-            'entries'  => $entries,
-            'draft_id' => (int) $draft_id,
-            'users_id' => (int) $users_id,
-            'meta_id'  => (int) $plugin_metademands_metademands_id,
-            'step'     => Metademand::STEP_SHOW,
-            'webdir'   => PLUGIN_METADEMANDS_WEBDIR,
-        ]);
+        return [
+            'template' => '@metademands/forms/drafts_list.html.twig',
+            'context'  => [
+                'entries'  => $entries,
+                'draft_id' => (int) $draft_id,
+                'users_id' => (int) $users_id,
+                'meta_id'  => (int) $plugin_metademands_metademands_id,
+                'step'     => Metademand::STEP_SHOW,
+                'webdir'   => PLUGIN_METADEMANDS_WEBDIR,
+            ],
+        ];
     }
 
     public static function loadDatasDraft($id_draft)
@@ -406,27 +421,25 @@ class Draft extends CommonDBTM
         $parameters['from_draft'] = 1;
         $parameters['cat_name'] = $cat_name;
 
-        ob_start();
-        Wizard::showMetademandTitle($metademands, $parameters);
-        $title_html = ob_get_clean();
 
         $userid = Session::getLoginUserID();
         $form_action = Toolbox::getItemTypeFormURL(Wizard::class);
 
         $forms = [];
-        $previous_html = '';
         if (count($metademands_data)) {
             foreach ($metademands_data as $form_step => $data) {
                 foreach ($data as $form_metademands_id => $line) {
-                    $hidden_html  = Html::hidden('tickets_id', ['value' => 0]);
-                    $hidden_html .= Html::hidden('resources_id', ['value' => 0]);
-                    $hidden_html .= Html::hidden('resources_step', ['value' => 0]);
-                    $hidden_html .= Html::hidden('block_id', ['value' => 0]);
-                    $hidden_html .= Html::hidden('ancestor_tickets_id', ['value' => 0]);
-                    $hidden_html .= Html::hidden('step', ['value' => 1]);
-                    $hidden_html .= Html::hidden('form_metademands_id', ['value' => $form_metademands_id]);
-                    $hidden_html .= Html::hidden('metademands_id', ['value' => $metademands_id]);
-                    $hidden_html .= Html::hidden('_users_id_requester', ['value' => $userid]);
+                    $hidden_inputs = [
+                        'tickets_id'          => 0,
+                        'resources_id'        => 0,
+                        'resources_step'      => 0,
+                        'block_id'            => 0,
+                        'ancestor_tickets_id' => 0,
+                        'step'                => 1,
+                        'form_metademands_id' => $form_metademands_id,
+                        'metademands_id'      => $metademands_id,
+                        '_users_id_requester' => $userid,
+                    ];
 
                     ob_start();
                     Wizard::constructForm(
@@ -445,22 +458,28 @@ class Draft extends CommonDBTM
                     $form_html = ob_get_clean();
 
                     $forms[] = [
-                        'hidden_html' => $hidden_html,
-                        'form_html'   => $form_html,
+                        'hidden_inputs' => $hidden_inputs,
+                        'form_html'     => $form_html,
                     ];
                 }
             }
-        } else {
-            $previous_html  = Html::submit(__('Previous'), ['name' => 'previous', 'class' => 'btn btn-primary']);
-            $previous_html .= Html::hidden('previous_metademands_id', ['value' => $metademands_id]);
         }
 
-        echo TemplateRenderer::getInstance()->render('@metademands/forms/draft_show.html.twig', [
-            'title_html'    => $title_html,
-            'form_action'   => $form_action,
-            'forms'         => $forms,
-            'previous_html' => $previous_html,
+        TemplateRenderer::getInstance()->display('@metademands/forms/draft_show.html.twig', [
+            'meta'             => $metademands,
+            'title_parameters' => $parameters,
+            'form_action'      => $form_action,
+            'metademands_id'   => $metademands_id,
+            'forms'            => $forms,
         ]);
+    }
+
+    /**
+     * Display the "Save as draft" button and its modal, for a template calling it in place.
+     */
+    public static function showDraftInput(int $type): void
+    {
+        echo self::createDraftInput($type);
     }
 
     public static function createDraftInput($type, $freetable = 0)
@@ -481,7 +500,7 @@ class Draft extends CommonDBTM
         return TemplateRenderer::getInstance()->render('@metademands/forms/draft_save_button.html.twig', [
             'style'           => $style,
             'icon'            => self::getIcon(),
-            'button_label'    => _sx('button', 'Save as draft', 'metademands'),
+            'button_label'    => _x('button', 'Save as draft', 'metademands'),
             'confirm_message' => __(
                 'Careful all the lines are not confirm, are you sure you want to continue ?',
                 'metademands',
@@ -512,30 +531,11 @@ class Draft extends CommonDBTM
 
         $rand = mt_rand();
 
-        $input_name = Html::input('draft_name', [
-            'value' => '',
-            'maxlength' => 250,
-            'size' => 40,
-            'class' => 'draft_name',
-            'placeholder' => __('Draft name', 'metademands'),
-        ]);
-
-        $submit_button = Html::submit(_sx('button', 'Save as draft', 'metademands'), [
-            'name' => 'save_draft',
-            'icon' => 'ti ti-cloud-upload pointer',
-            'form' => '',
-            'id' => 'submitSave',
-            'class' => 'btn btn-success btn-sm',
-            'onclick' => 'saveMyDraft()',
-        ]);
 
         $out = TemplateRenderer::getInstance()->render('@metademands/forms/draft_modal.html.twig', [
             'domid'         => $domid,
             'rand'          => $rand,
             'dialog_class'  => $param['dialog_class'],
-            'draft_name'    => __('Draft name', 'metademands'),
-            'input_name'    => $input_name,
-            'submit_button' => $submit_button,
             'reloadonclose' => (bool) $param['reloadonclose'],
             'autoopen'      => (bool) $param['autoopen'],
             'height'        => (int) $param['height'],

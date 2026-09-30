@@ -30,8 +30,9 @@
  #
  #  Expected context:
  #    use_as_step        : whether the step-by-step mode is active (adds #nextMsg)
- #    draft_input_html   : Draft::createDraftInput() markup, empty when drafts are off
- #    cancel_form_html   : Html::showSimpleForm() markup, empty when not applicable
+ #    use_draft          : show the "Save as draft" button and its modal (Draft::showDraftInput())
+ #    draft_mode         : Draft::DEFAULT_MODE
+ #    cancel_form        : {url, stepforms_id} of the "Cancel form" action, null when not applicable
  #    show_step_circles  : whether the step circles must be rendered
  #    step_count         : number of steps, drives how many circles are drawn
 -#}
@@ -41,9 +42,24 @@
             {% if use_as_step == 1 %}
                 <div id="nextMsg" class="alert alert-info center"></div>
             {% endif %}
-            {{ draft_input_html|raw }}
-            {% if cancel_form_html %}
-                <span style="color:darkred;font-size: 14px !important;margin-right: 8px">{{ cancel_form_html|raw }}</span>
+            {% if use_draft %}
+                {% do call('GlpiPlugin\\Metademands\\Draft::showDraftInput', [draft_mode]) %}
+            {% endif %}
+            {% if cancel_form is not null %}
+                {# Inside #wizard_form, where a nested <form> is dropped by the parser: the action is
+                 # posted by submitGetLink() of js/common.js, as Html::getSimpleForm() did. #}
+                {% set cancel_fields = {
+                    'delete_form_from_list': 'delete_form_from_list',
+                    'plugin_metademands_stepforms_id': cancel_form.stepforms_id,
+                    '_glpi_csrf_token': csrf_token(),
+                    '_glpi_simple_form': 1,
+                } %}
+                <span style="color:darkred;font-size: 14px !important;margin-right: 8px">
+                    <button type="button" class="btn btn-primary"
+                            onclick="submitGetLink({{ cancel_form.url|json_encode }}, {{ cancel_fields|json_encode }});">
+                        {{ _x('button', 'Cancel form', 'metademands') }}
+                    </button>
+                </span>
             {% endif %}
             <button type="button" id="prevBtn" style="margin-right: 8px;font-size: 14px !important;" class="btn btn-primary">
                 <i class="ti ti-chevron-left"></i>&nbsp;{{ __('Previous', 'metademands') }}

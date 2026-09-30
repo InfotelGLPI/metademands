@@ -25,11 +25,18 @@
  # --------------------------------------------------------------------------
  #}
 
-{#- hide_blocks: block numbers hidden on each click on the option, handled by
- #  public/scripts/wizard_form.js (data-md-hide-blocks). -#}
+{#- Checkbox field of the wizard (Fields\Checkbox::showWizardField()).
+ #
+ #  - is_simple, simple_checked: single checkbox of a field without custom values
+ #  - is_required: every option is mandatory
+ #  - options: {key, name, is_checked, has_comment, comment_html, icon, hide_blocks}, where
+ #    comment_html is sanitized by RichText::getSafeHtml() (shown by |safe_html in the
+ #    block display, escaped into the tooltip attribute otherwise)
+ #  - hide_blocks: block numbers hidden on each click on the option, handled by
+ #    public/scripts/wizard_form.js (data-md-hide-blocks). -#}
 {%- if is_simple -%}
     <input class='form-check-input' type='checkbox' name='{{ namefield }}[{{ id }}]'
-           value='checkbox' {{ simple_checked|raw }}>
+           value='checkbox'{% if simple_checked %} checked{% endif %}>
 {%- else -%}
     {%- if is_block %}<div class='row flex-row'>{% endif -%}
     {%- for opt in options -%}
@@ -46,27 +53,27 @@
                         <div class='text-start'>
                             <div class='d-flex align-items-center'>{{ opt.name }}</div>
                             <small
-                                class='form-hint'>{% if opt.has_comment %}{{ opt.comment_html|raw }}{% endif %}</small>
+                                class='form-hint'>{% if opt.has_comment %}{{ opt.comment_html|safe_html }}{% endif %}</small>
                         </div>
-                        <div class='me-2 ms-auto'><input {{ opt.required|raw }} class='form-check-input' type='checkbox'
+                        <div class='me-2 ms-auto'><input{% if is_required %} required{% endif %} class='form-check-input' type='checkbox'
                                                                                 check='{{ namefield }}[{{ id }}]'
                                                                                 name='{{ namefield }}[{{ id }}][{{ opt.key }}]'
                                                                                 key='{{ opt.key }}'
                                                                                 id='{{ namefield }}[{{ id }}][{{ opt.key }}]'
-                                                                                value='{{ opt.key }}'{% if opt.hide_blocks %} data-md-hide-blocks='{{ opt.hide_blocks|json_encode }}'{% endif %} {{ opt.checked|raw }}>
+                                                                                value='{{ opt.key }}'{% if opt.hide_blocks %} data-md-hide-blocks='{{ opt.hide_blocks|json_encode }}'{% endif %}{% if opt.is_checked %} checked{% endif %}>
                         </div>
                     </div>
                 </label></div>
         {%- else -%}
-            <div class='form-check {{ inline }}'><input {{ opt.required|raw }} class='form-check-input' type='checkbox'
+            <div class='form-check {{ inline }}'><input{% if is_required %} required{% endif %} class='form-check-input' type='checkbox'
                                                                                check='{{ namefield }}[{{ id }}]'
                                                                                name='{{ namefield }}[{{ id }}][{{ opt.key }}]'
                                                                                key='{{ opt.key }}'
                                                                                id='{{ namefield }}[{{ id }}][{{ opt.key }}]'
-                                                                               value='{{ opt.key }}'{% if opt.hide_blocks %} data-md-hide-blocks='{{ opt.hide_blocks|json_encode }}'{% endif %} {{ opt.checked|raw }}><label
+                                                                               value='{{ opt.key }}'{% if opt.hide_blocks %} data-md-hide-blocks='{{ opt.hide_blocks|json_encode }}'{% endif %}{% if opt.is_checked %} checked{% endif %}><label
                     class='form-check-label'
-                    for='{{ namefield }}[{{ id }}][{{ opt.key }}]'>{{ opt.name }}{% if opt.has_comment %}&nbsp;<span
-                        style='vertical-align: bottom;'>{{ opt.comment_tooltip_html|raw }}</span>{% endif %}</label>
+                    for='{{ namefield }}[{{ id }}][{{ opt.key }}]'>{{ opt.name }}{% if opt.has_comment %}&nbsp;<span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top"
+                        data-bs-html="true" data-bs-title="{{ opt.comment_html }}">?</span>{% endif %}</label>
             </div>
         {%- endif -%}
     {%- endfor -%}

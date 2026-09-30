@@ -200,7 +200,6 @@ class Dropdown extends CommonDBTM
                 'name'        => $name,
                 'id'          => $id,
                 'is_required' => !empty($opt['required']),
-                'script_src'  => Html::script(PLUGIN_METADEMANDS_WEBDIR . "/lib/cascading-dropdowns/jquery.chained.selects.js"),
                 'script_html' => Html::scriptBlock("function loadSplittedLocations() {
                             $('#' + {$id_json} + '-dropdown').chainedSelects({
                                 placeholder: '',
@@ -218,7 +217,6 @@ class Dropdown extends CommonDBTM
                             loadSplittedLocations();
                         });
                      "),
-                'hidden_html' => Html::hidden($name, ['id' => $id]),
             ],
         );
     }
@@ -474,27 +472,24 @@ class Dropdown extends CommonDBTM
 
                         $field = "";
                         if (!empty($custom_values)) {
-                            $required = ($data['is_mandatory'] == 1) ? "required=required" : "";
-
-                            // Option label is escaped by Twig {{ }}; the comment is pre-sanitized
-                            // rich HTML (getSafeHtml) rendered |raw. The field-level icon is shared.
+                            // Option label is escaped by the template, the comment sanitized there.
+                            // The field-level icon is shared.
                             $options = [];
                             foreach ($custom_values as $key => $label) {
-                                $checked = (isset($value) && $value == $key) ? 'checked' : '';
                                 $options[] = [
-                                    'key'          => $key,
-                                    'name'         => $label['name'],
-                                    'checked'      => $checked,
-                                    'comment_html' => RichText::getSafeHtml($label['comment']),
+                                    'key'        => $key,
+                                    'name'       => $label['name'],
+                                    'is_checked' => isset($value) && $value == $key,
+                                    'comment'    => (string) $label['comment'],
                                 ];
                             }
 
                             $field = TemplateRenderer::getInstance()->render(
                                 '@metademands/fields/field_dropdown_block.html.twig',
                                 [
-                                    'namefield' => $namefield,
-                                    'id'        => $data['id'],
-                                    'required'  => $required,
+                                    'namefield'   => $namefield,
+                                    'id'          => $data['id'],
+                                    'is_required' => $data['is_mandatory'] == 1,
                                     'has_icon'  => !empty($data['icon']),
                                     'icon'      => (string) $data['icon'],
                                     'options'   => $options,
@@ -524,15 +519,9 @@ class Dropdown extends CommonDBTM
     {
         $show_used_by_child = $params['object_to_create'] == 'Ticket'
             && in_array($params["item"], ["Location", "RequestType"]);
-        $used_by_child_html = '';
-        if ($show_used_by_child) {
-            ob_start();
-            \Dropdown::showYesNo('used_by_child', $params['used_by_child']);
-            $used_by_child_html = ob_get_clean();
-        }
 
         $show_link_to_user = in_array($params["item"], ["Location", "UserTitle", "UserCategory"]);
-        $link_to_user_html = '';
+        $arrayAvailable = [];
         if ($show_link_to_user) {
             $arrayAvailable[0] = \Dropdown::EMPTY_VALUE;
             $field = new Field();
@@ -544,63 +533,37 @@ class Dropdown extends CommonDBTM
             foreach ($fields as $f) {
                 $arrayAvailable[$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
             }
-            ob_start();
-            \Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
-            $link_to_user_html = ob_get_clean();
         }
 
         $show_location_options = $params["item"] == "Location";
-        $show_display_type = !$show_location_options;
-        $display_type_html = '';
-        $root_items_html = '';
-        $location_depth_html = '';
-
+        $depths = [];
+        $disp = [];
+        $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
         if ($show_location_options) {
-            $disp = [];
-            $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
             $disp[self::SPLITTED_DISPLAY] = __("Splitted display", "metademands");
-            $display_type_html = \Dropdown::showFromArray("display_type", $disp, [
-                'value'   => $params['display_type'],
-                'display' => false,
-            ]);
-            ob_start();
-            Location::dropdown([
-                'name'                => 'root_items_id',
-                'value'               => $params['root_items_id'] ?? 0,
-                'display_emptychoice' => true,
-            ]);
-            $root_items_html = ob_get_clean();
-
             $depths = [0 => __('No limit', 'metademands')];
             for ($i = 1; $i <= 6; $i++) {
                 $depths[$i] = sprintf(_n('%d level', '%d levels', $i, 'metademands'), $i);
             }
-            $location_depth_html = \Dropdown::showFromArray("location_depth", $depths, [
-                'value'   => $params['location_depth'] ?? 0,
-                'display' => false,
-            ]);
         } else {
-            $disp = [];
-            $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
             $disp[self::BLOCK_DISPLAY] = __("Block display", "metademands");
-            $display_type_html = \Dropdown::showFromArray("display_type", $disp, [
-                'value'   => $params['display_type'],
-                'display' => false,
-            ]);
         }
 
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_dropdown.html.twig',
             [
-                'show_used_by_child'      => $show_used_by_child,
-                'used_by_child_html'      => $used_by_child_html,
-                'show_link_to_user'       => $show_link_to_user,
-                'link_to_user_html'       => $link_to_user_html,
-                'show_location_options'   => $show_location_options,
-                'show_display_type'       => $show_display_type,
-                'display_type_html'       => $display_type_html,
-                'root_items_html'         => $root_items_html,
-                'location_depth_html'     => $location_depth_html,
+                'show_used_by_child'    => $show_used_by_child,
+                'used_by_child'         => $params['used_by_child'],
+                'show_link_to_user'     => $show_link_to_user,
+                'link_to_user'          => $params['link_to_user'],
+                'user_fields'           => $arrayAvailable,
+                'show_location_options' => $show_location_options,
+                'root_items_id'         => $params['root_items_id'] ?? 0,
+                'location_depth'        => $params['location_depth'] ?? 0,
+                'depths'                => $depths,
+                'show_display_type'     => !$show_location_options,
+                'display_type'          => $params['display_type'],
+                'display_types'         => $disp,
             ],
         );
     }
@@ -624,17 +587,14 @@ class Dropdown extends CommonDBTM
         }
         $cell_content = ob_get_clean();
 
-        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
-        // the wrapping cell now carries its parameters as data-* attributes.
-        $valuetocheck_html = TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_value_to_check_cell.html.twig',
-            [
-                'option_id'       => $params['ID'],
-                'with_check_type' => true,
-                'with_tech_group' => true,
-                'content'         => $cell_content,
-            ],
-        );
+        // Value cell, included by the row template; its parameters are read by
+        // public/scripts/fieldoption_valuetocheck.js from data-* attributes.
+        $valuetocheck = [
+            'option_id'       => $params['ID'],
+            'with_check_type' => true,
+            'with_tech_group' => true,
+            'content'         => $cell_content,
+        ];
 
         $link_html = FieldOption::showLinkHtml($item->getID(), $params);
 
@@ -645,7 +605,7 @@ class Dropdown extends CommonDBTM
                 'label'             => __('Value to check', 'metademands'),
                 'label_colspan'     => 1,
                 'regex_html'        => $regex_html,
-                'valuetocheck_html' => $valuetocheck_html,
+                'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
             ],
         );

@@ -32,8 +32,9 @@
  #
  # Expected context:
  #  - value_name:  label of the current value, a raw database column — escaped here
- #  - hidden_html: the hidden input, built by Html::hidden()
+ #  - field_name:  name of the hidden input that carries the value back
+ #  - value:       the current value
  #}
 
 {{ value_name }}
-{{ hidden_html|raw }}
+<input type="hidden" name="{{ field_name }}" value="{{ value }}">

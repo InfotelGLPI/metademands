@@ -29,12 +29,13 @@
  # Read only rendering of a "father's field" value: the hidden inputs carry the parent
  # value back on submission, the displayed values come from the database and are escaped
  # by Twig. `is_html` is set only for the field types whose getFieldValue() returns markup
- # by contract (signature, textarea), both already sanitised on the PHP side.
+ # by contract (signature, textarea): it goes through `|safe_html`, which keeps the
+ # signature <img> and the sanitised rich text.
  #}
 {%- for input in inputs -%}
     <input type="hidden" name="{{ input.name }}" value="{{ input.value }}">
 {%- endfor -%}
 {%- for value in values -%}
     {%- if not loop.first %}<br>{% endif -%}
-    {%- if is_html %}{{ value|raw }}{% else %}{{ value }}{% endif -%}
+    {%- if is_html %}{{ value|safe_html }}{% else %}{{ value }}{% endif -%}
 {%- endfor -%}

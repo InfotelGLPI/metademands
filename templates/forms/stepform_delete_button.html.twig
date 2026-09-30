@@ -26,13 +26,19 @@
  #}
 
 {#-
- # Trigger adding one more custom value row to a field configuration form. The
- # legacy markup self-closed the <i> AND closed it again, which browsers recover
- # from by nesting the rest of the row inside it.
+ # Delete button of a step form (was Html::showSimpleForm(), a link posting through JS).
  #
  # Expected context:
- #  - icon_class: icon and button classes of the trigger
- #  - onclick:    inline handler, kept from the legacy markup
- #  - title:      tooltip of the trigger
+ #  - delete_action: front/stepform.form.php
+ #  - delete_button: name of the posted button (delete_form_from_list or
+ #                   delete_form_from_metademands)
+ #  - stepforms_id:  identifier of the step form
 -#}
-&nbsp;<i class="{{ icon_class }}" style="cursor:pointer;" onclick="{{ onclick }}" title="{{ title }}"></i>&nbsp;
+<form method="post" action="{{ delete_action }}" class="d-inline">
+    <input type="hidden" name="plugin_metademands_stepforms_id" value="{{ stepforms_id }}">
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" name="{{ delete_button }}" value="1" class="btn btn-link text-danger p-0"
+            title="{{ _x('button', 'Delete form', 'metademands') }}">
+        <i class="ti ti-trash"></i><span class="sr-only">{{ _x('button', 'Delete form', 'metademands') }}</span>
+    </button>
+</form>

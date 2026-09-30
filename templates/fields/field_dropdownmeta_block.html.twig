@@ -25,6 +25,12 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Block display of a GLPI object dropdown (Fields\Dropdownmeta::getFieldInput()).
+ #
+ #  - options: {key, name, has_icon, icon, icon_is_fa, comment, is_checked}, comment being
+ #    the rich text of the option
+ #  - namefield, id, is_required: field
+-#}
 {%- apply spaceless -%}
     {%- for opt in options -%}
         <div class='col-12 col-lg-6 col-xxl-4 mb-2'><label class='form-selectgroup-boxes flex-fill w-100 h-100'
@@ -42,11 +48,11 @@
                     {%- endif -%}
                     <div class='text-start'>
                         <div class='d-flex align-items-center'>{{ opt.name }}</div>
-                        <small class='form-hint'>{{ opt.comment_html|raw }}</small></div>
-                    <div class='me-2 ms-auto'><input {{ required|raw }} class='form-check-input' type='radio'
+                        <small class='form-hint'>{{ opt.comment|safe_html }}</small></div>
+                    <div class='me-2 ms-auto'><input{% if is_required %} required="required"{% endif %} class='form-check-input' type='radio'
                                                                         name='{{ namefield }}[{{ id }}]'
                                                                         id='{{ namefield }}[{{ id }}][{{ opt.key }}]'
-                                                                        value='{{ opt.key }}' {{ opt.checked|raw }}>
+                                                                        value='{{ opt.key }}'{% if opt.is_checked %} checked{% endif %}>
                     </div>
                 </div>
             </label></div>

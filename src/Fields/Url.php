@@ -108,17 +108,14 @@ class Url extends CommonDBTM
         self::showValueToCheck($fieldoption, $params);
         $cell_content = ob_get_clean();
 
-        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
-        // the wrapping cell now carries its parameters as data-* attributes.
-        $valuetocheck_html = TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_value_to_check_cell.html.twig',
-            [
-                'option_id'       => $params['ID'],
-                'with_check_type' => false,
-                'with_tech_group' => false,
-                'content'         => $cell_content,
-            ],
-        );
+        // Value cell, included by the row template; its parameters are read by
+        // public/scripts/fieldoption_valuetocheck.js from data-* attributes.
+        $valuetocheck = [
+            'option_id'       => $params['ID'],
+            'with_check_type' => false,
+            'with_tech_group' => false,
+            'content'         => $cell_content,
+        ];
 
         if ($params['check_value'] == '') {
             $params['check_value'] = 1;
@@ -133,7 +130,7 @@ class Url extends CommonDBTM
                 'label'             => __('If field empty', 'metademands'),
                 'label_colspan'     => 2,
                 'regex_html'        => '',
-                'valuetocheck_html' => $valuetocheck_html,
+                'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
             ],
         );

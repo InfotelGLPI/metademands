@@ -129,7 +129,7 @@ class Dropdownmeta extends CommonDBTM
                                     $name = $label['name'];
                                 }
 
-                                $comment_html = "";
+                                $comment = "";
                                 if (isset($label['comment']) && !empty($label['comment'])) {
                                     if (empty(
                                         $comment = Field::displayCustomvaluesField(
@@ -140,28 +140,26 @@ class Dropdownmeta extends CommonDBTM
                                     )) {
                                         $comment = $label['comment'];
                                     }
-                                    // Sanitize raw user-supplied option comment to prevent stored XSS.
-                                    $comment_html = RichText::getSafeHtml($comment);
                                 }
 
-                                $checked = "";
+                                $is_checked = false;
                                 if (empty($value) && isset($label['is_default']) && $on_order == false) {
-                                    $checked = ($label['is_default'] == 1) ? 'checked' : '';
+                                    $is_checked = $label['is_default'] == 1;
                                 }
                                 if (isset($value) && $value == $key) {
-                                    $checked = 'checked';
+                                    $is_checked = true;
                                 }
 
-                                // Raw label/icon/comment are auto-escaped by the Twig template
-                                // ({{ }} applies htmlspecialchars ENT_QUOTES|ENT_SUBSTITUTE).
+                                // Label and icon are escaped by the template, the comment
+                                // (stored rich text) is sanitized there.
                                 $block_options[] = [
                                     'key'          => $key,
                                     'name'         => (string) $name,
                                     'has_icon'     => $has_icon,
                                     'icon'         => (string) $icon,
                                     'icon_is_fa'   => $has_icon && str_contains((string) $icon, 'fa-'),
-                                    'comment_html' => $comment_html,
-                                    'checked'      => $checked,
+                                    'comment'      => (string) $comment,
+                                    'is_checked'   => $is_checked,
                                 ];
                             }
                         }
@@ -176,7 +174,7 @@ class Dropdownmeta extends CommonDBTM
                                 'options'   => $block_options,
                                 'namefield' => $namefield,
                                 'id'        => $data['id'],
-                                'required'  => ($data['is_mandatory'] == 1) ? "required=required" : "",
+                                'is_required' => $data['is_mandatory'] == 1,
                             ],
                         );
                         $field .= "</div>";
@@ -937,12 +935,11 @@ class Dropdownmeta extends CommonDBTM
             'values_name' => (string) $values['name'],
             'value' => $itemtype . '_' . $items_id,
             'selected' => self::isDeviceSelected($itemtype, $items_id, $values),
-            'icon_html' => self::getDeviceIcon($itemtype, $loaded ? $obj : null),
+            'picture_url' => self::getDevicePictureUrl($itemtype, $loaded ? $obj : null),
+            'icon' => (string) self::getIconForType($itemtype),
             'name' => (string) ($name ?? ($loaded ? $obj->getName() : '')),
             'typename' => (string) ($typename ?? ($loaded ? $obj->getTypeName() : '')),
-            // showToolTip() prints by default, so the markup used to be flushed
-            // before the tiles while the row itself carried nothing.
-            'tooltip_html' => $comment === '' ? '' : Html::showToolTip($comment, ['display' => false]),
+            'comment' => $comment,
         ];
     }
 
@@ -978,7 +975,7 @@ class Dropdownmeta extends CommonDBTM
      *
      * @return string
      */
-    private static function getDeviceIcon($itemtype, $obj): string
+    private static function getDevicePictureUrl($itemtype, $obj): string
     {
         $pictures = [];
 
@@ -998,19 +995,10 @@ class Dropdownmeta extends CommonDBTM
 
         if (is_array($pictures) && count($pictures) > 0) {
             // The legacy loop rebuilt the tag on every picture: the last one won.
-            $picture_url = Toolbox::getPictureUrl(end($pictures));
-
-            return '<img class="user_picture" style="width: 30%;height: 30%;" alt="'
-                . _sn('Picture', 'Pictures', 1) . '" src="' . $picture_url . '">';
+            return (string) Toolbox::getPictureUrl(end($pictures));
         }
 
-        $icon = self::getIconForType($itemtype);
-
-        if (str_contains($icon, 'fa-')) {
-            return "<i style='font-size:4em' class='fas " . $icon . " fa-3x mr-3'></i>";
-        }
-
-        return "<i style='font-size:4em' class='ti " . $icon . " mr-3'></i>";
+        return '';
     }
 
     public static function getIconForType($type)
@@ -1027,137 +1015,66 @@ class Dropdownmeta extends CommonDBTM
     {
         global $CFG_GLPI;
 
-        $custom_values = $params['custom_values'];
-        $default_values = $params['default_values'];
-        $target = FieldCustomvalue::getFormURL();
-        $maxrank = -1;
-        $rows = [];
-
-        if (is_array($custom_values) && !empty($custom_values)) {
-            foreach ($custom_values as $key => $value) {
-                ob_start();
-                \Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
-                $default_html = ob_get_clean();
-
-                $icon_html = FieldCustomvalue::showIconSelector($key, (string) $value['icon']);
-
-                ob_start();
-                Html::showSimpleForm(
-                    $target,
-                    'delete',
-                    _x('button', 'Delete permanently'),
-                    [
-                        'customvalues_id' => $key,
-                        'rank' => $value['rank'],
-                        'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
-                    ],
-                    'ti-circle-x',
-                    "class='btn btn-sm btn-danger'",
-                );
-                $delete_form_html = ob_get_clean();
-
-                $rows[] = [
-                    'id' => $key,
-                    'rank' => $value['rank'],
-                    'name' => $value['name'],
-                    'comment' => $value['comment'] ?? '',
-                    'default_html' => $default_html,
-                    'icon_html' => $icon_html,
-                    'delete_form_html' => $delete_form_html,
-                ];
-                $maxrank = $value['rank'];
-            }
-        }
+        $display_comment = isset($params["display_type"]) && $params["display_type"] == self::BLOCK_DISPLAY;
+        $context = FieldCustomvalue::getListContext($params, $display_comment, false, true);
 
         $item = $params['item'] ?? '';
-        $init_form_html = '';
-        $import_html = '';
-        $specific_dropdown_html = '';
-
-        if (!in_array($item, Field::$field_specificobjects)) {
-            ob_start();
-            FieldCustomvalue::initCustomValue($maxrank, false, true, $params["plugin_metademands_fields_id"], true);
-            $init_form_html = ob_get_clean();
-
-            ob_start();
-            FieldCustomvalue::importCustomValue($params);
-            $import_html = ob_get_clean();
-        } else {
-            $options = [];
-            if (is_array($default_values) && count($default_values) > 0) {
-                foreach ($default_values as $key => $default_value) {
-                    $options['value'] = $default_value;
-                }
-            }
-            $options['name'] = "default[1]";
-            $options['display_emptychoice'] = true;
-
-            ob_start();
-            if ($item == 'urgency') {
-                \Ticket::dropdownUrgency($options);
-            } elseif ($item == 'impact') {
-                \Ticket::dropdownImpact($options);
-            } elseif ($item == 'priority') {
-                \Ticket::dropdownPriority($options);
-            } elseif ($item == 'mydevices') {
-                $list = [];
+        if (in_array($item, Field::$field_specificobjects)) {
+            $default_values = is_array($params['default_values']) ? $params['default_values'] : [];
+            if ($item == 'mydevices') {
+                $device_types = [];
                 foreach ($CFG_GLPI['assignable_types'] as $itemtype) {
                     if (!($obj = getItemForItemtype($itemtype))) {
                         continue;
                     }
                     if ($obj->canView()) {
-                        $list[$itemtype] = $obj->getTypeName();
+                        $device_types[$itemtype] = $obj->getTypeName();
                     }
                 }
-                \Dropdown::showFromArray("default", $list, [
-                    'values' => $default_values,
-                    'multiple' => true,
-                ]);
+                $context['specific'] = [
+                    'default_values' => $default_values,
+                    'device_types'   => $device_types,
+                ];
+            } else {
+                $context['specific'] = [
+                    'dropdown'      => [
+                        'urgency'  => 'Ticket::dropdownUrgency',
+                        'impact'   => 'Ticket::dropdownImpact',
+                        'priority' => 'Ticket::dropdownPriority',
+                    ][$item],
+                    'default_value' => count($default_values) > 0 ? end($default_values) : 0,
+                ];
             }
-            $specific_dropdown_html = ob_get_clean();
         }
 
-        TemplateRenderer::getInstance()->display(
-            '@metademands/fields/field_customvalue_list.html.twig',
-            [
-                'rows' => $rows,
-                'form_target' => $target,
-                'fields_id' => $params['plugin_metademands_fields_id'] ?? '',
-                'type' => $params['type'] ?? '',
-                'item' => $item,
-                'show_comment' => isset($params["display_type"]) && $params["display_type"] == self::BLOCK_DISPLAY,
-                'init_form_html' => $init_form_html,
-                'import_html' => $import_html,
-                'specific_dropdown_html' => $specific_dropdown_html,
-                'reorder_url' => PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php',
-            ],
-        );
+        FieldCustomvalue::showList($context);
     }
 
     public static function showFieldParameters($params): string
     {
         $show_used_by_child = in_array($params["item"], ["urgency", "impact", "priority"]);
-        $used_by_child_html = '';
-        if ($show_used_by_child) {
-            ob_start();
-            \Dropdown::showYesNo('used_by_child', $params['used_by_child']);
-            $used_by_child_html = ob_get_clean();
-        }
 
+        // My devices: classic or icon display, linked to a user field
         $show_display_type = $params["item"] == "mydevices";
-        $display_type_html = '';
+        $show_link_to_user = $show_display_type;
+
+        $show_itil_options = $params["id"] > 0
+            && $params['type'] == "dropdown_meta"
+            && $params["item"] == "ITILCategory_Metademands";
+
+        $show_other_display_type = $params["id"] > 0
+            && $params['type'] == "dropdown_meta"
+            && $params["item"] == "other";
+
+        $disp = [];
+        $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
         if ($show_display_type) {
-            $disp = [];
-            $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
             $disp[self::ICON_DISPLAY] = __("Icon display", "metademands");
-            $display_type_html = \Dropdown::showFromArray("display_type", $disp, [
-                'value'   => $params['display_type'],
-                'display' => false,
-            ]);
+        } elseif ($show_other_display_type) {
+            $disp[self::BLOCK_DISPLAY] = __("Block display", "metademands");
         }
 
-        $show_link_to_user = $params["item"] == "mydevices";
-        $link_to_user_html = '';
+        $arrayAvailable = [];
         if ($show_link_to_user) {
             $arrayAvailable[0] = \Dropdown::EMPTY_VALUE;
             $field = new Field();
@@ -1169,54 +1086,23 @@ class Dropdownmeta extends CommonDBTM
             foreach ($fields as $f) {
                 $arrayAvailable[$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
             }
-            ob_start();
-            \Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
-            $link_to_user_html = ob_get_clean();
-        }
-
-        $show_itil_options = $params["id"] > 0
-            && $params['type'] == "dropdown_meta"
-            && $params["item"] == "ITILCategory_Metademands";
-        $readonly_html = '';
-        $hidden_html = '';
-        if ($show_itil_options) {
-            ob_start();
-            \Dropdown::showYesNo('readonly', $params['readonly']);
-            $readonly_html = ob_get_clean();
-
-            ob_start();
-            \Dropdown::showYesNo('hidden', $params['hidden']);
-            $hidden_html = ob_get_clean();
-        }
-
-        $show_other_display_type = $params["id"] > 0
-            && $params['type'] == "dropdown_meta"
-            && $params["item"] == "other";
-        $other_display_type_html = '';
-        if ($show_other_display_type) {
-            $disp = [];
-            $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
-            $disp[self::BLOCK_DISPLAY] = __("Block display", "metademands");
-            $other_display_type_html = \Dropdown::showFromArray("display_type", $disp, [
-                'value'   => $params['display_type'],
-                'display' => false,
-            ]);
         }
 
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_dropdownmeta.html.twig',
             [
                 'show_used_by_child'      => $show_used_by_child,
-                'used_by_child_html'      => $used_by_child_html,
+                'used_by_child'           => $params['used_by_child'],
                 'show_display_type'       => $show_display_type,
-                'display_type_html'       => $display_type_html,
-                'show_link_to_user'       => $show_link_to_user,
-                'link_to_user_html'       => $link_to_user_html,
-                'show_itil_options'       => $show_itil_options,
-                'readonly_html'           => $readonly_html,
-                'hidden_html'             => $hidden_html,
                 'show_other_display_type' => $show_other_display_type,
-                'other_display_type_html' => $other_display_type_html,
+                'display_type'            => $params['display_type'],
+                'display_types'           => $disp,
+                'show_link_to_user'       => $show_link_to_user,
+                'link_to_user'            => $params['link_to_user'],
+                'user_fields'             => $arrayAvailable,
+                'show_itil_options'       => $show_itil_options,
+                'readonly'                => $params['readonly'],
+                'hidden'                  => $params['hidden'],
             ],
         );
     }
@@ -1240,17 +1126,14 @@ class Dropdownmeta extends CommonDBTM
         }
         $cell_content = ob_get_clean();
 
-        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
-        // the wrapping cell now carries its parameters as data-* attributes.
-        $valuetocheck_html = TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_value_to_check_cell.html.twig',
-            [
-                'option_id'       => $params['ID'],
-                'with_check_type' => true,
-                'with_tech_group' => true,
-                'content'         => $cell_content,
-            ],
-        );
+        // Value cell, included by the row template; its parameters are read by
+        // public/scripts/fieldoption_valuetocheck.js from data-* attributes.
+        $valuetocheck = [
+            'option_id'       => $params['ID'],
+            'with_check_type' => true,
+            'with_tech_group' => true,
+            'content'         => $cell_content,
+        ];
 
         $link_html = FieldOption::showLinkHtml($item->getID(), $params);
 
@@ -1261,7 +1144,7 @@ class Dropdownmeta extends CommonDBTM
                 'label'             => __('Value to check', 'metademands'),
                 'label_colspan'     => 1,
                 'regex_html'        => $regex_html,
-                'valuetocheck_html' => $valuetocheck_html,
+                'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
             ],
         );

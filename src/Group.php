@@ -270,7 +270,8 @@ class Group extends CommonDBChild
 
         if ($dataMetademandGroup) {
             foreach ($dataMetademandGroup as $field) {
-                $used_groups[] = $field['groups_id'];
+                // Dropdown::showFromArray() reads the keys of "used"
+                $used_groups[$field['groups_id']] = $field['groups_id'];
             }
         }
 

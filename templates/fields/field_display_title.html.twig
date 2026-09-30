@@ -25,6 +25,13 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Title of the wizard (Fields\Title::showWizardField()).
+ #
+ #  - label, icon, color, color_rgba: title and its look
+ #  - label2, comment: rich texts of the designer, sanitized here
+ #  - preview, config_url: link to the field settings in the preview
+-#}
+{% import '@metademands/fields/field_wrapper.html.twig' as wrapper %}
 <div id-field='field{{ id }}' class='card-header'
      style='background-color: {{ color_rgba }}!important;border-color:{{ color }}!important;border-radius: 0;margin-bottom: 10px;'>
     <br>
@@ -39,9 +46,9 @@
         {%- endif -%}
             {{- label -}}
             {%- if debug %} (ID:{{ id }}){% endif -%}
-            {%- if has_label2 %}&nbsp;{{ label2_tooltip_html|raw }}{% endif -%}
-            {%- if preview %}{{ config_link|raw }}{% endif -%}
+            {%- if has_label2 %}&nbsp;<span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-title="{{ label2|safe_html|e }}">?</span>{% endif -%}
+            {%- if preview %}{{ wrapper.config_link(config_url) }}{% endif -%}
     </span></h2>
 </div>
 {%- if has_comment %}
-    <div class='card-body'><i>{{ comment_html|raw }}</i></div>{% endif %}
+    <div class='card-body'><i>{{ comment|safe_html }}</i></div>{% endif %}

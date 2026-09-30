@@ -25,6 +25,10 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Modal form of a ticket field (TicketField::showForm()).
+ #
+ #  - item: the TicketField, whose legacy showFormHeader()/showFormButtons() print the form
+ #  - the other variables are those of forms/ticketfield_form_row.html.twig -#}
 <div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -37,7 +41,9 @@
             </div>
 
             <div class="modal-body" style="overflow-y:auto; max-height:75vh;">
-                {{ form_html|raw }}
+                {% do item.showFormHeader({'colspan': 2}) %}
+                {{ include('@metademands/forms/ticketfield_form_row.html.twig') }}
+                {% do item.showFormButtons({'colspan': 2, 'candel': item.fields['is_deletable']}) %}
             </div>
         </div>
     </div>

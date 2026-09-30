@@ -25,11 +25,17 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- A draft loaded in the wizard (Draft::showDraft()).
+ #
+ #  - meta, title_parameters: arguments of Wizard::showMetademandTitle()
+ #  - form_action, metademands_id
+ #  - forms: {hidden_inputs, form_html}, hidden_inputs being a map name => value and
+ #    form_html the step assembled by the legacy Wizard::constructForm() chain -#}
 <div id="content">
     <div class="bt-container-fluid asset metademands_wizard_rank">
         <div id="meta-form" class="bt-block">
             <div class="row">
-                {{ title_html|raw }}
+                {% do call('GlpiPlugin\\Metademands\\Wizard::showMetademandTitle', [meta, title_parameters]) %}
                 <div class="md-basket-wizard"></div>
                 {% if forms is not empty %}
                     <div class="md-wizard">
@@ -40,7 +46,8 @@
                             <form {% if loop.first %}id="wizard_form" {% endif %}method="post" class="formCustomDraft"
                                   action="{{ form_action }}" enctype="multipart/form-data">
                                 <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
-                                {{ form.hidden_html|raw }}
+                                {{ include('@metademands/wizard/hidden_inputs.html.twig', {'inputs': form.hidden_inputs}, false) }}
+                                {# raw: wizard form printed by the Field::getFieldInput() widgets (constructForm(), §3.2) #}
                                 {{ form.form_html|raw }}
                             </form>
                         {% endfor %}
@@ -52,7 +59,12 @@
                             <div class="bt-feature col-md-12 ">{{ __('No results found') }}</div>
                         </div>
                         <div class="row">
-                            <div class="bt-feature col-md-12 ">{{ previous_html|raw }}</div>
+                            <div class="bt-feature col-md-12 ">
+                                <button type="submit" name="previous" value="{{ __('Previous') }}" class="btn btn-primary">
+                                    <span>{{ __('Previous') }}</span>
+                                </button>
+                                <input type="hidden" name="previous_metademands_id" value="{{ metademands_id }}">
+                            </div>
                         </div>
                     </div>
                 {% endif %}

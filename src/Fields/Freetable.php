@@ -146,20 +146,13 @@ class Freetable extends CommonDBTM
 
         $rand = $data['id'];
 
-        // Build header columns (labels/tooltips) for the Twig template.
+        // Header columns: label, mandatory flag and comment (tooltip) of each column.
         $columns = [];
         foreach ($addfields as $k => $addfield) {
-            $tooltip_html = '';
-            if (isset($commentfields[$addfield]) && !empty($commentfields[$addfield])) {
-                $tooltip_html = Html::showToolTip(
-                    $commentfields[$addfield],
-                    ['display' => false, 'awesome-class' => 'ti ti-info-circle'],
-                );
-            }
             $columns[] = [
-                'label'        => $addfield,
-                'mandatory'    => in_array($k, $is_mandatory),
-                'tooltip_html' => $tooltip_html,
+                'label'     => $addfield,
+                'mandatory' => in_array($k, $is_mandatory),
+                'comment'   => (string) ($commentfields[$addfield] ?? ''),
             ];
         }
 
@@ -242,8 +235,8 @@ class Freetable extends CommonDBTM
                             $options = [];
                             foreach ($dropdown_values[$k] as $key => $dropdown_value) {
                                 $options[] = [
-                                    'dv'            => (string) $dropdown_value,
-                                    'selected_attr' => ($key == $l[$k]) ? 'selected' : '',
+                                    'dv'          => (string) $dropdown_value,
+                                    'is_selected' => $key == $l[$k],
                                 ];
                             }
                             $cell['options'] = $options;

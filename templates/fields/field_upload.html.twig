@@ -25,12 +25,16 @@
  # --------------------------------------------------------------------------
  #}
 
-{#- Legacy-identical order: for each already-uploaded file, its (user-controlled) name,
- #  a &nbsp;, the delete mini-form and a <br>; then the Html::file uploader (possibly
- #  empty when max_upload is already reached) and the Html::scriptBlock. file.name is
- #  auto-escaped by {{ }} — a deliberate hardening of the raw legacy filename sink.
- #  delete_form / file_input / script are core-widget / generated output injected raw.
- #  One physical line so no inter-element whitespace enters the output. -#}
-{% for file in files %}{{ file.name }}&nbsp;{{ file.delete_form|raw }}
-    <br>{% endfor %}{{ file_input|raw }}{{ script|raw }}
+{#- Upload field (Fields\Upload::showWizardField()).
+ #
+ #  - files: already uploaded files {name, post}, post holding the fields of the delete
+ #    request, posted to delete_url like Html::getSimpleForm() does
+ #  - file_options: options of Html::file(), null when max_upload is already reached
+ #  - script_html: Html::scriptBlock() showing the drop zone
+ #  One physical line so no inter-element whitespace enters the output.
+-#}
+{% for file in files %}{{ file.name }}&nbsp;{% set post = {'delete_basket_file': 'delete_basket_file'}|merge(file.post)|merge({'_glpi_csrf_token': csrf_token(), '_glpi_simple_form': 1}) %}<a  class='pointer'  onclick="submitGetLink({{ delete_url|json_encode }}, {{ post|json_encode }});" ><span class='fas fa-times-circle' title='{{ _x('button', 'Delete permanently') }}'><span class='sr-only'>{{ _x('button', 'Delete permanently') }}</span></span></a>
+    <br>{% endfor %}{% if file_options is not null %}{% do call('Html::file', [file_options]) %}{% endif %}
+{#- raw: Html::scriptBlock() showing the drop zone, id only (§3.2) -#}
+{{ script_html|raw }}
 {#- -#}

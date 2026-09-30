@@ -34,14 +34,20 @@
             <tr class="tab_bg_1">
                 <td class="center">
                     {{ metademand_type_name }}&nbsp;
-                    {{ metademand_dropdown|raw }}
+                    {% do call('Dropdown::show', [metademand_itemtype, {
+                        'name': 'plugin_metademands_metademands_id',
+                        'used': used_metademands,
+                        'entity': entities_id
+                    }]) %}
                 </td>
             </tr>
             <tr class="tab_bg_1">
                 <td class="tab_bg_2 center">
-                    {{ submit_html|raw }}
-                    {{ hidden_entities_id|raw }}
-                    {{ hidden_contracttype|raw }}
+                    <button type="submit" name="update" value="{{ _x('button', 'Add') }}" class="btn btn-primary">
+                        <span>{{ _x('button', 'Add') }}</span>
+                    </button>
+                    <input type="hidden" name="entities_id" value="{{ entities_id }}">
+                    <input type="hidden" name="plugin_resources_contracttypes_id" value="{{ contracttypes_id }}">
                 </td>
             </tr>
         </table>

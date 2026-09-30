@@ -25,6 +25,13 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Information block of the wizard (Fields\Information::showWizardField()).
+ #
+ #  - name, icon, color, display_class: content and look
+ #  - comment, label2: rich texts of the designer, sanitized here
+ #  - preview, config_url: link to the field settings in the preview
+-#}
+{% import '@metademands/fields/field_wrapper.html.twig' as wrapper %}
 <div class='alert {{ display_class }} alert-dismissible fade show informations'
      style='display:flex;align-items: center;'>
     {%- if show_content -%}
@@ -35,7 +42,7 @@
                 <i class='ti {{ icon }}' style='font-size:2em;color:{{ color }};'></i>&nbsp;
             {%- endif -%}
         {%- endif -%}
-        <div style='color:{{ color }};'>{{ name }}{{ comment_html|raw }}{{ label2_html|raw }}</div>
+        <div style='color:{{ color }};'>{{ name }}{{ comment|safe_html }}{{ label2|safe_html }}</div>
     {%- endif -%}
-    {%- if preview %}{{ config_link|raw }}{% endif -%}
+    {%- if preview %}{{ wrapper.config_link(config_url) }}{% endif -%}
 </div>

@@ -27,14 +27,20 @@
 
 {#-
  # Shared "value to check" editing row of a field's condition configuration.
- # The label is auto-escaped by {{ }}. Framework-produced markup (the optional
- # regex cell, the value dropdown cell together with its reload <script>, and
- # the linked task/field rows) is captured server-side and injected as raw.
+ #
+ # Expected context:
+ #  - row_class, label, label_colspan: the row and its label
+ #  - regex_html: "type of value to check" cell of FieldOption::showRegexDropdown(), or ''
+ #  - valuetocheck: context of field_value_to_check_cell.html.twig
+ #  - link_html: linked task / field rows of FieldOption::showLinkHtml()
+ #
  # The opening <tr> is intentionally left unclosed: it is closed by the first
  # <tr> emitted inside link_html (FieldOption::showLinkHtml), matching legacy.
 -#}
 <tr{% if row_class %} class="{{ row_class }}"{% endif %}>
    <td colspan="{{ label_colspan }}">{{ label }}</td>
+   {#- raw: rendered cell of FieldOption::showRegexDropdown(), core dropdown inside (§3.2) #}
    {{- regex_html|raw }}
-   {{- valuetocheck_html|raw }}
+   {%- include '@metademands/fields/field_value_to_check_cell.html.twig' with valuetocheck only %}
+{# raw: rows of FieldOption::showLinkHtml(), core widgets inside (§3.2) #}
 {{ link_html|raw }}

@@ -31,13 +31,19 @@
             <table class="tab_cadre_fixe">
                 <tr class="tab_bg_1">
                     <th colspan="6">
-                        {{ __('Synchronise with ticket template', 'metademands') }} {{ template_link|raw }}
+                        {{ __('Synchronise with ticket template', 'metademands') }}
+                        {# raw: CommonDBTM::getLink() escapes the name (§3.1) #}
+                        {{ template_link|raw }}
                     </th>
                 </tr>
                 <tr class="tab_bg_1">
                     <td class="tab_bg_2 center">
-                        {{ submit_html|raw }}
-                        {{ hidden_html|raw }}
+                        <button type="submit" name="template_sync" value="{{ __('Synchronise with ticket template', 'metademands') }}" class="btn btn-primary">
+                            <span>{{ __('Synchronise with ticket template', 'metademands') }}</span>
+                        </button>
+                        {% for name, value in item_fields %}
+                            <input type="hidden" name="{{ name }}" value="{{ value }}">
+                        {% endfor %}
                     </td>
                 </tr>
                 <tr class="tab_bg_1 center">
@@ -46,12 +52,15 @@
                            title="{{ __('Show list of available tags') }}">
                             {{ __('Show list of available tags') }}
                         </a>
-                        {{ tags_modal_html|raw }}
+                        {% do call('Ajax::createIframeModalWindow', ['tags', tags_url, {
+                            'title': __('Show list of available tags'),
+                            'display': true
+                        }]) %}
                     </td>
                 </tr>
             </table>
-            {# closes the <form> above and carries the CSRF token #}
-            {{ close_form_html|raw }}
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        </form>
     </div>
 {% endif %}
 

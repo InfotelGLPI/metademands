@@ -29,7 +29,8 @@
  # Step forms waiting on a given meta-demand, shown in the "Forms" tab of Metademand.
  #
  # Expected context:
- #  - rows: list of {id, publisher, group, user_dest, date, delete_html}, delete_html
+ #  - rows: list of {id, publisher, group, user_dest, date, can_delete}
+ #  - delete_action: endpoint of the delete button
  #          being the Html::showSimpleForm() markup of the cancel button, empty when
  #          the current user lacks the plugin_metademands_cancelform right
  #}
@@ -56,8 +57,11 @@
                         <td>{{ row.user_dest }}</td>
                         <td>{{ row.date }}</td>
                         <td>
-                            {% if row.delete_html is not empty %}
-                                <span class="text-danger">{{ row.delete_html|raw }}</span>
+                            {% if row.can_delete %}
+                                {{ include('@metademands/forms/stepform_delete_button.html.twig', {
+                                    'delete_button': 'delete_form_from_metademands',
+                                    'stepforms_id': row.id
+                                }, with_context = true) }}
                             {% endif %}
                         </td>
                     </tr>

@@ -37,7 +37,9 @@
         {%- for col in columns -%}
             <th style='text-align: left;{{ background_color }}'>{{- col.label -}}
                 {%- if col.mandatory %}<span style='color : red'> *</span>{% endif -%}
-                {{- col.tooltip_html|raw -}}
+                {%- if col.comment is not empty -%}
+                    <span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ col.comment }}">?</span>
+                {%- endif -%}
             </th>
         {%- endfor -%}
         <th style='text-align: right;{{ background_color }}' colspan='4'
@@ -52,7 +54,7 @@
                 {%- elseif cell.kind == 'select' -%}
                     <td><select class='form-select' id="{{ cell.id }}" name="{{ cell.name }}">
                             {%- for o in cell.options -%}
-                                <option {{ o.selected_attr|raw }} value="{{ o.dv }}">{{ o.dv }}</option>
+                                <option{% if o.is_selected %} selected{% endif %} value="{{ o.dv }}">{{ o.dv }}</option>
                             {%- endfor -%}
                         </select></td>
                 {%- elseif cell.kind == 'number' -%}

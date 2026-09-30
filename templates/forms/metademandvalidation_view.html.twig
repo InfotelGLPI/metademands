@@ -25,9 +25,13 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Validation of a meta-demand (MetademandValidation::viewValidation()).
+ #
+ #  - group_url: AJAX endpoint reloading the group selector when the choice changes
+ #  - group_condition, group_value: assignable groups and current assigned group -#}
 <form name="form_raz" id="form_raz" method="post" action="{{ form_action }}">
-    {{ action_hidden|raw }}
-    {{ tickets_hidden|raw }}
+    <input type="hidden" name="action" id="action_validationMeta" value="validationMeta">
+    <input type="hidden" name="tickets_id" id="action_validationMeta" value="{{ tickets_id }}">
     <table class="tab_cadre_fixe">
         <tr class="tab_bg_1 center">
             <th colspan="2">{{ __('Metademand validation', 'metademands') }}</th>
@@ -48,11 +52,20 @@
                 {% endif %}
                 </tr>
                 <tr class="tab_bg_1 center" id="to_update_group">
-                {{ ajax_scripts_html|raw }}
+                {% for radio_id in ['create_subticket', 'create_subticket2'] %}
+                    {% do call('Ajax::updateItemOnEvent', [radio_id, 'to_update_group', group_url, {
+                        'create_subticket': '__VALUE__',
+                        'tickets_id': tickets_id
+                    }]) %}
+                {% endfor %}
             {% elseif is_to_validate_withouttask %}
                 <td colspan="2">{{ __('Attribute ticket to ', 'metademands') }} &nbsp;
-                    {{ create_subticket_hidden|raw }}
-                    {{ group_dropdown_html|raw }}
+                    <input type="hidden" name="create_subticket" value="{{ assign_only }}">
+                    {% do call('Group::dropdown', [{
+                        'condition': group_condition,
+                        'name': 'group_to_assign',
+                        'value': group_value
+                    }]) %}
                 </td>
             {% elseif is_tasks_created %}
                 <div class="alert alert-success d-flex">{{ __('Tasks are created', 'metademands') }}</div>
@@ -68,7 +81,11 @@
         {% endif %}
         {% if show_submit %}
             <tr class="tab_bg_1">
-                <td colspan="2" class="center">{{ submit_html|raw }}</td>
+                <td colspan="2" class="center">
+                    <button type="submit" name="btnAddAll" value="{{ __('Validate metademands', 'metademands') }}" class="btn btn-primary">
+                        <span>{{ __('Validate metademands', 'metademands') }}</span>
+                    </button>
+                </td>
             </tr>
         {% endif %}
         <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">

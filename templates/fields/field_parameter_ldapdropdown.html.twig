@@ -25,6 +25,21 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Specific parameters of a LDAP dropdown field (Fields\Ldapdropdown::showFieldParameters()):
+ # values only, the widgets come from the core macros.
+ #
+ # Expected context:
+ #  - authldaps_id: LDAP directory, among the active ones
+ #  - ldap_filter: LDAP filter of the search
+ #  - ldap_attribute: LDAP attribute displayed (RuleRightParameter)
+ #  - webdir: web directory of the plugin, given to the directory change handler
+-#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{# The widgets sit in grid columns: no label, no column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
 <div class="card mt-2">
     <div class="card-header">
         <h5 class="card-title">{{ __('Specific parameters', 'metademands') }}</h5>
@@ -32,13 +47,16 @@
     <div class="card-body">
         <div class="row g-2 align-items-center mb-2">
             <label class="col-sm-3 col-form-label">{{ __('LDAP directory') }}</label>
-            <div class="col-sm-3">{{ authldaps_html|raw }}</div>
+            <div class="col-sm-3">{{ fields.dropdownField('AuthLDAP', 'authldaps_id', authldaps_id, '', bare|merge({
+                'condition': {'is_active': 1},
+                'on_change': "plugin_metademands_changeLDAP('" ~ webdir|e('js') ~ "', this)",
+            })) }}</div>
             <label class="col-sm-3 col-form-label">{{ __('Filter', 'metademands') }}</label>
-            <div class="col-sm-3">{{ ldap_filter_html|raw }}</div>
+            <div class="col-sm-3">{{ fields.textField('ldap_filter', ldap_filter, '', bare|merge({'additional_attributes': {'size': 50}})) }}</div>
         </div>
         <div class="row g-2 align-items-center mb-2">
             <label class="col-sm-3 col-form-label">{{ __('Attribute', 'metademands') }}</label>
-            <div class="col-sm-3">{{ ldap_attribute_html|raw }}</div>
+            <div class="col-sm-3">{{ fields.dropdownField('RuleRightParameter', 'ldap_attribute', ldap_attribute, '', bare) }}</div>
         </div>
     </div>
 </div>

@@ -30,13 +30,12 @@
  # script wiring it, and the hidden input carrying the value actually submitted.
  #
  # Expected context:
- #  - script_src:  Html::script() tag of the cascading-dropdowns library
  #  - script_html: Html::scriptBlock() building the cascade
- #  - hidden_html: Html::hidden() holding the selected location id
  #  - name, id:    name and id of the field
  #  - is_required: whether the field is mandatory
 -#}
-{{ script_src|raw }}
+<script src="{{ js_path('/plugins/metademands/lib/cascading-dropdowns/jquery.chained.selects.js') }}"></script>
 <select class="chained-select" name="{{ name }}-dropdown" id="{{ id }}-dropdown"{% if is_required %} required{% endif %}></select>
+{# raw: Html::scriptBlock() of the cascade, data encoded with JSON_HEX_TAG|JSON_HEX_AMP (§3.2) #}
 {{ script_html|raw }}
-{{ hidden_html|raw }}
+<input type="hidden" name="{{ name }}" id="{{ id }}">

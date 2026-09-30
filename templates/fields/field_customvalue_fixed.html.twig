@@ -30,29 +30,51 @@
  # parameters (no rank/order, no add/delete rows): Basket, Link, Number, Range,
  # Yesno. Rendered INSIDE the <table> already opened by
  # field_customvalue_values.html.twig, so this template emits table rows only.
- # The template owns the <tr class="tab_bg_1"> / <td> grid, the label and the
- # hint of each cell, and the trailing submit row. Only the widget itself is
- # captured server-side and injected as raw, because it is produced by a
- # framework call such as Dropdown::show*() or Html::input().
  #
- # Cell keys: html (required), label, hint, colspan — all optional but html.
- # `after_html` carries an optional trailing fragment such as the markup
- # produced by Html::closeForm().
+ # Expected context:
+ #  - rows: list of rows, each a list of cells {label, text, hint, colspan, widget}, all
+ #    optional. widget = {type, name, value} with type among
+ #      - yesno
+ #      - number (options: min, max, step)
+ #      - array (elements, display_emptychoice)
+ #      - text (size)
+ #  - close_form: close the form opened by the caller (Range)
 -#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{# The widgets sit in table cells: no label, no column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
 {% for row in rows %}
    <tr class="tab_bg_1">
       {%- for cell in row %}
-      <td{% if cell.colspan is defined and cell.colspan %} colspan="{{ cell.colspan }}"{% endif %}>
-         {%- if cell.label is defined and cell.label %}<label>{{ cell.label }}</label>&nbsp;{% endif -%}
-         {{ cell.html|raw }}
-         {%- if cell.hint is defined and cell.hint %}<br><i>{{ cell.hint }}</i>{% endif -%}
+      {%- set widget = cell.widget|default(null) %}
+      <td{% if cell.colspan|default(0) %} colspan="{{ cell.colspan }}"{% endif %}>
+         {%- if cell.label|default('') is not empty %}<label>{{ cell.label }}</label>&nbsp;{% endif -%}
+         {{- cell.text|default('') -}}
+         {%- if widget is null -%}
+         {%- elseif widget.type == 'yesno' -%}
+            {{ fields.dropdownYesNo(widget.name, widget.value, '', bare) }}
+         {%- elseif widget.type == 'number' -%}
+            {{ fields.dropdownNumberField(widget.name, widget.value, '', bare|merge(widget.options|default({}))) }}
+         {%- elseif widget.type == 'array' -%}
+            {{ fields.dropdownArrayField(widget.name, widget.value, widget.elements, '', bare|merge({
+               'display_emptychoice': widget.display_emptychoice|default(false),
+            })) }}
+         {%- elseif widget.type == 'text' -%}
+            {{ fields.textField(widget.name, widget.value, '', bare|merge({'size': widget.size|default(30)})) }}
+         {%- endif -%}
+         {%- if cell.hint|default('') is not empty %}<br><i>{{ cell.hint }}</i>{% endif -%}
       </td>
       {%- endfor %}
    </tr>
 {% endfor %}
    <tr class="tab_bg_1">
-      <td>{{ submit_html|raw }}</td>
+      <td>
+         <button type="submit" value="" name="update" class="btn btn-primary"><i class="ti ti-device-floppy"></i>&nbsp;<span></span></button>
+      </td>
    </tr>
-{%- if after_html is defined and after_html %}
-{{ after_html|raw }}
+{%- if close_form|default(false) %}
+<input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+</form>
 {%- endif %}

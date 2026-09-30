@@ -47,15 +47,8 @@ if (($_POST['action'] ?? null) !== 'reloaditem'
     return;
 }
 
-// Belt and braces: the plugin branch of dropdownFieldItems() may write to the output
-// buffer rather than honour 'display'.
-ob_start();
-$returned = Field::dropdownFieldItems($_POST['type'], [
-    'with_empty_value' => true,
-    'display'          => false,
-]);
-$item_dropdown_html = ob_get_clean() . (is_string($returned) ? $returned : '');
-
+// The type is one of Field::$field_withobjects: every branch of dropdownFieldItems() for
+// those types prints its dropdown, so the template calls it in place.
 TemplateRenderer::getInstance()->display('@metademands/ajax/reload_item.html.twig', [
-    'item_dropdown_html' => $item_dropdown_html,
+    'type' => $_POST['type'],
 ]);

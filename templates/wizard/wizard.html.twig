@@ -30,6 +30,13 @@
  # rendered inside several host layouts (helpdesk page, service catalog, preview modal) which each
  # close a different number of wrappers themselves. Keeping the historical asymmetry avoids
  # breaking those layouts.
+ #
+ # Expected context (built by Wizard::showWizard()):
+ #  - models_and_drafts: context of models_and_drafts.html.twig, null when not displayed here
+ #  - breadcrumb:        context of wizard_breadcrumb.html.twig, null outside the service catalog
+ #  - metademand_title:  context of metademand_title.html.twig, null when the title is hidden
+ #  - abort:             '' (form displayed), 'silent' or 'message' (abort_message displayed)
+ #  - steps:             markup still printed by Wizard::showWizardSteps()
  #}
 <div id="content">
 <div id="meta-form" class="bt-block">
@@ -39,7 +46,9 @@
       enctype="multipart/form-data"
       class="metademands_img">
 
-    {{ models_and_drafts|raw }}
+    {% if models_and_drafts is not null %}
+        {% include '@metademands/wizard/models_and_drafts.html.twig' with models_and_drafts only %}
+    {% endif %}
 
     {% if maintenance %}
         <div class="alert alert-warning center">
@@ -50,7 +59,9 @@
     {% else %}
         <div class="bt-container-fluid asset metademands_wizard_rank">
 
-            {{ breadcrumb|raw }}
+            {% if breadcrumb is not null %}
+                {% include '@metademands/wizard/wizard_breadcrumb.html.twig' with breadcrumb only %}
+            {% endif %}
 
             {% for name, value in hidden_fields %}
                 <input type="hidden" name="{{ name }}" value="{{ value }}">
@@ -77,18 +88,20 @@
                         </div>
                     </div>
                 </div>
-            {% elseif header == 'form' %}
-                {{ metademand_title|raw }}
+            {% elseif header == 'form' and metademand_title is not null %}
+                {% include '@metademands/wizard/metademand_title.html.twig' with metademand_title only %}
             {% endif %}
 
             {% if abort == 'message' %}
-                {{ abort_message|raw }}
+                {% include '@metademands/wizard/message.html.twig' with {'message': abort_message, 'is_error': true} only %}
             {% elseif abort == '' %}
                 {% if requester_id is not null %}
                     <input type="hidden" name="_users_id_requester" value="{{ requester_id }}">
                 {% endif %}
+                {# raw: steps of the form, printed by Wizard::showWizardSteps() around the Wizard::constructForm() step form (§3.2); captured because it may redirect, which call() would turn into a Twig error #}
                 {{ steps|raw }}
-                {{ close_form|raw }}
+                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                </form>
             {% endif %}
 
             {# 'silent' aborts stop right after the title and leave every wrapper open. #}

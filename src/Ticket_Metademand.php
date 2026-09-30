@@ -338,29 +338,18 @@ class Ticket_Metademand extends CommonDBTM
         if ($numrows > 0) {
             $rand = mt_rand();
 
-            // Ticket::commonListHeader() and Ticket::showShort() print their rows: capture
-            // them and let the template own the table.
-            ob_start();
-
-            \Ticket::commonListHeader(Search::HTML_OUTPUT, 'mass' . __CLASS__ . $rand);
-
-            $i = 0;
+            $tickets_ids = [];
             foreach ($iterator as $data) {
-                $ID = $data['id'];
-                $i++;
-                \Ticket::showShort(
-                    $ID,
-                    [
-                        'output_type' => Search::HTML_OUTPUT,
-                        'row_num' => $i,
-                        'type_for_massiveaction' => __CLASS__,
-                        'id_for_massiveaction'   => $ID,
-                    ],
-                );
+                $tickets_ids[] = $data['id'];
             }
 
+            // Ticket::commonListHeader() and Ticket::showShort() print their rows: the
+            // template calls them inside the table it owns.
             TemplateRenderer::getInstance()->display('@metademands/forms/ticket_metademand_list.html.twig', [
-                'rows_html' => ob_get_clean(),
+                'output_type'   => Search::HTML_OUTPUT,
+                'mass_id'       => 'mass' . __CLASS__ . $rand,
+                'massive_type'  => __CLASS__,
+                'tickets_ids'   => $tickets_ids,
             ]);
         } else {
             TemplateRenderer::getInstance()->display('@metademands/alert.html.twig', [

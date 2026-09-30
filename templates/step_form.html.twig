@@ -40,7 +40,7 @@
                     {{ __('Block', 'metademands') }}
                 </label>
                 <div class="col-8">
-                    {{ block_dropdown_html|raw }}
+                    {% do call('Dropdown::showFromArray', ['block_id', blocks, block_options]) %}
                 </div>
             </div>
 
@@ -50,7 +50,16 @@
                         {{ __('Group') }}
                     </label>
                     <div class="col-8">
-                        {{ groups_dropdown_html|raw }}
+                        {% if groups is not empty %}
+                            {% do call('Dropdown::showFromArray', ['groups_id', groups, {
+                                'value': groups_id,
+                                'width': '100%',
+                                'multiple': true,
+                                'entity': active_entities
+                            }]) %}
+                        {% else %}
+                            {% do call('Group::dropdown', [{'name': 'groups_id', 'value': groups_id}]) %}
+                        {% endif %}
                         {{ inputs.hidden('only_by_supervisor', 0) }}
                     </div>
                 </div>
@@ -62,7 +71,7 @@
                         {{ __('Only by supervisor', 'metademands') }}
                     </label>
                     <div class="col-8">
-                        {{ supervisor_dropdown_html|raw }}
+                        {% do call('Dropdown::showYesNo', ['only_by_supervisor', only_by_supervisor]) %}
                         {{ inputs.hidden('groups_id', 0) }}
                     </div>
                 </div>

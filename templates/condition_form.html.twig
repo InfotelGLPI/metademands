@@ -58,10 +58,14 @@
 
             <div class="row g-2 align-items-center">
                 <div class="col">
-                    {{ show_logic_html|raw }}
+                    {% do call('Dropdown::showFromArray', ['show_logic', show_logic_options, {'value': show_logic}]) %}
                 </div>
                 <div class="col">
-                    {{ fields_dropdown_html|raw }}
+                    {% do call('Dropdown::showFromArray', ['plugin_metademands_fields_id', fields_options, {
+                        'rand': rand,
+                        'display_emptychoice': true,
+                        'value': fields_id
+                    }]) %}
                     {% do call('Ajax::updateItemOnSelectEvent', [
                         'dropdown_plugin_metademands_fields_id' ~ rand,
                         'show_type_field' ~ rand,
@@ -82,16 +86,24 @@
                     ]) %}
                 </div>
                 <div class="col">
-                    <span id="show_type_field{{ rand }}">{{ type_field_html|raw }}</span>
+                    <span id="show_type_field{{ rand }}">{{ type_field_name }}</span>
                 </div>
                 <div class="col">
-                    <span id="show_dropdown_condition_{{ rand }}">{{ condition_dropdown_html|raw }}</span>
+                    <span id="show_dropdown_condition_{{ rand }}">
+                        {% do call('Dropdown::showFromArray', ['show_condition', show_condition_options, {
+                            'display_emptychoice': false,
+                            'value': show_condition,
+                            'rand': rand
+                        }]) %}
+                    </span>
                 </div>
                 <div class="col">
-                    <span id="show_value_to_check_{{ rand }}">{{ check_value_html|raw }}</span>
+                    <span id="show_value_to_check_{{ rand }}">
+                        {% do call(check_value_callable, [fields_id, condition_id]) %}
+                    </span>
                 </div>
                 <div class="col">
-                    {{ order_dropdown_html|raw }}
+                    {% do call('Dropdown::showNumber', ['order', {'value': order}]) %}
                 </div>
                 <div class="col">
                     <button class="btn btn-primary" type="submit" name="update" value="1">

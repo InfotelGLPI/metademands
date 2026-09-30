@@ -25,6 +25,21 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Wrapper of a wizard field (Field::displayFieldByType()): label, icon, comment help,
+ # second label and, for a date interval, the end widget.
+ #
+ # Expected context:
+ #  - config_url: form of the field, linked in preview from the central interface ('' otherwise)
+ #  - comment_html: sanitized help of the field, escaped into the tooltip attribute
+ #    (Bootstrap renders it as HTML) when show_comment_tooltip
+ #  - label2: rich text of the second label, shown in an alert when show_label2_alert
+ #  - interval_required: the end of the interval is mandatory
+ #  - field_html, interval_html: widgets printed by the renderers of the field type
+-#}
+{%- macro config_link(config_url) -%}
+    {%- if config_url is not empty %}&nbsp;<a href="{{ config_url }}"><i class="ti ti-settings"></i></a>{% endif -%}
+{%- endmacro -%}
 <div id-field='field{{ id }}' class="{{ wrapper_class }}">{% if is_basket %}
     <h4 class='card-title mb-2 text-break' style='color: #a83d3d;'>{% endif %}
         {%- if render_label %}
@@ -34,25 +49,29 @@
                 {%- if has_icon %}<i class='ti {{ icon }}'></i>&nbsp;{% endif -%}
                 {{- label }} {{ upload -}}
                 {%- if debug %} (ID:{{ id }}){% endif -%}
-                {%- if preview %}{{ config_link|raw }}{% endif -%}
-                {%- if show_comment_tooltip %}&nbsp;{{ comment_tooltip_html|raw }}{% endif -%}
+                {%- if preview %}{{ _self.config_link(config_url) }}{% endif -%}
+                {%- if show_comment_tooltip %}&nbsp;<span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top"
+                      data-bs-html="true" data-bs-title="{{ comment_html }}">?</span>{% endif -%}
                 <span class='metademands_wizard_red'
                       id='metademands_wizard_red{{ id }}'>{% if is_mandatory_star %}*{% endif %}</span>
             </div>
         {%- endif %}
     {%- else %}
-        <div style='margin-top: 10px;'>{% if preview %}{{ config_link|raw }}{% endif %}
+        <div style='margin-top: 10px;'>{% if preview %}{{ _self.config_link(config_url) }}{% endif %}
             {%- endif %}
         {%- if is_basket %}</h4>{% endif %}
     {%- endif %}
     {%- if show_label2_alert %}
         <div class='alert alert-secondary' style='padding: 10px;'>
-        <div class='remove-last-tinymce-margin'>{{ label2_alert_html|raw }}</div></div>{% endif %}
+        <div class='remove-last-tinymce-margin'>{{ label2|safe_html }}</div></div>{% endif %}
+    {# raw: wizard widget of any field type, printed by Field::getFieldInput(), whose renderers are not all in Twig yet #}
     {{- field_html|raw -}}
     {%- if close_hidetitle_div %}</div>{% endif %}
 {%- if is_interval %}</div>
 <div id-field='field{{ id }}-2' class="form-group col-md-6 md-bottom">
     <div for='field[{{ id }}-2]' class='col-form-label metademand-label'>{{ interval_label_html }}
-        <span {{ interval_required_class|raw }}>{{ interval_required_icon|raw }}</span>
-    </div>{{ interval_html|raw }}{% endif %}
+        <span{% if interval_required %} class='metademands_wizard_red'> * {% else %}>{% endif %}</span>
+    </div>
+    {#- raw: end widget of a date interval, printed by the renderer of the field type, not in Twig yet #}
+    {{- interval_html|raw }}{% endif %}
 </div>

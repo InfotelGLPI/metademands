@@ -25,6 +25,19 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Specific parameters of a date interval field (Fields\Dateinterval /
+ # Datetimeinterval::showFieldParameters()): values only, the widgets come from the core macros.
+ #
+ # Expected context:
+ #  - use_future_date, use_date_now: yes / no
+ #  - additional_number_day: days added to the default date
+-#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{# The widgets sit in grid columns: no label, no column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
 <div class="card mt-2">
     <div class="card-header">
         <h5 class="card-title">{{ __('Specific parameters', 'metademands') }}</h5>
@@ -32,14 +45,14 @@
     <div class="card-body">
         <div class="row g-2 align-items-center mb-2">
             <label class="col-sm-3 col-form-label">{{ __('Day greater or equal to now', 'metademands') }}</label>
-            <div class="col-sm-3">{{ use_future_date_html|raw }}</div>
+            <div class="col-sm-3">{{ fields.dropdownYesNo('use_future_date', use_future_date, '', bare) }}</div>
             <label class="col-sm-3 col-form-label">{{ __('Define the default date', 'metademands') }}</label>
-            <div class="col-sm-3">{{ use_date_now_html|raw }}</div>
+            <div class="col-sm-3">{{ fields.dropdownYesNo('use_date_now', use_date_now, '', bare) }}</div>
         </div>
         <div class="row g-2 align-items-center mb-2">
             <label
                 class="col-sm-3 col-form-label">{{ __('Additional number day to the default date', 'metademands') }}</label>
-            <div class="col-sm-3">{{ additional_number_day_html|raw }}</div>
+            <div class="col-sm-3">{{ fields.dropdownNumberField('additional_number_day', additional_number_day, '', bare|merge({'min': 0, 'max': 500})) }}</div>
         </div>
     </div>
 </div>

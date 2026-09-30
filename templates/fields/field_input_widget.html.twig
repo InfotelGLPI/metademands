@@ -28,7 +28,7 @@
 {#- Input of the Email / Tel / Text / Url fields. The prefill from a linked "User"
  #  field travels as data-md-user-* attributes on the input, handled by
  #  public/scripts/wizard_form.js (initUserPrefill).
- #  raw: Html::input() core widget, attributes escaped by Html::parseAttributes().
  #  No leading/trailing whitespace. -#}
+{#- raw: Html::input() core widget from showWizardField(), attributes escaped by Html::parseAttributes() (§3.2) -#}
 {{- input_html|raw -}}
 {#- -#}

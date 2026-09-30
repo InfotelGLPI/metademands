@@ -30,7 +30,6 @@
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Config;
 use GlpiPlugin\Metademands\Field;
-use GlpiPlugin\Metademands\Wizard;
 
 $AJAX_INCLUDE = 1;
 if (strpos($_SERVER['PHP_SELF'], "utooltipUpdate.php")) {
@@ -86,13 +85,8 @@ if (isset($_POST['users_id']) && (int) $_POST["users_id"] > 0) {
             || Config::canCurrentUserViewRequester($user_id))
         && $user_tooltip->getFromDB($user_id)
     ) {
-        // showUserInformations() writes to the standard output.
-        ob_start();
-        Wizard::showUserInformations($user_tooltip);
-        $user_informations_html = ob_get_clean();
-
         TemplateRenderer::getInstance()->display('@metademands/ajax/user_tooltip.html.twig', [
-            'user_informations_html' => $user_informations_html,
+            'user' => $user_tooltip,
         ]);
     }
 }

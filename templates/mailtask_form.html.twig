@@ -35,12 +35,19 @@
 
 <div class="row mb-3">
     <label class="col-4 col-form-label fw-bold">{{ __('Use block', 'metademands') }}</label>
-    <div class="col-8">{{ use_block_html|raw }}</div>
+    <div class="col-8">{% do call('Dropdown::showYesNo', ['useBlock', use_block]) %}</div>
 </div>
 
 <div class="row mb-3">
     <label class="col-4 col-form-label fw-bold">{{ __('Block to use', 'metademands') }}</label>
-    <div class="col-8">{{ block_use_html|raw }}</div>
+    <div class="col-8">
+        {% do call('Dropdown::showFromArray', ['block_use', blocks, {
+            'values': block_use,
+            'width': '100%',
+            'multiple': true,
+            'entity': active_entities
+        }]) %}
+    </div>
 </div>
 
 <hr class="my-3">
@@ -49,14 +56,28 @@
     <label class="col-4 col-form-label fw-bold">
         {{ __('Actors', 'metademands') }} — {{ __('Recipient') }} ({{ __('User') }})
     </label>
-    <div class="col-8">{{ user_recipient_html|raw }}</div>
+    <div class="col-8">
+        {% do call('User::dropdown', [{
+            'name': 'users_id_recipient',
+            'value': users_id_recipient,
+            'entity': entities_id,
+            'right': user_right
+        }]) %}
+    </div>
 </div>
 
 <div class="row mb-3">
     <label class="col-4 col-form-label fw-bold">
         {{ __('Actors', 'metademands') }} — {{ __('Recipient') }} ({{ __('Group') }})
     </label>
-    <div class="col-8">{{ group_recipient_html|raw }}</div>
+    <div class="col-8">
+        {% do call('Dropdown::show', ['Group', {
+            'name': 'groups_id_recipient',
+            'value': groups_id_recipient,
+            'entity': entities_id,
+            'condition': {'is_requester': 1}
+        }]) %}
+    </div>
 </div>
 
 <hr class="my-3">

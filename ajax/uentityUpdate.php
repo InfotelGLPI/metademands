@@ -138,7 +138,8 @@ if ($fieldEntity->fields['readonly'] == 1) {
     // getDropdownName() returns the raw completename column: the template escapes it.
     TemplateRenderer::getInstance()->display('@metademands/ajax/readonly_dropdown_value.html.twig', [
         'value_name'  => Dropdown::getDropdownName("glpi_entities", $val),
-        'hidden_html' => Html::hidden($_POST["field"], ['value' => $val]),
+        'field_name'  => $_POST["field"],
+        'value'       => $val,
     ]);
 } else {
     Entity::dropdown($opt);

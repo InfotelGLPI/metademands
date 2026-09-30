@@ -30,7 +30,8 @@
  # the dropdown listing the items that type can be bound to.
  #
  # Expected context:
- #  - item_dropdown_html: dropdown, written by Field::dropdownFieldItems()
+ #  - type: field type, one of Field::$field_withobjects, whose dropdown is printed by
+ #    Field::dropdownFieldItems()
  #}
 
-<label>{{ __('Object', 'metademands') }}</label>&nbsp;{{ item_dropdown_html|raw }}
+<label>{{ __('Object', 'metademands') }}</label>&nbsp;{% do call('GlpiPlugin\\Metademands\\Field::dropdownFieldItems', [type, {'with_empty_value': true}]) %}

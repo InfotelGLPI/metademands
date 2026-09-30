@@ -34,7 +34,8 @@
  #  - header_icon  string  icon class, header_is_fa tells which family it belongs to
  #  - header_is_fa bool
  #  - cards        list  [{icon, is_fa, name, created, block_id,
- #                         has_group_dest, group_dest, has_user_dest, user_dest, delete_html}, ...]
+ #                         has_group_dest, group_dest, has_user_dest, user_dest, can_delete}, ...]
+ #  - delete_action string  endpoint of the delete button
  #}
 
 <div class="card mt-2 mb-4">
@@ -81,7 +82,12 @@
                                         {{ card.user_dest }}
                                     </div>
                                 {% endif %}
-                                <span class="text-danger">{{ card.delete_html|raw }}</span>
+                                {% if card.can_delete %}
+                                    {{ include('@metademands/forms/stepform_delete_button.html.twig', {
+                                        'delete_button': 'delete_form_from_list',
+                                        'stepforms_id': card.id
+                                    }, with_context = true) }}
+                                {% endif %}
                             </div>
                         </div>
                     </div>

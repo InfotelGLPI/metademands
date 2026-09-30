@@ -27,6 +27,20 @@
 
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
 
+{#-
+ # Form of a field of a metademand (Field::showForm()).
+ #
+ # Expected context, besides the plain values of the field:
+ #  - type_options:    choices of the "Type" dropdown, or null when the type is fixed
+ #                     (type_name is then displayed instead)
+ #  - type_rand:       rand of the "Type" dropdown, listened to by the object selector
+ #  - ajax_url, params_type, params_item: Ajax reloads driven by the "Type" dropdown
+ #  - rank, rank_rand, max_fields: "Block" dropdown
+ #  - item_selector:   options of the object selector, or null
+ #  - item_fixed:      fixed object (item_fixed_name is displayed), or null
+ #  - order:           {select, value} of the "Display field after" dropdown
+-#}
+
 {% do call('Html::requireJs', ['tinymce']) %}
 
 <form name="form" method="post" action="{{ action }}">
@@ -82,7 +96,13 @@
                     <label class="form-label fw-bold">
                         {{ __('Type') }} <span class="text-danger">*</span>
                     </label>
-                    {{ type_html|raw }}
+                    {% if type_options is not null %}
+                        {% do call('Dropdown::showFromArray', ['type', type_options, {'value': type, 'rand': type_rand}]) %}
+                        {% do call('Ajax::updateItemOnSelectEvent', ['dropdown_type' ~ type_rand, 'show_values', ajax_url, params_type]) %}
+                    {% else %}
+                        {{ type_name }}
+                        <input type="hidden" name="type" value="{{ type }}">
+                    {% endif %}
                     {% if basket_warning %}
                         <div class="alert alert-warning d-flex mt-1">
                             <span>{{ __("Remember to activate basket mode on your metademand !", 'metademands') }}</span>
@@ -91,7 +111,7 @@
                 </div>
                 <div class="col-6">
                     <label class="form-label fw-bold">{{ __('Block', 'metademands') }}</label>
-                    {{ rank_html|raw }}
+                    {% do call('Dropdown::showNumber', ['rank', {'value': rank, 'min': 1, 'max': max_fields, 'rand': rank_rand}]) %}
                     {% do call('Ajax::updateItemOnSelectEvent', [
                         'dropdown_rank' ~ rank_rand,
                         'show_order',
@@ -105,13 +125,31 @@
             {# Objet + Ordre #}
             <div class="row mb-3">
                 <div class="col-6">
-                    <label class="form-label fw-bold">{{ item_label_html|raw }}</label>
-                    {{ item_value_html|raw }}
+                    <label class="form-label fw-bold">
+                        {%- if is_new -%}
+                            <span id="show_item_object" style="display:none">{{ __('Object') }}<span style="color:red">&nbsp;*&nbsp;</span></span>
+                            <span id="show_item_label_title" style="display:none"></span>
+                        {%- else -%}
+                            {{ __('Object', 'metademands') }}
+                        {%- endif -%}
+                    </label>
+                    {% if item_selector is not null %}
+                        {% include '@metademands/forms/field_item_selector.html.twig' with {
+                            'type': type,
+                            'dropdown_options': item_selector,
+                            'type_rand': type_rand,
+                            'ajax_url': ajax_url,
+                            'params_item': params_item,
+                        } only %}
+                    {% elseif item_fixed is not null %}
+                        {{ item_fixed_name }}
+                        <input type="hidden" name="item" value="{{ item_fixed }}">
+                    {% endif %}
                 </div>
                 {% if not is_title_block %}
                     <div class="col-6">
                         <label class="form-label fw-bold">{{ __('Display field after', 'metademands') }}</label>
-                        <span id="show_order">{{ order_html|raw }}</span>
+                        <span id="show_order">{% do call('Dropdown::showFromArray', ['plugin_metademands_fields_id', order.select, {'value': order.value}]) %}</span>
                     </div>
                 {% endif %}
             </div>

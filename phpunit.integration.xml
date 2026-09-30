@@ -16,6 +16,22 @@
         <file>tests/FreetableFieldsTest.php</file>
         <file>tests/BasketlineSummaryTest.php</file>
         <file>tests/ConditionListTest.php</file>
+        <file>tests/FieldCustomvalueListTest.php</file>
+        <file>tests/FieldParameterGlobalTest.php</file>
+        <file>tests/GroupListTest.php</file>
+        <file>tests/FieldWrapperTest.php</file>
+        <file>tests/FieldCheckboxTest.php</file>
+        <file>tests/FieldRadioTest.php</file>
+        <file>tests/WizardMetademandsTest.php</file>
+        <file>tests/WizardTemplatesTest.php</file>
+        <file>tests/WizardTitleTest.php</file>
+        <file>tests/AjaxTemplatesTest.php</file>
+        <file>tests/DraftTemplatesTest.php</file>
+        <file>tests/FormListsTest.php</file>
+        <file>tests/TemplatesWithoutRawTest.php</file>
+        <file>tests/FieldWizardDisplayTest.php</file>
+        <file>tests/FieldParameterSpecificTest.php</file>
+        <file>tests/FieldFormsWithoutRawTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

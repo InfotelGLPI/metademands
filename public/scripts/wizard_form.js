@@ -462,6 +462,22 @@
             .metademands_add_custom_values('show_custom_fields', parseInt(this.dataset.mdFreetablefieldAdd, 10));
     });
 
+    // "Add" button of the custom values of a field (templates/fields/field_customvalue_list.html.twig):
+    // append the form of a new value.
+    $(document).on('click', 'button[data-md-customvalue-add]', function () {
+        $(document)
+            .metademandWizard({root_doc: this.dataset.mdCustomvalueRoot})
+            .metademands_add_custom_values('show_custom_fields', parseInt(this.dataset.mdCustomvalueAdd, 10));
+    });
+
+    // Submit buttons carrying a confirmation (templates/fields/field_customvalue_import.html.twig).
+    $(document).on('click', 'button[data-md-confirm]', function (event) {
+        if (!window.confirm(this.dataset.mdConfirm)) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+    });
+
     // Type of a new free table column (Freetablefield::addNewValue()): show the
     // dropdown values or the comment cell of that rank.
     $(document).on('change', 'select[data-md-freetablefield-type]', function () {

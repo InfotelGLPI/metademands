@@ -32,7 +32,7 @@ namespace GlpiPlugin\Metademands\Fields;
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
-use Html;
+use Toolbox;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
@@ -75,29 +75,20 @@ class Title extends CommonDBTM
             }
         }
 
-        // The label2 tooltip is rendered by Html::showToolTip() which echoes directly:
-        // capture it so it can be injected raw into the template.
         $has_label2 = isset($data['label2']) && !empty($data['label2']);
-        $label2_tooltip_html = '';
+        $label2 = '';
         if ($has_label2) {
             if (empty($label2 = Field::displayField($data['id'], 'label2'))) {
                 $label2 = $data['label2'];
             }
-            ob_start();
-            Html::showToolTip(
-                RichText::getSafeHtml($label2),
-                ['awesome-class' => 'ti ti-info-circle'],
-            );
-            $label2_tooltip_html = ob_get_clean();
         }
 
         $has_comment = !empty($data['comment']);
-        $comment_html = '';
+        $comment = '';
         if ($has_comment) {
             if (empty($comment = Field::displayField($data['id'], 'comment'))) {
                 $comment = $data['comment'];
             }
-            $comment_html = RichText::getSafeHtml($comment);
         }
 
         echo TemplateRenderer::getInstance()->render('@metademands/fields/field_display_title.html.twig', [
@@ -110,11 +101,11 @@ class Title extends CommonDBTM
             'label'               => $label,
             'debug'               => $debug,
             'has_label2'          => $has_label2,
-            'label2_tooltip_html' => $label2_tooltip_html,
+            'label2'              => $label2,
             'preview'             => (bool) $preview,
-            'config_link'         => $config_link,
+            'config_url'          => $config_link !== '' ? Toolbox::getItemTypeFormURL(Field::class) . '?id=' . $data['id'] : '',
             'has_comment'         => $has_comment,
-            'comment_html'        => $comment_html,
+            'comment'             => $comment,
         ]);
     }
 
@@ -122,13 +113,9 @@ class Title extends CommonDBTM
 
     public static function showFieldParameters($params): string
     {
-        ob_start();
-        Html::showColorField('color', ['value' => $params["color"]]);
-        $color_html = ob_get_clean();
-
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_color.html.twig',
-            ['color_html' => $color_html],
+            ['color' => $params['color']],
         );
     }
 

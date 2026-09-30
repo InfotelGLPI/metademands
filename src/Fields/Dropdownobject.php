@@ -42,7 +42,6 @@ use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\MetademandTask;
-use GlpiPlugin\Metademands\Wizard;
 use GlpiPlugin\Resources\Resource;
 use Group;
 use Group_User;
@@ -372,15 +371,13 @@ class Dropdownobject extends CommonDBTM
 
                 // The anchor is always rendered when the tooltip is enabled: it is the
                 // target utooltipUpdate.php loads into on every change.
-                $user_informations = "";
+                $info_user = null;
                 // $opt['value'] has been cleared above when the caller may not see that
                 // user, so the tooltip is only ever built for a target they may view.
                 if ($data['display_type'] == 1 && (int) $opt['value'] > 0) {
                     $user_tooltip = new User();
                     if ($user_tooltip->getFromDB((int) $opt['value'])) {
-                        ob_start();
-                        Wizard::showUserInformations($user_tooltip);
-                        $user_informations = ob_get_clean();
+                        $info_user = $user_tooltip;
                     }
                 }
 
@@ -393,7 +390,7 @@ class Dropdownobject extends CommonDBTM
                         'update_script'      => $update_script,
                         'with_tooltip'       => $data['display_type'] == 1,
                         'field_id'           => $data['id'],
-                        'user_informations'  => $user_informations,
+                        'info_user'          => $info_user,
                         'linked_text_fields' => self::getLinkedTextFieldsConfig($data, $namefield),
                     ],
                 );
@@ -565,11 +562,11 @@ class Dropdownobject extends CommonDBTM
     public static function showFieldParameters($params): string
     {
         $rows = [];
+        $custom_values = [];
+        $link_to_user = [];
+        $used_by_child = [];
 
-        if ($params['item'] == 'User') {
-            $custom_values = FieldParameter::_unserialize($params['custom_values']);
-            $user_group = $custom_values['user_group'] ?? 0;
-
+        if ($params['item'] == 'User' || $params['item'] == 'Group') {
             $arrayAvailable[0] = \Dropdown::EMPTY_VALUE;
             $field = new Field();
             $fields = $field->find([
@@ -580,54 +577,32 @@ class Dropdownobject extends CommonDBTM
             foreach ($fields as $f) {
                 $arrayAvailable[$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
             }
-            ob_start();
-            \Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
-            $link_to_user_html = ob_get_clean();
-
-            ob_start();
-            \Dropdown::showYesNo('display_type', $params['display_type']);
-            $display_type_html = ob_get_clean();
-
-            $rows[] = [
-                ['label' => __('Link this to a user field', 'metademands'), 'html' => $link_to_user_html],
-                ['label' => __('Show a identity card of user', 'metademands'), 'html' => $display_type_html],
+            $link_to_user = [
+                'label'    => __('Link this to a user field', 'metademands'),
+                'name'     => 'link_to_user',
+                'value'    => $params['link_to_user'],
+                'elements' => $arrayAvailable,
             ];
 
-            ob_start();
-            \Dropdown::showYesNo('user_group', $user_group);
-            $user_group_html = ob_get_clean();
+            $custom_values = FieldParameter::_unserialize($params['custom_values']);
+            $used_by_child = $params['object_to_create'] == 'Ticket'
+                ? ['label' => __('Use this field for child ticket field', 'metademands'), 'name' => 'used_by_child', 'value' => $params['used_by_child']]
+                : ['empty' => true];
+        }
 
-            if ($params['object_to_create'] == 'Ticket') {
-                ob_start();
-                \Dropdown::showYesNo('used_by_child', $params['used_by_child']);
-                $used_by_child_html = ob_get_clean();
-                $rows[] = [
-                    ['label' => __('Only users of my groups', 'metademands'), 'html' => $user_group_html],
-                    ['label' => __('Use this field for child ticket field', 'metademands'), 'html' => $used_by_child_html],
-                ];
-            } else {
-                $rows[] = [
-                    ['label' => __('Only users of my groups', 'metademands'), 'html' => $user_group_html],
-                    ['colspan' => 2, 'html' => ''],
-                ];
-            }
-
-            ob_start();
-            \Dropdown::showYesNo('default_use_id_requester', $params['default_use_id_requester']);
-            $default_use_id_requester_html = ob_get_clean();
-
-            ob_start();
-            \Dropdown::showYesNo('default_use_id_requester_supervisor', $params['default_use_id_requester_supervisor']);
-            $default_use_id_requester_supervisor_html = ob_get_clean();
-
+        if ($params['item'] == 'User') {
             $rows[] = [
-                ['label' => __('Use id of requester by default', 'metademands'), 'html' => $default_use_id_requester_html],
-                ['label' => __('Use id of supervisor requester by default', 'metademands'), 'html' => $default_use_id_requester_supervisor_html],
+                $link_to_user,
+                ['label' => __('Show a identity card of user', 'metademands'), 'name' => 'display_type', 'value' => $params['display_type']],
             ];
-
-            ob_start();
-            \Dropdown::showYesNo('readonly', $params['readonly']);
-            $readonly_html = ob_get_clean();
+            $rows[] = [
+                ['label' => __('Only users of my groups', 'metademands'), 'name' => 'user_group', 'value' => $custom_values['user_group'] ?? 0],
+                $used_by_child,
+            ];
+            $rows[] = [
+                ['label' => __('Use id of requester by default', 'metademands'), 'name' => 'default_use_id_requester', 'value' => $params['default_use_id_requester']],
+                ['label' => __('Use id of supervisor requester by default', 'metademands'), 'name' => 'default_use_id_requester_supervisor', 'value' => $params['default_use_id_requester_supervisor']],
+            ];
 
             $decode = "";
             if (!is_array($params['informations_to_display'])) {
@@ -641,76 +616,26 @@ class Dropdownobject extends CommonDBTM
                 "name"      => __('Login'),
                 "email"     => _n('Email', 'Emails', 1),
             ];
-            $informations_html = \Dropdown::showFromArray('informations_to_display', $informations, [
-                'values'   => $values,
-                'display'  => false,
-                'multiple' => true,
-            ]);
 
             $rows[] = [
-                ['label' => __('Read-Only', 'metademands'), 'html' => $readonly_html],
-                ['label' => __('Informations to display in ticket and PDF', 'metademands'), 'html' => $informations_html],
+                ['label' => __('Read-Only', 'metademands'), 'name' => 'readonly', 'value' => $params['readonly']],
+                [
+                    'label'    => __('Informations to display in ticket and PDF', 'metademands'),
+                    'name'     => 'informations_to_display',
+                    'value'    => $values,
+                    'elements' => $informations,
+                    'multiple' => true,
+                ],
             ];
         } elseif ($params["item"] == "Group") {
-            $custom_values = FieldParameter::_unserialize($params['custom_values']);
-            $is_assign = $custom_values['is_assign'] ?? 0;
-            $is_watcher = $custom_values['is_watcher'] ?? 0;
-            $is_requester = $custom_values['is_requester'] ?? 0;
-            $user_group = $custom_values['user_group'] ?? 0;
-
-            $arrayAvailable[0] = \Dropdown::EMPTY_VALUE;
-            $field = new Field();
-            $fields = $field->find([
-                "plugin_metademands_metademands_id" => $params['plugin_metademands_metademands_id'],
-                'type' => "dropdown_object",
-                "item" => User::getType(),
-            ]);
-            foreach ($fields as $f) {
-                $arrayAvailable[$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
-            }
-            ob_start();
-            \Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
-            $link_to_user_html = ob_get_clean();
-
-            if ($params['object_to_create'] == 'Ticket') {
-                ob_start();
-                \Dropdown::showYesNo('used_by_child', $params['used_by_child']);
-                $used_by_child_html = ob_get_clean();
-                $rows[] = [
-                    ['label' => __('Link this to a user field', 'metademands'), 'html' => $link_to_user_html],
-                    ['label' => __('Use this field for child ticket field', 'metademands'), 'html' => $used_by_child_html],
-                ];
-            } else {
-                $rows[] = [
-                    ['label' => __('Link this to a user field', 'metademands'), 'html' => $link_to_user_html],
-                    ['colspan' => 2, 'html' => ''],
-                ];
-            }
-
-            ob_start();
-            \Dropdown::showYesNo('is_requester', $is_requester);
-            $is_requester_html = ob_get_clean();
-
-            ob_start();
-            \Dropdown::showYesNo('is_watcher', $is_watcher);
-            $is_watcher_html = ob_get_clean();
-
+            $rows[] = [$link_to_user, $used_by_child];
             $rows[] = [
-                ['label' => __('Requester'), 'html' => $is_requester_html],
-                ['label' => __('Observer'), 'html' => $is_watcher_html],
+                ['label' => __('Requester'), 'name' => 'is_requester', 'value' => $custom_values['is_requester'] ?? 0],
+                ['label' => __('Observer'), 'name' => 'is_watcher', 'value' => $custom_values['is_watcher'] ?? 0],
             ];
-
-            ob_start();
-            \Dropdown::showYesNo('is_assign', $is_assign);
-            $is_assign_html = ob_get_clean();
-
-            ob_start();
-            \Dropdown::showYesNo('user_group', $user_group);
-            $user_group_html = ob_get_clean();
-
             $rows[] = [
-                ['label' => __('Assigned'), 'html' => $is_assign_html],
-                ['label' => __('My groups'), 'html' => $user_group_html],
+                ['label' => __('Assigned'), 'name' => 'is_assign', 'value' => $custom_values['is_assign'] ?? 0],
+                ['label' => __('My groups'), 'name' => 'user_group', 'value' => $custom_values['user_group'] ?? 0],
             ];
         }
 
@@ -739,17 +664,14 @@ class Dropdownobject extends CommonDBTM
         }
         $cell_content = ob_get_clean();
 
-        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
-        // the wrapping cell now carries its parameters as data-* attributes.
-        $valuetocheck_html = TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_value_to_check_cell.html.twig',
-            [
-                'option_id'       => $params['ID'],
-                'with_check_type' => true,
-                'with_tech_group' => true,
-                'content'         => $cell_content,
-            ],
-        );
+        // Value cell, included by the row template; its parameters are read by
+        // public/scripts/fieldoption_valuetocheck.js from data-* attributes.
+        $valuetocheck = [
+            'option_id'       => $params['ID'],
+            'with_check_type' => true,
+            'with_tech_group' => true,
+            'content'         => $cell_content,
+        ];
 
         $link_html = FieldOption::showLinkHtml($item->getID(), $params);
 
@@ -760,7 +682,7 @@ class Dropdownobject extends CommonDBTM
                 'label'             => __('Value to check', 'metademands'),
                 'label_colspan'     => 1,
                 'regex_html'        => $regex_html,
-                'valuetocheck_html' => $valuetocheck_html,
+                'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
             ],
         );

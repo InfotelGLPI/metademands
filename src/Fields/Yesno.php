@@ -121,15 +121,10 @@ class Yesno extends CommonDBTM
         $required = ($data['is_mandatory'] && $value == 0) ? "required" : "";
         $id = $name . "-toggle";
 
-        $checked = "";
-        if ($value == 2) {
-            $checked = "checked='checked'";
-        }
+        $is_checked = $value == 2;
         if ($value == 0) {
             $value = 1;
         }
-
-        $hidden_html = Html::hidden($name, ['id' => $name, 'value' => $value]);
 
         $script_html = Html::scriptBlock("(function(){
         const toggle = document.getElementById('$id');
@@ -153,8 +148,8 @@ class Yesno extends CommonDBTM
             [
                 'id'          => $id,
                 'name'        => $name,
-                'checked'     => $checked,
-                'hidden_html' => $hidden_html,
+                'is_checked'  => $is_checked,
+                'value'       => $value,
                 'script_html' => $script_html,
             ],
         );
@@ -162,36 +157,25 @@ class Yesno extends CommonDBTM
 
     public static function showFieldCustomValues($params)
     {
-        // Show yes/no default value
-        ob_start();
-        echo _n('Default value', 'Default values', 1, 'metademands') . "&nbsp;";
-        $p = [];
-
+        // Yes / no default value
+        $value = '';
         if (isset($params['custom_values']) && !is_array($params['custom_values'])) {
-            $p['value'] = $params['custom_values'];
+            $value = $params['custom_values'];
         }
-        $data[1] = __('No');
-        $data[2] = __('Yes');
-
-        if ($params["display_type"] == self::CLASSIC_DISPLAY) {
-            $p['display_emptychoice'] = true;
-        }
-        \Dropdown::showFromArray("custom", $data, $p);
-        $cell_html = ob_get_clean();
-
-        ob_start();
-        echo Html::submit("", [
-            'name' => 'update',
-            'class' => 'btn btn-primary',
-            'icon' => 'ti ti-device-floppy',
-        ]);
-        $submit_html = ob_get_clean();
 
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_customvalue_fixed.html.twig',
             [
-                'rows'        => [[['html' => $cell_html]]],
-                'submit_html' => $submit_html,
+                'rows' => [[[
+                    'text'   => _n('Default value', 'Default values', 1, 'metademands') . "\u{00A0}",
+                    'widget' => [
+                        'type'                => 'array',
+                        'name'                => 'custom',
+                        'value'               => $value,
+                        'elements'            => [1 => __('No'), 2 => __('Yes')],
+                        'display_emptychoice' => $params["display_type"] == self::CLASSIC_DISPLAY,
+                    ],
+                ]]],
             ],
         );
     }
@@ -201,15 +185,11 @@ class Yesno extends CommonDBTM
         $disp = [];
         $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
         $disp[self::SWITCH_DISPLAY] = __("Switch display", "metademands");
-        $display_type_html = \Dropdown::showFromArray("display_type", $disp, [
-            'value'   => $params['display_type'],
-            'display' => false,
-        ]);
-
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_yesno.html.twig',
             [
-                'display_type_html'   => $display_type_html,
+                'display_type'        => $params['display_type'],
+                'display_types'       => $disp,
                 'show_switch_warning' => $params["display_type"] == self::SWITCH_DISPLAY,
             ],
         );
@@ -225,17 +205,14 @@ class Yesno extends CommonDBTM
         self::showValueToCheck($fieldoption, $params);
         $cell_content = ob_get_clean();
 
-        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
-        // the wrapping cell now carries its parameters as data-* attributes.
-        $valuetocheck_html = TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_value_to_check_cell.html.twig',
-            [
-                'option_id'       => $params['ID'],
-                'with_check_type' => false,
-                'with_tech_group' => false,
-                'content'         => $cell_content,
-            ],
-        );
+        // Value cell, included by the row template; its parameters are read by
+        // public/scripts/fieldoption_valuetocheck.js from data-* attributes.
+        $valuetocheck = [
+            'option_id'       => $params['ID'],
+            'with_check_type' => false,
+            'with_tech_group' => false,
+            'content'         => $cell_content,
+        ];
 
         if ($params['check_value'] == '') {
             $params['check_value'] = 1;
@@ -250,7 +227,7 @@ class Yesno extends CommonDBTM
                 'label'             => __('Value to check', 'metademands'),
                 'label_colspan'     => 2,
                 'regex_html'        => '',
-                'valuetocheck_html' => $valuetocheck_html,
+                'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
             ],
         );

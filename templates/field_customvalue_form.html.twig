@@ -34,14 +34,14 @@
     <input type="hidden" name="plugin_metademands_fields_id" value="{{ plugin_metademands_fields_id }}">
     <div class="card mt-2">
         <div class="card-body">
-            {{ field_custom_values_html|raw }}
+            {% do call('GlpiPlugin\\Metademands\\FieldCustomvalue::showFieldCustomValues', [params]) %}
         </div>
     </div>
 </form>
 {% else %}
 <div class="card mt-2">
     <div class="card-body">
-        {{ field_custom_values_html|raw }}
+        {% do call('GlpiPlugin\\Metademands\\FieldCustomvalue::showFieldCustomValues', [params]) %}
     </div>
 </div>
 {% endif %}

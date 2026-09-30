@@ -30,9 +30,9 @@
  # ajax/dropdownNextUser.php whenever the group dropdown changes.
  #
  # Expected context:
- #  - dropdown_html: markup returned by Dropdown::showFromArray('next_users_id', …)
+ #  - users: selectable users, name by identifier
  #}
 
 <label class="control-label center" for="next_users_id">{{ __('User') }}&nbsp;</label>
 <br>
-{{ dropdown_html|raw }}
+{% do call('Dropdown::showFromArray', ['next_users_id', users, {'display_emptychoice': true}]) %}

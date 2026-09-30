@@ -25,6 +25,20 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Specific parameters of a title, title block or information field (Fields\Title /
+ # Titleblock / Information::showFieldParameters()): values only.
+ #
+ # Expected context:
+ #  - color: color of the field
+ #  - display_types, display_type: kinds of information (value => label) and current one;
+ #    Information only
+-#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{# The widgets sit in grid columns: no label, no column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
 <div class="card mt-2">
     <div class="card-header">
         <h5 class="card-title">{{ __('Specific parameters', 'metademands') }}</h5>
@@ -32,12 +46,12 @@
     <div class="card-body">
         <div class="row g-2 align-items-center mb-2">
             <label class="col-sm-3 col-form-label">{{ __('Color') }}</label>
-            <div class="col-sm-3">{{ color_html|raw }}</div>
+            <div class="col-sm-3"><input type="color" name="color" value="{{ color }}"></div>
         </div>
-        {% if display_type_html is defined and display_type_html %}
+        {% if display_types is defined %}
             <div class="row g-2 align-items-center mb-2">
                 <label class="col-sm-3 col-form-label">{{ __('Type', 'metademands') }}</label>
-                <div class="col-sm-3">{{ display_type_html|raw }}</div>
+                <div class="col-sm-3">{{ fields.dropdownArrayField('display_type', display_type, display_types, '', bare) }}</div>
             </div>
         {% endif %}
     </div>

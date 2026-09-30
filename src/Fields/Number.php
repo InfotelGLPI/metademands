@@ -31,7 +31,6 @@ namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
-use Html;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
 
@@ -103,41 +102,27 @@ class Number extends CommonDBTM
             $minimal = $params['custom_values'][3] ?? "";
         }
 
-        // The label and the hint of each cell belong to the shared template; only the
-        // widget is captured, because Dropdown::showNumber() prints its markup.
-        ob_start();
-        \Dropdown::showNumber("custom[0]", ['value' => $min]);
-        $min_cell = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showNumber("custom[1]", ['value' => $max, 'max' => 9999]);
-        $max_cell = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showNumber("custom[2]", ['value' => $step, 'min' => 1]);
-        $step_cell = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showNumber("custom[3]", ['value' => $minimal]);
-        $minimal_cell = ob_get_clean();
-
-        ob_start();
-        echo Html::submit("", [
-            'name' => 'update',
-            'class' => 'btn btn-primary',
-            'icon'  => 'ti ti-device-floppy']);
-        $submit_html = ob_get_clean();
-
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_customvalue_fixed.html.twig',
             [
                 'rows' => [[
-                    ['label' => __("Minimal count"), 'html' => $min_cell],
-                    ['label' => __("Maximal count"), 'html' => $max_cell],
-                    ['label' => __("Step for number", "metademands"), 'html' => $step_cell],
-                    ['label' => __("Minimal mandatory", "metademands"), 'html' => $minimal_cell],
+                    [
+                        'label'  => __("Minimal count"),
+                        'widget' => ['type' => 'number', 'name' => 'custom[0]', 'value' => $min],
+                    ],
+                    [
+                        'label'  => __("Maximal count"),
+                        'widget' => ['type' => 'number', 'name' => 'custom[1]', 'value' => $max, 'options' => ['max' => 9999]],
+                    ],
+                    [
+                        'label'  => __("Step for number", "metademands"),
+                        'widget' => ['type' => 'number', 'name' => 'custom[2]', 'value' => $step, 'options' => ['min' => 1]],
+                    ],
+                    [
+                        'label'  => __("Minimal mandatory", "metademands"),
+                        'widget' => ['type' => 'number', 'name' => 'custom[3]', 'value' => $minimal],
+                    ],
                 ]],
-                'submit_html' => $submit_html,
             ],
         );
     }

@@ -27,13 +27,18 @@
 
 {#-
  # Custom values contributed by other plugins through the `metademands` hook.
- # showPluginCustomvalues() prints its markup, so the caller captures it.
+ # Each plugin prints its own rows (FieldParameter::showPluginCustomvalues()).
  #
  # Expected context:
- #  - content: captured markup of every contributing plugin
+ #  - plugs:  keys of the active plugins printing custom values
+ #  - params: field parameters
 -#}
 <div class="mt-2">
     <table class="table card-table">
-        <tbody>{{ content|raw }}</tbody>
+        <tbody>
+        {%- for plug in plugs -%}
+            {% do call('GlpiPlugin\\Metademands\\FieldParameter::showPluginCustomvalues', [plug, params]) %}
+        {%- endfor -%}
+        </tbody>
     </table>
 </div>

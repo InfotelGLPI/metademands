@@ -36,7 +36,7 @@
  #}
 
 <form name="form" method="post" action="{{ target }}" enctype="multipart/form-data">
-    {{ call('Html::hidden', [hidden_name, {'value': hidden_value}])|raw }}
+    <input type="hidden" name="{{ hidden_name }}" value="{{ hidden_value }}">
     <div class="card mt-2">
         <div class="card-header">
             <h5 class="card-title">{{ __('Export') }}</h5>
@@ -46,14 +46,13 @@
                 <div class="row align-items-center{{ loop.last ? '' : ' mb-3' }}">
                     <div class="col-sm-8">{{ row.label }}</div>
                     <div class="col-sm-4 text-end">
-                        {{ call('Html::submit', [row.button_label, {
-                            'name': row.button_name,
-                            'class': 'btn btn-primary'
-                        }])|raw }}
+                        <button type="submit" name="{{ row.button_name }}" value="{{ row.button_label }}" class="btn btn-primary">
+                            <span>{{ row.button_label }}</span>
+                        </button>
                     </div>
                 </div>
             {% endfor %}
         </div>
     </div>
-    {# closeForm() emits the CSRF token and the closing </form> tag #}
-    {{ call('Html::closeForm', [false])|raw }}
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+</form>

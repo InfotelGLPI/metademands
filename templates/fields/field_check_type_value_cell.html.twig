@@ -30,12 +30,13 @@
  #
  # Expected context (include it with `only`):
  #  - option_id: id of the option being edited
- #  - content:   the check_type_value dropdown fragment
+ #  - choices:   choices of the check_type_value dropdown
+ #  - value:     selected choice
  #}
 
 <td style="text-align: right"
     data-md-option-id="{{ option_id }}"
     data-md-check-type="1"
     data-md-tech-group="1">
-    {{ content|raw }}
+    {% do call('Dropdown::showFromArray', ['check_type_value', choices, {'value': value}]) %}
 </td>

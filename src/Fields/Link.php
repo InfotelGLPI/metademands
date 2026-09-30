@@ -31,7 +31,6 @@ namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
-use Html;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
 use Toolbox;
@@ -122,41 +121,28 @@ class Link extends CommonDBTM
             $linkVal = $custom_values[1] ?? "";
         }
 
-        // The label and the hint of each cell belong to the shared template; only the
-        // widget is captured, because Dropdown::showFromArray() prints its markup.
-        ob_start();
-        \Dropdown::showFromArray(
-            "custom[0]",
-            [
-                'button' => __('button', "metademands"),
-                'link_a' => __('Web link'),
-            ],
-            ['value' => $linkType],
-        );
-        $type_cell = ob_get_clean();
-
-        ob_start();
-        echo Html::submit("", [
-            'name'  => 'update',
-            'class' => 'btn btn-primary',
-            'icon'  => 'ti ti-device-floppy']);
-        $submit_html = ob_get_clean();
-
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_customvalue_fixed.html.twig',
             [
                 'rows' => [[
                     [
                         'label' => __("Link"),
-                        'html'  => Html::input('custom[1]', ['value' => $linkVal, 'size' => 30]),
+                        'widget' => ['type' => 'text', 'name' => 'custom[1]', 'value' => $linkVal, 'size' => 30],
                     ],
                     [
                         'label' => __("Button Type", "metademands"),
-                        'html'  => $type_cell,
+                        'widget' => [
+                            'type'     => 'array',
+                            'name'     => 'custom[0]',
+                            'value'    => $linkType,
+                            'elements' => [
+                                'button' => __('button', "metademands"),
+                                'link_a' => __('Web link'),
+                            ],
+                        ],
                         'hint'  => __('*use field "Additional label" for the button title', 'metademands'),
                     ],
                 ]],
-                'submit_html' => $submit_html,
             ],
         );
     }

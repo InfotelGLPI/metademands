@@ -37,8 +37,8 @@
  #    fields_html      : fields of the block, rendered by Wizard::displayBlockFields()
  #    subblocks        : list of {id, html}, the sub-blocks opened inside this block
  #
- #  title_html, fields_html and the sub-blocks are still built by legacy renderers that
- #  print their markup; they will lose their |raw as those renderers reach Twig.
+ #  title_html, fields_html and the sub-blocks are field widgets captured from
+ #  Field::displayFieldByType() / getFieldInput(), the temporary exception of §3.2.
 -#}
 {#- The frame colour is declared on the card so that both the title field and the row
  #  of fields, which carry the .md-preview-tag badge, read it back. -#}
@@ -55,6 +55,7 @@
 {%- endif -%}
 
 <div bloc-id="bloc{{ block }}" class="card tab-sc-child-{{ block }}" style="{{ frame }}{{ background }}">
+    {# raw: title field widget, rendered by Field::displayFieldByType() (getFieldInput(), §3.2) #}
     {{ title_html|raw }}
     <div class="card-body" bloc-hideid="bloc{{ block }}">
         <div class="{{ row_class }}" style="{{ row_style }}"{% if is_preview %} data-title="{{ block }}"{% endif %}>
@@ -63,9 +64,11 @@
                     {{ __('You are using a public template. This allows you to automatically pre-fill form fields, making your life easier :)', 'metademands') }}
                 </div>
             {% endif %}
+            {# raw: field widgets, rendered by Wizard::displayBlockFields() (getFieldInput(), §3.2) #}
             {{ fields_html|raw }}
             {% for subblock in subblocks %}
                 <div class="col-md-12 md-bottom form-group row" bloc-id="subbloc{{ subblock.id }}">
+                    {# raw: field widgets of the sub-block (getFieldInput(), §3.2) #}
                     {{ subblock.html|raw }}
                 </div>
             {% endfor %}

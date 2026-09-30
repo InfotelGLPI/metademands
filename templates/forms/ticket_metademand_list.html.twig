@@ -28,11 +28,24 @@
 {#-
  # List of the tickets belonging to the same meta-demand, shown on the "Metademand"
  # tab of a ticket. The rows come from Ticket::commonListHeader() and
- # Ticket::showShort(), which print their markup, so they are captured and injected.
+ # Ticket::showShort(), which print their markup.
  #
  # Expected context:
- #  - rows_html: captured header row and ticket rows
+ #  - output_type:  Search::HTML_OUTPUT
+ #  - mass_id:      identifier of the massive action container
+ #  - massive_type: itemtype of the massive action checkboxes
+ #  - tickets_ids:  identifiers of the listed tickets
 -#}
 <div class="table-responsive">
-    <table class="table card-table">{{ rows_html|raw }}</table>
+    <table class="table card-table">
+        {% do call('Ticket::commonListHeader', [output_type, mass_id]) %}
+        {% for ticket_id in tickets_ids %}
+            {% do call('Ticket::showShort', [ticket_id, {
+                'output_type': output_type,
+                'row_num': loop.index,
+                'type_for_massiveaction': massive_type,
+                'id_for_massiveaction': ticket_id
+            }]) %}
+        {% endfor %}
+    </table>
 </div>

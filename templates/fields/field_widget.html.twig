@@ -28,5 +28,6 @@
 {#- Legacy-identical: echo <core widget output>. The widget (e.g. Dropdown::showNumber)
  #  is already rendered to a string in PHP and injected raw — no wrapper element, no
  #  added whitespace. Bare passthrough shared by pure-widget fields. -#}
+{#- raw: core widget rendered by showWizardField() (§3.2) -#}
 {{- widget_html|raw -}}
 {#- -#}

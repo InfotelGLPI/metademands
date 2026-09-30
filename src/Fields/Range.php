@@ -56,8 +56,6 @@ class Range extends CommonDBTM
 
     public static function showWizardField($data, $namefield, $value, $on_order)
     {
-        $css_html = Html::css(PLUGIN_METADEMANDS_WEBDIR . "/css/range.css");
-
         if (empty($comment = Field::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
@@ -92,9 +90,6 @@ class Range extends CommonDBTM
         // Unique IDs per field to support multiple Range fields on the same form
         $field_id = 'range_' . $data['id'];
 
-        $required       = (isset($data['is_mandatory']) && $data['is_mandatory'] == 1) ? "required='required'" : "";
-        $mandatory_attr = $minimal_mandatory > 0 ? "minimal_mandatory='$minimal_mandatory'" : "";
-
         // Cap ticks at 20 to avoid generating thousands of DOM elements
         $tick_count     = $step > 0 ? (int) floor(($max - $min) / $step) + 1 : 0;
         $show_all_ticks = $tick_count <= 20;
@@ -117,7 +112,6 @@ class Range extends CommonDBTM
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_range.html.twig',
             [
-                'css_html'       => $css_html,
                 'script_html'    => Html::scriptBlock('$(document).ready(function() {' . $js . '});'),
                 'field_id'       => $field_id,
                 'name'           => $name,
@@ -126,8 +120,8 @@ class Range extends CommonDBTM
                 'max'            => $max,
                 'step'           => $step,
                 'id'             => $data['id'],
-                'required'       => $required,
-                'mandatory_attr' => $mandatory_attr,
+                'is_required'       => isset($data['is_mandatory']) && $data['is_mandatory'] == 1,
+                'minimal_mandatory' => $minimal_mandatory,
                 'show_all_ticks' => $show_all_ticks,
             ],
         );
@@ -147,45 +141,29 @@ class Range extends CommonDBTM
             $minimal = $params['custom_values'][3] ?? "";
         }
 
-        // The label of each cell belongs to the shared template; only the widget is
-        // captured, because Dropdown::showNumber() prints its markup.
-        ob_start();
-        \Dropdown::showNumber("custom[0]", ['value' => $min]);
-        $min_cell = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showNumber("custom[1]", ['value' => $max, 'max' => 9999]);
-        $max_cell = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showNumber("custom[2]", ['value' => $step, 'min' => 1, 'max' => 9999]);
-        $step_cell = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showNumber("custom[3]", ['value' => $minimal]);
-        $minimal_cell = ob_get_clean();
-
-        ob_start();
-        echo Html::submit("", ['name'  => 'update',
-            'class' => 'btn btn-primary',
-            'icon'  => 'ti ti-device-floppy']);
-        $submit_html = ob_get_clean();
-
-        ob_start();
-        Html::closeForm();
-        $after_html = ob_get_clean();
-
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_customvalue_fixed.html.twig',
             [
                 'rows' => [[
-                    ['label' => __("Minimal count"), 'html' => $min_cell],
-                    ['label' => __("Maximal count"), 'html' => $max_cell],
-                    ['label' => __("Step for number", "metademands"), 'html' => $step_cell],
-                    ['label' => __("Minimal mandatory", "metademands"), 'html' => $minimal_cell],
+                    [
+                        'label'  => __("Minimal count"),
+                        'widget' => ['type' => 'number', 'name' => 'custom[0]', 'value' => $min],
+                    ],
+                    [
+                        'label'  => __("Maximal count"),
+                        'widget' => ['type' => 'number', 'name' => 'custom[1]', 'value' => $max, 'options' => ['max' => 9999]],
+                    ],
+                    [
+                        'label'  => __("Step for number", "metademands"),
+                        'widget' => ['type' => 'number', 'name' => 'custom[2]', 'value' => $step, 'options' => ['min' => 1, 'max' => 9999]],
+                    ],
+                    [
+                        'label'  => __("Minimal mandatory", "metademands"),
+                        'widget' => ['type' => 'number', 'name' => 'custom[3]', 'value' => $minimal],
+                    ],
                 ]],
-                'submit_html' => $submit_html,
-                'after_html'  => $after_html,
+                // The legacy code closes here the form opened by the caller
+                'close_form' => true,
             ],
         );
     }

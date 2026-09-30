@@ -25,20 +25,26 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Last forms of the current user (Form::showFormsForUserMetademand()).
+ #
+ #  - entries: {id, name, meta_name, date, url}, url being the getLink() of the
+ #    linked item or null
+ #  - meta_id, step, itilcategories_id, webdir -#}
 <span>
     {% if entries is not empty %}
         <table class="tab_cadre_fixe">
             <tbody id="bodyForm">
                 {% for entry in entries %}
-                    {% set tooltip_content %}
-                        {{ __('Name') }} : {{ entry.name }}<br>
-                        {{ __('Date') }} : {{ entry.date }}
-                        {% if entry.url %}<br>{{ __('URL') }} : {{ entry.url|raw }}{% endif %}
-                    {% endset %}
+                    {#- HTML of the tooltip, escaped as a whole into data-bs-title: the name
+                        and date are escaped here, entry.url is a getLink() output -#}
+                    {% set tooltip_content = __('Name') ~ ' : ' ~ entry.name|e ~ '<br>'
+                        ~ __('Date') ~ ' : ' ~ entry.date|e
+                        ~ (entry.url ? '<br>' ~ __('URL') ~ ' : ' ~ entry.url : '') %}
                     <tr>
                         <td>{{ entry.meta_name }} / {{ entry.date }}</td>
                         <td>
-                            {{ call('Html::showToolTip', [tooltip_content, {'awesome-class': 'ti ti-info-circle', 'display': false}])|raw }}
+                            <span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top"
+                                  data-bs-html="true" data-bs-title="{{ tooltip_content }}">?</span>
                         </td>
                         <td></td>
                         <td>

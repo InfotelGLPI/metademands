@@ -31,9 +31,15 @@
  # `<td>` and never closed it.
  #
  # Expected context:
- #  - group_dropdown_html: assignable-group dropdown, written by Group::dropdown()
+ #  - condition: criteria of the assignable groups, replayed on the posted value by
+ #    MetademandValidation::validateMeta()
+ #  - value:     group currently assigned to the ticket
  #}
 
 <td colspan="2">
-    {{ __('Attribute ticket to ', 'metademands') }}&nbsp;{{ group_dropdown_html|raw }}
+    {{ __('Attribute ticket to ', 'metademands') }}&nbsp;{% do call('Group::dropdown', [{
+        'condition': condition,
+        'name': 'group_to_assign',
+        'value': value
+    }]) %}
 </td>

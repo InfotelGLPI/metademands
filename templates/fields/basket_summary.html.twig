@@ -36,7 +36,7 @@
     <table class="tab_cadre_fixe">
         {% for row in field_rows %}
             <tr class="tab_bg_1">
-                {% for cells in row %}{{ cells|raw }}{% endfor %}
+                {% for cells in row %}{% include '@metademands/fields/field_basket_row_cells.html.twig' with cells only %}{% endfor %}
             </tr>
         {% endfor %}
     </table>
@@ -89,10 +89,15 @@
     </table>
 
     <br>
-    {#- Html::submit() and Draft::createDraftInput() return core-built markup. -#}
     <div{% if order is not empty %} data-metademands-basket-order="{{ order|json_encode }}"{% endif %}>
-        {{ draft_input|raw }}
-        <span style="float:right">{{ submit_button|raw }}</span>
+        {% if use_draft %}
+            {% do call('GlpiPlugin\\Metademands\\Draft::showDraftInput', [draft_mode]) %}
+        {% endif %}
+        <span style="float:right">
+            <button type="submit" value="{{ _x('button', 'Save & Post', 'metademands') }}" name="send_order" form="" id="submitOrder" class="btn btn-success right">
+                <i class="ti ti-shopping-bag"></i>&nbsp;<span>{{ _x('button', 'Save & Post', 'metademands') }}</span>
+            </button>
+        </span>
     </div>
 {% else %}
     <table>

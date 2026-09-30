@@ -25,6 +25,11 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Block display of a dropdown field (Fields\Dropdown::getFieldInput()).
+ #
+ #  - options: {key, name, comment, is_checked}, comment being the rich text of the item
+ #  - namefield, id, is_required, has_icon, icon: field and its look
+-#}
 {%- if options is not empty -%}
     <div class='row flex-row'>
         {%- for opt in options -%}
@@ -35,11 +40,11 @@
                         <span class='me-2 mt-1'><i class='ti {{ icon }} text-secondary'></i></span>{% endif %}
                         <div class='text-start'>
                             <div class='d-flex align-items-center'>{{ opt.name }}</div>
-                            <small class='form-hint'>{{ opt.comment_html|raw }}</small></div>
-                        <div class='me-2 ms-auto'><input {{ required|raw }} class='form-check-input' type='radio'
+                            <small class='form-hint'>{{ opt.comment|safe_html }}</small></div>
+                        <div class='me-2 ms-auto'><input{% if is_required %} required="required"{% endif %} class='form-check-input' type='radio'
                                                                             name='{{ namefield }}[{{ id }}]'
                                                                             id='{{ namefield }}[{{ id }}][{{ opt.key }}]'
-                                                                            value='{{ opt.key }}' {{ opt.checked|raw }}>
+                                                                            value='{{ opt.key }}'{% if opt.is_checked %} checked{% endif %}>
                         </div>
                     </div>
                 </label></div>

@@ -33,10 +33,11 @@
  # Expected context:
  #  - label:      name of the field, translated when a translation exists
  #  - label2:     second label of a "date_interval" field, empty otherwise
- #  - value_html: markup returned by the matching Fields\*::getFieldValue()
+ #  - value:      value returned by the matching Fields\*::getFieldValue(), plain text
+ #  - is_rich:    true when value is rich text (textarea), sanitized here
 -#}
 <td>
    {{ label }}
    {%- if label2 is not empty %}<br><br><br>{{ label2 }}{% endif %}
 </td>
-<td>{{ value_html|raw }}</td>
+<td>{% if is_rich %}{{ value|safe_html }}{% else %}{{ value }}{% endif %}</td>

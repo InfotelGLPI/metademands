@@ -148,14 +148,10 @@ class Basket extends CommonDBTM
         $materials = $DB->request($criteria);
         $nb = count($materials);
 
-        // Capture-and-render: the tabular/conditional logic and the ordermaterial /
-        // orderfollowup integration stay in PHP; the widget (showNumber, carrying the
-        // data-md-totalrow-* attributes read by wizard_form.js), the checkbox input and the
-        // sanitized description (getSafeHtml) are captured as raw strings and injected
-        // via |raw at their exact positions. Reference / Designation are passed as raw
-        // text so the template auto-escapes them (defense-in-depth). background_color,
-        // header labels and placeholders are data as well: they are escaped by the
-        // template instead of being pre-escaped in PHP.
+        // The tabular/conditional logic and the ordermaterial / orderfollowup integration
+        // stay in PHP; the cells carry values only (see field_basket.html.twig), the
+        // quantity widget (showNumber, carrying the data-md-totalrow-* attributes read by
+        // wizard_form.js) being rendered by the template.
         $headers = [];
         $headers[] = ['label' => __('Reference', 'metademands'), 'style' => $background_color];
         $headers[] = ['label' => __('Designation', 'metademands'), 'style' => $background_color];
@@ -228,7 +224,7 @@ class Basket extends CommonDBTM
 
                 $cells[] = ['t' => (string) $material['reference']];
                 $cells[] = ['t' => (string) $material['name']];
-                $cells[] = ['h' => RichText::getSafeHtml($material['description'])];
+                $cells[] = ['rich' => (string) $material['description']];
 
                 if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
                     $ordermaterialmeta = new PluginOrdermaterialMetademand();
@@ -238,10 +234,10 @@ class Basket extends CommonDBTM
                         $ordermaterial = new PluginOrdermaterialMaterial();
                         if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])) {
                             if ($ordermaterial->fields['is_specific'] == 1) {
-                                $cells[] = ['h' => __('On quotation', 'ordermaterial')];
+                                $cells[] = ['t' => __('On quotation', 'ordermaterial')];
                             } else {
                                 $cells[] = [
-                                    'h' => Html::formatNumber(
+                                    't' => Html::formatNumber(
                                         $ordermaterial->fields['estimated_price'],
                                         false,
                                         2,
@@ -249,7 +245,7 @@ class Basket extends CommonDBTM
                                 ];
                             }
                         } else {
-                            $cells[] = ['h' => ''];
+                            $cells[] = ['t' => ''];
                         }
                     }
                 }
@@ -261,22 +257,16 @@ class Basket extends CommonDBTM
                     )) {
                         $ordermaterial = new Material();
                         if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])) {
-                            // 'unit' belongs to the ordermaterial plugin and goes through no filter of ours,
-                            // while the cell is rendered with |raw: escape it at the point of construction.
-                            $cells[] = ['h' => htmlspecialchars(
-                                (string) $ordermaterial->fields['unit'],
-                                ENT_QUOTES,
-                                'UTF-8',
-                            )];
+                            $cells[] = ['t' => (string) $ordermaterial->fields['unit']];
 
                             if (isset($custom_values[1]) && $custom_values[1] == 1) {
                                 $cells[] = [
-                                    'h' => Html::formatNumber($ordermaterial->fields['unit_price'], false, 2) . " €",
+                                    't' => Html::formatNumber($ordermaterial->fields['unit_price'], false, 2) . " €",
                                 ];
                             }
                         } else {
-                            $cells[] = ['h' => ''];
-                            $cells[] = ['h' => ''];
+                            $cells[] = ['t' => ''];
+                            $cells[] = ['t' => ''];
                         }
                     }
                 }
@@ -340,14 +330,11 @@ class Basket extends CommonDBTM
                 $opt['specific_tags']['data-md-totalrow-url'] = PLUGIN_METADEMANDS_WEBDIR . '/ajax/totalrow.php';
                 $opt['specific_tags']['data-md-totalrow-params'] = json_encode($params);
 
-                $qty_html = \Dropdown::showNumber("quantity[" . $data['id'] . "][" . $key . "]", $opt);
-
-                $cells[] = ['h' => $qty_html];
-
-                $cells[] = [
-                    'h' => '',
-                    'attrs' => " style='text-align: right;' id='plugin_metademands_totalrow$rand_totalrow'",
-                ];
+                $cells[] = ['number' => [
+                    'name'    => "quantity[" . $data['id'] . "][" . $key . "]",
+                    'options' => ['display' => true] + $opt,
+                ]];
+                $cells[] = ['total_id' => 'plugin_metademands_totalrow' . $rand_totalrow];
 
                 $rows[] = $cells;
             }
@@ -358,7 +345,7 @@ class Basket extends CommonDBTM
 
                 $cells[] = ['t' => (string) $material['reference']];
                 $cells[] = ['t' => (string) $material['name']];
-                $cells[] = ['h' => RichText::getSafeHtml($material['description'])];
+                $cells[] = ['rich' => (string) $material['description']];
 
                 if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
                     $ordermaterialmeta = new PluginOrdermaterialMetademand();
@@ -368,10 +355,10 @@ class Basket extends CommonDBTM
                         $ordermaterial = new PluginOrdermaterialMaterial();
                         if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])) {
                             if ($ordermaterial->fields['is_specific'] == 1) {
-                                $cells[] = ['h' => __('On quotation', 'ordermaterial')];
+                                $cells[] = ['t' => __('On quotation', 'ordermaterial')];
                             } else {
                                 $cells[] = [
-                                    'h' => Html::formatNumber(
+                                    't' => Html::formatNumber(
                                         $ordermaterial->fields['estimated_price'],
                                         false,
                                         2,
@@ -389,41 +376,31 @@ class Basket extends CommonDBTM
                     )) {
                         $ordermaterial = new Material();
                         if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])) {
-                            // 'unit' belongs to the ordermaterial plugin and goes through no filter of ours,
-                            // while the cell is rendered with |raw: escape it at the point of construction.
-                            $cells[] = ['h' => htmlspecialchars(
-                                (string) $ordermaterial->fields['unit'],
-                                ENT_QUOTES,
-                                'UTF-8',
-                            )];
+                            $cells[] = ['t' => (string) $ordermaterial->fields['unit']];
 
                             if (isset($custom_values[1]) && $custom_values[1] == 1) {
                                 $cells[] = [
-                                    'h' => Html::formatNumber($ordermaterial->fields['unit_price'], false, 2) . " €",
+                                    't' => Html::formatNumber($ordermaterial->fields['unit_price'], false, 2) . " €",
                                 ];
                             }
                         }
                     }
                 }
 
-                $checked = '';
-                $required = "";
-                //                if ($data['is_mandatory'] == 1) {
-                //                    $required = "required=required";
-                //                }
-                $value_check = $key;
+                $is_checked = false;
                 if (isset($value) && is_array($value)) {
                     foreach ($value as $val) {
                         if ($val == $key) {
-                            $checked = "checked";
+                            $is_checked = true;
                         }
                     }
                 }
-                $checkbox_html = "<input $required class='form-check-input' type='checkbox'
-                check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . htmlescape($key) . "]'
-                key='" . htmlescape($key) . "' id='" . $namefield . "[" . $data['id'] . "][" . htmlescape($key) . "]' value='" . htmlescape($value_check) . "' $checked>";
-
-                $cells[] = ['h' => $checkbox_html];
+                $cells[] = ['checkbox' => [
+                    'check'      => $namefield . "[" . $data['id'] . "]",
+                    'name'       => $namefield . "[" . $data['id'] . "][" . $key . "]",
+                    'key'        => $key,
+                    'is_checked' => $is_checked,
+                ]];
 
                 $rows[] = $cells;
             }
@@ -452,24 +429,18 @@ class Basket extends CommonDBTM
 
         $rows = [];
 
-        ob_start();
-        \Dropdown::showYesNo('custom[0]', $quantity);
-        $quantity_cell = ob_get_clean();
         $rows[] = [
-            ['html' => __('With quantity', 'metademands')],
-            ['html' => $quantity_cell],
-            ['html' => '', 'colspan' => 2],
+            ['text' => __('With quantity', 'metademands')],
+            ['widget' => ['type' => 'yesno', 'name' => 'custom[0]', 'value' => $quantity]],
+            ['colspan' => 2],
         ];
 
         if (Plugin::isPluginActive('ordermaterial')
             || Plugin::isPluginActive('orderfollowup')) {
-            ob_start();
-            \Dropdown::showYesNo('custom[1]', $price);
-            $price_cell = ob_get_clean();
             $rows[] = [
-                ['html' => __('With unit price (HT)', 'metademands')],
-                ['html' => $price_cell],
-                ['html' => '', 'colspan' => 2],
+                ['text' => __('With unit price (HT)', 'metademands')],
+                ['widget' => ['type' => 'yesno', 'name' => 'custom[1]', 'value' => $price]],
+                ['colspan' => 2],
             ];
         }
 
@@ -477,38 +448,21 @@ class Basket extends CommonDBTM
             $is_specific = $params['custom_values'][2] ?? 0;
             $is_accessory = $params['custom_values'][3] ?? 0;
 
-            ob_start();
-            \Dropdown::showYesNo('custom[2]', $is_specific);
-            $specific_cell = ob_get_clean();
             $rows[] = [
-                ['html' => __('On quotation', 'ordermaterial')],
-                ['html' => $specific_cell],
-                ['html' => '', 'colspan' => 2],
+                ['text' => __('On quotation', 'ordermaterial')],
+                ['widget' => ['type' => 'yesno', 'name' => 'custom[2]', 'value' => $is_specific]],
+                ['colspan' => 2],
             ];
-
-            ob_start();
-            \Dropdown::showYesNo('custom[3]', $is_accessory);
-            $accessory_cell = ob_get_clean();
             $rows[] = [
-                ['html' => __('Accessory', 'ordermaterial')],
-                ['html' => $accessory_cell],
-                ['html' => '', 'colspan' => 2],
+                ['text' => __('Accessory', 'ordermaterial')],
+                ['widget' => ['type' => 'yesno', 'name' => 'custom[3]', 'value' => $is_accessory]],
+                ['colspan' => 2],
             ];
         }
 
-        ob_start();
-        echo Html::submit("", [
-            'name' => 'update',
-            'class' => 'btn btn-primary',
-            'icon'  => 'ti ti-device-floppy']);
-        $submit_html = ob_get_clean();
-
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_customvalue_fixed.html.twig',
-            [
-                'rows'        => $rows,
-                'submit_html' => $submit_html,
-            ],
+            ['rows' => $rows],
         );
     }
 
@@ -552,17 +506,14 @@ class Basket extends CommonDBTM
 
         $cell_content = ob_get_clean();
 
-        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
-        // the wrapping cell now carries its parameters as data-* attributes.
-        $valuetocheck_html = TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_value_to_check_cell.html.twig',
-            [
-                'option_id'       => $params['ID'],
-                'with_check_type' => false,
-                'with_tech_group' => false,
-                'content'         => $cell_content,
-            ],
-        );
+        // Value cell, included by the row template; its parameters are read by
+        // public/scripts/fieldoption_valuetocheck.js from data-* attributes.
+        $valuetocheck = [
+            'option_id'       => $params['ID'],
+            'with_check_type' => false,
+            'with_tech_group' => false,
+            'content'         => $cell_content,
+        ];
 
         $link_html = FieldOption::showLinkHtml($item->getID(), $params);
 
@@ -573,7 +524,7 @@ class Basket extends CommonDBTM
                 'label'             => $label,
                 'label_colspan'     => 2,
                 'regex_html'        => '',
-                'valuetocheck_html' => $valuetocheck_html,
+                'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
             ],
         );
@@ -1262,15 +1213,35 @@ class Basket extends CommonDBTM
      */
     public static function retrieveDatasByType($id, $value): string
     {
-        $field = new Field();
-        if (!$field->getFromDB($id)) {
+        $cells = self::getFilledFieldCells($id, $value);
+        if ($cells === null) {
             return '';
         }
 
-        // A basket field, or a field left empty, contributes no cell at all: the caller
-        // relies on the empty string to skip it.
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/field_basket_row_cells.html.twig',
+            $cells,
+        );
+    }
+
+    /**
+     * Context of field_basket_row_cells.html.twig for one field the requester filled in.
+     *
+     * @param int   $id    field id
+     * @param mixed $value value the requester filled in
+     *
+     * @return array|null null for a basket field or a field left empty
+     */
+    private static function getFilledFieldCells($id, $value): ?array
+    {
+        $field = new Field();
+        if (!$field->getFromDB($id)) {
+            return null;
+        }
+
+        // A basket field, or a field left empty, contributes no cell at all.
         if (empty($value) || !isset($field->fields['type']) || $field->fields['type'] == "basket") {
-            return '';
+            return null;
         }
 
         if (empty($label = Field::displayField($field->fields['id'], 'name'))) {
@@ -1295,10 +1266,9 @@ class Basket extends CommonDBTM
 
         // Every branch below but one returns plain text read back from the database — a
         // dropdown label, an LDAP attribute, a custom value, a raw column for number, range
-        // and time — and the cell is rendered with |raw, so the escaping is done here, once,
-        // rather than left to each Fields\*::getFieldValue(). Only the textarea branch is
-        // allowed to carry markup, and it is markup RichText::getSafeHtml() has sanitised.
-        $is_safe_html = false;
+        // and time — auto-escaped by the template. Only the textarea branch carries markup,
+        // sanitized by the template as rich text.
+        $is_rich = false;
 
         switch ($field->fields['type']) {
             case 'dropdown':
@@ -1321,7 +1291,7 @@ class Basket extends CommonDBTM
                 break;
             case 'textarea':
                 $value_html = Textarea::getFieldValue($values);
-                $is_safe_html = true;
+                $is_rich = true;
                 break;
             case 'text':
                 $value_html = Text::getFieldValue($values);
@@ -1370,18 +1340,12 @@ class Basket extends CommonDBTM
                 break;
         }
 
-        if (!$is_safe_html) {
-            $value_html = htmlspecialchars((string) $value_html, ENT_QUOTES, 'UTF-8');
-        }
-
-        return TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_basket_row_cells.html.twig',
-            [
-                'label'      => (string) $label,
-                'label2'     => (string) $label2,
-                'value_html' => (string) $value_html,
-            ],
-        );
+        return [
+            'label'   => (string) $label,
+            'label2'  => (string) $label2,
+            'value'   => (string) $value_html,
+            'is_rich' => $is_rich,
+        ];
     }
 
     /**
@@ -1411,22 +1375,8 @@ class Basket extends CommonDBTM
             ? self::getBasketSummaryTable($materials, $quantities, $meta_id)
             : [];
 
-        $draft_input = '';
         $config = Config::getInstance();
-        if ($has_materials && $config['use_draft']) {
-            $draft_input = Draft::createDraftInput(Draft::BASKET_MODE);
-        }
-
-        $submit_button = '';
-        if ($has_materials) {
-            $submit_button = Html::submit(_x('button', 'Save & Post', 'metademands'), [
-                'name' => 'send_order',
-                'icon' => 'ti ti-shopping-bag',
-                'form' => '',
-                'id' => 'submitOrder',
-                'class' => 'btn btn-success right',
-            ]);
-        }
+        $use_draft = $has_materials && $config['use_draft'];
 
         // The order button used to carry its own inline <script>, with the meta-demand
         // name interpolated into a JS string literal. Every value it needs now travels
@@ -1456,8 +1406,8 @@ class Basket extends CommonDBTM
             'headers' => $summary['headers'] ?? [],
             'rows' => $summary['rows'] ?? [],
             'footers' => $summary['footers'] ?? [],
-            'draft_input' => $draft_input,
-            'submit_button' => $submit_button,
+            'use_draft' => $use_draft,
+            'draft_mode' => Draft::BASKET_MODE,
             'order' => $order,
         ]);
     }
@@ -1469,17 +1419,16 @@ class Basket extends CommonDBTM
      *
      * @param array $materials
      *
-     * @return array[] rows, each holding up to two rendered "<td></td><td></td>" pairs
+     * @return array[] rows, each holding up to two contexts of field_basket_row_cells.html.twig
      */
     private static function getFilledFieldRows(array $materials): array
     {
         $cells = [];
         foreach ($materials as $id => $value) {
-            $html = self::retrieveDatasByType($id, $value);
-
             // A basket field, or a field left empty, renders nothing at all.
-            if ($html !== '') {
-                $cells[] = $html;
+            $field_cells = self::getFilledFieldCells($id, $value);
+            if ($field_cells !== null) {
+                $cells[] = $field_cells;
             }
         }
 
@@ -1536,13 +1485,12 @@ class Basket extends CommonDBTM
      */
     private static function getBasketSummaryTable(array $materials, array $quantities, $meta_id): array
     {
-        $ordermaterial_meta = new PluginOrdermaterialMetademand();
+        // The classes of the price plugins only exist when those plugins are loaded.
         $has_ordermaterial = Plugin::isPluginActive('ordermaterial')
-            && $ordermaterial_meta->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id]);
+            && (new PluginOrdermaterialMetademand())->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id]);
 
-        $orderfollowup_meta = new OrderMetademand();
         $has_orderfollowup = Plugin::isPluginActive('orderfollowup')
-            && $orderfollowup_meta->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id]);
+            && (new OrderMetademand())->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id]);
 
         // The legacy code read these two flags twice: once to pick the headers, once to
         // fill the rows. The second read tested $field->fields['custom_values'], a

@@ -32,7 +32,13 @@
     <a class="btn primary answer-action btn-orange" data-bs-toggle="modal" data-bs-target="#metavalidation">
         <i class="ti ti-thumb-up" style="margin-left: 10px;"></i>{{ __('Metademand validation', 'metademands') }}
     </a>
-    {{ modal_html|raw }}
+    {% do call('Ajax::createIframeModalWindow', ['metavalidation', modal_url, {
+        'title': __('Metademand validation', 'metademands'),
+        'display': true,
+        'width': 200,
+        'height': 400,
+        'reloadonclose': true
+    }]) %}
 </div>
 
 {% if has_sons %}

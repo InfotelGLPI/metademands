@@ -25,10 +25,20 @@
  # --------------------------------------------------------------------------
  #}
 
-{{ hidden_fields_id|raw }}
-{{ hidden_type|raw }}
-{{ hidden_item|raw }}
-{{ freetable_html|raw }}
+{#-
+ # Body of the free table columns form (Freetablefield::showForm()).
+ #
+ # Expected context:
+ #  - fields_id, type, item: identifiers of the field
+ #  - params: field parameters; the columns are printed by
+ #    Freetablefield::showFreetableFields()
+ #  - show_info, type_name, example_html: "field informations" panel
+-#}
+
+<input type="hidden" name="plugin_metademands_fields_id" value="{{ fields_id }}">
+<input type="hidden" name="type" value="{{ type }}">
+<input type="hidden" name="item" value="{{ item }}">
+{% do call('GlpiPlugin\\Metademands\\Freetablefield::showFreetableFields', [params]) %}
 {% if show_info %}
     {% include '@metademands/forms/field_informations.html.twig' with {
         'type_name': type_name,

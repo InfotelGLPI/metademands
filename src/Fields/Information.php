@@ -34,7 +34,7 @@ use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Metademand;
-use Html;
+use Toolbox;
 
 /**
  * Information Class
@@ -69,8 +69,7 @@ class Information extends CommonDBTM
             $display = "alert-danger";
         }
 
-        // Build the three content fragments separately so the template can auto-escape the
-        // designer-defined name while keeping the already-sanitized rich HTML (comment/label2) raw.
+        // The name is escaped by the template, the rich texts are sanitized there.
         $name = "";
         $name_html = "";
         if ($data['hide_title'] == 0) {
@@ -81,20 +80,21 @@ class Information extends CommonDBTM
             $name_html = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
         }
 
+        $comment = "";
         $comment_html = "";
         if (!empty($data['comment'])) {
             $comment = Field::displayField($data['id'], 'comment') ?: $data['comment'];
             $comment_html = RichText::getSafeHtml($comment);
         }
 
+        $label2 = "";
         $label2_html = "";
         if (!empty($data['label2'])) {
             $label2 = Field::displayField($data['id'], 'label2') ?: $data['label2'];
             $label2_html = RichText::getSafeHtml($label2);
         }
 
-        // Preserve the exact original visibility gate (!empty on the concatenated payload,
-        // including the "0" edge case) while rendering the fragments separately.
+        // Visibility gate on the concatenated payload, "0" edge case included
         $todisplay = $name_html . $comment_html . $label2_html;
         $icon = (string) ($data['icon'] ?? '');
 
@@ -106,10 +106,10 @@ class Information extends CommonDBTM
             'icon_is_fa'    => str_contains($icon, 'fa-'),
             'color'         => Metademand::toThemedForeground($data['color']),
             'name'          => $name,
-            'comment_html'  => $comment_html,
-            'label2_html'   => $label2_html,
+            'comment'       => $comment,
+            'label2'        => $label2,
             'preview'       => (bool) $preview,
-            'config_link'   => $config_link,
+            'config_url'    => $config_link !== '' ? Toolbox::getItemTypeFormURL(Field::class) . '?id=' . $data['id'] : '',
         ]);
     }
 
@@ -118,23 +118,15 @@ class Information extends CommonDBTM
 
     public static function showFieldParameters($params): string
     {
-        ob_start();
-        Html::showColorField('color', ['value' => $params["color"]]);
-        $color_html = ob_get_clean();
-
         $values[self::INFO] = __('Information', 'metademands');
         $values[self::WARNING] = __('Warning', 'metademands');
         $values[self::ALERT] = __('Alert', 'metademands');
-        $display_type_html = \Dropdown::showFromArray("display_type", $values, [
-            'value'   => $params['display_type'],
-            'display' => false,
-        ]);
-
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_color.html.twig',
             [
-                'color_html'        => $color_html,
-                'display_type_html' => $display_type_html,
+                'color'         => $params['color'],
+                'display_type'  => $params['display_type'],
+                'display_types' => $values,
             ],
         );
     }

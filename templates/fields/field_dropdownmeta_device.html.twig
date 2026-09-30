@@ -29,8 +29,8 @@
  #
  #  Expected context:
  #    items : rows built by Dropdownmeta::buildDeviceRow(), each holding
- #            varname, values_name, value, selected, icon_html, name,
- #            tooltip_html and typename
+ #            varname, values_name, value, selected, picture_url (model picture) or
+ #            icon (icon of the type), name, comment (serial number) and typename
  #
  #  The highlight of the picked tile is handled by public/scripts/dropdownmeta_device.js,
  #  which finds the tiles through the data-metademands-device marker.
@@ -42,9 +42,16 @@
         <input type="radio" class="my_items" name="{{ item.values_name }}" value="{{ item.value }}"
                {{ item.selected ? 'checked' : '' }}>
         <div class="center">
-            {{ item.icon_html|raw }}&nbsp;
+            {%- if item.picture_url is not empty -%}
+                <img class="user_picture" style="width: 30%;height: 30%;" alt="{{ _n('Picture', 'Pictures', 1) }}" src="{{ item.picture_url }}">
+            {%- elseif 'fa-' in item.icon -%}
+                <i style="font-size:4em" class="fas {{ item.icon }} fa-3x mr-3"></i>
+            {%- else -%}
+                <i style="font-size:4em" class="ti {{ item.icon }} mr-3"></i>
+            {%- endif -%}
+            &nbsp;
             <h5 class="mt-0 mb-1 buttonelt-title">
-                {{ item.name }}&nbsp;{% if item.tooltip_html is not empty %}&nbsp;{{ item.tooltip_html|raw }}{% endif %}
+                {{ item.name }}&nbsp;{% if item.comment is not empty %}&nbsp;<span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ item.comment }}">?</span>{% endif %}
             </h5>
             <br>{{ item.typename }}
         </div>

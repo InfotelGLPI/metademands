@@ -25,11 +25,16 @@
  # --------------------------------------------------------------------------
  #}
 
-{#- Legacy-identical concatenation: the iOS-style toggle label, then the core
- #  Html::hidden output and the Html::scriptBlock, both injected raw. id and name are
- #  data and are escaped; checked is an authored attribute fragment. One physical line
- #  so no inter-element whitespace enters the output. -#}
-<label class='ios-switch-sm'><input type='checkbox' id='{{ id }}' name='{{ name }}' {{ checked|raw }}
+{#- iOS-style toggle of a yes/no field (Fields\Yesno::showSwitchField()).
+ #
+ #  - id, name, is_checked: the checkbox
+ #  - value: value of the hidden input actually submitted (1 = no, 2 = yes)
+ #  - script_html: Html::scriptBlock() mirroring the checkbox into the hidden input
+ #  One physical line so no inter-element whitespace enters the output.
+-#}
+<label class='ios-switch-sm'><input type='checkbox' id='{{ id }}' name='{{ name }}'{% if is_checked %} checked='checked'{% endif %}
                                     isswitch='isswitch'><span class='slider'><span class='checkmark-on'><i
-                class='ti ti-check'></i></span><span class='checkmark-off'></span><span class='checkmark-empty'></span></span></label>{{ hidden_html|raw }}{{ script_html|raw }}
+                class='ti ti-check'></i></span><span class='checkmark-off'></span><span class='checkmark-empty'></span></span></label><input type="hidden" name="{{ name }}" id="{{ name }}" value="{{ value }}">
+{#- raw: Html::scriptBlock() of the toggle, ids only (§3.2) -#}
+{{ script_html|raw }}
 {#- -#}

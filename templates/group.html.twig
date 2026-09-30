@@ -25,7 +25,16 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Groups allowed to enter a meta-demand (Group::showForMetademand()).
+ #
+ # Expected context:
+ #  - groups, used_groups: groups of the entity scope, those already added
+ #  - add_groups_with_regex: offer the regular expression input
+ #  - groups_items: added groups ({id, link})
+-#}
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
+{% import 'components/form/fields_macros.html.twig' as fields %}
 
 {% if canedit %}
 <form name="form" method="post" action="{{ action }}">
@@ -39,15 +48,15 @@
         <div class="card-body">
             <div class="d-flex align-items-center gap-3 flex-wrap">
                 <label class="form-label mb-0">{{ __('Group') }}</label>
-                {% set groups_html %}
-                    {% do call('Dropdown::showFromArray', ['groups_id', groups, {
-                        'name': 'groups_id',
-                        'width': '300px',
-                        'multiple': true,
-                        'used': used_groups
-                    }]) %}
-                {% endset %}
-                {{ groups_html|raw }}
+                {{ fields.dropdownArrayField('groups_id', '', groups, '', {
+                    'no_label': true,
+                    'field_class': '',
+                    'mb': '',
+                    'width': '300px',
+                    'multiple': true,
+                    'values': [],
+                    'used': used_groups
+                }) }}
             </div>
 
             {% if add_groups_with_regex %}
@@ -73,7 +82,9 @@
     {% set mass_container = 'mass' ~ rand %}
 
     {% if canedit %}
-        {{ call('Html::openMassiveActionsForm', [mass_container])|raw }}
+        {# raw: massive actions, no core macro (§3.2) #}
+        {{ call('Html::getOpenMassiveActionsForm', [mass_container])|raw }}
+        {# raw: massive actions, no core macro (§3.2) #}
         {{ call('Html::showMassiveActions', [{'item': itemtype, 'container': mass_container, 'display': false}])|raw }}
     {% endif %}
 
@@ -84,6 +95,7 @@
         <tr>
             <th width="10">
                 {% if canedit %}
+                    {# raw: massive actions, no core macro (§3.2) #}
                     {{ call('Html::getCheckAllAsCheckbox', [mass_container])|raw }}
                 {% endif %}
             </th>
@@ -93,15 +105,20 @@
         <tr class="tab_bg_1">
             <td width="10">
                 {% if canedit %}
-                    {{ call('Html::showMassiveActionCheckBox', [itemtype, group_item.id])|raw }}
+                    {# raw: massive actions, no core macro (§3.2) #}
+                    {{ call('Html::getMassiveActionCheckBox', [itemtype, group_item.id])|raw }}
                 {% endif %}
             </td>
+            {# raw: CommonDBTM::getLink() escapes the name (§3.1) #}
             <td>{{ group_item.link|raw }}</td>
         </tr>
         {% endfor %}
     </table>
 
     {% if canedit %}
+        {# raw: massive actions, no core macro (§3.2) #}
         {{ call('Html::showMassiveActions', [{'item': itemtype, 'container': mass_container, 'ontop': false, 'display': false}])|raw }}
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        </form>
     {% endif %}
 {% endif %}

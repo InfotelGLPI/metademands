@@ -28,5 +28,6 @@
 {#- Legacy-identical wrapper: "<span ...>" . widget . "</span>". The core widget
  #  (showDateField / showDateTimeField / showTimeField / showNumber ...) is already
  #  rendered to a string in PHP and injected raw. No leading/trailing whitespace. -#}
+{#- raw: core widget rendered by showWizardField() (§3.2) -#}
 <span style='width: 50%!important;display: -webkit-box;'>{{ widget_html|raw }}</span>
 {#- -#}

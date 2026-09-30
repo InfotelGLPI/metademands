@@ -25,6 +25,22 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Global parameters of a field (FieldParameter::showGlobalParameters()): values
+ # only, the widgets come from the core macros.
+ #
+ # Expected context:
+ #  - show_*: which parameters the type of the field offers
+ #  - is_mandatory, hide_title, row_display, is_basket, icon: current values
+ #  - ticket_fields, used_by_ticket: fields of the object to create, current one
+ #  - plugin_fields, plugin_fields_value: fields of the "fields" plugin, current one
+ #  - metademands_id: meta-demand of the field, posted with the "fields" plugin link
+-#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{# The widgets sit in grid columns: no label, no column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
 <div class="card mb-2">
     <div class="card-header">
         <h5 class="card-title">{{ __('Global parameters', 'metademands') }}</h5>
@@ -34,25 +50,28 @@
             <div class="row g-2 align-items-center mb-2">
                 {% if show_mandatory %}
                     <label class="col-sm-3 col-form-label">{{ __('Mandatory field') }}</label>
-                    <div class="col-sm-3">{{ mandatory_html|raw }}</div>
+                    <div class="col-sm-3">{{ fields.dropdownYesNo('is_mandatory', is_mandatory, '', bare) }}</div>
                 {% endif %}
                 {% if show_hide_title %}
                     <label class="col-sm-3 col-form-label">{{ __('Hide title', 'metademands') }}</label>
-                    <div class="col-sm-3">{{ hide_title_html|raw }}</div>
+                    <div class="col-sm-3">{{ fields.dropdownYesNo('hide_title', hide_title, '', bare) }}</div>
                 {% endif %}
             </div>
         {% endif %}
         <div class="row g-2 align-items-center mb-2">
             <label class="col-sm-3 col-form-label">{{ __('Icon') }}</label>
-            <div class="col-sm-9">{{ icon_html|raw }}</div>
+            <div class="col-sm-9 d-flex align-items-center gap-2">
+                {{ fields.dropdownWebIcons('icon', icon, '', bare|merge({'width': '175px'})) }}
+                <label class="fw-normal mb-0 text-nowrap"><input type="checkbox" name="_blank_picture">&nbsp;{{ __('Clear') }}</label>
+            </div>
         </div>
         {% if show_row_display %}
             <div class="row g-2 align-items-center mb-2">
                 <label class="col-sm-3 col-form-label">{{ __('Takes the whole row', 'metademands') }}</label>
-                <div class="col-sm-3">{{ row_display_html|raw }}</div>
+                <div class="col-sm-3">{{ fields.dropdownYesNo('row_display', row_display, '', bare) }}</div>
                 {% if show_is_basket %}
                     <label class="col-sm-3 col-form-label">{{ __('Display into the basket', 'metademands') }}</label>
-                    <div class="col-sm-3">{{ is_basket_html|raw }}</div>
+                    <div class="col-sm-3">{{ fields.dropdownYesNo('is_basket', is_basket, '', bare) }}</div>
                 {% endif %}
             </div>
         {% endif %}
@@ -61,12 +80,15 @@
                 {% if show_used_by_ticket %}
                     <label
                         class="col-sm-3 col-form-label">{{ __('Use this field as object field', 'metademands') }}</label>
-                    <div class="{{ show_plugin_fields ? 'col-sm-3' : 'col-sm-9' }}">{{ used_by_ticket_html|raw }}</div>
+                    <div class="{{ show_plugin_fields ? 'col-sm-3' : 'col-sm-9' }}">{{ fields.dropdownArrayField('used_by_ticket', used_by_ticket, ticket_fields, '', bare) }}</div>
                 {% endif %}
                 {% if show_plugin_fields %}
                     <label
                         class="col-sm-3 col-form-label">{{ __('Link this to a plugin "fields" field', 'metademands') }}</label>
-                    <div class="{{ show_used_by_ticket ? 'col-sm-3' : 'col-sm-9' }}">{{ plugin_fields_html|raw }}</div>
+                    <div class="{{ show_used_by_ticket ? 'col-sm-3' : 'col-sm-9' }}">
+                        {{ fields.dropdownArrayField('plugin_fields_fields_id', plugin_fields_value, plugin_fields, '', bare|merge({'display_emptychoice': true})) }}
+                        <input type="hidden" name="plugin_metademands_metademands_id" value="{{ metademands_id }}">
+                    </div>
                 {% endif %}
             </div>
         {% endif %}

@@ -31,7 +31,6 @@ namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
-use GlpiPlugin\Metademands\FieldCustomvalue;
 use Html;
 use GlpiPlugin\Metademands\Wizard;
 
@@ -79,53 +78,42 @@ class Upload extends CommonDBTM
             'filecontainer' => $container,
             'editor_id' => $namefield . $data['id'],
             'showtitle' => false,
-            'display' => false,
+            'display' => true,
             'dropZone' => 'dropdoc' . $randupload,
             'required' => ($data['is_mandatory'] ? true : false),
             'uploads' => $self->uploads,
         ];
         $multiple_opts = ['multiple' => true] + $file_opts;
 
-        $file_input = "";
+        $file_options = $data["max_upload"] > 1 ? $multiple_opts : $file_opts;
+        $can_add      = true;
         if (is_array($arrayFiles)) {
             if (count($arrayFiles) > 0) {
                 foreach ($arrayFiles as $k => $file) {
-                    $wiz = new Wizard();
-                    //own showSimpleForm for return (not echo)
                     $files[] = [
                         // The stored filename is user-controlled; auto-escaped in the template.
                         'name' => str_replace($file['_prefix_filename'], "", $file['_filename']),
-                        'delete_form' => FieldCustomvalue::showSimpleForm(
-                            $wiz->getFormURL(),
-                            'delete_basket_file',
-                            _x('button', 'Delete permanently'),
-                            [
-                                'id' => $k,
-                                'metademands_id' => $data['plugin_metademands_metademands_id'],
-                                'plugin_metademands_fields_id' => $data['id'],
-                                'idline' => $idline,
-                            ],
-                            'fa-times-circle',
-                        ),
+                        // Fields of the delete request, the template adds the button and the token
+                        'post' => [
+                            'id' => $k,
+                            'metademands_id' => $data['plugin_metademands_metademands_id'],
+                            'plugin_metademands_fields_id' => $data['id'],
+                            'idline' => $idline,
+                        ],
                     ];
                     $nb++;
                 }
-                if ($data["max_upload"] > $nb) {
-                    $file_input = Html::file($data["max_upload"] > 1 ? $multiple_opts : $file_opts);
-                }
-            } else {
-                $file_input = Html::file($data["max_upload"] > 1 ? $multiple_opts : $file_opts);
+                $can_add = $data["max_upload"] > $nb;
             }
-        } else {
-            $file_input = Html::file($data["max_upload"] > 1 ? $multiple_opts : $file_opts);
         }
 
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_upload.html.twig',
             [
-                'files'      => $files,
-                'file_input' => $file_input,
-                'script'     => Html::scriptBlock("$('#$namedrop').show();"),
+                'files'        => $files,
+                'delete_url'   => Wizard::getFormURL(),
+                'file_options' => $can_add ? $file_options : null,
+                'script_html'  => Html::scriptBlock("$('#$namedrop').show();"),
             ],
         );
     }
@@ -138,14 +126,12 @@ class Upload extends CommonDBTM
         for ($i = 1; $i <= 50; $i++) {
             $data[$i] = $i;
         }
-        $max_upload_html = \Dropdown::showFromArray("max_upload", $data, [
-            'value'   => $params['max_upload'],
-            'display' => false,
-        ]);
-
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_upload.html.twig',
-            ['max_upload_html' => $max_upload_html],
+            [
+                'max_upload'  => $params['max_upload'],
+                'max_uploads' => $data,
+            ],
         );
     }
 

@@ -25,11 +25,15 @@
  # --------------------------------------------------------------------------
  #}
 
-{#- Cell contract: {t: text} is auto-escaped (Reference/Designation), {h: html} is
- #  injected raw (pre-sanitized getSafeHtml description, core quantity widget,
- #  formatted price, checkbox input). With several lines, the search inputs are
- #  bound by public/scripts/wizard_form.js through data-md-basket-search. Optional {attrs} for the total-display
- #  td. background_style / header labels / placeholders carry data (admin colour,
+{#- Cell contract, one key per cell:
+ #   - t: plain text (reference, designation, price, unit)
+ #   - rich: description, stored rich text sanitized here
+ #   - number: {name, options} of the quantity, Dropdown::showNumber()
+ #   - total_id: id of the line total, reloaded by public/scripts/wizard_form.js
+ #   - checkbox: {check, name, key, is_checked} of an object to pick
+ #  With several lines, the search inputs are
+ #  bound by public/scripts/wizard_form.js through data-md-basket-search.
+ #  background_style / header labels / placeholders carry data (admin colour,
  #  translations) and are escaped. Rendered on one physical line so
  #  no inter-element whitespace enters the output; the harness trims edge whitespace. -#}
 <table class='tab_cadre_fixehov' style='{{ background_style }}'{% if nb > 1 %} data-md-basket-search='{{ search_id }}'{% endif %}>
@@ -47,7 +51,10 @@
     <tbody id='tablesearch-{{ search_id }}'>{% else %}
     <tbody>{% endif %}{% for row in rows %}
         <tr class='tab_bg_1'>{% for cell in row %}{% if cell.t is defined %}
-            <td>{{ cell.t }}</td>{% else %}
-            <td{{ cell.attrs|raw }}>{{ cell.h|raw }}</td>{% endif %}{% endfor %}</tr>{% endfor %}</tbody>
+            <td>{{ cell.t }}</td>{% elseif cell.rich is defined %}
+            <td>{{ cell.rich|safe_html }}</td>{% elseif cell.number is defined %}
+            <td>{% do call('Dropdown::showNumber', [cell.number.name, cell.number.options]) %}</td>{% elseif cell.total_id is defined %}
+            <td style='text-align: right;' id='{{ cell.total_id }}'></td>{% else %}
+            <td><input class='form-check-input' type='checkbox' check='{{ cell.checkbox.check }}' name='{{ cell.checkbox.name }}' key='{{ cell.checkbox.key }}' id='{{ cell.checkbox.name }}' value='{{ cell.checkbox.key }}'{% if cell.checkbox.is_checked %} checked{% endif %}></td>{% endif %}{% endfor %}</tr>{% endfor %}</tbody>
 </table>
 {#- -#}

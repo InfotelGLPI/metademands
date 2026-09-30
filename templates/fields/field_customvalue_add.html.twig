@@ -25,13 +25,24 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # One more custom value row, added by metademands_add_custom_values()
+ # (public/scripts/metademands.js) through ajax/addnewvalue.php.
+ #
+ # Expected context:
+ #  - form_target:     front/fieldcustomvalue.form.php
+ #  - rank, fields_id: rank of the new value, id of the field
+ #  - display_comment, display_default, display_icon: widgets offered on the row
+-#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
 <form method="post" action="{{ form_target }}">
     <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="rank" value="{{ rank }}">
     <input type="hidden" name="fields_id" value="{{ fields_id }}">
     <div class="d-flex align-items-center gap-2 flex-wrap py-1 px-2"
          style="border-bottom:1px solid var(--tblr-border-color,#e6e7e9)">
-        <span class="badge rounded-pill bg-outline-secondary flex-shrink-0"
+        <span class="badge rounded-pill bg-secondary-lt flex-shrink-0"
               style="margin-right: 15px;">{{ rank }}</span>
         <input type="text" id="custom_values{{ rank }}"
                name="custom_values[{{ rank }}]"
@@ -48,14 +59,25 @@
         {% if display_default %}
             <div class="d-flex align-items-center gap-1 flex-shrink-0" id="default_values{{ rank }}">
                 <span class="text-muted small text-nowrap">{{ __('Default value', 'metademands') }}</span>
-                {{ default_html|raw }}
+                {{ fields.dropdownYesNo('default_values[' ~ rank ~ ']', 0, '', {
+                    'no_label': true,
+                    'field_class': '',
+                    'mb': '',
+                }) }}
             </div>
         {% endif %}
         {% if display_icon %}
-            <div id="icon{{ rank }}" class="flex-shrink-0">{{ icon_html|raw }}</div>
+            <div id="icon{{ rank }}" class="flex-shrink-0">
+                {% include '@metademands/fields/field_customvalue_icon.html.twig' with {
+                    'key': rank,
+                    'icon': '',
+                } only %}
+            </div>
         {% endif %}
-        <button type="submit" name="add" value="" class="btn btn-sm btn-primary flex-shrink-0">
+        <button type="submit" name="add" value="" class="btn btn-sm btn-primary flex-shrink-0"
+                title="{{ _x('button', 'Save') }}">
             <i class="ti ti-device-floppy"></i>
+            <span class="sr-only">{{ _x('button', 'Save') }}</span>
         </button>
     </div>
 </form>

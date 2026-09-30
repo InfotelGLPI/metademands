@@ -35,7 +35,9 @@
 
 <div class="left">
     {% if canedit %}
+        {# raw: massive actions, no core macro (§3.2) #}
         {{ call('Html::getOpenMassiveActionsForm', [mass_container])|raw }}
+        {# raw: massive actions, no core macro (§3.2) #}
         {{ call('Html::showMassiveActions', [{
             'item': itemtype,
             'container': mass_container,
@@ -49,6 +51,7 @@
         </tr>
         <tr>
             {% if canedit %}
+                {# raw: massive actions, no core macro (§3.2) #}
                 <th width="10">{{ call('Html::getCheckAllAsCheckbox', [mass_container])|raw }}</th>
             {% endif %}
             <th>{{ __('Name') }}</th>
@@ -58,6 +61,7 @@
         {% for entry in entries %}
             <tr class="tab_bg_1">
                 {% if canedit %}
+                    {# raw: massive actions, no core macro (§3.2) #}
                     <td width="10">{{ call('Html::getMassiveActionCheckBox', [itemtype, entry.id])|raw }}</td>
                 {% endif %}
                 <td>{{ entry.metademand_name }}</td>
@@ -67,13 +71,14 @@
     </table>
 
     {% if canedit %}
+        {# raw: massive actions, no core macro (§3.2) #}
         {{ call('Html::showMassiveActions', [{
             'item': itemtype,
             'container': mass_container,
             'ontop': false,
             'display': false
         }])|raw }}
-        {# closeForm() emits the CSRF token and the closing </form> tag #}
-        {{ call('Html::closeForm', [false])|raw }}
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        </form>
     {% endif %}
 </div>

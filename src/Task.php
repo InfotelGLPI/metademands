@@ -29,7 +29,6 @@
 
 namespace GlpiPlugin\Metademands;
 
-use Ajax;
 use CommonDBChild;
 use CommonDBTM;
 use CommonGLPI;
@@ -320,157 +319,127 @@ class Task extends CommonDBChild
         }
 
         $modal_rand = mt_rand();
-        $form_html  = '';
+        $type_rand  = mt_rand();
 
-        if ($solved) {
-            ob_start();
+        $task_types = [];
+        if ($solved && $ID <= 0) {
+            $task_types = self::getTaskTypes($item->getID());
 
-            $this->showFormHeader($options);
-
-            if ($ID > 0) {
-                $valType = $this->fields['type'];
-            } else {
-                // Dropdown::showFromArray() and Ajax::updateItemOnSelectEvent() print their
-                // markup: capture it and let the template own the row.
-                ob_start();
-
-                $task_types = self::getTaskTypes($item->getID());
-
-                // Only one metademand can be selected
-                $metademand_tasks = $this->find([
-                    'plugin_metademands_metademands_id' => $item->getID(),
-                    'type' => self::METADEMAND_TYPE,
-                ]);
-                if (count($metademand_tasks)) {
-                    unset($task_types[self::METADEMAND_TYPE]);
-                }
-
-                $valType = 0;
-
-                $rand = \Dropdown::showFromArray('taskType', $task_types, ['value' => $valType]);
-                $params = [
-                    'taskType' => '__VALUE__',
-                    'plugin_metademands_metademands_id' => $item->getID(),
-                ];
-                Ajax::updateItemOnSelectEvent(
-                    "dropdown_taskType$rand",
-                    "show_add_task_form",
-                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/showAddTaskForm.php",
-                    $params,
-                );
-
-                echo TemplateRenderer::getInstance()->render(
-                    '@metademands/forms/task_form_row.html.twig',
-                    [
-                        'label'   => __('Task type', 'metademands'),
-                        'content' => ob_get_clean(),
-                    ],
-                );
+            // Only one metademand can be selected
+            $metademand_tasks = $this->find([
+                'plugin_metademands_metademands_id' => $item->getID(),
+                'type' => self::METADEMAND_TYPE,
+            ]);
+            if (count($metademand_tasks)) {
+                unset($task_types[self::METADEMAND_TYPE]);
             }
-            // TicketTask::showTicketTaskForm() and MailTask::showMailTaskForm() print the
-            // form: capture it and let the template own the row and the <span> the Ajax
-            // reload targets.
-            ob_start();
-            if ($ID > 0) {
-                $type = $this->fields['type'];
-
-                $tickettask = new TicketTask();
-                $tickettask->getFromDBByCrit(["plugin_metademands_tasks_id" => $ID]);
-
-                if ($type == self::TICKET_TYPE || $type == self::TASK_TYPE) {
-                    $values = [
-                        'tickettask_id' => $tickettask->getID(),
-                        'itilcategories_id' => $tickettask->fields['itilcategories_id'],
-                        'type' => $type,
-                        'parent_tasks_id' => $this->fields['plugin_metademands_tasks_id'],
-                        'plugin_metademands_tasks_id' => $ID,
-                        'content' => $tickettask->fields['content'],
-                        'name' => $this->fields['name'],
-                        'block_use' => json_decode($this->fields['block_use'], true),
-                        'useBlock' => $this->fields['useBlock'],
-                        'block_parent_ticket_resolution' => $this->fields['block_parent_ticket_resolution'],
-                        'formatastable' => $this->fields['formatastable'],
-                        'entities_id' => $this->fields['entities_id'],
-                        'is_recursive' => $this->fields['is_recursive'],
-                        'users_id_requester' => $tickettask->fields['users_id_requester'],
-                        'users_id_observer' => $tickettask->fields['users_id_observer'],
-                        'users_id_assign' => $tickettask->fields['users_id_assign'],
-                        'groups_id_requester' => $tickettask->fields['groups_id_requester'],
-                        'groups_id_observer' => $tickettask->fields['groups_id_observer'],
-                        'groups_id_assign' => $tickettask->fields['groups_id_assign'],
-                        'status' => $tickettask->fields['status'],
-                        'requesttypes_id' => $tickettask->fields['requesttypes_id'],
-                    ];
-                } elseif ($this->fields['type'] == self::MAIL_TYPE) {
-                    $mailtask = new MailTask();
-                    $mailtask->getFromDBByCrit(["plugin_metademands_tasks_id" => $ID]);
-                    $values = [
-                        'mailtask_id' => $mailtask->getID(),
-                        'type' => $type,
-                        'itilcategories_id' => $mailtask->fields['itilcategories_id'] ?? 0,
-                        'plugin_metademands_tasks_id' => $ID,
-                        'content' => $mailtask->fields['content'] ?? "",
-                        'name' => $this->fields['name'],
-                        'block_use' => json_decode($this->fields['block_use'], true),
-                        'useBlock' => $this->fields['useBlock'],
-                        'block_parent_ticket_resolution' => $this->fields['block_parent_ticket_resolution'],
-                        'formatastable' => $this->fields['formatastable'],
-                        'entities_id' => $this->fields['entities_id'],
-                        'is_recursive' => $this->fields['is_recursive'],
-                        'users_id_recipient' => $mailtask->fields['users_id_recipient'] ?? 0,
-                        'groups_id_recipient' => $mailtask->fields['groups_id_recipient'] ?? 0,
-                    ];
-                    MailTask::showMailTaskForm($item->getID(), $type, $values);
-                } else {
-                    $values = [
-                        'tickettask_id' => $tickettask->getID(),
-                        'type' => $type,
-                    ];
-                }
-                if ($type != Task::MAIL_TYPE) {
-                    TicketTask::showTicketTaskForm($item->getID(), $solved, $type, $values);
-                }
-            } else {
-                $type = "-1";
-                if (Session::haveRight('ticket', CREATE)) {
-                    $type = self::TICKET_TYPE;
-                }
-                if ($item->fields['force_create_tasks'] == 1) {
-                    $type = self::TASK_TYPE;
-                }
-                if ($type > -1) {
-                    TicketTask::showTicketTaskForm($item->getID(), $solved, $type);
-                } else {
-                    echo TemplateRenderer::getInstance()->render('@metademands/alert.html.twig', [
-                        'level'   => 'danger',
-                        'message' => __("You don't have the ticket creation right", 'metademands'),
-                    ]);
-                }
-            }
-
-            echo TemplateRenderer::getInstance()->render(
-                '@metademands/forms/task_form_row.html.twig',
-                [
-                    'span_id' => 'show_add_task_form',
-                    'content' => ob_get_clean(),
-                ],
-            );
-
-            echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
-
-            $this->showFormButtons(['colspan' => 3]);
-
-            $form_html = ob_get_clean();
         }
 
         TemplateRenderer::getInstance()->display('@metademands/task_form.html.twig', [
             'modal_id'   => 'modal_task_' . $item->getID() . $modal_rand,
             'is_new'     => $ID <= 0,
-            'form_html'  => $form_html,
             'not_solved' => !$solved,
+            'item'       => $this,
+            'parent'     => $item,
+            'form_id'    => $ID,
+            'options'    => $options,
+            'task_types' => $task_types,
+            'type_rand'  => $type_rand,
+            'type_url'   => PLUGIN_METADEMANDS_WEBDIR . "/ajax/showAddTaskForm.php",
         ]);
 
         return true;
+    }
+
+    /**
+     * Print the part of the task form that depends on the task type.
+     * TicketTask::showTicketTaskForm() and MailTask::showMailTaskForm() print their
+     * markup, so task_form.html.twig calls this method where the form must appear.
+     *
+     * @param CommonDBTM $item   parent metademand
+     * @param int        $ID     identifier of the task, 0 for a new one
+     * @param bool       $solved whether the linked tickets are solved
+     *
+     * @return void
+     */
+    public function showTypeForm(CommonDBTM $item, $ID, $solved)
+    {
+        if ($ID > 0) {
+            $type = $this->fields['type'];
+
+            $tickettask = new TicketTask();
+            $tickettask->getFromDBByCrit(["plugin_metademands_tasks_id" => $ID]);
+
+            if ($type == self::TICKET_TYPE || $type == self::TASK_TYPE) {
+                $values = [
+                    'tickettask_id' => $tickettask->getID(),
+                    'itilcategories_id' => $tickettask->fields['itilcategories_id'],
+                    'type' => $type,
+                    'parent_tasks_id' => $this->fields['plugin_metademands_tasks_id'],
+                    'plugin_metademands_tasks_id' => $ID,
+                    'content' => $tickettask->fields['content'],
+                    'name' => $this->fields['name'],
+                    'block_use' => json_decode($this->fields['block_use'], true),
+                    'useBlock' => $this->fields['useBlock'],
+                    'block_parent_ticket_resolution' => $this->fields['block_parent_ticket_resolution'],
+                    'formatastable' => $this->fields['formatastable'],
+                    'entities_id' => $this->fields['entities_id'],
+                    'is_recursive' => $this->fields['is_recursive'],
+                    'users_id_requester' => $tickettask->fields['users_id_requester'],
+                    'users_id_observer' => $tickettask->fields['users_id_observer'],
+                    'users_id_assign' => $tickettask->fields['users_id_assign'],
+                    'groups_id_requester' => $tickettask->fields['groups_id_requester'],
+                    'groups_id_observer' => $tickettask->fields['groups_id_observer'],
+                    'groups_id_assign' => $tickettask->fields['groups_id_assign'],
+                    'status' => $tickettask->fields['status'],
+                    'requesttypes_id' => $tickettask->fields['requesttypes_id'],
+                ];
+            } elseif ($this->fields['type'] == self::MAIL_TYPE) {
+                $mailtask = new MailTask();
+                $mailtask->getFromDBByCrit(["plugin_metademands_tasks_id" => $ID]);
+                $values = [
+                    'mailtask_id' => $mailtask->getID(),
+                    'type' => $type,
+                    'itilcategories_id' => $mailtask->fields['itilcategories_id'] ?? 0,
+                    'plugin_metademands_tasks_id' => $ID,
+                    'content' => $mailtask->fields['content'] ?? "",
+                    'name' => $this->fields['name'],
+                    'block_use' => json_decode($this->fields['block_use'], true),
+                    'useBlock' => $this->fields['useBlock'],
+                    'block_parent_ticket_resolution' => $this->fields['block_parent_ticket_resolution'],
+                    'formatastable' => $this->fields['formatastable'],
+                    'entities_id' => $this->fields['entities_id'],
+                    'is_recursive' => $this->fields['is_recursive'],
+                    'users_id_recipient' => $mailtask->fields['users_id_recipient'] ?? 0,
+                    'groups_id_recipient' => $mailtask->fields['groups_id_recipient'] ?? 0,
+                ];
+                MailTask::showMailTaskForm($item->getID(), $type, $values);
+            } else {
+                $values = [
+                    'tickettask_id' => $tickettask->getID(),
+                    'type' => $type,
+                ];
+            }
+            if ($type != Task::MAIL_TYPE) {
+                TicketTask::showTicketTaskForm($item->getID(), $solved, $type, $values);
+            }
+        } else {
+            $type = "-1";
+            if (Session::haveRight('ticket', CREATE)) {
+                $type = self::TICKET_TYPE;
+            }
+            if ($item->fields['force_create_tasks'] == 1) {
+                $type = self::TASK_TYPE;
+            }
+            if ($type > -1) {
+                TicketTask::showTicketTaskForm($item->getID(), $solved, $type);
+            } else {
+                TemplateRenderer::getInstance()->display('@metademands/alert.html.twig', [
+                    'level'   => 'danger',
+                    'message' => __("You don't have the ticket creation right", 'metademands'),
+                ]);
+            }
+        }
     }
 
 

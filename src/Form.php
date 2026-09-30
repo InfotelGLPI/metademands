@@ -185,6 +185,18 @@ class Form extends CommonDBTM
      */
     public static function showFormsForUserMetademand($users_id, $plugin_metademands_metademands_id)
     {
+        $list = self::getUserFormsContext($users_id, $plugin_metademands_metademands_id);
+
+        return TemplateRenderer::getInstance()->render($list['template'], $list['context']);
+    }
+
+    /**
+     * Template and context of the list, for a caller including it (wizard/models_and_drafts.html.twig).
+     *
+     * @return array{template: string, context: array<string, mixed>}
+     */
+    public static function getUserFormsContext($users_id, $plugin_metademands_metademands_id): array
+    {
         $self = new self();
         $condition = [
             'users_id' => $users_id,
@@ -217,13 +229,16 @@ class Form extends CommonDBTM
             }
         }
 
-        return TemplateRenderer::getInstance()->render('@metademands/forms/user_forms_list.html.twig', [
-            'entries'           => $entries,
-            'meta_id'           => (int) $plugin_metademands_metademands_id,
-            'step'              => Metademand::STEP_SHOW,
-            'itilcategories_id' => (int) $itilcategories_id,
-            'webdir'            => PLUGIN_METADEMANDS_WEBDIR,
-        ]);
+        return [
+            'template' => '@metademands/forms/user_forms_list.html.twig',
+            'context'  => [
+                'entries'           => $entries,
+                'meta_id'           => (int) $plugin_metademands_metademands_id,
+                'step'              => Metademand::STEP_SHOW,
+                'itilcategories_id' => (int) $itilcategories_id,
+                'webdir'            => PLUGIN_METADEMANDS_WEBDIR,
+            ],
+        ];
     }
 
 
@@ -234,6 +249,18 @@ class Form extends CommonDBTM
      * @return string
      */
     public static function showPrivateFormsForUserMetademand($users_id, $plugin_metademands_metademands_id)
+    {
+        $list = self::getPrivateFormsContext($users_id, $plugin_metademands_metademands_id);
+
+        return TemplateRenderer::getInstance()->render($list['template'], $list['context']);
+    }
+
+    /**
+     * Template and context of the list, for a caller including it (wizard/models_and_drafts.html.twig).
+     *
+     * @return array{template: string, context: array<string, mixed>}
+     */
+    public static function getPrivateFormsContext($users_id, $plugin_metademands_metademands_id): array
     {
         $self = new self();
         $condition = [
@@ -274,17 +301,20 @@ class Form extends CommonDBTM
             }
         }
 
-        return TemplateRenderer::getInstance()->render('@metademands/forms/private_models_list.html.twig', [
-            'entries'           => $entries,
-            'rand'              => mt_rand(),
-            'can_public'        => self::canPublish(),
-            'form_id'           => (int) $form_id,
-            'users_id'          => (int) $users_id,
-            'meta_id'           => (int) $plugin_metademands_metademands_id,
-            'step'              => Metademand::STEP_SHOW,
-            'itilcategories_id' => (int) $itilcategories_id,
-            'webdir'            => PLUGIN_METADEMANDS_WEBDIR,
-        ]);
+        return [
+            'template' => '@metademands/forms/private_models_list.html.twig',
+            'context'  => [
+                'entries'           => $entries,
+                'rand'              => mt_rand(),
+                'can_public'        => self::canPublish(),
+                'form_id'           => (int) $form_id,
+                'users_id'          => (int) $users_id,
+                'meta_id'           => (int) $plugin_metademands_metademands_id,
+                'step'              => Metademand::STEP_SHOW,
+                'itilcategories_id' => (int) $itilcategories_id,
+                'webdir'            => PLUGIN_METADEMANDS_WEBDIR,
+            ],
+        ];
     }
 
 
@@ -309,6 +339,18 @@ class Form extends CommonDBTM
      * @return string
      */
     public static function showPublicFormsForUserMetademand($plugin_metademands_metademands_id)
+    {
+        $list = self::getPublicFormsContext($plugin_metademands_metademands_id);
+
+        return TemplateRenderer::getInstance()->render($list['template'], $list['context']);
+    }
+
+    /**
+     * Template and context of the list, for a caller including it (wizard/models_and_drafts.html.twig).
+     *
+     * @return array{template: string, context: array<string, mixed>}
+     */
+    public static function getPublicFormsContext($plugin_metademands_metademands_id): array
     {
         $self = new self();
         // A public model must not cross the entity boundary. Rows created before the
@@ -346,13 +388,16 @@ class Form extends CommonDBTM
             }
         }
 
-        return TemplateRenderer::getInstance()->render('@metademands/forms/public_models_list.html.twig', [
-            'entries'           => $entries,
-            'meta_id'           => (int) $plugin_metademands_metademands_id,
-            'step'              => Metademand::STEP_SHOW,
-            'itilcategories_id' => (int) $itilcategories_id,
-            'webdir'            => PLUGIN_METADEMANDS_WEBDIR,
-        ]);
+        return [
+            'template' => '@metademands/forms/public_models_list.html.twig',
+            'context'  => [
+                'entries'           => $entries,
+                'meta_id'           => (int) $plugin_metademands_metademands_id,
+                'step'              => Metademand::STEP_SHOW,
+                'itilcategories_id' => (int) $itilcategories_id,
+                'webdir'            => PLUGIN_METADEMANDS_WEBDIR,
+            ],
+        ];
     }
 
     /**

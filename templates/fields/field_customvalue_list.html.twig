@@ -25,6 +25,49 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Free custom values of a checkbox, radio, dropdown meta or dropdown multiple field.
+ # Context built by FieldCustomvalue::getListContext(): data only, the widgets come
+ # from the core macros, the add and import buttons are driven by
+ # public/scripts/wizard_form.js.
+ #
+ # Expected context:
+ #  - rows:          id, rank, name, comment, is_default and icon of each value
+ #  - form_target:   front/fieldcustomvalue.form.php
+ #  - fields_id:     id of the field
+ #  - type, item:    type and item of the field
+ #  - show_comment:  offer the comment of each value
+ #  - show_icon:     offer the icon of each value
+ #  - add:           count, display_comment and display_icon read by the add button
+ #  - root_doc:      web root of the plugin
+ #  - import_action: front/importcustomvalues.php
+ #  - specific:      null, or the default value(s) of a dropdown meta bound to
+ #                   urgency, impact, priority (dropdown, default_value) or
+ #                   my devices (default_values, device_types)
+ #  - reorder_url:   ajax/reorder.php
+-#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{# The widgets sit in table cells: no label, no column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
+{#
+ # Trigger adding one more value. The hidden inputs are read by
+ # metademands_add_custom_values() (public/scripts/metademands.js), the click by
+ # public/scripts/wizard_form.js.
+ #}
+{% macro add_value(add, fields_id, root_doc) %}
+    <input type="hidden" id="display_comment" name="display_comment" value="{{ add.display_comment ? 1 : 0 }}">
+    <input type="hidden" id="count_custom_values" name="count_custom_values" value="{{ add.count }}">
+    <input type="hidden" id="display_default" name="display_default" value="1">
+    <input type="hidden" id="display_icon" name="display_icon" value="{{ add.display_icon ? 1 : 0 }}">
+    &nbsp;<button type="button" class="btn btn-sm btn-success" title="{{ _x('button', 'Add') }}"
+                  data-md-customvalue-add="{{ fields_id }}" data-md-customvalue-root="{{ root_doc }}">
+        <i class="ti ti-square-plus"></i>
+        <span class="sr-only">{{ _x('button', 'Add') }}</span>
+    </button>&nbsp;
+{% endmacro %}
+
 {% if rows is not empty %}
     <tr>
         <td colspan="5" class="p-2">
@@ -37,7 +80,7 @@
                         <tr style="border-bottom:1px solid var(--tblr-border-color,#e6e7e9)"
                             data-md-order="{{ row.rank }}">
                             <td class="rowhandler align-middle text-center ps-1 py-2" style="width:44px">
-                                <span class="badge rounded-pill bg-outline-secondary">{{ row.rank }}</span>
+                                <span class="badge rounded-pill bg-secondary-lt">{{ row.rank }}</span>
                             </td>
                             <td class="py-1 px-2">
                                 <form method="post" action="{{ form_target }}">
@@ -62,15 +105,21 @@
                                              id="default_values{{ row.id }}">
                                             <span
                                                 class="text-muted small text-nowrap">{{ __('Default value', 'metademands') }}</span>
-                                            {{ row.default_html|raw }}
+                                            {{ fields.dropdownYesNo('is_default[' ~ row.id ~ ']', row.is_default, '', bare) }}
                                         </div>
-                                        {% if row.icon_html %}
-                                            <div id="icon{{ row.id }}"
-                                                 class="flex-shrink-0">{{ row.icon_html|raw }}</div>
+                                        {% if show_icon %}
+                                            <div id="icon{{ row.id }}" class="flex-shrink-0">
+                                                {% include '@metademands/fields/field_customvalue_icon.html.twig' with {
+                                                    'key': row.id,
+                                                    'icon': row.icon,
+                                                } only %}
+                                            </div>
                                         {% endif %}
                                         <button type="submit" name="update" value=""
-                                                class="btn btn-sm btn-primary flex-shrink-0">
+                                                class="btn btn-sm btn-primary flex-shrink-0"
+                                                title="{{ _x('button', 'Save') }}">
                                             <i class="ti ti-device-floppy"></i>
+                                            <span class="sr-only">{{ _x('button', 'Save') }}</span>
                                         </button>
                                     </div>
                                 </form>
@@ -81,7 +130,17 @@
                                 </div>
                             </td>
                             <td class="rowhandler align-middle text-center py-1 pe-1" style="width:40px">
-                                {{ row.delete_form_html|raw }}
+                                <form method="post" action="{{ form_target }}">
+                                    <input type="hidden" name="customvalues_id" value="{{ row.id }}">
+                                    <input type="hidden" name="rank" value="{{ row.rank }}">
+                                    <input type="hidden" name="plugin_metademands_fields_id" value="{{ fields_id }}">
+                                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" name="delete" value="1" class="btn btn-sm btn-danger"
+                                            title="{{ _x('button', 'Delete permanently') }}">
+                                        <i class="ti ti-circle-x"></i>
+                                        <span class="sr-only">{{ _x('button', 'Delete permanently') }}</span>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     {% endfor %}
@@ -95,13 +154,19 @@
             </div>
         </td>
     </tr>
-    <tr>
-        <td colspan="5" class="px-2 pb-2">
-            {{ init_form_html|raw }}
-        </td>
-    </tr>
-    {{ import_html|raw }}
-{% elseif specific_dropdown_html %}
+    {# A dropdown meta bound to a GLPI list has no free value to add #}
+    {% if not specific %}
+        <tr>
+            <td colspan="5" class="px-2 pb-2">
+                {{ _self.add_value(add, fields_id, root_doc) }}
+            </td>
+        </tr>
+        {% include '@metademands/fields/field_customvalue_import.html.twig' with {
+            'import_action': import_action,
+            'fields_id': fields_id,
+        } only %}
+    {% endif %}
+{% elseif specific %}
     <tr class="tab_bg_1">
         <td colspan="5">
             <form method="post" action="{{ form_target }}">
@@ -110,9 +175,22 @@
                 <input type="hidden" name="item" value="{{ item }}">
                 <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                 <div class="d-flex align-items-center gap-2 mt-2">
-                    {{ specific_dropdown_html|raw }}
-                    <button type="submit" name="update" value="" class="btn btn-primary">
+                    {% if specific.device_types is defined %}
+                        {{ fields.dropdownArrayField('default', '', specific.device_types, '', bare|merge({
+                            'multiple': true,
+                            'values': specific.default_values,
+                        })) }}
+                    {% else %}
+                        {% do call(specific.dropdown, [{
+                            'name': 'default[1]',
+                            'value': specific.default_value,
+                            'display_emptychoice': true,
+                        }]) %}
+                    {% endif %}
+                    <button type="submit" name="update" value="" class="btn btn-primary"
+                            title="{{ _x('button', 'Save') }}">
                         <i class="ti ti-device-floppy"></i>
+                        <span class="sr-only">{{ _x('button', 'Save') }}</span>
                     </button>
                 </div>
             </form>
@@ -120,7 +198,10 @@
     </tr>
 {% else %}
     <tr class="tab_bg_1">
-        <td colspan="5" id="show_custom_fields">{{ init_form_html|raw }}</td>
+        <td colspan="5" id="show_custom_fields">{{ _self.add_value(add, fields_id, root_doc) }}</td>
     </tr>
-    {{ import_html|raw }}
+    {% include '@metademands/fields/field_customvalue_import.html.twig' with {
+        'import_action': import_action,
+        'fields_id': fields_id,
+    } only %}
 {% endif %}

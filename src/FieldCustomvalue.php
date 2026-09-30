@@ -298,10 +298,6 @@ class FieldCustomvalue extends CommonDBChild
 
         $params = Field::getAllParamsFromField($metademand_fields);
 
-        ob_start();
-        self::showFieldCustomValues($params);
-        $field_custom_values_html = ob_get_clean();
-
         $field_example_html = '';
         if ($ID > 0) {
             ob_start();
@@ -310,7 +306,7 @@ class FieldCustomvalue extends CommonDBChild
         }
 
         TemplateRenderer::getInstance()->display('@metademands/field_customvalue_form.html.twig', [
-            'field_custom_values_html'      => $field_custom_values_html,
+            'params'                        => $params,
             'is_new'                        => $ID <= 0,
             'field_type_name'               => $ID > 0 ? Field::getFieldTypesName($params['type']) : '',
             'field_example_html'            => $field_example_html,
@@ -360,7 +356,6 @@ class FieldCustomvalue extends CommonDBChild
 
         $has_duplicates    = false;
         $is_not_sequential = false;
-        $fix_ranks_html    = '';
 
         if (in_array($params['type'], $allowed_customvalues_types)
             || in_array($params['item'], $allowed_customvalues_items)) {
@@ -371,22 +366,29 @@ class FieldCustomvalue extends CommonDBChild
             if (count($ranks) > 0) {
                 $has_duplicates    = count($ranks) > count(array_unique($ranks));
                 $is_not_sequential = !self::isSequentialFromZero($ranks) && $params["item"] != "Appliance";
-                if ($is_not_sequential) {
-                    ob_start();
-                    Html::showSimpleForm(
-                        self::getFormURL(),
-                        'fixranks',
-                        _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands'),
-                        ['plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"]],
-                        'ti-settings',
-                        "class='btn btn-warning'",
-                    );
-                    $fix_ranks_html = ob_get_clean();
-                }
             }
         }
 
-        ob_start();
+        TemplateRenderer::getInstance()->display('@metademands/field_customvalue_values.html.twig', [
+            'show_header'       => $show_header,
+            'has_duplicates'    => $has_duplicates,
+            'is_not_sequential' => $is_not_sequential,
+            'form_url'          => self::getFormURL(),
+            'fields_id'         => $params["plugin_metademands_fields_id"] ?? 0,
+            'params'            => $params,
+        ]);
+    }
+
+    /**
+     * Print the custom value rows of a field: the field classes print their own rows
+     * (field_customvalue_values.html.twig).
+     *
+     * @param array $params field parameters, as normalised by showFieldCustomValues()
+     *
+     * @return void
+     */
+    public static function showCustomValueRows($params): void
+    {
         if ($params["type"] != "dropdown_multiple") {
             switch ($params['item']) {
                 case 'impact':
@@ -411,15 +413,6 @@ class FieldCustomvalue extends CommonDBChild
                 $class::showFieldCustomValues($params);
                 break;
         }
-        $custom_values_html = ob_get_clean();
-
-        echo TemplateRenderer::getInstance()->render('@metademands/field_customvalue_values.html.twig', [
-            'show_header'        => $show_header,
-            'has_duplicates'     => $has_duplicates,
-            'is_not_sequential'  => $is_not_sequential,
-            'fix_ranks_html'     => $fix_ranks_html,
-            'custom_values_html' => $custom_values_html,
-        ]);
     }
 
 
@@ -481,106 +474,67 @@ class FieldCustomvalue extends CommonDBChild
 
 
     /**
-     * @param      $count
-     * @param bool $display_comment
-     * @param bool $display_default
+     * Context of field_customvalue_list.html.twig: the free values of a field as data,
+     * their widgets, add and import buttons are rendered by the template.
+     *
+     * @param array $params       parameters of the field: custom_values,
+     *                            plugin_metademands_fields_id, type and item
+     * @param bool  $show_comment offer the comment of each existing value
+     * @param bool  $add_comment  offer the comment of a new value
+     * @param bool  $show_icon    offer the icon of each value
+     * @param int   $maxrank      rank counted from when the field has no value yet
+     *
+     * @return array<string, mixed>
      */
-    public static function initCustomValue($count, $display_comment = false, $display_default = false, $plugin_metademands_fields_id = 0, $display_icon = false)
-    {
+    public static function getListContext(
+        array $params,
+        bool $show_comment,
+        bool $add_comment,
+        bool $show_icon,
+        int $maxrank = -1
+    ): array {
+        $rows = [];
+        $custom_values = $params['custom_values'] ?? [];
+        if (is_array($custom_values)) {
+            foreach ($custom_values as $key => $value) {
+                $rows[] = [
+                    'id'         => $key,
+                    'rank'       => $value['rank'],
+                    'name'       => $value['name'],
+                    'comment'    => $value['comment'] ?? '',
+                    'is_default' => $value['is_default'],
+                    'icon'       => (string) ($value['icon'] ?? ''),
+                ];
+                $maxrank = (int) $value['rank'];
+            }
+        }
 
-        $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
-            ['root_doc' => PLUGIN_METADEMANDS_WEBDIR],
-        ) . ");";
-
-        echo Html::hidden('display_comment', ['id' => 'display_comment', 'value' => $display_comment]);
-        echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
-        echo Html::hidden('display_default', ['id' => 'display_default', 'value' => $display_default]);
-        echo Html::hidden('display_icon', ['id' => 'display_icon', 'value' => $display_icon]);
-
-        echo TemplateRenderer::getInstance()->render(
-            '@metademands/forms/custom_value_add_button.html.twig',
-            [
-                'icon_class' => 'ti ti-square-plus btn btn-sm btn-success',
-                'onclick'    => $script . ' metademandWizard.metademands_add_custom_values("show_custom_fields", '
-                    . (int) $plugin_metademands_fields_id . ');',
-                'title'      => _x('button', 'Add'),
+        return [
+            'rows'          => $rows,
+            'form_target'   => self::getFormURL(),
+            'fields_id'     => $params['plugin_metademands_fields_id'] ?? '',
+            'type'          => $params['type'] ?? '',
+            'item'          => $params['item'] ?? '',
+            'show_comment'  => $show_comment,
+            'show_icon'     => $show_icon,
+            'add'           => [
+                'count'           => $maxrank,
+                'display_comment' => $add_comment,
+                'display_icon'    => $show_icon,
             ],
-        );
-
-    }
-
-
-    /**
-     * @param      $count
-     * @param bool $display_comment
-     * @param bool $display_default
-     */
-    public static function importCustomValue($params)
-    {
-        $hidden_html = Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
-        $submit_html = Html::submit("", ['name'  => 'importreplacecsv',
-            'class' => 'btn btn-success',
-            'icon'  => 'ti ti-upload',
-            'confirm' => __('Are you sure ? Custom values will be deleted !', 'metademands')]);
-
-        $warning = __('Please respect this format : name; display by default(0|1); comment; - sorted by display order', 'metademands');
-        ob_start();
-        Html::showToolTip($warning);
-        $tooltip_html = ob_get_clean();
-
-        $script_html = Html::scriptBlock("function formToggle(ID) {
-                var element = document.getElementById(ID);
-                if (element.style.display === 'none') {
-                    element.style.display = 'block';
-                } else {
-                    element.style.display = 'none';
-                }
-            };");
-
-        TemplateRenderer::getInstance()->display(
-            '@metademands/fields/field_customvalue_import.html.twig',
-            [
-                'import_action' => PLUGIN_METADEMANDS_WEBDIR . "/front/importcustomvalues.php",
-                'hidden_html'   => $hidden_html,
-                'submit_html'   => $submit_html,
-                'tooltip_html'  => $tooltip_html,
-                'script_html'   => $script_html,
-            ],
-        );
+            'root_doc'      => PLUGIN_METADEMANDS_WEBDIR,
+            'import_action' => PLUGIN_METADEMANDS_WEBDIR . '/front/importcustomvalues.php',
+            'specific'      => null,
+            'reorder_url'   => PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php',
+        ];
     }
 
     /**
-     * Web-icon selector of one custom-value row. Four call sites used to inline the same
-     * <select> + WebIconSelector module + "clear" checkbox, each with its own indentation
-     * and its own HTML literal.
-     *
-     * @param int|string $key  index carried by the icon[] and _blank_picture[] inputs
-     * @param string     $icon currently selected icon, empty on a new row
-     *
-     * @return string
+     * @param array<string, mixed> $context built by getListContext()
      */
-    public static function showIconSelector($key, string $icon = ''): string
+    public static function showList(array $context): void
     {
-        $icon_selector_id = 'icon_' . mt_rand();
-
-        return TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_customvalue_icon.html.twig',
-            [
-                'key'         => $key,
-                'select_html' => Html::select(
-                    "icon[$key]",
-                    $icon === '' ? ['' => ''] : [$icon => $icon],
-                    ['id' => $icon_selector_id, 'selected' => $icon, 'style' => 'width:175px;'],
-                ),
-                'script_html' => Html::script('js/modules/Form/WebIconSelector.js')
-                    . Html::scriptBlock("$(function() {
-                        import('/js/modules/Form/WebIconSelector.js').then((m) => {
-                            var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-                            icon_selector.init();
-                        });
-                    });"),
-            ],
-        );
+        TemplateRenderer::getInstance()->display('@metademands/fields/field_customvalue_list.html.twig', $context);
     }
 
     /**
@@ -590,18 +544,6 @@ class FieldCustomvalue extends CommonDBChild
      */
     public static function addNewValue($rank, $display_comment, $display_default, $fields_id, $display_icon = false)
     {
-        $default_html = '';
-        if ($display_default) {
-            ob_start();
-            \Dropdown::showYesNo("default_values[$rank]", 0);
-            $default_html = ob_get_clean();
-        }
-
-        $icon_html = '';
-        if ($display_icon) {
-            $icon_html = self::showIconSelector($rank);
-        }
-
         TemplateRenderer::getInstance()->display(
             '@metademands/fields/field_customvalue_add.html.twig',
             [
@@ -610,9 +552,7 @@ class FieldCustomvalue extends CommonDBChild
                 'fields_id'       => $fields_id,
                 'display_comment' => (bool) $display_comment,
                 'display_default' => (bool) $display_default,
-                'default_html'    => $default_html,
                 'display_icon'    => (bool) $display_icon,
-                'icon_html'       => $icon_html,
             ],
         );
     }

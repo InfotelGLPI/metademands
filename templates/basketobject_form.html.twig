@@ -68,7 +68,10 @@
                     <span class="text-danger">*</span>
                 </label>
                 <div class="col-8">
-                    {{ type_dropdown_html|raw }}
+                    {% do call('Dropdown::show', [type_itemtype, {
+                        'name': 'plugin_metademands_basketobjecttypes_id',
+                        'value': types_id
+                    }]) %}
                 </div>
             </div>
 

@@ -35,7 +35,6 @@ use DBConnection;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
-use GlpiPlugin\Metademands\Fields\Freetable;
 use Html;
 use Migration;
 use Session;
@@ -269,15 +268,7 @@ class Freetablefield extends CommonDBChild
 
         $this->showFormHeader($options);
 
-        $hidden_fields_id = Html::hidden('plugin_metademands_fields_id', ['value' => $item->getID()]);
-        $hidden_type      = Html::hidden('type', ['value' => $metademand_fields->fields['type']]);
-        $hidden_item      = Html::hidden('item', ['value' => $metademand_fields->fields['item']]);
-
         $params = Field::getAllParamsFromField($metademand_fields);
-
-        ob_start();
-        self::showFreetableFields($params);
-        $freetable_html = ob_get_clean();
 
         $show_info    = ($ID > 0);
         $type_name    = '';
@@ -296,10 +287,10 @@ class Freetablefield extends CommonDBChild
         }
 
         TemplateRenderer::getInstance()->display('@metademands/forms/freetablefield_fields_form.html.twig', [
-            'hidden_fields_id' => $hidden_fields_id,
-            'hidden_type'      => $hidden_type,
-            'hidden_item'      => $hidden_item,
-            'freetable_html'   => $freetable_html,
+            'fields_id'        => $item->getID(),
+            'type'             => $metademand_fields->fields['type'],
+            'item'             => $metademand_fields->fields['item'],
+            'params'           => $params,
             'show_info'        => $show_info,
             'type_name'        => $type_name,
             'example_html'     => $example_html,
@@ -321,19 +312,10 @@ class Freetablefield extends CommonDBChild
             return;
         }
 
-        // The rows are rendered by the already migrated Freetable::showFreetableFields(),
-        // which echoes its own template: capture it and hand it to the wrapper.
-        ob_start();
-        Freetable::showFreetableFields($params);
-        $rows_html = ob_get_clean();
-
         TemplateRenderer::getInstance()->display('@metademands/forms/freetable_fields_wrapper.html.twig', [
             'title'        => _n('Free table field', 'Free table fields', 2, 'metademands'),
-            'tooltip_html' => Html::showToolTip(
-                RichText::getSafeHtml(__('(6 fields maximum)', 'metademands')),
-                ['awesome-class' => 'ti ti-info-circle', 'display' => false],
-            ),
-            'rows_html'    => $rows_html,
+            'tooltip'      => __('(6 fields maximum)', 'metademands'),
+            'params'       => $params,
         ]);
     }
 

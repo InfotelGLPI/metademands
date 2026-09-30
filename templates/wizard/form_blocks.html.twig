@@ -31,12 +31,13 @@
  #    wrap_nostep        : true when the form is NOT in step-by-step mode; .tab-nostep is
  #                         read by plugin_metademands_wizard_* in scripts/metademands.js
  #    is_basket          : posts see_basket_summary when the meta-demand is a basket
- #    tabs_html          : block tab bar, empty when the blocks are not shown as tabs
+ #    tabs               : context of form_tabs.html.twig, null when the blocks are not shown as tabs
  #    blocks             : list of {in_step, html} built by Wizard::constructForm(); in_step
  #                         tells whether the block belongs to the step-by-step flow, which
  #                         hides it through .tab-step until its step opens
  #
- #  html is still produced by Wizard::displayBlockContent(), which prints its markup.
+ #  html is captured from Wizard::displayBlockContent(): the field widgets of the
+ #  Wizard::constructForm() step form (§3.2).
  #
  #  Whitespace control is load-bearing: plugin_metademands_wizard_displayStepButton()
  #  in scripts/metademands.js reads .tab-step.firstChild, which has to be the card of
@@ -45,9 +46,10 @@
 {%- if wrap_nostep %}<div class="tab-nostep">{% endif -%}
 {%- if is_basket %}<input type="hidden" name="see_basket_summary" value="1">{% endif -%}
 <div id="ajax_loader" class="ajax_loader hidden"></div>
-{{- tabs_html|raw -}}
+{%- if tabs is not null %}{% include '@metademands/wizard/form_tabs.html.twig' with tabs only %}{% endif -%}
 {%- for block in blocks -%}
     {%- if block.in_step %}<div class="tab-step">{% endif -%}
+    {#- raw: block of the Wizard::constructForm() step form, field widgets included (§3.2) -#}
     {{- block.html|raw -}}
     {%- if block.in_step %}</div>{% endif -%}
 {%- endfor -%}

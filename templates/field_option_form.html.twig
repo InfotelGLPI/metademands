@@ -27,6 +27,16 @@
 
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
 
+{#-
+ # Form of a condition of a field (FieldOption::showForm()).
+ #
+ # Expected context:
+ #  - option, field, params: the option, its field and the option values; the rows
+ #    depend on the field type and are printed by FieldOption::showOptionRows()
+ #    (the field classes and the plugins print their own rows)
+ #  - show_submit: false when the field saves its options itself
+-#}
+
 <form name="form" method="post" action="{{ form_action }}">
     {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
     {{ inputs.hidden('plugin_metademands_fields_id', field_parent_id) }}
@@ -34,7 +44,7 @@
 
     <table class="tab_cadre w-100">
         <tbody>
-        {{ form_rows_html|raw }}
+        {% do call([option, 'showOptionRows'], [field, params]) %}
         </tbody>
     </table>
 

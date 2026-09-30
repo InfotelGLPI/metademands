@@ -39,7 +39,7 @@
         <button type="button" style='display: none' id="multiselect{{ id }}_leftAll" class="btn buttonCol"><i
                 class="ti ti-chevrons-left"></i></button>
     </div>
-    <div class='zone'><select class='form-select formCol' {{ required|raw }} name='{{ name }}'
+    <div class='zone'><select class='form-select formCol'{% if is_required %} required="required"{% endif %} name='{{ name }}'
                               id="multiselect{{ id }}_to" size='8' multiple='multiple'
                               style='font-size: 1em;'>{% for opt in right_options %}
                 <option

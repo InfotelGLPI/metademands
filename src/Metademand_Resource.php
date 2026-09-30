@@ -205,20 +205,14 @@ class Metademand_Resource extends CommonDBTM
         }
         $canedit = $this->canCreate();
         if ($canedit) {
-            ob_start();
-            Dropdown::show(Metademand::class, ['name'   => 'plugin_metademands_metademands_id',
-                'used'   => $used_data,
-                'entity' => $_SESSION['glpiactive_entity']]);
-            $metademand_dropdown = ob_get_clean();
-
             TemplateRenderer::getInstance()->display('@metademands/forms/metademand_resource_form.html.twig', [
                 'form_action'          => Toolbox::getItemTypeFormURL(Metademand_Resource::class),
                 'resource_type_name'   => self::getTypeName(1),
                 'metademand_type_name' => Metademand::getTypeName(1),
-                'metademand_dropdown'  => $metademand_dropdown,
-                'submit_html'          => Html::submit(_sx('button', 'Add'), ['name' => 'update', 'class' => 'btn btn-primary']),
-                'hidden_entities_id'   => Html::hidden('entities_id', ['value' => $_SESSION['glpiactive_entity']]),
-                'hidden_contracttype'  => Html::hidden('plugin_resources_contracttypes_id', ['value' => $resourceContractType->fields['id']]),
+                'metademand_itemtype'  => Metademand::class,
+                'used_metademands'     => $used_data,
+                'entities_id'          => $_SESSION['glpiactive_entity'],
+                'contracttypes_id'     => $resourceContractType->fields['id'],
             ]);
         }
 

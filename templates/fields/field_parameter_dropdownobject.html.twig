@@ -25,6 +25,20 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Specific parameters of a GLPI object dropdown field (Fields\Dropdownobject::showFieldParameters()):
+ # values only, the widgets come from the core macros.
+ #
+ # Expected context:
+ #  - rows: lines of two cells; a cell is either empty ({'empty': true}) or
+ #    {label, name, value, elements?, multiple?}: a yes / no dropdown, or a dropdown of the
+ #    given elements (value => label), multiple when asked
+-#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{# The widgets sit in grid columns: no label, no column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
 {% if rows %}
     <div class="card mt-2">
         <div class="card-header">
@@ -34,9 +48,17 @@
             {% for row in rows %}
                 <div class="row g-2 align-items-center mb-2">
                     {% for cell in row %}
-                        {% if cell.colspan is not defined %}
+                        {% if cell.empty is not defined %}
                             <label class="col-sm-3 col-form-label">{{ cell.label }}</label>
-                            <div class="col-sm-3">{{ cell.html|raw }}</div>
+                            <div class="col-sm-3">
+                                {% if cell.multiple ?? false %}
+                                    {{ fields.dropdownArrayField(cell.name, '', cell.elements, '', bare|merge({'values': cell.value, 'multiple': true})) }}
+                                {% elseif cell.elements is defined %}
+                                    {{ fields.dropdownArrayField(cell.name, cell.value, cell.elements, '', bare) }}
+                                {% else %}
+                                    {{ fields.dropdownYesNo(cell.name, cell.value, '', bare) }}
+                                {% endif %}
+                            </div>
                         {% endif %}
                     {% endfor %}
                 </div>

@@ -30,9 +30,12 @@
  # field_option_options.html.twig, so this template emits a <tr> only.
  #
  # Expected context:
- #  - value_html: captured "value to check" selector
+ #  - parent_fields: fields of the parent metademands, id => label
 -#}
 <tr>
     <td>{{ __('Field') }}</td>
-    <td>{{ value_html|raw }}</td>
+    <td>
+        {% do call('Dropdown::showFromArray', ['parent_field_id', parent_fields]) %}
+        <input type="hidden" name="check_value" value="0">
+    </td>
 </tr>

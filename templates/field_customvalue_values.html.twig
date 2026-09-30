@@ -25,6 +25,16 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Custom values of a field (FieldCustomvalue::showFieldCustomValues()).
+ #
+ # Expected context:
+ #  - show_header, has_duplicates, is_not_sequential: header and rank warnings
+ #  - form_url, fields_id: target of the "fix the ranks" form
+ #  - params: field parameters; the rows depend on the field type and are printed by
+ #    FieldCustomvalue::showCustomValueRows() (the field classes print their own rows)
+-#}
+
 {% if has_duplicates %}
     <div class="alert alert-warning d-flex align-items-center mb-2">
         <i class="ti ti-alert-triangle me-2" style="font-size:2em;color:orange;"></i>
@@ -37,7 +47,15 @@
         <i class="ti ti-alert-triangle me-2" style="font-size:2em;color:orange;"></i>
         <div>
             <p class="mb-1">{{ __('The ranks are not ordered correctly, you will not be able to order them!', 'metademands') }}</p>
-            {{ fix_ranks_html|raw }}
+            {% set fix_label = _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands') %}
+            <form method="post" action="{{ form_url }}">
+                <input type="hidden" name="plugin_metademands_fields_id" value="{{ fields_id }}">
+                <button type="submit" name="fixranks" value="1" class="btn btn-warning" title="{{ fix_label }}">
+                    <i class="ti ti-settings"></i>
+                    <span class="sr-only">{{ fix_label }}</span>
+                </button>
+                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+            </form>
         </div>
     </div>
 {% endif %}
@@ -48,5 +66,5 @@
             <th colspan="5">{{ __('Custom values', 'metademands') }}</th>
         </tr>
     {% endif %}
-    {{ custom_values_html|raw }}
+    {% do call('GlpiPlugin\\Metademands\\FieldCustomvalue::showCustomValueRows', [params]) %}
 </table>

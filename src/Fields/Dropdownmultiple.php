@@ -43,7 +43,6 @@ use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\MetademandTask;
 use Session;
-use Toolbox;
 use User;
 
 /**
@@ -367,7 +366,7 @@ class Dropdownmultiple extends CommonDBTM
         return TemplateRenderer::getInstance()->render('@metademands/fields/field_multiselect.html.twig', [
             'id'            => $id,
             'name'          => $name,
-            'required'      => $required,
+            'is_required'   => $required !== '',
             'left_options'  => $left_options,
             'right_options' => $right_options,
         ]);
@@ -473,11 +472,13 @@ class Dropdownmultiple extends CommonDBTM
 
                 $target = FieldCustomvalue::getFormURL();
 
-                $hidden_html = '';
+                $hidden_fields = [];
                 if (isset($params['plugin_metademands_fields_id'])) {
-                    $hidden_html .= Html::hidden('plugin_metademands_fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
-                    $hidden_html .= Html::hidden('type', ['value' => $params["type"]]);
-                    $hidden_html .= Html::hidden('item', ['value' => $params["item"]]);
+                    $hidden_fields = [
+                        'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
+                        'type'                         => $params["type"],
+                        'item'                         => $params["item"],
+                    ];
                 }
 
                 $script_html = Html::scriptBlock("$(function () {
@@ -499,34 +500,18 @@ class Dropdownmultiple extends CommonDBTM
 
                 $items = [];
                 foreach ($found_items as $key => $v) {
-                    ob_start();
-                    \Dropdown::showYesNo("default[" . $key . "]", ($default_values[$key] ?? 0));
-                    $default_html = ob_get_clean();
-
                     $items[] = [
-                        'key'          => $key,
-                        'name'         => (string) $v["name"],
-                        'default_html' => $default_html,
-                        'checked'      => (isset($custom_values[$key]) && $custom_values[$key] != 0),
+                        'key'     => $key,
+                        'name'    => (string) $v["name"],
+                        'default' => $default_values[$key] ?? 0,
+                        'checked' => (isset($custom_values[$key]) && $custom_values[$key] != 0),
                     ];
                 }
-
-                ob_start();
-                echo Html::submit("", [
-                    'name' => 'update',
-                    'class' => 'btn btn-primary',
-                    'icon' => 'ti ti-device-floppy',
-                ]);
-                $submit_html = ob_get_clean();
-
-                ob_start();
-                Html::closeForm();
-                $close_form_html = ob_get_clean();
 
                 $data = [
                     'mode'                   => 'objects',
                     'form_target'            => $target,
-                    'hidden_html'            => $hidden_html,
+                    'hidden_fields'          => $hidden_fields,
                     'script_html'            => $script_html,
                     'type_name'              => FieldCustomvalue::getTypeName(2),
                     'default_value_label'    => _n('Default value', 'Default values', 1, 'metademands'),
@@ -534,77 +519,12 @@ class Dropdownmultiple extends CommonDBTM
                     'select_all_label'       => __('Select all', 'metademands'),
                     'unselect_all_label'     => __('Unselect all', 'metademands'),
                     'items'                  => $items,
-                    'submit_html'            => $submit_html,
-                    'close_form_html'        => $close_form_html,
                 ];
             } else {
                 if ($params['item'] != 'Location') {
-                    $target   = FieldCustomvalue::getFormURL();
-                    $maxrank  = 0;
-                    $rows     = [];
-
-                    if (is_array($custom_values) && !empty($custom_values)) {
-                        foreach ($custom_values as $key => $value) {
-                            ob_start();
-                            \Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
-                            $default_html = ob_get_clean();
-
-                            ob_start();
-                            Html::showSimpleForm(
-                                $target,
-                                'delete',
-                                _x('button', 'Delete permanently'),
-                                [
-                                    'customvalues_id'              => $key,
-                                    'rank'                          => $value['rank'],
-                                    'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
-                                ],
-                                'ti-circle-x',
-                                "class='btn btn-sm btn-danger'",
-                            );
-                            $delete_form_html = ob_get_clean();
-
-                            $rows[] = [
-                                'id'               => $key,
-                                'rank'             => $value['rank'],
-                                'name'             => $value['name'],
-                                'comment'          => '',
-                                'default_html'     => $default_html,
-                                'icon_html'        => '',
-                                'delete_form_html' => $delete_form_html,
-                            ];
-                            $maxrank = $value['rank'];
-                        }
-                    }
-
-                    ob_start();
-                    FieldCustomvalue::initCustomValue($maxrank, false, true, $params["plugin_metademands_fields_id"]);
-                    $init_form_html = ob_get_clean();
-
-                    ob_start();
-                    FieldCustomvalue::importCustomValue($params);
-                    $import_html = ob_get_clean();
-
-                    ob_start();
-                    TemplateRenderer::getInstance()->display(
-                        '@metademands/fields/field_customvalue_list.html.twig',
-                        [
-                            'rows'                   => $rows,
-                            'form_target'            => $target,
-                            'fields_id'              => $params['plugin_metademands_fields_id'] ?? '',
-                            'type'                   => $params['type'] ?? '',
-                            'show_comment'           => false,
-                            'init_form_html'         => $init_form_html,
-                            'import_html'            => $import_html,
-                            'specific_dropdown_html' => '',
-                            'reorder_url'            => PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php',
-                        ],
-                    );
-                    $list_html = ob_get_clean();
-
                     $data = [
-                        'mode'      => 'list',
-                        'list_html' => $list_html,
+                        'mode' => 'list',
+                        'list' => FieldCustomvalue::getListContext($params, false, false, false, 0),
                     ];
                 }
             }
@@ -621,32 +541,15 @@ class Dropdownmultiple extends CommonDBTM
         $disp = [];
         $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
         $disp[self::DOUBLE_COLUMN_DISPLAY] = __("Double column display", "metademands");
-        $display_type_html = \Dropdown::showFromArray("display_type", $disp, [
-            'value'   => $params['display_type'],
-            'display' => false,
-        ]);
 
         $is_user = $params["item"] == 'User';
-        $user_group_html = '';
-        $default_use_id_requester_html = '';
-        $default_use_id_requester_supervisor_html = '';
-        $informations_to_display_html = '';
+        $user_group = 0;
+        $values = [];
+        $informations = [];
 
         if ($is_user) {
             $custom_values = FieldParameter::_unserialize($params['custom_values']);
             $user_group = $custom_values['user_group'] ?? 0;
-
-            ob_start();
-            \Dropdown::showYesNo('user_group', $user_group);
-            $user_group_html = ob_get_clean();
-
-            ob_start();
-            \Dropdown::showYesNo('default_use_id_requester', $params['default_use_id_requester']);
-            $default_use_id_requester_html = ob_get_clean();
-
-            ob_start();
-            \Dropdown::showYesNo('default_use_id_requester_supervisor', $params['default_use_id_requester_supervisor']);
-            $default_use_id_requester_supervisor_html = ob_get_clean();
 
             $decode = json_decode($params['informations_to_display']);
             $values = empty($decode) ? ['full_name'] : $decode;
@@ -657,22 +560,19 @@ class Dropdownmultiple extends CommonDBTM
                 "name"      => __('Login'),
                 "email"     => _n('Email', 'Emails', 1),
             ];
-            $informations_to_display_html = \Dropdown::showFromArray('informations_to_display', $informations, [
-                'values'   => $values,
-                'display'  => false,
-                'multiple' => true,
-            ]);
         }
 
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_dropdownmultiple.html.twig',
             [
-                'display_type_html'                        => $display_type_html,
-                'is_user'                                  => $is_user,
-                'user_group_html'                          => $user_group_html,
-                'default_use_id_requester_html'            => $default_use_id_requester_html,
-                'default_use_id_requester_supervisor_html' => $default_use_id_requester_supervisor_html,
-                'informations_to_display_html'             => $informations_to_display_html,
+                'display_type'                        => $params['display_type'],
+                'display_types'                       => $disp,
+                'is_user'                             => $is_user,
+                'user_group'                          => $user_group,
+                'default_use_id_requester'            => $params['default_use_id_requester'],
+                'default_use_id_requester_supervisor' => $params['default_use_id_requester_supervisor'],
+                'informations_to_display'             => $values,
+                'informations'                        => $informations,
             ],
         );
     }
@@ -696,17 +596,14 @@ class Dropdownmultiple extends CommonDBTM
         }
         $cell_content = ob_get_clean();
 
-        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
-        // the wrapping cell now carries its parameters as data-* attributes.
-        $valuetocheck_html = TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_value_to_check_cell.html.twig',
-            [
-                'option_id'       => $params['ID'],
-                'with_check_type' => true,
-                'with_tech_group' => true,
-                'content'         => $cell_content,
-            ],
-        );
+        // Value cell, included by the row template; its parameters are read by
+        // public/scripts/fieldoption_valuetocheck.js from data-* attributes.
+        $valuetocheck = [
+            'option_id'       => $params['ID'],
+            'with_check_type' => true,
+            'with_tech_group' => true,
+            'content'         => $cell_content,
+        ];
 
         $params['use_richtext'] = 0;
 
@@ -719,7 +616,7 @@ class Dropdownmultiple extends CommonDBTM
                 'label'             => __('Value to check', 'metademands'),
                 'label_colspan'     => 1,
                 'regex_html'        => $regex_html,
-                'valuetocheck_html' => $valuetocheck_html,
+                'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
             ],
         );

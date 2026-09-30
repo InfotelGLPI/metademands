@@ -25,25 +25,30 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Step of the wizard (Wizard::showMetademands()).
+ #
+ #  - forms: form of the step, assembled by the legacy Wizard::constructForm() chain
+ #  - show_actions, actions_margin, show_print: flags of the bottom actions
+ #  - ancestor_tickets_id: parent ticket of a sub-request, or null -#}
 <div class="md-basket-wizard"></div>
 
 <div class="md-wizard">
     {% if has_data %}
-        {# Form fragment built by the legacy constructForm() chain #}
+        {# raw: wizard form printed by the Field::getFieldInput() widgets (constructForm(), §3.2) #}
         {{ forms|raw }}
 
         {% if show_actions %}
             <div class="row" style="width: 100%;">
                 <div class="bt-feature col-md-12"{% if actions_margin %} style="margin-top: 20px"{% endif %}>
-                    {{ call('Html::hidden', ['metademands_id', {'value': metademands_id}])|raw }}
+                    <input type="hidden" name="metademands_id" value="{{ metademands_id }}">
                 </div>
             </div>
         {% endif %}
 
-        {{ call('Html::hidden', ['create_metademands', {'value': 1}])|raw }}
+        <input type="hidden" name="create_metademands" value="1">
 
         {% if ancestor_tickets_id is not null %}
-            {{ call('Html::hidden', ['ancestor_tickets_id', {'value': ancestor_tickets_id}])|raw }}
+            <input type="hidden" name="ancestor_tickets_id" value="{{ ancestor_tickets_id }}">
         {% endif %}
 
         {% if show_print %}
@@ -62,8 +67,10 @@
         </div>
         <div class="row">
             <div class="bt-feature col-md-12">
-                {{ call('Html::submit', [__('Previous'), {'name': 'previous', 'class': 'btn btn-primary'}])|raw }}
-                {{ call('Html::hidden', ['previous_metademands_id', {'value': metademands_id}])|raw }}
+                <button type="submit" name="previous" value="{{ __('Previous') }}" class="btn btn-primary">
+                    <span>{{ __('Previous') }}</span>
+                </button>
+                <input type="hidden" name="previous_metademands_id" value="{{ metademands_id }}">
             </div>
         </div>
     </div>

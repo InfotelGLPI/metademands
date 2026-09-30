@@ -27,10 +27,13 @@
 
 {#-
  # Width constraint around the date pickers of the condition form.
- # Html::showDateField() and Html::showDateTimeField() print the picker, so the
- # caller captures it.
+ # Html::showDateField() and Html::showDateTimeField() print the picker.
  #
  # Expected context:
- #  - content: captured markup of the picker
+ #  - name: input name
+ #  - options: picker options (size, value)
+ #  - with_time: true for a date and time picker
 -#}
-<span style="width: 50%!important;display: -webkit-box;">{{ content|raw }}</span>
+<span style="width: 50%!important;display: -webkit-box;">
+    {% do call(with_time ? 'Html::showDateTimeField' : 'Html::showDateField', [name, options]) %}
+</span>

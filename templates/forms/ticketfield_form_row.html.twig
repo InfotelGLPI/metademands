@@ -30,19 +30,25 @@
  # showFormHeader()/showFormButtons() table, so this template emits a <tr> only.
  #
  # Expected context:
- #  - field_name:  translated name of the ticket field being predefined
- #  - hidden_html: the four Html::hidden() the form needs to be saved
- #  - script_html: Ajax::updateItem() call that fills the value cell
+ #  - field_name: translated name of the ticket field being predefined
+ #  - entities_id, is_recursive, metademands_id, num: hidden values the save needs
+ #  - value_url, value_params: AJAX endpoint and parameters filling the value cell
 -#}
 <tr class="tab_bg_1">
     <td>{{ __('Name') }}</td>
     <td>
         {{ field_name }}
-        {{- hidden_html|raw }}
+        {# Required by the CommonDBChild rights check done in front/ticketfield.form.php:
+           without the parent foreign key, check(-1, UPDATE, $_POST) cannot resolve the
+           parent metademand and the save is rejected with an access denied error. #}
+        <input type="hidden" name="entities_id" value="{{ entities_id }}">
+        <input type="hidden" name="is_recursive" value="{{ is_recursive }}">
+        <input type="hidden" name="plugin_metademands_metademands_id" value="{{ metademands_id }}">
+        <input type="hidden" name="num" value="{{ num }}">
     </td>
     <td>{{ __('Value') }}</td>
     <td>
         <span id="show_massiveaction_field">&nbsp;</span>
-        {{- script_html|raw }}
+        {% do call('Ajax::updateItem', ['show_massiveaction_field', value_url, value_params, '', true]) %}
     </td>
 </tr>

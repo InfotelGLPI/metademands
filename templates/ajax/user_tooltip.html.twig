@@ -30,10 +30,10 @@
  # requester / manager field of the wizard.
  #
  # Expected context:
- #  - user_informations_html: card body, written by Wizard::showUserInformations()
+ #  - user: the User, whose card is printed by Wizard::showUserInformations()
  #}
 
 <br><br>
 <div class="alert alert-info alert-dismissible fade show informations d-flex align-items-center">
-    <div>{{ user_informations_html|raw }}</div>
+    <div>{% do call('GlpiPlugin\\Metademands\\Wizard::showUserInformations', [user]) %}</div>
 </div>

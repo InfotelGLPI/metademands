@@ -29,7 +29,6 @@
 
 namespace GlpiPlugin\Metademands;
 
-use Ajax;
 use ChangeTask;
 use CommonDBTM;
 use CommonGLPI;
@@ -5168,17 +5167,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             }
 
             echo TemplateRenderer::getInstance()->render('@metademands/forms/ticket_validation.html.twig', [
-                'modal_html' => Ajax::createIframeModalWindow(
-                    'metavalidation',
-                    PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id=' . $tickets_id,
-                    [
-                        'title' => __('Metademand validation', 'metademands'),
-                        'display' => false,
-                        'width' => 200,
-                        'height' => 400,
-                        'reloadonclose' => true,
-                    ],
-                ),
+                'modal_url' => PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id=' . $tickets_id,
                 'has_sons' => is_array($sons),
                 'sons_rows' => $sons_rows,
             ]);
@@ -5814,9 +5803,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     {
         switch ($ma->getAction()) {
             case 'duplicate':
-                echo TemplateRenderer::getInstance()->render(
+                TemplateRenderer::getInstance()->display(
                     '@metademands/forms/massiveaction_field.html.twig',
-                    ['submit_html' => Html::submit(__('Validate'), ['name' => 'massiveaction'])],
+                    ['submit_label' => __('Validate')],
                 );
                 return true;
             case 'exportXML':
@@ -6744,7 +6733,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         }
 
         TemplateRenderer::getInstance()->display('@metademands/forms/metademand_progression.html.twig', [
-            'css_html' => Html::css(PLUGIN_METADEMANDS_WEBDIR . '/css/_process-chart.css'),
             'creation_date' => Html::convDateTime($item->fields['date']),
             'steps' => $steps,
             'end_icon' => !empty($item->fields['solvedate']) ? 'ti-check' : 'ti-hourglass',

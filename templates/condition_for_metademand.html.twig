@@ -42,7 +42,7 @@
                     {{ __('Submit button display', 'metademands') }}
                 </label>
                 <div class="col-8">
-                    {{ show_rule_html|raw }}
+                    {% do call('Dropdown::showFromArray', ['show_rule', show_rule_options, {'value': show_rule}]) %}
                 </div>
             </div>
         </div>
@@ -87,10 +87,13 @@
 
             <div class="row g-2 align-items-center">
                 <div class="col">
-                    {{ show_logic_html|raw }}
+                    {% do call('Dropdown::showFromArray', ['show_logic', show_logic_options]) %}
                 </div>
                 <div class="col">
-                    {{ fields_dropdown_html|raw }}
+                    {% do call('Dropdown::showFromArray', ['plugin_metademands_fields_id', fields_options, {
+                        'rand': rand,
+                        'display_emptychoice': true
+                    }]) %}
                     {% do call('Ajax::updateItemOnSelectEvent', [
                         'dropdown_plugin_metademands_fields_id' ~ rand,
                         'show_type_field' ~ rand,
@@ -120,7 +123,7 @@
                     <span id="show_value_to_check_{{ rand }}"></span>
                 </div>
                 <div class="col">
-                    {{ order_dropdown_html|raw }}
+                    {% do call('Dropdown::showNumber', ['order']) %}
                 </div>
                 <div class="col">
                     <button class="btn btn-primary" type="submit" name="add" value="1">

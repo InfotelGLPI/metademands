@@ -41,7 +41,6 @@ use Migration;
 use Session;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Address;
-use User;
 
 /**
  * Class MailTask
@@ -176,43 +175,17 @@ class MailTask extends CommonDBChild
             $values['block_use'] = [$values['block_use']];
         }
 
-        ob_start();
-        \Dropdown::showYesNo('useBlock', $values['useBlock']);
-        $use_block_html = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showFromArray('block_use', $blocks, [
-            'values'   => $values['block_use'],
-            'width'    => '100%',
-            'multiple' => true,
-            'entity'   => $_SESSION['glpiactiveentities'],
-        ]);
-        $block_use_html = ob_get_clean();
-
         $ticket = new \Ticket();
-        ob_start();
-        User::dropdown([
-            'name'   => 'users_id_recipient',
-            'value'  => $values['users_id_recipient'] ?? 0,
-            'entity' => $metademands->fields["entities_id"],
-            'right'  => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER),
-        ]);
-        $user_recipient_html = ob_get_clean();
-
-        ob_start();
-        \Dropdown::show('Group', [
-            'name'      => 'groups_id_recipient',
-            'value'     => $values['groups_id_recipient'] ?? 0,
-            'entity'    => $metademands->fields["entities_id"],
-            'condition' => ['is_requester' => 1],
-        ]);
-        $group_recipient_html = ob_get_clean();
 
         TemplateRenderer::getInstance()->display('@metademands/mailtask_form.html.twig', [
-            'use_block_html'       => $use_block_html,
-            'block_use_html'       => $block_use_html,
-            'user_recipient_html'  => $user_recipient_html,
-            'group_recipient_html' => $group_recipient_html,
+            'use_block'            => $values['useBlock'],
+            'blocks'               => $blocks,
+            'block_use'            => $values['block_use'],
+            'active_entities'      => $_SESSION['glpiactiveentities'],
+            'entities_id'          => $metademands->fields["entities_id"],
+            'users_id_recipient'   => $values['users_id_recipient'] ?? 0,
+            'user_right'           => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER),
+            'groups_id_recipient'  => $values['groups_id_recipient'] ?? 0,
             'name'                 => $values['name'] ?? '',
             'content'              => stripslashes($values['content'] ?? ''),
             'mailtask_id'          => $values['mailtask_id'],

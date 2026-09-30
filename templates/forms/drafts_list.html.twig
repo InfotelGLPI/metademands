@@ -25,6 +25,10 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Drafts of the current user (Draft::showDraftsForUserMetademand()).
+ #
+ #  - entries: {id, name, date}
+ #  - draft_id, users_id, meta_id, step, webdir -#}
 <span>
     <script>
         $('[name="wizard_form"]').submit(function() {
@@ -48,26 +52,18 @@
         <tr>
             <td colspan="4" class="center">
                 <br>
-                {{ call('Html::input', ['draft_name', {
-                    'value': '',
-                    'maxlength': 250,
-                    'size': 40,
-                    'placeholder': __('Draft name', 'metademands')
-                }])|raw }}
+                <input type="text" name="draft_name" value="" maxlength="250" size="40"
+                       placeholder="{{ __('Draft name', 'metademands') }}" class="form-control">
                 <br>
-                {{ call('Html::submit', [_x('button', 'Save as draft', 'metademands'), {
-                    'name': 'save_draft',
-                    'form': '',
-                    'id': 'submitSave',
-                    'icon': 'ti ti-cloud-upload pointer',
-                    'class': 'btn btn-success btn-sm'
-                }])|raw }}
+                <button type="submit" value="{{ _x('button', 'Save as draft', 'metademands') }}" name="save_draft" form=""
+                        id="submitSave" class="btn btn-success btn-sm">
+                    <i class="ti ti-cloud-upload pointer"></i>&nbsp;<span>{{ _x('button', 'Save as draft', 'metademands') }}</span>
+                </button>
                 &nbsp;
-                {{ call('Html::submit', [_x('button', 'Clean form', 'metademands'), {
-                    'name': 'clean_form',
-                    'icon': 'ti ti-playlist-x pointer',
-                    'class': 'btn btn-warning btn-sm'
-                }])|raw }}
+                <button type="submit" value="{{ _x('button', 'Clean form', 'metademands') }}" name="clean_form"
+                        class="btn btn-warning btn-sm">
+                    <i class="ti ti-playlist-x pointer"></i>&nbsp;<span>{{ _x('button', 'Clean form', 'metademands') }}</span>
+                </button>
                 <br>
             </td>
         </tr>
@@ -115,7 +111,7 @@
         </tbody>
     </table>
 
-    {{ call('Html::hidden', ['plugin_metademands_drafts_id', {'value': draft_id, 'id': 'plugin_metademands_drafts_id'}])|raw }}
+    <input type="hidden" name="plugin_metademands_drafts_id" value="{{ draft_id }}" id="plugin_metademands_drafts_id">
 
     <script>
         var meta_id = {{ meta_id }};

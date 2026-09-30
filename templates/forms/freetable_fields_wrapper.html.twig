@@ -28,15 +28,16 @@
 {#
  # Expected context:
  #  - title        string  section heading
- #  - tooltip_html string  framework tooltip fragment (Html::showToolTip)
- #  - rows_html    string  rows rendered by Freetable::showFreetableFields()
+ #  - tooltip      string  help shown next to the heading
+ #  - params       array   field parameters; the rows are printed by the
+ #                         Freetable::showFreetableFields() field class
  #}
 
 <table class="tab_cadre_fixe">
     <tr class="tab_bg_1">
         <th colspan="5">
-            {{ title }}&nbsp;{{ tooltip_html|raw }}
+            {{ title }}&nbsp;<i class="ti ti-info-circle" data-bs-toggle="tooltip" title="{{ tooltip }}"></i>
         </th>
     </tr>
-    {{ rows_html|raw }}
+    {% do call('GlpiPlugin\\Metademands\\Fields\\Freetable::showFreetableFields', [params]) %}
 </table>

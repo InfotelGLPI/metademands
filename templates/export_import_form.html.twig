@@ -49,11 +49,10 @@
             </div>
         </div>
         <div class="card-footer text-center">
-            {{ call('Html::submit', [__('Import', 'metademands'), {
-                'name': 'import_file',
-                'class': 'btn btn-primary'
-            }])|raw }}
+            <button type="submit" name="import_file" value="{{ __('Import', 'metademands') }}" class="btn btn-primary">
+                <span>{{ __('Import', 'metademands') }}</span>
+            </button>
         </div>
     </div>
-    {# closeForm() emits the CSRF token and the closing </form> tag #}
-    {{ call('Html::closeForm', [false])|raw }}
+    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+</form>

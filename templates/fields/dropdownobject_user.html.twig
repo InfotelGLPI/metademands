@@ -32,22 +32,25 @@
  #   update_script      : core <script> from Ajax::commonDropdownUpdateItem
  #   with_tooltip       : whether the tooltip anchor must be rendered
  #   field_id           : metademands field id, part of the tooltip anchor id
- #   user_informations  : Wizard::showUserInformations() markup for the selected user
+ #   info_user          : selected user whose card is shown (Wizard::showUserInformations()), or null
  #   linked_text_fields : config consumed by public/scripts/dropdownobject_linked_text_fields.js
 -#}
+{# raw: Ajax::updateItem() script of the tooltip anchor, core (§3.2) #}
 {{ tooltip_script|raw }}
 {% if wrapper_id %}<div id="{{ wrapper_id }}" class="input-group">{% endif %}
+{# raw: User::dropdown() core widget, rendered by getFieldInput() (§3.2) #}
 {{ widget_html|raw }}
 {% if wrapper_id %}</div>{% endif %}
+{# raw: Ajax::commonDropdownUpdateItem() script, core (§3.2) #}
 {{ update_script|raw }}
 
 {% if with_tooltip %}
     {# Always rendered: this is the anchor utooltipUpdate.php loads into on every change. #}
     <span id="tooltip_user{{ field_id }}">
-        {% if user_informations %}
+        {% if info_user is not null %}
             <br><br>
             <div class="alert alert-info alert-dismissible fade show informations d-flex align-items-center">
-                <div>{{ user_informations|raw }}</div>
+                <div>{% do call('GlpiPlugin\\Metademands\\Wizard::showUserInformations', [info_user]) %}</div>
             </div>
         {% endif %}
     </span>

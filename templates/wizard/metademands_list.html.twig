@@ -25,9 +25,19 @@
  # --------------------------------------------------------------------------
  #}
 
+{#
+ # List of the meta-demands the requester can pick.
+ #
+ # Expected context:
+ #  - display_cards: cards (entries, most_used) or a plain drop-down (metademands)
+ #  - most_used:     entries of most_used_metademands.html.twig
+ #  - entries:       cards; comment is designer-defined rich HTML, sanitized by |safe_html
+ #  - metademands:   id => name of the drop-down
+ #}
+
 {% if display_cards %}
     <div id="listmeta">
-        {{ most_used|raw }}
+        {% include '@metademands/wizard/most_used_metademands.html.twig' with {'entries': most_used} only %}
         <div tabindex="-1" id="mt-fuzzysearch">
             <div class="modal-content">
                 <div class="modal-body" style="padding: 10px;">
@@ -63,7 +73,7 @@
                                     <div class="text-secondary remove-last-tinymce-margin"
                                          style="font-size:0.8rem;">
                                         {% if entry.comment is not empty %}
-                                            {{ entry.comment|raw }}
+                                            {{ entry.comment|safe_html }}
                                         {% else %}
                                             {{ entry.name }}
                                         {% endif %}
@@ -82,7 +92,7 @@
 {% else %}
     <div id="listmeta" class="bt-row">
         <div class="bt-feature bt-col-sm-12 bt-col-md-12">
-            {{ dropdown|raw }}
+            {% do call('Dropdown::showFromArray', ['metademands_id', metademands, {'width': 250}]) %}
         </div>
     </div>
     <br>

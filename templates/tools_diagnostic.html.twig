@@ -29,14 +29,32 @@
  # One card per diagnostic. Each card either lists the offending fields in a single table or
  # states that nothing was found; the legacy markup opened a <tr>/<td> per section and never
  # closed it, which left the browser to guess the structure.
+ #
+ # Each action is a small POST form (was Html::getSimpleForm(), a link posting through JS).
  #}
+
+{% macro action_form(action, button, label, fields, icon) %}
+    <form method="post" action="{{ action }}" class="d-inline">
+        {% for name, value in fields %}
+            <input type="hidden" name="{{ name }}" value="{{ value }}">
+        {% endfor %}
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        {% if icon %}
+            <button type="submit" name="{{ button }}" value="1" class="btn btn-link p-0" title="{{ label }}">
+                <i class="{{ icon }}"></i><span class="sr-only">{{ label }}</span>
+            </button>
+        {% else %}
+            <button type="submit" name="{{ button }}" value="1" class="btn btn-primary">{{ label }}</button>
+        {% endif %}
+    </form>
+{% endmacro %}
 
 <div class="card mb-3">
     <div class="card-header">
         <h3 class="card-title">{{ __('Metademands global status', 'metademands') }}</h3>
     </div>
     <div class="card-body">
-        {{ global_status_form|raw }}
+        {{ _self.action_form(tools_url, 'change_global_status', _x('button', 'Verify metademands global status', 'metademands'), {}, '') }}
     </div>
 </div>
 
@@ -44,7 +62,7 @@
     <div class="card-header">
         <h3 class="card-title">{{ __('Duplicates fields options', 'metademands') }}</h3>
         {% if duplicates_has %}
-            <span class="badge bg-outline-danger ms-2">{{ duplicates_rows|length }}</span>
+            <span class="badge bg-red-lt ms-2">{{ duplicates_rows|length }}</span>
         {% endif %}
     </div>
     {% if duplicates_has %}
@@ -60,6 +78,7 @@
                 <tbody>
                     {% for row in duplicates_rows %}
                         <tr>
+                            {# raw: CommonDBTM::getLink() escapes the name (§3.1) #}
                             <td>{{ row.field_link|raw }}</td>
                             <td>{{ row.meta_name }}</td>
                             <td>{{ row.nbr }}</td>
@@ -70,7 +89,7 @@
         </div>
     {% else %}
         <div class="card-body">
-            <span class="badge bg-outline-success">{{ __('No duplicates founded', 'metademands') }}</span>
+            <span class="badge bg-green-lt">{{ __('No duplicates founded', 'metademands') }}</span>
         </div>
     {% endif %}
 </div>
@@ -79,7 +98,7 @@
     <div class="card-header">
         <h3 class="card-title">{{ __('Empty fields options', 'metademands') }}</h3>
         {% if empty_options_has %}
-            <span class="badge bg-outline-danger ms-2">{{ empty_options_rows|length }}</span>
+            <span class="badge bg-red-lt ms-2">{{ empty_options_rows|length }}</span>
         {% endif %}
     </div>
     {% if empty_options_has %}
@@ -95,9 +114,10 @@
                 <tbody>
                     {% for row in empty_options_rows %}
                         <tr>
+                            {# raw: CommonDBTM::getLink() escapes the name (§3.1) #}
                             <td>{{ row.field_link|raw }}</td>
                             <td>{{ row.meta_name }}</td>
-                            <td class="text-center">{{ row.purge_form|raw }}</td>
+                            <td class="text-center">{{ _self.action_form(tools_url, 'purge_emptyoptions', _x('button', 'Delete permanently'), {'id': row.id}, 'ti ti-circle-x') }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -105,7 +125,7 @@
         </div>
     {% else %}
         <div class="card-body">
-            <span class="badge bg-outline-success">{{ __('No empty field options founded', 'metademands') }}</span>
+            <span class="badge bg-green-lt">{{ __('No empty field options founded', 'metademands') }}</span>
         </div>
     {% endif %}
 </div>
@@ -115,7 +135,7 @@
         <div class="card-header">
             <h3 class="card-title">{{ __('Ranks problem with fields', 'metademands') }}</h3>
             {% if ranks_has %}
-                <span class="badge bg-outline-danger ms-2">{{ ranks_rows|length }}</span>
+                <span class="badge bg-red-lt ms-2">{{ ranks_rows|length }}</span>
             {% endif %}
         </div>
         {% if ranks_has %}
@@ -131,9 +151,10 @@
                     <tbody>
                         {% for row in ranks_rows %}
                             <tr>
+                                {# raw: CommonDBTM::getLink() escapes the name (§3.1) #}
                                 <td>{{ row.field_link|raw }}</td>
                                 <td>{{ row.meta_name }}</td>
-                                <td class="text-end">{{ row.fix_form|raw }}</td>
+                                <td class="text-end">{{ _self.action_form(customvalue_url, 'fixranks', _x('button', 'Do you want to fix them ? Warning you must check your options after!', 'metademands'), {'plugin_metademands_fields_id': row.fields_id}, 'ti ti-settings') }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -141,7 +162,7 @@
             </div>
         {% else %}
             <div class="card-body">
-                <span class="badge bg-outline-success">{{ __('No problems with ranks found', 'metademands') }}</span>
+                <span class="badge bg-green-lt">{{ __('No problems with ranks found', 'metademands') }}</span>
             </div>
         {% endif %}
     </div>

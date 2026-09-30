@@ -471,12 +471,6 @@ class Condition extends CommonDBChild
 
         $rand = mt_rand();
 
-        ob_start();
-        \Dropdown::showFromArray('show_rule', self::getEnumShowRule(), [
-            'value' => $item->fields['show_rule'],
-        ]);
-        $show_rule_html = ob_get_clean();
-
         $field  = new Field();
         $fields = $field->find([
             'type'                              => self::$field_types_available,
@@ -487,31 +481,15 @@ class Condition extends CommonDBChild
             $dropdown_fields[$f['id']] = stripslashes($f['name']) . ' (' . $f['id'] . ') ';
         }
 
-        ob_start();
-        \Dropdown::showFromArray('show_logic', self::getEnumShowLogic());
-        $show_logic_html = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showFromArray('plugin_metademands_fields_id', $dropdown_fields, [
-            'rand'                => $rand,
-            'display_emptychoice' => true,
-        ]);
-        $fields_dropdown_html = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showNumber('order');
-        $order_dropdown_html = ob_get_clean();
-
         TemplateRenderer::getInstance()->display('@metademands/condition_for_metademand.html.twig', [
             'rule_action'         => Toolbox::getItemTypeFormURL(Metademand::class),
             'condition_action'    => Toolbox::getItemTypeFormURL(Condition::class),
             'metademand_id'       => $item->fields['id'],
             'show_rule'           => $item->fields['show_rule'],
             'show_rule_always'    => self::SHOW_RULE_ALWAYS,
-            'show_rule_html'      => $show_rule_html,
-            'show_logic_html'     => $show_logic_html,
-            'fields_dropdown_html' => $fields_dropdown_html,
-            'order_dropdown_html'  => $order_dropdown_html,
+            'show_rule_options'   => self::getEnumShowRule(),
+            'show_logic_options'  => self::getEnumShowLogic(),
+            'fields_options'      => $dropdown_fields,
             'rand'                => $rand,
             'plugin_web_dir'      => PLUGIN_METADEMANDS_WEBDIR,
         ]);
@@ -926,48 +904,19 @@ class Condition extends CommonDBChild
             $dropdown_fields[$f['id']] = stripslashes($f['name']) . ' (' . $f['id'] . ') ';
         }
 
-        ob_start();
-        \Dropdown::showFromArray('show_logic', self::getEnumShowLogic(), [
-            'value' => $this->fields['show_logic'],
-        ]);
-        $show_logic_html = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showFromArray('plugin_metademands_fields_id', $dropdown_fields, [
-            'rand'                => $rand,
-            'display_emptychoice' => true,
-            'value'               => $this->fields['plugin_metademands_fields_id'],
-        ]);
-        $fields_dropdown_html = ob_get_clean();
-
-        $type_field_html = Field::getFieldTypesName($this->fields['type']);
-
-        ob_start();
-        \Dropdown::showFromArray('show_condition', Condition::getEnumShowCondition($this->fields['type']), [
-            'display_emptychoice' => false,
-            'value'               => $this->fields['show_condition'],
-            'rand'                => $rand,
-        ]);
-        $condition_dropdown_html = ob_get_clean();
-
-        ob_start();
-        self::showCheckValue($this->fields['plugin_metademands_fields_id'], $ID);
-        $check_value_html = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showNumber('order', ['value' => $this->fields['order']]);
-        $order_dropdown_html = ob_get_clean();
-
         TemplateRenderer::getInstance()->display('@metademands/condition_form.html.twig', [
             'action'                  => Toolbox::getItemTypeFormURL(Condition::class),
             'metademand_id'           => $item->fields['id'],
             'condition_id'            => $ID,
-            'show_logic_html'         => $show_logic_html,
-            'fields_dropdown_html'    => $fields_dropdown_html,
-            'type_field_html'         => $type_field_html,
-            'condition_dropdown_html' => $condition_dropdown_html,
-            'check_value_html'        => $check_value_html,
-            'order_dropdown_html'     => $order_dropdown_html,
+            'show_logic_options'      => self::getEnumShowLogic(),
+            'show_logic'              => $this->fields['show_logic'],
+            'fields_options'          => $dropdown_fields,
+            'fields_id'               => $this->fields['plugin_metademands_fields_id'],
+            'type_field_name'         => Field::getFieldTypesName($this->fields['type']),
+            'show_condition_options'  => self::getEnumShowCondition($this->fields['type']),
+            'show_condition'          => $this->fields['show_condition'],
+            'check_value_callable'    => self::class . '::showCheckValue',
+            'order'                   => $this->fields['order'],
             'rand'                    => $rand,
             'plugin_web_dir'          => PLUGIN_METADEMANDS_WEBDIR,
         ]);
@@ -1139,16 +1088,9 @@ class Condition extends CommonDBChild
                         if ($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
-                        // Html::showDateField() prints the picker: capture it and let the
-                        // template own the width constraint.
-                        ob_start();
-                        Html::showDateField(
-                            "$name",
-                            $option,
-                        );
-                        echo TemplateRenderer::getInstance()->render(
+                        TemplateRenderer::getInstance()->display(
                             '@metademands/forms/condition_date_wrapper.html.twig',
-                            ['content' => ob_get_clean()],
+                            ['name' => $name, 'options' => $option, 'with_time' => false],
                         );
                         break;
                     case 'datetime':
@@ -1158,16 +1100,9 @@ class Condition extends CommonDBChild
                         if ($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
-                        // Html::showDateTimeField() prints the picker: capture it and let
-                        // the template own the width constraint.
-                        ob_start();
-                        Html::showDateTimeField(
-                            "$name",
-                            $option,
-                        );
-                        echo TemplateRenderer::getInstance()->render(
+                        TemplateRenderer::getInstance()->display(
                             '@metademands/forms/condition_date_wrapper.html.twig',
-                            ['content' => ob_get_clean()],
+                            ['name' => $name, 'options' => $option, 'with_time' => true],
                         );
                         break;
 

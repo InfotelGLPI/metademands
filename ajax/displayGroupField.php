@@ -55,16 +55,9 @@ foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $d) {
     $group = $d['groups_id'];
 }
 
-ob_start();
 // Criteria shared with MetademandValidation::validateMeta(), which replays them on
 // the value that comes back: the list and the check must not be able to drift apart.
-\Group::dropdown([
-    'condition' => MetademandValidation::getAssignableGroupCriteria(),
-    'name' => 'group_to_assign',
-    'value' => $group,
-]);
-$group_dropdown_html = ob_get_clean();
-
 TemplateRenderer::getInstance()->display('@metademands/ajax/group_to_assign.html.twig', [
-    'group_dropdown_html' => $group_dropdown_html,
+    'condition' => MetademandValidation::getAssignableGroupCriteria(),
+    'value'     => $group,
 ]);

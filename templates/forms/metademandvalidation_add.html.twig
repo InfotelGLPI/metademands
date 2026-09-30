@@ -34,8 +34,10 @@
             {% if canedit %}
                 <tr class="tab_bg_1">
                     <td class="tab_bg_2 center" colspan="6">
-                        {{ hidden_html|raw }}
-                        {{ submit_html|raw }}
+                        <input type="hidden" name="plugin_metademands_metademands_id" value="{{ metademands_id }}">
+                        <button type="submit" name="add" value="{{ _x('button', 'Add') }}" class="btn btn-primary">
+                            <span>{{ _x('button', 'Add') }}</span>
+                        </button>
                     </td>
                 </tr>
             {% endif %}

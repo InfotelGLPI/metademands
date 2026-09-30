@@ -25,9 +25,21 @@
  # --------------------------------------------------------------------------
  #}
 
-{# Emits <tr> rows only: the caller renders this inside an already open <table>. #}
+{#-
+ # Emits <tr> rows only: the caller renders this inside an already open <table>.
+ #
+ # Expected context:
+ #  - blocks: rows built by FieldOption::showLinkHtml(), of three kinds:
+ #     - row:    label, comment, alert_lines, widget_alert, widgets and widget_span;
+ #               each widget is a GLPI helper printing itself, {callable, args}
+ #     - hidden: name and value of a hidden input
+ #     - raw:    html, the options a plugin prints (showOptions() hook)
+-#}
 {% for block in blocks %}
-    {% if block.kind == 'raw' %}
+    {% if block.kind == 'hidden' %}
+        <input type="hidden" name="{{ block.name }}" value="{{ block.value }}">
+    {% elseif block.kind == 'raw' %}
+        {# raw: markup returned by the showOptions() hook of a third-party plugin, not ours to escape (§3.2) #}
         {{ block.html|raw }}
     {% else %}
         <tr>
@@ -47,9 +59,11 @@
                 {% if block.widget_alert %}
                     <span class="alert alert-warning d-flex">{{ block.widget_alert }}</span>
                 {% endif %}
-                {{ block.widget_html|raw }}
+                {% for widget in block.widgets %}
+                    {% do call(widget.callable, widget.args) %}
+                {% endfor %}
                 {% if block.widget_span is not null %}
-                    <span id="{{ block.widget_span.id }}">{{ block.widget_span.html|raw }}</span>
+                    <span id="{{ block.widget_span.id }}">{% do call(block.widget_span.widget.callable, block.widget_span.widget.args) %}</span>
                 {% endif %}
             </td>
         </tr>

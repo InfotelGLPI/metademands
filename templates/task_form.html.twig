@@ -43,7 +43,25 @@
                         <span>{{ __('You cannot add new tasks if linked tickets are not solved', 'metademands') }}</span>
                     </div>
                 {% else %}
-                    {{ form_html|raw }}
+                    {% do item.showFormHeader(options) %}
+                    {% if form_id <= 0 %}
+                        {% embed '@metademands/forms/task_form_row.html.twig' with {'label': __('Task type', 'metademands')} %}
+                            {% block content %}
+                                {% do call('Dropdown::showFromArray', ['taskType', task_types, {'value': 0, 'rand': type_rand}]) %}
+                                {% do call('Ajax::updateItemOnSelectEvent', ['dropdown_taskType' ~ type_rand, 'show_add_task_form', type_url, {
+                                    'taskType': '__VALUE__',
+                                    'plugin_metademands_metademands_id': parent.getID()
+                                }]) %}
+                            {% endblock %}
+                        {% endembed %}
+                    {% endif %}
+                    {% embed '@metademands/forms/task_form_row.html.twig' with {'label': '', 'span_id': 'show_add_task_form'} %}
+                        {% block content %}
+                            {% do item.showTypeForm(parent, form_id, true) %}
+                        {% endblock %}
+                    {% endembed %}
+                    <input type="hidden" name="plugin_metademands_metademands_id" value="{{ parent.getID() }}">
+                    {% do item.showFormButtons({'colspan': 3}) %}
                 {% endif %}
             </div>
         </div>

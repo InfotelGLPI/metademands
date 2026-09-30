@@ -32,7 +32,7 @@
  #    title      : dialog title
  #    user_label : "Previous user" label, empty when that user could not be loaded
  #    user_name  : display name of the previous user
- #    content    : already sanitised HTML of the parent fields
+ #    content    : HTML of the parent fields, sanitized by |safe_html
 -#}
 <div class="d-none" data-metademands-previous-dialog="{{ title }}">
     {% if user_label is not empty %}
@@ -42,5 +42,5 @@
             </tr>
         </table>
     {% endif %}
-    {{ content|raw }}
+    {{ content|safe_html }}
 </div>

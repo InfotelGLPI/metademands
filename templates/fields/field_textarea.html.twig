@@ -25,17 +25,25 @@
  # --------------------------------------------------------------------------
  #}
 
-{#- Two legacy branches. Rich text: the captured textarea widget, then the
- #  scriptBlock and the static <style> — all generated/static, injected raw.
- #  Classic: a <textarea> whose exact multi-line formatting is reproduced
- #  verbatim; `value` is auto-escaped by {{ }} (byte-identical to the legacy
- #  htmlspecialchars($value)) and the placeholder `comment` is now auto-escaped
- #  too (a deliberate hardening of the raw legacy attribute). name_attr / id_attr
- #  are data and are escaped as well. -#}
+{#- Textarea field (Fields\Textarea::showWizardField()).
+ #
+ #  - is_richtext: rich text editor, else a classic <textarea>
+ #  - rich text: textarea_html (editor widget of Fields\Textarea::textarea()) and
+ #    script_html (hides the document dropdown)
+ #  - classic: is_required, rows, cols, comment (placeholder), value, name_attr, id_attr
+-#}
 {%- if is_richtext -%}
-{{ textarea_html|raw }}{{ script_html|raw }}{{ style_html|raw }}
+{# raw: rich text editor widget and its init script, from getFieldInput() (§3.2) #}
+{{ textarea_html|raw }}
+{# raw: Html::scriptBlock() hiding the document dropdown, no data (§3.2) #}
+{{ script_html|raw }}
+<style>
+    .fileupload.only-uploaded-files {
+        display: none;
+    }
+</style>
 {%- else -%}
-<textarea {{ required|raw }} class='form-control' rows='{{ rows }}' cols='{{ cols }}'
+<textarea{% if is_required %} required='required'{% endif %} class='form-control' rows='{{ rows }}' cols='{{ cols }}'
                placeholder="{{ comment }}"
                name='{{ name_attr }}' id='{{ id_attr }}'>{{ value }}</textarea>
 {%- endif -%}

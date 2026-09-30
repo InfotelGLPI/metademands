@@ -25,6 +25,12 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- Radio field of the wizard (Fields\Radio::showWizardField()).
+ #
+ #  - is_required: the choice is mandatory
+ #  - options: {key, name, is_checked, has_comment, comment_html, icon}, where
+ #    comment_html is sanitized by RichText::getSafeHtml() (shown by |safe_html in the
+ #    block display, escaped into the tooltip attribute otherwise) -#}
 {% if is_block %}
 <div class='row flex-row'>{% endif -%}
     {%- for opt in options -%}
@@ -41,23 +47,23 @@
                         <div class='text-start'>
                             <div class='d-flex align-items-center'>{{ opt.name }}</div>
                             <small
-                                class='form-hint'>{% if opt.has_comment %}{{ opt.comment_html|raw }}{% endif %}</small>
+                                class='form-hint'>{% if opt.has_comment %}{{ opt.comment_html|safe_html }}{% endif %}</small>
                         </div>
-                        <div class='me-2 ms-auto'><input {{ opt.required|raw }} class='form-check-input' type='radio'
+                        <div class='me-2 ms-auto'><input{% if is_required %} required{% endif %} class='form-check-input' type='radio'
                                                                                 name='{{ namefield }}[{{ id }}]'
                                                                                 id='{{ namefield }}[{{ id }}][{{ opt.key }}]'
-                                                                                value='{{ opt.key }}' {{ opt.checked|raw }}>
+                                                                                value='{{ opt.key }}'{% if opt.is_checked %} checked{% endif %}>
                         </div>
                     </div>
                 </label></div>
         {%- else -%}
-            <div class='form-check {{ inline }}'><input {{ opt.required|raw }} class='form-check-input' type='radio'
+            <div class='form-check {{ inline }}'><input{% if is_required %} required{% endif %} class='form-check-input' type='radio'
                                                                                name='{{ namefield }}[{{ id }}]'
                                                                                id='{{ namefield }}[{{ id }}][{{ opt.key }}]'
-                                                                               value='{{ opt.key }}' {{ opt.checked|raw }}><label
+                                                                               value='{{ opt.key }}'{% if opt.is_checked %} checked{% endif %}><label
                     class='form-check-label'
-                    for='{{ namefield }}[{{ id }}][{{ opt.key }}]'>{{ opt.name }}{% if opt.has_comment %}&nbsp;<span
-                        style='vertical-align: bottom;'>{{ opt.comment_tooltip_html|raw }}</span>{% endif %}</label>
+                    for='{{ namefield }}[{{ id }}][{{ opt.key }}]'>{{ opt.name }}{% if opt.has_comment %}&nbsp;<span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top"
+                        data-bs-html="true" data-bs-title="{{ opt.comment_html }}">?</span>{% endif %}</label>
             </div>
         {%- endif -%}
     {%- endfor -%}

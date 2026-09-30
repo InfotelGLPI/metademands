@@ -29,12 +29,10 @@
 
 namespace GlpiPlugin\Metademands;
 
-use Ajax;
 use CommonDBTM;
 use CommonGLPI;
 use CommonITILActor;
 use DbUtils;
-use Glpi\Application\View\Extension\IllustrationExtension;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QuerySubQuery;
 use Glpi\RichText\RichText;
@@ -280,6 +278,22 @@ class Wizard extends CommonDBTM
      */
     public static function showMetademandTitle($meta, $parameters)
     {
+        TemplateRenderer::getInstance()->display(
+            '@metademands/wizard/metademand_title.html.twig',
+            self::getMetademandTitleContext($meta, $parameters),
+        );
+    }
+
+    /**
+     * Context of wizard/metademand_title.html.twig.
+     *
+     * @param Metademand $meta
+     * @param array      $parameters
+     *
+     * @return array<string, mixed>
+     */
+    private static function getMetademandTitleContext($meta, $parameters): array
+    {
         $config = Config::getInstance();
 
         $title_color       = "#000";
@@ -312,10 +326,8 @@ class Wizard extends CommonDBTM
             $icon = $meta->fields['icon'];
         }
 
-        $illustration = "";
-        if (!empty($meta->fields['illustration'])) {
-            $illustration = (new IllustrationExtension())->renderIllustration($meta->fields['illustration']);
-        }
+        // Name of the illustration, drawn by render_illustration() in the template.
+        $illustration = (string) ($meta->fields['illustration'] ?? '');
 
         if (empty($title = Metademand::displayField($meta->getID(), 'name'))) {
             $title = $meta->getName();
@@ -333,8 +345,8 @@ class Wizard extends CommonDBTM
             }
         }
 
-        $category_details_id    = 0;
-        $category_details_modal = "";
+        $category_details_id  = 0;
+        $category_details_url = "";
         if (Plugin::isPluginActive('servicecatalog')) {
             $configsc = new ServiceCatalogConfig();
             $seedetail = 1;
@@ -361,17 +373,9 @@ class Wizard extends CommonDBTM
                         || $helpdesk_category->fields['service_use'] != null
                         || $helpdesk_category->fields['service_supervision'] != null
                         || $helpdesk_category->fields['service_rules'] != null)) {
-                    $category_details_id    = $itilcategories_id;
-                    $category_details_modal = Ajax::createIframeModalWindow(
-                        'categorydetails' . $itilcategories_id,
-                        PLUGIN_SERVICECATALOG_WEBDIR . "/front/categorydetail.form.php?type=" . $meta->fields['type'] . "&category_id=" . $itilcategories_id,
-                        [
-                            'title' => __('More informations', 'servicecatalog'),
-                            'display' => false,
-                            'width' => 1050,
-                            'height' => 500,
-                        ],
-                    );
+                    $category_details_id  = $itilcategories_id;
+                    $category_details_url = PLUGIN_SERVICECATALOG_WEBDIR . "/front/categorydetail.form.php?type="
+                        . $meta->fields['type'] . "&category_id=" . $itilcategories_id;
                 }
             }
         }
@@ -383,56 +387,54 @@ class Wizard extends CommonDBTM
             $settings_url = Toolbox::getItemTypeFormURL(Metademand::class) . "?id=" . $meta->getID();
         }
 
-        // 'comment' is rich HTML authored in TinyMCE by the metademand designer: it is the only
-        // value handed to the template unescaped, so it must be sanitized here.
+        // Rich HTML authored in TinyMCE by the metademand designer, sanitized by |safe_html.
         $comment = "";
         if (!empty($meta->fields['comment'])) {
             if (empty($comment = Metademand::displayField($meta->getID(), 'comment'))) {
                 $comment = $meta->fields['comment'];
             }
-            $comment = RichText::getSafeHtml($comment);
         }
 
         if (!isset($parameters['from_draft'])) {
             $parameters['from_draft'] = 0;
         }
-        $models_and_drafts = "";
+        $models_and_drafts = null;
         if ($parameters['from_draft'] == 0) {
-            $models_and_drafts = self::showmodelsAndDrafts($parameters, true);
+            $models_and_drafts = self::getModelsAndDraftsContext($parameters, true);
         }
 
-        TemplateRenderer::getInstance()->display('@metademands/wizard/metademand_title.html.twig', [
-            'background_color'       => $background_color,
-            'style_title_color'      => $style_title_color,
-            'icon_color'             => $icon_color,
-            'margin_top'             => empty($illustration) ? "margin-top: 5px" : "margin-top: -45px",
-            'illustration'           => $illustration,
-            'icon'                   => $icon,
-            'is_fa_icon'             => str_contains($icon, 'fa-'),
-            'title'                  => $title,
-            'cat_name'               => $parameters['cat_name'] ?? "",
-            'category_completename'  => $category_completename,
-            'category_details_id'    => $category_details_id,
-            'category_details_modal' => $category_details_modal,
-            'settings_url'           => $settings_url,
-            'comment'                => $comment,
-            'models_and_drafts'      => $models_and_drafts,
-        ]);
+        return [
+            'background_color'      => $background_color,
+            'style_title_color'     => $style_title_color,
+            'icon_color'            => $icon_color,
+            'margin_top'            => empty($illustration) ? "margin-top: 5px" : "margin-top: -45px",
+            'illustration'          => $illustration,
+            'icon'                  => $icon,
+            'is_fa_icon'            => str_contains($icon, 'fa-'),
+            'title'                 => $title,
+            'cat_name'              => $parameters['cat_name'] ?? "",
+            'category_completename' => $category_completename,
+            'category_details_id'   => $category_details_id,
+            'category_details_url'  => $category_details_url,
+            'settings_url'          => $settings_url,
+            'comment'               => $comment,
+            'models_and_drafts'     => $models_and_drafts,
+        ];
     }
 
     /**
-     * Render the drop-down holding the models, the created forms and the drafts of the
-     * current user for a metademand.
+     * Context of wizard/models_and_drafts.html.twig: the drop-down holding the models, the
+     * created forms and the drafts of the current user for a metademand.
      *
-     * @param array    $parameters
-     * @param bool|int $with_title whether the metademand title is shown above the toggle
+     * @param array $parameters
+     * @param bool  $with_title whether the metademand title is shown above the toggle
      *
-     * @return string
+     * @return array<string, mixed>|null null when the drop-down is not displayed
      */
-    public static function showmodelsAndDrafts($parameters, $with_title = 1)
+    private static function getModelsAndDraftsContext(array $parameters, bool $with_title): ?array
     {
         if ($parameters['preview'] || $parameters['seeform']) {
-            return '';
+            return null;
         }
 
         $config = Config::getInstance();
@@ -443,13 +445,15 @@ class Wizard extends CommonDBTM
             [
                 'id' => 'divformmodels',
                 'label' => __('Your models', 'metademands'),
-                'content' => Form::showPrivateFormsForUserMetademand($user_id, $meta_id)
-                    . Form::showPublicFormsForUserMetademand($meta_id),
+                'lists' => [
+                    Form::getPrivateFormsContext($user_id, $meta_id),
+                    Form::getPublicFormsContext($meta_id),
+                ],
             ],
             [
                 'id' => 'divforms',
                 'label' => __('Your created forms', 'metademands'),
-                'content' => Form::showFormsForUserMetademand($user_id, $meta_id),
+                'lists' => [Form::getUserFormsContext($user_id, $meta_id)],
             ],
         ];
 
@@ -457,15 +461,15 @@ class Wizard extends CommonDBTM
             $tabs[] = [
                 'id' => 'divdrafts',
                 'label' => __('Your drafts', 'metademands'),
-                'content' => Draft::showDraftsForUserMetademand($user_id, $meta_id),
+                'lists' => [Draft::getUserDraftsContext($user_id, $meta_id)],
             ];
         }
 
-        return TemplateRenderer::getInstance()->render('@metademands/wizard/models_and_drafts.html.twig', [
+        return [
             'toggle_class' => $with_title ? 'mydraft-withtitle' : 'mydraft-withouttitle',
             'toggle_title' => _x('button', 'Your forms', 'metademands'),
             'tabs' => $tabs,
-        ]);
+        ];
     }
 
     /**
@@ -520,9 +524,9 @@ class Wizard extends CommonDBTM
             $title = $meta->fields['hide_title'] ? 0 : 1;
         }
 
-        $models_and_drafts = "";
+        $models_and_drafts = null;
         if ($parameters['step'] > Metademand::STEP_LIST && $title == 0) {
-            $models_and_drafts = self::showmodelsAndDrafts($parameters, false);
+            $models_and_drafts = self::getModelsAndDraftsContext($parameters, false);
         }
 
         $template_vars = [
@@ -530,17 +534,16 @@ class Wizard extends CommonDBTM
             'models_and_drafts' => $models_and_drafts,
             'maintenance'       => ($maintenance_mode == 1 && !$parameters['preview']),
             'preview'           => (bool) $parameters['preview'],
-            'breadcrumb'        => "",
+            'breadcrumb'        => null,
             'hidden_fields'     => [],
             'header'            => "",
             'icon'              => "",
             'is_fa_icon'        => false,
-            'metademand_title'  => "",
+            'metademand_title'  => null,
             'requester_id'      => null,
             'abort'             => "",
             'abort_message'     => "",
             'steps'             => "",
-            'close_form'        => "",
         ];
 
         if ($template_vars['maintenance']) {
@@ -554,7 +557,7 @@ class Wizard extends CommonDBTM
             && Plugin::isPluginActive('servicecatalog')
             && Session::getCurrentInterface() != 'central'
             && $parameters['itilcategories_id'] > 0) {
-            $template_vars['breadcrumb'] = self::getWizardBreadcrumb($meta, (int) $parameters['itilcategories_id']);
+            $template_vars['breadcrumb'] = self::getWizardBreadcrumbContext($meta, (int) $parameters['itilcategories_id']);
         }
 
         // Case of simple ticket convertion
@@ -602,9 +605,7 @@ class Wizard extends CommonDBTM
         } elseif ($parameters['step'] > Metademand::STEP_LIST) {
             $template_vars['header'] = 'form';
             if ($title == 1) {
-                ob_start();
-                self::showMetademandTitle($meta, $parameters);
-                $template_vars['metademand_title'] = (string) ob_get_clean();
+                $template_vars['metademand_title'] = self::getMetademandTitleContext($meta, $parameters);
             }
 
             if ($parameters['preview'] == 0) {
@@ -654,7 +655,7 @@ class Wizard extends CommonDBTM
             }
             if ($denied_message !== "") {
                 $template_vars['abort'] = 'message';
-                $template_vars['abort_message'] = self::showMessage($denied_message, true);
+                $template_vars['abort_message'] = $denied_message;
                 TemplateRenderer::getInstance()->display('@metademands/wizard/wizard.html.twig', $template_vars);
                 return false;
             }
@@ -675,20 +676,20 @@ class Wizard extends CommonDBTM
             $parameters['meta_validated'],
         );
         $template_vars['steps'] = (string) ob_get_clean();
-        $template_vars['close_form'] = (string) Html::closeForm(false);
 
         TemplateRenderer::getInstance()->display('@metademands/wizard/wizard.html.twig', $template_vars);
     }
 
     /**
-     * Build the service catalog breadcrumb displayed above the wizard.
+     * Context of wizard/wizard_breadcrumb.html.twig: the service catalog breadcrumb displayed
+     * above the wizard.
      *
      * @param Metademand $meta
      * @param int        $itilcategories_id
      *
-     * @return string
+     * @return array<string, mixed>
      */
-    private static function getWizardBreadcrumb(Metademand $meta, int $itilcategories_id): string
+    private static function getWizardBreadcrumbContext(Metademand $meta, int $itilcategories_id): array
     {
         $treename = Category::getTreeCategoryFriendlyName(
             $meta->fields['type'],
@@ -726,16 +727,16 @@ class Wizard extends CommonDBTM
             }
         }
 
-        return TemplateRenderer::getInstance()->render('@metademands/wizard/wizard_breadcrumb.html.twig', [
+        return [
             'tree_name'       => $treename['name'],
-            // getTreeCategoryFriendlyName() json_encode()s its script: decoding it gives back the
-            // JavaScript string literal (quotes included) the inline script turns into a text node.
-            'tree_script'     => json_decode($treename['script']),
+            // getTreeCategoryFriendlyName() json_encode()s a JavaScript string literal: decoding
+            // it and dropping its quotes gives back the script source, encoded by the template.
+            'tree_script'     => trim((string) json_decode($treename['script']), '"'),
             'alert_class'     => $alert_class,
             'alert_style'     => $alert_style,
             'display_warning' => $display_warning,
             'faq_url'         => $faq_url,
-        ]);
+        ];
     }
 
     /**
@@ -999,6 +1000,20 @@ class Wizard extends CommonDBTM
 
     public static function showMostUsedMetademands($type)
     {
+        TemplateRenderer::getInstance()->display('@metademands/wizard/most_used_metademands.html.twig', [
+            'entries' => self::getMostUsedMetademandsEntries($type),
+        ]);
+    }
+
+    /**
+     * Metademands the current user created the most tickets from.
+     *
+     * @param int|string $type
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private static function getMostUsedMetademandsEntries($type): array
+    {
         global $DB;
 
         switch ($type) {
@@ -1090,9 +1105,7 @@ class Wizard extends CommonDBTM
             ];
         }
 
-        TemplateRenderer::getInstance()->display('@metademands/wizard/most_used_metademands.html.twig', [
-            'entries' => $entries,
-        ]);
+        return $entries;
     }
 
     /**
@@ -1111,15 +1124,11 @@ class Wizard extends CommonDBTM
             $options['type'] = $type;
             $data = $meta->listMetademands(false, $options);
 
-            ob_start();
-            \Dropdown::showFromArray('metademands_id', $data, ['width' => 250]);
-            $dropdown = (string) ob_get_clean();
-
             TemplateRenderer::getInstance()->display('@metademands/wizard/metademands_list.html.twig', [
                 'display_cards' => false,
                 'meta_type'     => $type,
                 'step_show'     => Metademand::STEP_SHOW,
-                'dropdown'      => $dropdown,
+                'metademands'   => $data,
             ]);
             return;
         }
@@ -1140,11 +1149,9 @@ class Wizard extends CommonDBTM
             return;
         }
 
-        $most_used = "";
+        $most_used = [];
         if ($config['see_top'] && ($type == \Ticket::INCIDENT_TYPE || $type == \Ticket::DEMAND_TYPE)) {
-            ob_start();
-            self::showMostUsedMetademands($type);
-            $most_used = (string) ob_get_clean();
+            $most_used = self::getMostUsedMetademandsEntries($type);
         }
 
         $entries = [];
@@ -1207,8 +1214,8 @@ class Wizard extends CommonDBTM
                 'is_fa_icon'   => str_contains($icon, 'fa-'),
                 'icon_color'   => $icon_color,
                 'name'         => $name_meta,
-                // Rich HTML comment: the only value handed to the template unescaped, sanitize it here.
-                'comment'      => !empty($comment_meta) ? RichText::getSafeHtml($comment_meta) : "",
+                // Rich HTML comment, sanitized by |safe_html.
+                'comment'      => (string) $comment_meta,
                 'drafts_label' => $drafts_label,
             ];
         }
@@ -1776,7 +1783,7 @@ class Wizard extends CommonDBTM
         }
 
         if (count($lines)) {
-            $tabs_html = '';
+            $tabs = null;
             if ($use_as_step == 0) {
                 $cpt = 1;
             }
@@ -1873,11 +1880,11 @@ class Wizard extends CommonDBTM
                     // The block names come from the designer-defined title-block fields: Twig
                     // escapes them as element text (stored XSS). The scroll handlers live in
                     // public/scripts/wizard_form.js.
-                    $tabs_html = TemplateRenderer::getInstance()->render('@metademands/wizard/form_tabs.html.twig', [
+                    $tabs = [
                         'blocks'        => $tab_blocks,
                         'hidden_blocks' => $hidden_tabs,
                         'block_id'      => (int) $block_id,
-                    ]);
+                    ];
                 }
             }
             $use_model = $_SESSION['plugin_metademands'][$metademands->fields['id']]['use_model'] ?? 0;
@@ -1904,7 +1911,7 @@ class Wizard extends CommonDBTM
                 'blocks'              => $blocks_html,
                 'wrap_nostep'         => $use_as_step == 0,
                 'is_basket'           => $is_basket,
-                'tabs_html'           => $tabs_html,
+                'tabs'                => $tabs,
             ]);
 
             if (!$preview) {
@@ -1923,33 +1930,24 @@ class Wizard extends CommonDBTM
                     Html::back();
                 }
                 $config = Config::getInstance();
-                $draft_input_html = '';
-                if ($config['use_draft']
-                    && $draft_id == 0) {
-                    //button create draft
-                    $draft_input_html = Draft::createDraftInput(Draft::DEFAULT_MODE);
-                }
+                $use_draft = $config['use_draft'] && $draft_id == 0;
 
-                $cancel_form_html = '';
+                $cancel_form = null;
                 if (Session::haveRight("plugin_metademands_cancelform", READ)
                     && isset(
                         $_SESSION['plugin_metademands'][$metademands->getID()]['plugin_metademands_stepforms_id'],
                     )) {
-                    $cancel_form_html = Html::getSimpleForm(
-                        PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php",
-                        'delete_form_from_list',
-                        _sx('button', 'Cancel form', 'metademands'),
-                        [
-                            'plugin_metademands_stepforms_id' => $_SESSION['plugin_metademands'][$metademands->getID(
-                            )]['plugin_metademands_stepforms_id'],
-                        ],
-                    );
+                    $cancel_form = [
+                        'url'             => PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php",
+                        'stepforms_id'    => (int) $_SESSION['plugin_metademands'][$metademands->getID()]['plugin_metademands_stepforms_id'],
+                    ];
                 }
 
                 TemplateRenderer::getInstance()->display('@metademands/wizard/form_nav_buttons.html.twig', [
                     'use_as_step'       => $use_as_step,
-                    'draft_input_html'  => $draft_input_html,
-                    'cancel_form_html'  => $cancel_form_html,
+                    'use_draft'         => $use_draft,
+                    'draft_mode'        => Draft::DEFAULT_MODE,
+                    'cancel_form'       => $cancel_form,
                     'show_step_circles' => $see_summary == 0 && $displayBlocksAsTab == 0,
                     'step_count'        => $cpt,
                 ]);
@@ -1983,7 +1981,7 @@ class Wizard extends CommonDBTM
                             'title' => __('Previous data edited', 'metademands'),
                             'user_label' => $user_label,
                             'user_name' => $user_name,
-                            'content' => stripslashes(RichText::getSafeHtml($parent_fields['content'])),
+                            'content' => stripslashes($parent_fields['content']),
                         ]);
 
                         $hidden_blocks = $_SESSION['plugin_metademands'][$metademands_id]['hidden_blocks'] ?? [];
@@ -2252,10 +2250,9 @@ class Wizard extends CommonDBTM
         $debug = isset($_SESSION['glpi_use_mode'])
             && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
 
-        $config_link = '';
+        $config_url = '';
         if (Session::getCurrentInterface() == 'central' && $preview) {
-            $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(Field::class) . "?id=" . $data['id'] . "'>"
-                . "<i class='ti ti-settings'></i></a>";
+            $config_url = Toolbox::getItemTypeFormURL(Field::class) . "?id=" . $data['id'];
         }
 
         $data = self::mergeFieldParameters($data);
@@ -2267,7 +2264,7 @@ class Wizard extends CommonDBTM
         if (isset($key_indexes[$key])
             && isset($keys[$key_indexes[$key] - 1])
             && $data['rank'] != $line[$keys[$key_indexes[$key] - 1]]['rank']) {
-            self::displayBlockBreak($metademands, $data, $preview || $debug, $debug, $block, $config_link);
+            self::displayBlockBreak($metademands, $data, $preview || $debug, $debug, $block, $config_url);
         }
 
         if ($data['type'] != 'title-block') {
@@ -2403,9 +2400,9 @@ class Wizard extends CommonDBTM
      * @param bool       $is_preview
      * @param bool       $debug
      * @param int        $block
-     * @param string     $config_link
+     * @param string     $config_url form of the title field, empty outside the central preview
      */
-    private static function displayBlockBreak($metademands, array $data, bool $is_preview, bool $debug, $block, string $config_link): void
+    private static function displayBlockBreak($metademands, array $data, bool $is_preview, bool $debug, $block, string $config_url): void
     {
         $title = null;
 
@@ -2414,35 +2411,28 @@ class Wizard extends CommonDBTM
                 $label = $data['name'];
             }
 
-            $label2_tooltip_html = '';
+            // The secondary label and the comment are designer-defined rich HTML, sanitized
+            // by |safe_html in the template.
+            $label2 = '';
             if (!empty($data['label2'])) {
                 if (empty($label2 = Field::displayField($data['id'], 'label2'))) {
                     $label2 = $data['label2'];
                 }
-                // showToolTip() prints by default, which used to flush the tooltip before
-                // the title it belongs to.
-                $label2_tooltip_html = Html::showToolTip(
-                    RichText::getSafeHtml($label2),
-                    ['awesome-class' => 'ti ti-info-circle', 'display' => false],
-                );
             }
 
-            $comment_html = '';
+            $comment = '';
             if (!empty($data['comment'])) {
                 if (empty($comment = Field::displayField($data['id'], 'comment'))) {
                     $comment = $data['comment'];
                 }
-                // Designer-defined rich comment displayed to every requester: sanitize it
-                // like the secondary label above.
-                $comment_html = RichText::getSafeHtml($comment);
             }
 
             $title = [
                 'color' => Metademand::toThemedForeground($data['color'] ?? ''),
                 'label' => $label,
                 'id' => $data['id'],
-                'label2_tooltip_html' => $label2_tooltip_html,
-                'comment_html' => $comment_html,
+                'label2' => (string) $label2,
+                'comment' => (string) $comment,
             ];
         }
 
@@ -2454,7 +2444,7 @@ class Wizard extends CommonDBTM
             // The legacy code read this colour from an undefined $meta variable, so the
             // row never got the background the designer had picked.
             'background_color' => Metademand::toThemedBackground($metademands->fields['background_color'] ?? ''),
-            'config_link' => $config_link,
+            'config_url' => $config_url,
             'title' => $title,
         ]);
     }

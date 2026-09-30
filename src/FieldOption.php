@@ -705,9 +705,36 @@ class FieldOption extends CommonDBChild
             }
         }
 
+        $show_submit = !($params['type'] === 'textarea' && !empty($params['use_richtext']));
+
+        TemplateRenderer::getInstance()->display('@metademands/field_option_form.html.twig', [
+            'form_action'     => \Toolbox::getItemTypeFormURL(FieldOption::class),
+            'field_parent_id' => $item->getID(),
+            'field_id'        => $ID > 0 ? $ID : 0,
+            'is_new'          => $ID <= 0,
+            'option'          => $this,
+            'field'           => $item,
+            'params'          => $params,
+            'show_submit'     => $show_submit,
+        ]);
+        return true;
+    }
+
+    /**
+     * Print the rows of the option form matching the type of the field: the field
+     * classes and the plugins print their own rows (field_option_form.html.twig).
+     *
+     * @param Field $item   field the option belongs to
+     * @param array $params option values, as built by showForm()
+     *
+     * @return void
+     */
+    public function showOptionRows($item, $params)
+    {
+        global $PLUGIN_HOOKS;
+
         $class = Field::getClassFromType($params['type']);
 
-        ob_start();
         switch ($params['type']) {
             case 'title-block':
             case 'informations':
@@ -740,13 +767,9 @@ class FieldOption extends CommonDBChild
                 $class::getParamsValueToCheck($this, $item, $params);
                 break;
             case 'parent_field':
-                // showValueToCheck() prints the selector: capture it and let the template
-                // own the row.
-                ob_start();
-                self::showValueToCheck($this, $params);
-                echo TemplateRenderer::getInstance()->render(
+                TemplateRenderer::getInstance()->display(
                     '@metademands/forms/field_option_parent_field_row.html.twig',
-                    ['value_html' => ob_get_clean()],
+                    ['parent_fields' => self::getParentFieldChoices($params["plugin_metademands_metademands_id"])],
                 );
                 break;
             default:
@@ -757,19 +780,6 @@ class FieldOption extends CommonDBChild
                 }
                 break;
         }
-        $form_rows_html = ob_get_clean();
-
-        $show_submit = !($params['type'] === 'textarea' && !empty($params['use_richtext']));
-
-        TemplateRenderer::getInstance()->display('@metademands/field_option_form.html.twig', [
-            'form_action'     => \Toolbox::getItemTypeFormURL(FieldOption::class),
-            'field_parent_id' => $item->getID(),
-            'field_id'        => $ID > 0 ? $ID : 0,
-            'is_new'          => $ID <= 0,
-            'form_rows_html'  => $form_rows_html,
-            'show_submit'     => $show_submit,
-        ]);
-        return true;
     }
 
     /**
@@ -904,35 +914,48 @@ class FieldOption extends CommonDBChild
                 $class::showValueToCheck($item, $params);
                 break;
             case 'parent_field':
-                //list of fields
-                $fields = [];
-                $metademand_parent = new Metademand();
-                // list of parents
-                $metademands_parent = MetademandTask::getAncestorOfMetademandTask(
-                    $params["plugin_metademands_metademands_id"],
+                Dropdown::showFromArray(
+                    'parent_field_id',
+                    self::getParentFieldChoices($params["plugin_metademands_metademands_id"]),
                 );
-                $fieldclass = new Field();
-                foreach ($metademands_parent as $parent_id) {
-                    if ($metademand_parent->getFromDB($parent_id)) {
-                        $name_metademand = $metademand_parent->getName();
-
-                        $condition = [
-                            'plugin_metademands_metademands_id' => $parent_id,
-                            ['NOT' => ['type' => ['parent_field', 'upload']]],
-                        ];
-                        $datas_fields = $fieldclass->find($condition, ['rank', 'order']);
-                        //formatting the name to display (Name of metademand - Father's Field Label - type)
-                        foreach ($datas_fields as $data_field) {
-                            $fields[$data_field['id']] = $name_metademand . " - " . $data_field['name'] . " - " . Field::getFieldTypesName(
-                                $data_field['type'],
-                            );
-                        }
-                    }
-                }
-                Dropdown::showFromArray('parent_field_id', $fields);
                 echo Html::hidden('check_value', ['value' => 0]);
                 break;
         }
+    }
+
+    /**
+     * Fields of the parent metademands a "father's field" may copy, labelled
+     * "Name of metademand - Father's Field Label - type".
+     *
+     * @param int $metademands_id metademand of the field
+     *
+     * @return array<int, string> field id => label
+     */
+    public static function getParentFieldChoices($metademands_id): array
+    {
+        $fields = [];
+        $metademand_parent = new Metademand();
+        // list of parents
+        $metademands_parent = MetademandTask::getAncestorOfMetademandTask($metademands_id);
+        $fieldclass = new Field();
+        foreach ($metademands_parent as $parent_id) {
+            if ($metademand_parent->getFromDB($parent_id)) {
+                $name_metademand = $metademand_parent->getName();
+
+                $condition = [
+                    'plugin_metademands_metademands_id' => $parent_id,
+                    ['NOT' => ['type' => ['parent_field', 'upload']]],
+                ];
+                $datas_fields = $fieldclass->find($condition, ['rank', 'order']);
+                foreach ($datas_fields as $data_field) {
+                    $fields[$data_field['id']] = $name_metademand . " - " . $data_field['name'] . " - " . Field::getFieldTypesName(
+                        $data_field['type'],
+                    );
+                }
+            }
+        }
+
+        return $fields;
     }
 
     /**
@@ -1016,30 +1039,23 @@ class FieldOption extends CommonDBChild
 
     public static function showRegexDropdown($value, $paramID)
     {
-        ob_start();
-        Dropdown::showFromArray(
-            "check_type_value",
-            [Dropdown::EMPTY_VALUE, __('Value', 'metademands'), __('Regex', 'metademands')],
-            ['value' => $value],
-        );
-        $cell_content = ob_get_clean();
-
         // The inline <script> moved to public/scripts/fieldoption_valuetocheck.js, which
         // reads the value from whichever widget the sibling cell currently shows.
-        echo TemplateRenderer::getInstance()->render(
+        TemplateRenderer::getInstance()->display(
             '@metademands/fields/field_check_type_value_cell.html.twig',
             [
                 'option_id' => $paramID,
-                'content'   => $cell_content,
+                'choices'   => [Dropdown::EMPTY_VALUE, __('Value', 'metademands'), __('Regex', 'metademands')],
+                'value'     => $value,
             ],
         );
     }
 
     public static function showRegexInput($value)
     {
-        echo TemplateRenderer::getInstance()->render(
+        TemplateRenderer::getInstance()->display(
             '@metademands/forms/field_option_regex_input.html.twig',
-            ['input_html' => Html::input('check_value', ['value' => $value])],
+            ['value' => $value],
         );
     }
 
@@ -1119,12 +1135,12 @@ class FieldOption extends CommonDBChild
             $blocks[] = self::getLinkBlock(
                 __('Launch a task with the field', 'metademands'),
                 __('If the value selected equals the value to check, the task is created', 'metademands'),
-                Task::showAllTasksDropdown(
+                [self::linkWidget([Task::class, 'showAllTasksDropdown'], [
                     $metademands_id,
                     $params['plugin_metademands_tasks_id'],
-                    false,
+                    true,
                     $tasksusedarray,
-                ),
+                ])],
             );
         }
 
@@ -1147,9 +1163,7 @@ class FieldOption extends CommonDBChild
             $blocks[] = self::getLinkBlock(
                 __('Make this field mandatory', 'metademands'),
                 __('If the value selected equals the value to check, the field becomes mandatory', 'metademands'),
-                Dropdown::showFromArray('fields_link', $data, ['value' => $params['fields_link'],
-                    'display' => false,
-                ]),
+                [self::linkWidget('Dropdown::showFromArray', ['fields_link', $data, ['value' => $params['fields_link']]])],
             );
         }
 
@@ -1171,10 +1185,10 @@ class FieldOption extends CommonDBChild
                     'If the selected value matches the value to be checked, a technical group will be automatically assigned',
                     'metademands',
                 ),
-                Dropdown::showFromArray('assign_tech_group', $groupdata, ['multiple' => true,
+                [self::linkWidget('Dropdown::showFromArray', ['assign_tech_group', $groupdata, [
+                    'multiple' => true,
                     'values' => $params['assign_tech_group'],
-                    'display' => false,
-                ]),
+                ]])],
                 ['alert_lines' => $alert_lines],
             );
         }
@@ -1195,9 +1209,7 @@ class FieldOption extends CommonDBChild
             $blocks[] = self::getLinkBlock(
                 __('Display this hidden field', 'metademands'),
                 __('If the value selected equals the value to check, the field becomes visible', 'metademands'),
-                Dropdown::showFromArray('hidden_link', $data, ['value' => $params['hidden_link'],
-                    'display' => false,
-                ]),
+                [self::linkWidget('Dropdown::showFromArray', ['hidden_link', $data, ['value' => $params['hidden_link']]])],
             );
 
             $hiddenblockarray = [];
@@ -1242,14 +1254,13 @@ class FieldOption extends CommonDBChild
             $blocks[] = self::getLinkBlock(
                 __('Display this hidden block', 'metademands'),
                 __('If the value selected equals the value to check, the block becomes visible', 'metademands'),
-                Dropdown::showNumber('hidden_block', [
+                [self::linkWidget('Dropdown::showNumber', ['hidden_block', [
                     'value' => $params['hidden_block'],
                     'used' => $hiddenblockarray,
                     'min' => 1,
                     'max' => Field::MAX_FIELDS,
                     'toadd' => [0 => Dropdown::EMPTY_VALUE],
-                    'display' => false,
-                ]),
+                ]])],
                 ['widget_alert' => $block_warning],
             );
 
@@ -1263,12 +1274,10 @@ class FieldOption extends CommonDBChild
                     'If the value selected equals the value to check, the block becomes visible on the same block',
                     'metademands',
                 ),
-                Dropdown::showYesNo(
+                [self::linkWidget('Dropdown::showYesNo', [
                     'hidden_block_same_block',
                     $params['hidden_block_same_block'],
-                    -1,
-                    ['display' => false],
-                ),
+                ])],
             );
 
             $childsblockarray = [];
@@ -1300,11 +1309,12 @@ class FieldOption extends CommonDBChild
                         'If child blocks exist, these blocks are hidden when you deselect the option configured',
                         'metademands',
                     ),
-                    self::showChildsBlocksDropdown(
+                    [self::linkWidget([self::class, 'showChildsBlocksDropdown'], [
                         $metademands_id,
                         $params['hidden_block'],
                         $params['childs_blocks'],
-                    ),
+                        true,
+                    ])],
                 );
             }
 
@@ -1342,17 +1352,14 @@ class FieldOption extends CommonDBChild
                 $blocks[] = self::getLinkBlock(
                     __('Launch a validation', 'metademands'),
                     __('If the value selected equals the value to check, the validation is sent to the user', 'metademands'),
-                    User::dropdown([
+                    [self::linkWidget([User::class, 'dropdown'], [[
                         'name' => 'users_id_validate',
                         'value' => $params['users_id_validate'],
                         'right' => $right,
-                        'display' => false,
-                    ]),
+                    ]])],
                 );
             } else {
-                $blocks[] = ['kind' => 'raw',
-                    'html' => Html::hidden('users_id_validate', ['value' => 0]),
-                ];
+                $blocks[] = ['kind' => 'hidden', 'name' => 'users_id_validate', 'value' => 0];
             }
 
             $checkboxarray = [];
@@ -1380,21 +1387,21 @@ class FieldOption extends CommonDBChild
                 }
 
                 $randcheck = mt_rand();
-                $checkbox_dropdown = Dropdown::showFromArray('checkbox_id', $dropdown_values, [
-                    'display_emptychoice' => true,
-                    'value' => $params['checkbox_id'],
-                    'rand' => $randcheck,
-                    'display' => false,
-                ]);
-                $checkbox_dropdown .= Ajax::updateItemOnSelectEvent(
-                    'dropdown_checkbox_id' . $randcheck,
-                    "checkbox_value",
-                    $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_WEBDIR . "/ajax/checkboxValues.php",
-                    ['checkbox_id_val' => '__VALUE__',
-                        'metademands_id' => $metademands_id,
-                    ],
-                    false,
-                );
+                $checkbox_widgets = [
+                    self::linkWidget('Dropdown::showFromArray', ['checkbox_id', $dropdown_values, [
+                        'display_emptychoice' => true,
+                        'value' => $params['checkbox_id'],
+                        'rand' => $randcheck,
+                    ]]),
+                    self::linkWidget('Ajax::updateItemOnSelectEvent', [
+                        'dropdown_checkbox_id' . $randcheck,
+                        "checkbox_value",
+                        $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_WEBDIR . "/ajax/checkboxValues.php",
+                        ['checkbox_id_val' => '__VALUE__',
+                            'metademands_id' => $metademands_id,
+                        ],
+                    ]),
+                ];
 
                 $arrayValues = [0 => Dropdown::EMPTY_VALUE];
                 if (!empty($params['checkbox_id'])) {
@@ -1410,13 +1417,12 @@ class FieldOption extends CommonDBChild
                 $blocks[] = self::getLinkBlock(
                     __('Bind to the value of this checkbox', 'metademands'),
                     __('If the selected value is equal to the value to check, the checkbox value is set', 'metademands'),
-                    $checkbox_dropdown,
+                    $checkbox_widgets,
                     ['widget_span' => ['id' => 'checkbox_value',
-                        'html' => Dropdown::showFromArray('checkbox_value', $arrayValues, [
+                        'widget' => self::linkWidget('Dropdown::showFromArray', ['checkbox_value', $arrayValues, [
                             'display_emptychoice' => false,
                             'value' => $params['checkbox_value'],
-                            'display' => false,
-                        ]),
+                        ]]),
                     ]],
                 );
             }
@@ -1433,6 +1439,7 @@ class FieldOption extends CommonDBChild
                 $new_res = self::getPluginShowOptions($plug, $p);
                 if (Plugin::isPluginActive($plug)
                     && !empty($new_res)) {
+                    // Markup printed by the plugin, see field_option_link.html.twig
                     $blocks[] = ['kind' => 'raw', 'html' => $new_res];
                 }
             }
@@ -1449,23 +1456,36 @@ class FieldOption extends CommonDBChild
      *
      * @param string $label
      * @param string $comment
-     * @param string $widget_html widget markup, produced by a GLPI dropdown helper
+     * @param array  $widgets     widgets printed by the template, built by linkWidget()
      * @param array  $options     alert_lines: extra warning lines below the comment;
      *                            widget_alert: warning shown above the widget;
-     *                            widget_span: ['id' => …, 'html' => …] appended after the widget
+     *                            widget_span: ['id' => …, 'widget' => …] appended after the widget
      *
      * @return array
      */
-    private static function getLinkBlock($label, $comment, $widget_html, $options = [])
+    private static function getLinkBlock($label, $comment, $widgets, $options = [])
     {
         return ['kind' => 'row',
             'label' => $label,
             'comment' => $comment,
-            'widget_html' => $widget_html,
+            'widgets' => $widgets,
             'alert_lines' => $options['alert_lines'] ?? [],
             'widget_alert' => $options['widget_alert'] ?? '',
             'widget_span' => $options['widget_span'] ?? null,
         ];
+    }
+
+    /**
+     * A widget of the field link table, printed by the template through `call()`.
+     *
+     * @param callable-string|array{class-string, string} $callable GLPI helper printing the widget
+     * @param array                                        $args     its arguments
+     *
+     * @return array{callable: callable-string|array{class-string, string}, args: array}
+     */
+    private static function linkWidget($callable, array $args): array
+    {
+        return ['callable' => $callable, 'args' => $args];
     }
 
 
@@ -1503,7 +1523,7 @@ class FieldOption extends CommonDBChild
      *
      * @return string
      */
-    public static function showChildsBlocksDropdown($metademands_id, $hidden_block, $selected_values)
+    public static function showChildsBlocksDropdown($metademands_id, $hidden_block, $selected_values, $display = false)
     {
         $fields = new Field();
         $fields = $fields->find(["plugin_metademands_metademands_id" => $metademands_id]);
@@ -1542,7 +1562,7 @@ class FieldOption extends CommonDBChild
                 'width' => '100%',
                 'multiple' => true,
                 'entity' => $_SESSION['glpiactiveentities'],
-                'display' => false,
+                'display' => $display,
             ],
         );
     }

@@ -95,28 +95,12 @@ class Datetimeinterval extends CommonDBTM
 
     public static function showFieldParameters($params): string
     {
-        ob_start();
-        \Dropdown::showYesNo('use_future_date', $params['use_future_date']);
-        $use_future_date_html = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showYesNo('use_date_now', $params['use_date_now']);
-        $use_date_now_html = ob_get_clean();
-
-        ob_start();
-        \Dropdown::showNumber('additional_number_day', [
-            'value' => $params['additional_number_day'],
-            'min'   => 0,
-            'max'   => 500,
-        ]);
-        $additional_number_day_html = ob_get_clean();
-
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_interval.html.twig',
             [
-                'use_future_date_html'       => $use_future_date_html,
-                'use_date_now_html'          => $use_date_now_html,
-                'additional_number_day_html' => $additional_number_day_html,
+                'use_future_date'       => $params['use_future_date'],
+                'use_date_now'          => $params['use_date_now'],
+                'additional_number_day' => $params['additional_number_day'],
             ],
         );
     }

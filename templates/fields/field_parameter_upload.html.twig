@@ -25,6 +25,17 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Specific parameters of an upload field (Fields\Upload::showFieldParameters()): values only.
+ #
+ # Expected context:
+ #  - max_upload, max_uploads: number of documents allowed, available ones (value => label)
+-#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{# The widgets sit in grid columns: no label, no column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
 <div class="card mt-2">
     <div class="card-header">
         <h5 class="card-title">{{ __('Specific parameters', 'metademands') }}</h5>
@@ -32,7 +43,7 @@
     <div class="card-body">
         <div class="row g-2 align-items-center mb-2">
             <label class="col-sm-3 col-form-label">{{ __('Number of documents allowed', 'metademands') }}</label>
-            <div class="col-sm-3">{{ max_upload_html|raw }}</div>
+            <div class="col-sm-3">{{ fields.dropdownArrayField('max_upload', max_upload, max_uploads, '', bare) }}</div>
         </div>
     </div>
 </div>

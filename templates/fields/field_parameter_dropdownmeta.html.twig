@@ -25,6 +25,22 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Specific parameters of a GLPI object dropdown field (Fields\Dropdownmeta::showFieldParameters()):
+ # values only, the widgets come from the core macros.
+ #
+ # Expected context:
+ #  - show_used_by_child, used_by_child: yes / no
+ #  - show_display_type, show_other_display_type, display_type, display_types: current
+ #    display, available ones (my devices, other dropdowns)
+ #  - show_link_to_user, link_to_user, user_fields: linked user field (id => label)
+ #  - show_itil_options, readonly, hidden: category of the meta-demand
+-#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{# The widgets sit in grid columns: no label, no column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
 <div class="card mt-2">
     <div class="card-header">
         <h5 class="card-title">{{ __('Specific parameters', 'metademands') }}</h5>
@@ -35,30 +51,30 @@
                 {% if show_used_by_child %}
                     <label
                         class="col-sm-3 col-form-label">{{ __('Use this field for child ticket field', 'metademands') }}</label>
-                    <div class="col-sm-3">{{ used_by_child_html|raw }}</div>
+                    <div class="col-sm-3">{{ fields.dropdownYesNo('used_by_child', used_by_child, '', bare) }}</div>
                 {% endif %}
                 {% if show_display_type %}
                     <label class="col-sm-3 col-form-label">{{ __('Display type of the field', 'metademands') }}</label>
-                    <div class="col-sm-3">{{ display_type_html|raw }}</div>
+                    <div class="col-sm-3">{{ fields.dropdownArrayField('display_type', display_type, display_types, '', bare) }}</div>
                 {% endif %}
                 {% if show_link_to_user %}
                     <label class="col-sm-3 col-form-label">{{ __('Link this to a user field', 'metademands') }}</label>
-                    <div class="col-sm-3">{{ link_to_user_html|raw }}</div>
+                    <div class="col-sm-3">{{ fields.dropdownArrayField('link_to_user', link_to_user, user_fields, '', bare) }}</div>
                 {% endif %}
             </div>
         {% endif %}
         {% if show_itil_options %}
             <div class="row g-2 align-items-center mb-2">
                 <label class="col-sm-3 col-form-label">{{ __('Read-Only', 'metademands') }}</label>
-                <div class="col-sm-3">{{ readonly_html|raw }}</div>
+                <div class="col-sm-3">{{ fields.dropdownYesNo('readonly', readonly, '', bare) }}</div>
                 <label class="col-sm-3 col-form-label">{{ __('Hidden field', 'metademands') }}</label>
-                <div class="col-sm-3">{{ hidden_html|raw }}</div>
+                <div class="col-sm-3">{{ fields.dropdownYesNo('hidden', hidden, '', bare) }}</div>
             </div>
         {% endif %}
         {% if show_other_display_type %}
             <div class="row g-2 align-items-center mb-2">
                 <label class="col-sm-3 col-form-label">{{ __('Display type of the field', 'metademands') }}</label>
-                <div class="col-sm-3">{{ other_display_type_html|raw }}</div>
+                <div class="col-sm-3">{{ fields.dropdownArrayField('display_type', display_type, display_types, '', bare) }}</div>
             </div>
         {% endif %}
     </div>

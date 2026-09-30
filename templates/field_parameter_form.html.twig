@@ -27,6 +27,16 @@
 
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
 
+{#-
+ # Parameters of a field (FieldParameter::showForm()).
+ #
+ # Expected context, besides the identifiers of the field:
+ #  - params: field parameters; the form body depends on the field type and is
+ #    printed by FieldParameter::showFieldParameters() (the field classes and the
+ #    plugins contribute their own parts)
+ #  - field_type_name, field_example_html: "field informations" panel
+-#}
+
 {% do call('Html::requireJs', ['tinymce']) %}
 
 <form name="form" method="post" action="{{ form_action }}">
@@ -40,7 +50,7 @@
 
     <div class="card mt-2">
         <div class="card-body">
-            {{ field_parameters_html|raw }}
+            {% do call('GlpiPlugin\\Metademands\\FieldParameter::showFieldParameters', [params]) %}
         </div>
         <div class="card-footer d-flex justify-content-end">
             <button class="btn btn-primary" type="submit"

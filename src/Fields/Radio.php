@@ -86,82 +86,55 @@ class Radio extends CommonDBTM
 
         if (count($custom_values) > 0) {
             foreach ($custom_values as $key => $label) {
-                $checked = "";
+                $is_checked = false;
 
                 if (empty($value) && isset($label['is_default']) && $on_order == false) {
-                    $checked = ($label['is_default'] == 1) ? 'checked' : '';
+                    $is_checked = ($label['is_default'] == 1);
                 }
                 if (isset($value) && $value == $key) {
-                    $checked = 'checked';
-                }
-                $required = "";
-                if ($data['is_mandatory'] == 1) {
-                    $required = "required=required";
+                    $is_checked = true;
                 }
 
                 // Option label / comment / icon come from user-supplied custom-value data stored
                 // raw (GLPI 10+): passed raw to the template so {{ }} auto-escapes them (label/icon),
-                // rich content is pre-sanitized here (getSafeHtml / showToolTip) and injected |raw.
+                // the comment is sanitized here (getSafeHtml) and escaped or shown by |safe_html.
                 if (empty($name = Field::displayCustomvaluesField($data['id'], $key))) {
                     $name = $label['name'];
                 }
 
                 $has_comment = isset($label['comment']) && !empty($label['comment']);
-                $comment_tooltip_html = '';
                 $comment_html = '';
                 $has_icon = false;
                 $icon = '';
                 $icon_is_fa = false;
 
-                if (!$is_block) {
-                    if ($has_comment) {
-                        if (empty(
-                            $comment = Field::displayCustomvaluesField(
-                                $data['id'],
-                                $key,
-                                "comment",
-                            )
-                        )) {
-                            $comment = $label['comment'];
-                        }
-                        $comment_tooltip_html = Html::showToolTip(
-                            RichText::getSafeHtml($comment),
-                            [
-                                'awesome-class' => 'ti ti-info-circle',
-                                'display' => false,
-                            ],
-                        );
+                if ($has_comment) {
+                    if (empty(
+                        $comment = Field::displayCustomvaluesField(
+                            $data['id'],
+                            $key,
+                            "comment",
+                        )
+                    )) {
+                        $comment = $label['comment'];
                     }
-                } else {
+                    $comment_html = RichText::getSafeHtml($comment);
+                }
+
+                if ($is_block) {
                     $icon = $label['icon'];
                     if (empty($label['icon'])) {
                         $icon = $data['icon'];
                     }
                     $has_icon = !empty($icon);
                     $icon_is_fa = str_contains((string) $icon, 'fa-');
-
-                    if ($has_comment) {
-                        if (empty(
-                            $comment = Field::displayCustomvaluesField(
-                                $data['id'],
-                                $key,
-                                "comment",
-                            )
-                        )) {
-                            $comment = $label['comment'];
-                        }
-                        // Sanitize raw user-supplied option comment (mirrors the CLASSIC tooltip above).
-                        $comment_html = RichText::getSafeHtml($comment);
-                    }
                 }
 
                 $options[] = [
                     'key'                  => $key,
                     'name'                 => $name,
-                    'checked'              => $checked,
-                    'required'             => $required,
+                    'is_checked'           => $is_checked,
                     'has_comment'          => $has_comment,
-                    'comment_tooltip_html' => $comment_tooltip_html,
                     'comment_html'         => $comment_html,
                     'has_icon'             => $has_icon,
                     'icon'                 => (string) $icon,
@@ -215,11 +188,12 @@ class Radio extends CommonDBTM
         }
 
         echo TemplateRenderer::getInstance()->render('@metademands/fields/field_radio.html.twig', [
-            'is_block'  => $is_block,
-            'inline'    => $inline,
-            'namefield' => $namefield,
-            'id'        => $data['id'],
-            'options'   => $options,
+            'is_block'    => $is_block,
+            'is_required' => $data['is_mandatory'] == 1,
+            'inline'      => $inline,
+            'namefield'   => $namefield,
+            'id'          => $data['id'],
+            'options'     => $options,
         ]);
 
         echo $scripts;
@@ -227,69 +201,7 @@ class Radio extends CommonDBTM
 
     public static function showFieldCustomValues($params)
     {
-        $custom_values = $params['custom_values'];
-        $target = FieldCustomvalue::getFormURL();
-        $maxrank = -1;
-        $rows = [];
-
-        if (is_array($custom_values) && !empty($custom_values)) {
-            foreach ($custom_values as $key => $value) {
-                ob_start();
-                \Dropdown::showYesNo('is_default[' . $key . ']', $value['is_default']);
-                $default_html = ob_get_clean();
-
-                $icon_html = FieldCustomvalue::showIconSelector($key, (string) $value['icon']);
-
-                ob_start();
-                Html::showSimpleForm(
-                    $target,
-                    'delete',
-                    _x('button', 'Delete permanently'),
-                    [
-                        'customvalues_id' => $key,
-                        'rank' => $value['rank'],
-                        'plugin_metademands_fields_id' => $params["plugin_metademands_fields_id"],
-                    ],
-                    'ti-circle-x',
-                    "class='btn btn-sm btn-danger'",
-                );
-                $delete_form_html = ob_get_clean();
-
-                $rows[] = [
-                    'id' => $key,
-                    'rank' => $value['rank'],
-                    'name' => $value['name'],
-                    'comment' => $value['comment'] ?? '',
-                    'default_html' => $default_html,
-                    'icon_html' => $icon_html,
-                    'delete_form_html' => $delete_form_html,
-                ];
-                $maxrank = $value['rank'];
-            }
-        }
-
-        ob_start();
-        FieldCustomvalue::initCustomValue($maxrank, true, true, $params["plugin_metademands_fields_id"], true);
-        $init_form_html = ob_get_clean();
-
-        ob_start();
-        FieldCustomvalue::importCustomValue($params);
-        $import_html = ob_get_clean();
-
-        TemplateRenderer::getInstance()->display(
-            '@metademands/fields/field_customvalue_list.html.twig',
-            [
-                'rows' => $rows,
-                'form_target' => $target,
-                'fields_id' => $params['plugin_metademands_fields_id'] ?? '',
-                'type' => $params['type'] ?? '',
-                'show_comment' => true,
-                'init_form_html' => $init_form_html,
-                'import_html' => $import_html,
-                'specific_dropdown_html' => '',
-                'reorder_url' => PLUGIN_METADEMANDS_WEBDIR . '/ajax/reorder.php',
-            ],
-        );
+        FieldCustomvalue::showList(FieldCustomvalue::getListContext($params, true, true, true));
     }
 
     public static function showFieldParameters($params): string
@@ -297,14 +209,12 @@ class Radio extends CommonDBTM
         $disp = [];
         $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
         $disp[self::BLOCK_DISPLAY] = __("Block display", "metademands");
-        $display_type_html = \Dropdown::showFromArray("display_type", $disp, [
-            'value'   => $params['display_type'],
-            'display' => false,
-        ]);
-
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_checkbox_radio.html.twig',
-            ['display_type_html' => $display_type_html],
+            [
+                'display_type'  => $params['display_type'],
+                'display_types' => $disp,
+            ],
         );
     }
 
@@ -314,17 +224,14 @@ class Radio extends CommonDBTM
         self::showValueToCheck($fieldoption, $params);
         $cell_content = ob_get_clean();
 
-        // The per-cell inline <script> moved to public/scripts/fieldoption_valuetocheck.js;
-        // the wrapping cell now carries its parameters as data-* attributes.
-        $valuetocheck_html = TemplateRenderer::getInstance()->render(
-            '@metademands/fields/field_value_to_check_cell.html.twig',
-            [
-                'option_id'       => $params['ID'],
-                'with_check_type' => false,
-                'with_tech_group' => true,
-                'content'         => $cell_content,
-            ],
-        );
+        // Value cell, included by the row template; its parameters are read by
+        // public/scripts/fieldoption_valuetocheck.js from data-* attributes.
+        $valuetocheck = [
+            'option_id'       => $params['ID'],
+            'with_check_type' => false,
+            'with_tech_group' => true,
+            'content'         => $cell_content,
+        ];
 
         $link_html = FieldOption::showLinkHtml($item->getID(), $params);
 
@@ -335,7 +242,7 @@ class Radio extends CommonDBTM
                 'label'             => __('Value to check', 'metademands'),
                 'label_colspan'     => 2,
                 'regex_html'        => '',
-                'valuetocheck_html' => $valuetocheck_html,
+                'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
             ],
         );

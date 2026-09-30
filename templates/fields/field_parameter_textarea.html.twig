@@ -25,6 +25,17 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Specific parameters of a textarea field (Fields\Textarea::showFieldParameters()): values only.
+ #
+ # Expected context:
+ #  - use_richtext: yes / no
+-#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{# The widgets sit in grid columns: no label, no column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
 <div class="card mt-2">
     <div class="card-header">
         <h5 class="card-title">{{ __('Specific parameters', 'metademands') }}</h5>
@@ -32,7 +43,7 @@
     <div class="card-body">
         <div class="row g-2 align-items-center mb-2">
             <label class="col-sm-3 col-form-label">{{ __('Use richt text', 'metademands') }}</label>
-            <div class="col-sm-3">{{ use_richtext_html|raw }}</div>
+            <div class="col-sm-3">{{ fields.dropdownYesNo('use_richtext', use_richtext, '', bare) }}</div>
         </div>
     </div>
 </div>

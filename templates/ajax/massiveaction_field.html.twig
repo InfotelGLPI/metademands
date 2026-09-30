@@ -31,18 +31,21 @@
  #
  # Expected context:
  #  - use_table:   whether the widget needs the legacy two-cell table layout
- #  - widget_html: the widget, written by the core helpers of the endpoint
- #  - hidden_html: the `field` hidden input, built by Html::hidden()
+ #  - itemtype:    itemtype of the massive action
+ #  - search:      search option of the picked field
+ #  - input:       request parameters (value, itemtype_used, relative_dates…)
+ #  The widget is printed in place by TicketField::showMassiveActionFieldWidget().
+ #  - field_name:  value of the `field` hidden input, the name of the widget
  #}
 
 {% if use_table %}
     <table>
         <tr>
-            <td>{{ widget_html|raw }}</td>
-            <td>{{ hidden_html|raw }}</td>
+            <td>{% do call('GlpiPlugin\\Metademands\\TicketField::showMassiveActionFieldWidget', [itemtype, search, input]) %}</td>
+            <td><input type="hidden" name="field" value="{{ field_name }}"></td>
         </tr>
     </table>
 {% else %}
-    {{ widget_html|raw }}
-    {{ hidden_html|raw }}
+    {% do call('GlpiPlugin\\Metademands\\TicketField::showMassiveActionFieldWidget', [itemtype, search, input]) %}
+    <input type="hidden" name="field" value="{{ field_name }}">
 {% endif %}

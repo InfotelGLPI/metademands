@@ -25,6 +25,21 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Specific parameters of a multiple dropdown field (Fields\Dropdownmultiple::showFieldParameters()):
+ # values only, the widgets come from the core macros.
+ #
+ # Expected context:
+ #  - display_type, display_types: current display, available ones (value => label)
+ #  - is_user: dropdown of users, with the parameters below
+ #  - user_group, default_use_id_requester, default_use_id_requester_supervisor: yes / no
+ #  - informations_to_display, informations: selected user information, available ones
+-#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{# The widgets sit in grid columns: no label, no column class #}
+{% set bare = {'no_label': true, 'field_class': '', 'mb': ''} %}
+
 <div class="card mt-2">
     <div class="card-header">
         <h5 class="card-title">{{ __('Specific parameters', 'metademands') }}</h5>
@@ -32,24 +47,24 @@
     <div class="card-body">
         <div class="row g-2 align-items-center mb-2">
             <label class="col-sm-3 col-form-label">{{ __('Display type of the field', 'metademands') }}</label>
-            <div class="col-sm-3">{{ display_type_html|raw }}</div>
+            <div class="col-sm-3">{{ fields.dropdownArrayField('display_type', display_type, display_types, '', bare) }}</div>
         </div>
         {% if is_user %}
             <div class="row g-2 align-items-center mb-2">
                 <label class="col-sm-3 col-form-label">{{ __('Only users of my groups', 'metademands') }}</label>
-                <div class="col-sm-3">{{ user_group_html|raw }}</div>
+                <div class="col-sm-3">{{ fields.dropdownYesNo('user_group', user_group, '', bare) }}</div>
             </div>
             <div class="row g-2 align-items-center mb-2">
                 <label class="col-sm-3 col-form-label">{{ __('Use id of requester by default', 'metademands') }}</label>
-                <div class="col-sm-3">{{ default_use_id_requester_html|raw }}</div>
+                <div class="col-sm-3">{{ fields.dropdownYesNo('default_use_id_requester', default_use_id_requester, '', bare) }}</div>
                 <label
                     class="col-sm-3 col-form-label">{{ __('Use id of supervisor requester by default', 'metademands') }}</label>
-                <div class="col-sm-3">{{ default_use_id_requester_supervisor_html|raw }}</div>
+                <div class="col-sm-3">{{ fields.dropdownYesNo('default_use_id_requester_supervisor', default_use_id_requester_supervisor, '', bare) }}</div>
             </div>
             <div class="row g-2 align-items-center mb-2">
                 <label
                     class="col-sm-3 col-form-label">{{ __('Informations to display in ticket and PDF', 'metademands') }}</label>
-                <div class="col-sm-9">{{ informations_to_display_html|raw }}</div>
+                <div class="col-sm-9">{{ fields.dropdownArrayField('informations_to_display', '', informations, '', bare|merge({'values': informations_to_display, 'multiple': true})) }}</div>
             </div>
         {% endif %}
     </div>

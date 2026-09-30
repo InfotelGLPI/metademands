@@ -27,12 +27,13 @@
 
 {#-
  # The itemtype selector of a field, wrapped in the <span> the "Type" dropdown
- # reloads through Ajax. dropdownFieldItems() prints its markup, so the caller
- # captures it.
+ # reloads through Ajax. Included by field_form.html.twig.
  #
  # Expected context:
- #  - dropdown_html: captured selector
- #  - script_html:   Ajax::updateItemOnSelectEvent() call driving the reload
+ #  - type:                  type of the field driving the available itemtypes
+ #  - dropdown_options:      options forwarded to Field::dropdownFieldItems()
+ #  - type_rand:             rand of the "Type" dropdown driving the reload
+ #  - ajax_url, params_item: Ajax reload of the selector
 -#}
-<span id="show_item">{{ dropdown_html|raw }}</span>
-{{ script_html|raw }}
+<span id="show_item">{% do call('GlpiPlugin\\Metademands\\Field::dropdownFieldItems', [type, dropdown_options]) %}</span>
+{% do call('Ajax::updateItemOnSelectEvent', ['dropdown_type' ~ type_rand, 'show_item', ajax_url, params_item]) %}
