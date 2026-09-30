@@ -35,6 +35,8 @@
  #    cancel_form        : {url, stepforms_id} of the "Cancel form" action, null when not applicable
  #    show_step_circles  : whether the step circles must be rendered
  #    step_count         : number of steps, drives how many circles are drawn
+ #    button_titles      : titles of #nextBtn by kind, see Wizard::getButtonTitles(); read by
+ #                         plugin_metademands_wizard_setNextBtnTitle() of public/scripts/metademands.js
 -#}
 <div class="form-sc-group">
     <div class="center">
@@ -64,7 +66,8 @@
             <button type="button" id="prevBtn" style="margin-right: 8px;font-size: 14px !important;" class="btn btn-primary">
                 <i class="ti ti-chevron-left"></i>&nbsp;{{ __('Previous', 'metademands') }}
             </button>
-            &nbsp;<button type="button" id="nextBtn" style="margin-right: 8px;font-size: 14px !important;" class="btn btn-primary">
+            &nbsp;<button type="button" id="nextBtn" style="margin-right: 8px;font-size: 14px !important;" class="btn btn-primary"
+                    data-md-title-kind="next" data-md-titles="{{ (button_titles ?? {})|json_encode }}">
                 {{ __('Next', 'metademands') }}&nbsp;<i class="ti ti-chevron-right"></i>
             </button>
             &nbsp;<button type="button" id="nextBtn2" style="margin-right: 8px;font-size: 14px !important;display: none" class="btn btn-primary">

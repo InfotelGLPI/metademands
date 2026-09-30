@@ -271,11 +271,6 @@ class Url extends CommonDBTM
                 $script2 .= "$('[name^=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
             }
 
-            $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-            $nextsteptitle = __(
-                'Next',
-                'metademands',
-            ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
             foreach ($check_values as $idc => $check_value) {
@@ -283,7 +278,7 @@ class Url extends CommonDBTM
                     if ($tasks_id) {
                         if (MetademandTask::setUsedTask($tasks_id, 0)) {
                             $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                            $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                            $script .= "plugin_metademands_wizard_setNextBtnTitle('post')";
                             $script .= "});";
                         }
                     }
@@ -302,13 +297,13 @@ class Url extends CommonDBTM
                                   used: 0 },
                                   success: function(response){
                                        if (response != 1) {
-                                           document.getElementById('nextBtn').innerHTML = '$title'
+                                           plugin_metademands_wizard_setNextBtnTitle('post')
                                        }
                                     },
                                 });
 //                                if (typeof document.getElementById('nextBtn') !== 'undefined'
 //                                && document.getElementById('nextBtn').value){
-                                    if(document.getElementById('nextBtn') != null) {document.getElementById('nextBtn').innerHTML = '$title'};
+                                    plugin_metademands_wizard_setNextBtnTitle('post');
 //                                 }
                                  ";
 
@@ -320,7 +315,7 @@ class Url extends CommonDBTM
                                   used: 1 },
                                   success: function(response){
                                        if (response != 1) {
-                                           document.getElementById('nextBtn').innerHTML = '$nextsteptitle'
+                                           plugin_metademands_wizard_setNextBtnTitle('next')
                                        }
                                     },
                                 });
@@ -573,8 +568,6 @@ class Url extends CommonDBTM
 
     public static function checkConditions($data, $metaparams)
     {
-        $submittitle   = $metaparams['submittitle'] ?? '';
-        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
         $use_condition = $metaparams['use_condition'] ?? '';
         $show_rule     = $metaparams['show_rule'] ?? '';
         $show_button   = $metaparams['show_button'] ?? '';
@@ -590,8 +583,6 @@ class Url extends CommonDBTM
         if ($show_rule != Condition::SHOW_RULE_ALWAYS && in_array($data['id'], $condition_fields)) {
             $root_doc = PLUGIN_METADEMANDS_WEBDIR;
             $onchange = "window.metademandconditionsparams = {};
-                        metademandconditionsparams.submittitle = '$submittitle';
-                        metademandconditionsparams.nextsteptitle = '$nextsteptitle';
                         metademandconditionsparams.use_condition = '$use_condition';
                         metademandconditionsparams.show_rule = '$show_rule';
                         metademandconditionsparams.show_button = '$show_button';

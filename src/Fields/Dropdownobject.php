@@ -969,8 +969,6 @@ class Dropdownobject extends CommonDBTM
             }
         }
 
-        $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-        $nextsteptitle = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
 
         foreach ($check_values as $idc => $check_value) {
@@ -978,7 +976,7 @@ class Dropdownobject extends CommonDBTM
                 if ($tasks_id) {
                     if (MetademandTask::setUsedTask($tasks_id, 0)) {
                         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                        $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                        $script .= "plugin_metademands_wizard_setNextBtnTitle('post')";
                         $script .= "});";
                     }
                 }
@@ -1035,7 +1033,7 @@ class Dropdownobject extends CommonDBTM
                                   used: 0 },
                                   success: function(response){
                                        if (response != 1) {
-                                           document.getElementById('nextBtn').innerHTML = '$title'
+                                           plugin_metademands_wizard_setNextBtnTitle('post')
                                        }
                                     },
                                 });
@@ -1048,7 +1046,7 @@ class Dropdownobject extends CommonDBTM
                                   used: 1 },
                                   success: function(response){
                                        if (response != 1) {
-                                           document.getElementById('nextBtn').innerHTML = '$nextsteptitle'
+                                           plugin_metademands_wizard_setNextBtnTitle('savenext')
                                        }
                                     },
                                 });
@@ -1070,13 +1068,13 @@ class Dropdownobject extends CommonDBTM
                                 if ($idc == $k) {
                                     if (MetademandTask::setUsedTask($tasks_id, 1)) {
                                         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                        $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                                        $script .= "plugin_metademands_wizard_setNextBtnTitle('savenext')";
                                         $script .= "});";
                                     }
                                 } else {
                                     if (MetademandTask::setUsedTask($tasks_id, 0)) {
                                         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                        $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                                        $script .= "plugin_metademands_wizard_setNextBtnTitle('post')";
                                         $script .= "});";
                                     }
                                 }
@@ -1422,8 +1420,6 @@ class Dropdownobject extends CommonDBTM
     public static function checkConditions($data, $metaparams)
     {
 
-        $submittitle   = $metaparams['submittitle'] ?? '';
-        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
         $use_condition = $metaparams['use_condition'] ?? '';
         $show_rule     = $metaparams['show_rule'] ?? '';
         $show_button   = $metaparams['show_button'] ?? '';
@@ -1439,8 +1435,6 @@ class Dropdownobject extends CommonDBTM
         if ($show_rule != Condition::SHOW_RULE_ALWAYS && in_array($data['id'], $condition_fields)) {
             $root_doc = PLUGIN_METADEMANDS_WEBDIR;
             $onchange = "window.metademandconditionsparams = {};
-                        metademandconditionsparams.submittitle = '$submittitle';
-                        metademandconditionsparams.nextsteptitle = '$nextsteptitle';
                         metademandconditionsparams.use_condition = '$use_condition';
                         metademandconditionsparams.show_rule = '$show_rule';
                         metademandconditionsparams.show_button = '$show_button';

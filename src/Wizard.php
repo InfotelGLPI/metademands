@@ -1357,25 +1357,7 @@ class Wizard extends CommonDBTM
         $root_doc = PLUGIN_METADEMANDS_WEBDIR;
         $token = Session::getNewCSRFToken();
 
-        $title = _sx('button', 'Save & Post', 'metademands');
-        $icon = "ti ti-device-floppy";
-
-        $childs_meta = MetademandTask::getChildMetademandsToCreate($metademands->fields['id']);
-        if (count($childs_meta) > 0) {
-            $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-        }
-
-        $see_summary = 0;
-        if ($metademands->fields['is_order'] == 1) {
-            $title = _sx('button', 'Add to basket', 'metademands');
-            $icon = "ti ti-plus";
-        }
-
-        if ($metademands->fields['is_basket'] == 1) {
-            $title = _sx('button', 'See basket summary & send it', 'metademands');
-            $see_summary = 1;
-        }
-        $submittitle = "<i class=\"$icon\"></i>&nbsp;" . $title;
+        $see_summary = $metademands->fields['is_basket'] == 1 ? 1 : 0;
 
         $block_id = $_SESSION['plugin_metademands'][$metademands->fields['id']]['block_id'] ?? 0;
 
@@ -1510,8 +1492,6 @@ class Wizard extends CommonDBTM
         }
 
         //MSG
-        $metaparams['nexttitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-        $metaparams['submittitle'] = $submittitle;
         $metaparams['alert'] = __('Thanks to fill mandatory fields', 'metademands');
         $metaparams['alert_regex'] = __("These fields don\'t respect regex", 'metademands');
         //End MSG
@@ -1519,8 +1499,6 @@ class Wizard extends CommonDBTM
         //Use as step parameters
         $metaparams['use_as_step'] = $use_as_step;
         $metaparams['listStepBlocks'] = $listStepBlocks;
-        $metaparams['nextsteptitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-        $metaparams['submitsteptitle'] = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & send to another user / group', 'metademands');
         //For multi User forms
         $metaparams['havenextuser'] = $havenextuser;
         $metaparams['updatestepform'] = $updatestepform;
@@ -1544,28 +1522,69 @@ class Wizard extends CommonDBTM
         return $metaparams;
     }
 
+    /**
+     * Titles of the #nextBtn button, keyed by kind. The button carries them as JSON,
+     * plugin_metademands_wizard_setNextBtnTitle() of public/scripts/metademands.js
+     * builds the icons and the label from a kind: no markup travels in a script.
+     *
+     * Each title is {before: icon class, label: plain text, after: icon class}.
+     * - next:              default "Next" title of the step-by-step mode
+     * - submit:            last tab, depends on the metademand (order, basket, child metademands)
+     * - submitstep:        hands the form to another user / group
+     * - post:              set by the fields which trigger a task
+     * - savenext:          "Next" variant of the basket and object fields
+     * - conditions_submit: title the conditions compare the button with; unlike submit,
+     *                      it ignores the basket and the child metademands win over the order
+     *
+     * @param Metademand $metademands
+     *
+     * @return array<string, array{before: string, label: string, after: string}>
+     */
+    public static function getButtonTitles($metademands)
+    {
+        $floppy = 'ti ti-device-floppy';
+        $next   = ['before' => '', 'label' => __('Next', 'metademands'), 'after' => 'ti ti-chevron-right'];
+        $post   = ['before' => $floppy, 'label' => _x('button', 'Save & Post', 'metademands'), 'after' => ''];
+        $has_childs = count(MetademandTask::getChildMetademandsToCreate($metademands->fields['id'])) > 0;
+        $is_order   = $metademands->fields['is_order'] == 1;
+
+        $submit = $post;
+        if ($has_childs) {
+            $submit = ['before' => $floppy] + $next;
+        }
+        if ($is_order) {
+            $submit = ['before' => 'ti ti-plus', 'label' => _x('button', 'Add to basket', 'metademands'), 'after' => ''];
+        }
+        if ($metademands->fields['is_basket'] == 1) {
+            $submit['label'] = _x('button', 'See basket summary & send it', 'metademands');
+            $submit['after'] = '';
+        }
+
+        $conditions_submit = $post;
+        if ($is_order) {
+            $conditions_submit = ['before' => 'ti ti-plus', 'label' => _x('button', 'Add to basket', 'metademands'), 'after' => ''];
+        }
+        if ($has_childs) {
+            $conditions_submit['label'] = $next['label'];
+            $conditions_submit['after'] = $next['after'];
+        }
+
+        return [
+            'next'              => $next,
+            'submit'            => $submit,
+            'submitstep'        => ['before' => $floppy, 'label' => _x('button', 'Save & send to another user / group', 'metademands'), 'after' => ''],
+            'post'              => $post,
+            'savenext'          => ['before' => $floppy] + $next,
+            'conditions_submit' => $conditions_submit,
+        ];
+    }
+
     public static function getConditionsParams($metademands)
     {
 
         $root_doc = PLUGIN_METADEMANDS_WEBDIR;
         $metaparams['root_doc'] = $root_doc;
 
-        $title = _sx('button', 'Save & Post', 'metademands');
-        $icon = "ti ti-device-floppy";
-        if ($metademands->fields['is_order'] == 1) {
-            $title = _sx('button', 'Add to basket', 'metademands');
-            $icon = "ti ti-plus";
-        }
-
-        $childs_meta = MetademandTask::getChildMetademandsToCreate($metademands->fields['id']);
-        if (count($childs_meta) > 0) {
-            $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-        }
-        $submittitle = "<i class=\"$icon\"></i>&nbsp;" . $title;
-
-
-        $metaparams['submittitle'] = $submittitle;
-        $metaparams['nextsteptitle'] = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
         $use_condition = false;
 
@@ -1950,6 +1969,7 @@ class Wizard extends CommonDBTM
                     'cancel_form'       => $cancel_form,
                     'show_step_circles' => $see_summary == 0 && $displayBlocksAsTab == 0,
                     'step_count'        => $cpt,
+                    'button_titles'     => self::getButtonTitles($metademands),
                 ]);
 
                 if (!empty($data_form)) {
@@ -2477,8 +2497,6 @@ class Wizard extends CommonDBTM
             'id'                     => (string) $metaparams['ID'],
             'nameform'               => $metaparams['nameform'],
             'block_id'               => (string) $metaparams['block_id'],
-            'nexttitle'              => $metaparams['nexttitle'],
-            'submittitle'            => $metaparams['submittitle'],
             'msg'                    => $metaparams['alert'],
             // The msgid carries a literal backslash that the legacy JS string literal
             // swallowed: keep the text the requester used to read.
@@ -2494,14 +2512,10 @@ class Wizard extends CommonDBTM
             'havenextuser'           => $metaparams['havenextuser'] ? '1' : '',
             'changestepbystepoption' => $metaparams['changestepbystepoption'] ? '1' : '',
             'updatestepform'         => (string) $metaparams['updatestepform'],
-            'submitsteptitle'        => $metaparams['submitsteptitle'],
-            'nextsteptitle'          => $metaparams['nextsteptitle'],
         ];
 
         $conditions = [
             'root_doc'      => $metaconditionsparams['root_doc'],
-            'submittitle'   => $metaconditionsparams['submittitle'],
-            'nextsteptitle' => $metaconditionsparams['nextsteptitle'],
             'use_condition' => $metaconditionsparams['use_condition'] ? '1' : '',
             'show_rule'     => (string) $metaconditionsparams['show_rule'],
             'show_button'   => (string) $metaconditionsparams['show_button'],

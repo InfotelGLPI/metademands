@@ -854,8 +854,6 @@ class Ldapdropdown extends CommonDBTM
     public static function checkConditions($data, $metaparams)
     {
 
-        $submittitle   = $metaparams['submittitle'] ?? '';
-        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
         $use_condition = $metaparams['use_condition'] ?? '';
         $show_rule     = $metaparams['show_rule'] ?? '';
         $show_button   = $metaparams['show_button'] ?? '';
@@ -871,8 +869,6 @@ class Ldapdropdown extends CommonDBTM
         if ($show_rule != Condition::SHOW_RULE_ALWAYS && in_array($data['id'], $condition_fields)) {
             $root_doc = PLUGIN_METADEMANDS_WEBDIR;
             $onchange = "window.metademandconditionsparams = {};
-                        metademandconditionsparams.submittitle = '$submittitle';
-                        metademandconditionsparams.nextsteptitle = '$nextsteptitle';
                         metademandconditionsparams.use_condition = '$use_condition';
                         metademandconditionsparams.show_rule = '$show_rule';
                         metademandconditionsparams.show_button = '$show_button';

@@ -557,22 +557,80 @@ function plugin_metademands_wizard_validateForm(metademandparams)
     return valid;
 }
 
+/**
+ * Titles of #nextBtn by kind, rendered by templates/wizard/form_nav_buttons.html.twig
+ * from Wizard::getButtonTitles(): {before: icon class, label: text, after: icon class}.
+ */
+function plugin_metademands_wizard_getNextBtnTitles(btn)
+{
+    try {
+        return JSON.parse(btn.dataset.mdTitles || '{}');
+    } catch (e) {
+        return {};
+    }
+}
+
+/**
+ * Set the title of #nextBtn from its kind: the icons are created as elements and the
+ * label as text, no markup is injected.
+ */
+function plugin_metademands_wizard_setNextBtnTitle(kind)
+{
+    const btn = document.getElementById('nextBtn');
+    if (btn === null) {
+        return;
+    }
+    const title = plugin_metademands_wizard_getNextBtnTitles(btn)[kind];
+    if (title === undefined) {
+        return;
+    }
+    const icon = function (css_class) {
+        const i = document.createElement('i');
+        i.className = css_class;
+        return i;
+    };
+    const parts = [];
+    if (title.before) {
+        parts.push(icon(title.before), '\u00a0');
+    }
+    parts.push(title.label);
+    if (title.after) {
+        parts.push('\u00a0', icon(title.after));
+    }
+    btn.replaceChildren(...parts);
+    btn.dataset.mdTitleKind = kind;
+}
+
+/**
+ * Whether #nextBtn currently shows the same title as the given kind. Two kinds may
+ * share a title ("Save & Post" is both the submit title and the one of the fields
+ * which trigger a task): the titles are compared, as the legacy innerHTML check did.
+ */
+function plugin_metademands_wizard_nextBtnHasTitle(kind)
+{
+    const btn = document.getElementById('nextBtn');
+    if (btn === null) {
+        return false;
+    }
+    const titles = plugin_metademands_wizard_getNextBtnTitles(btn);
+    const current = titles[btn.dataset.mdTitleKind];
+    const expected = titles[kind];
+    return current !== undefined && expected !== undefined
+        && current.before === expected.before
+        && current.label === expected.label
+        && current.after === expected.after;
+}
+
 function plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metademandconditionsparams)
 {
     // This function will display the specified tab of the form...
 
     if (metademandconditionsparams.use_condition == true) {
         if (metademandconditionsparams.show_rule == 2) {
-            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.submittitle) {
+            if (plugin_metademands_wizard_nextBtnHasTitle('conditions_submit')) {
                 document.getElementById('nextBtn').style.display = 'none';
             }
         }
-
-        $('#prevBtn').off('click.metademands').on('click.metademands', function () {
-            if (document.getElementById('nextBtn').innerHTML == metademandconditionsparams.nexttitle) {
-                document.getElementById('nextBtn').style.display = 'inline';
-            }
-        });
 
         plugin_metademands_wizard_checkConditions(metademandconditionsparams);
     }
@@ -619,11 +677,11 @@ function plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metade
     }
 
 
-    document.getElementById('nextBtn').innerHTML = metademandparams.nexttitle;
+    plugin_metademands_wizard_setNextBtnTitle('next');
 
     if (metademandparams.currentTab == (x.length - 1)) {
         if (metademandparams.seeform == 0) {
-            document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
+            plugin_metademands_wizard_setNextBtnTitle('submit');
         } else {
             document.getElementById('nextBtn').style.display = 'none';
         }
@@ -673,16 +731,16 @@ function plugin_metademands_wizard_displayStepButton(metademandparams)
         if (metademandparams.seeform == 0) {
             document.getElementById('nextBtn').style.display = 'inline';
             if (nextTab >= x.length) {
-                document.getElementById('nextBtn').innerHTML = metademandparams.submittitle;
+                plugin_metademands_wizard_setNextBtnTitle('submit');
             } else {
                 if (create) {
-                    document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
+                    plugin_metademands_wizard_setNextBtnTitle('submitstep');
                     document.getElementById('nextBtn2').style.display = 'none';
                 } else if (metademandparams.changestepbystepoption) {
-                    document.getElementById('nextBtn').innerHTML = metademandparams.submitsteptitle;
+                    plugin_metademands_wizard_setNextBtnTitle('submitstep');
                     document.getElementById('nextBtn2').style.display = 'inline';
                 } else {
-                    document.getElementById('nextBtn').innerHTML = metademandparams.nextsteptitle;
+                    plugin_metademands_wizard_setNextBtnTitle('next');
                     document.getElementById('nextBtn2').style.display = 'none';
                 }
             }
@@ -774,10 +832,8 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams)
             data: formDatas,
             success: function (response) {
                 const btn = document.getElementById('nextBtn');
-                const innerHTML = btn.innerHTML;
-                const isAnyStepTitle = innerHTML == metademandconditionsparams.submittitle;
 
-                if (!isAnyStepTitle) {
+                if (!plugin_metademands_wizard_nextBtnHasTitle('conditions_submit')) {
                     return;
                 }
 

@@ -33,6 +33,8 @@ use Glpi\Application\View\TemplateRenderer;
 use Glpi\Tests\DbTestCase;
 use GlpiPlugin\Metademands\Draft;
 use GlpiPlugin\Metademands\Form;
+use GlpiPlugin\Metademands\Metademand;
+use GlpiPlugin\Metademands\Wizard;
 use Session;
 
 /**
@@ -200,6 +202,69 @@ class WizardTemplatesTest extends DbTestCase
         ]);
 
         $this->assertStringNotContainsString('submitGetLink', $html);
+    }
+
+    public function testNextButtonCarriesItsTitlesAsEscapedData(): void
+    {
+        $titles = ['next' => ['before' => '', 'label' => '</button><b>x</b>', 'after' => 'ti ti-chevron-right']];
+
+        $html = $this->render('form_nav_buttons', [
+            'use_as_step'       => 0,
+            'use_draft'         => false,
+            'cancel_form'       => null,
+            'show_step_circles' => false,
+            'step_count'        => 1,
+            'button_titles'     => $titles,
+        ]);
+
+        $this->assertSame(1, preg_match('/<button[^>]*id="nextBtn"[^>]*data-md-titles="([^"]*)"/', $html, $matches));
+        $this->assertStringNotContainsString('<b>', $matches[1]);
+        $this->assertSame($titles, json_decode(html_entity_decode($matches[1], ENT_QUOTES), true));
+        $this->assertStringContainsString('data-md-title-kind="next"', $html);
+    }
+
+    public function testButtonTitlesFollowTheKindOfMetademand(): void
+    {
+        $this->login();
+
+        $titles = [];
+        foreach (['plain' => [0, 0], 'order' => [1, 0], 'basket' => [0, 1]] as $kind => [$is_order, $is_basket]) {
+            $metademand = $this->createItem(Metademand::class, [
+                'name'             => 'Titles ' . $kind,
+                'entities_id'      => $this->getTestRootEntity(true),
+                'object_to_create' => 'Ticket',
+                'type'             => 0,
+                'is_order'         => $is_order,
+                'is_basket'        => $is_basket,
+            ]);
+            $titles[$kind] = Wizard::getButtonTitles($metademand);
+        }
+
+        $post = ['before' => 'ti ti-device-floppy', 'label' => _x('button', 'Save & Post', 'metademands'), 'after' => ''];
+        $this->assertSame($post, $titles['plain']['submit']);
+        $this->assertSame($post, $titles['plain']['post']);
+        $this->assertSame($post, $titles['plain']['conditions_submit']);
+        $this->assertSame(
+            ['before' => '', 'label' => __('Next', 'metademands'), 'after' => 'ti ti-chevron-right'],
+            $titles['plain']['next'],
+        );
+        $this->assertSame('ti ti-device-floppy', $titles['plain']['savenext']['before']);
+
+        $add = ['before' => 'ti ti-plus', 'label' => _x('button', 'Add to basket', 'metademands'), 'after' => ''];
+        $this->assertSame($add, $titles['order']['submit']);
+        $this->assertSame($add, $titles['order']['conditions_submit']);
+
+        $this->assertSame(_x('button', 'See basket summary & send it', 'metademands'), $titles['basket']['submit']['label']);
+        $this->assertSame('ti ti-device-floppy', $titles['basket']['submit']['before']);
+        // The conditions compare the button with the plain submit title of a basket
+        $this->assertSame($post, $titles['basket']['conditions_submit']);
+
+        // No markup in the labels: the script creates the icons
+        foreach ($titles as $by_kind) {
+            foreach ($by_kind as $title) {
+                $this->assertStringNotContainsString('<', $title['label']);
+            }
+        }
     }
 
     public function testFormBlocksIncludeTheTabBar(): void

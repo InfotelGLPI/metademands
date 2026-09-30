@@ -2104,12 +2104,6 @@ class FieldOption extends CommonDBChild
             $use_as_step = 1;
         }
 
-        $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-        $nextsteptitle =  __(
-            'Next',
-            'metademands',
-        ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-
         if ($blockid > 0) {
             $fields = new Field();
             $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metaid, 'rank' => $blockid]);
@@ -2132,7 +2126,7 @@ class FieldOption extends CommonDBChild
             }
 
             if ($use_as_step == 1) {
-                $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'; ";
+                $script .= "plugin_metademands_wizard_setNextBtnTitle('next'); ";
             }
         }
 

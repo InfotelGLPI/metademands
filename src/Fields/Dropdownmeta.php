@@ -260,7 +260,7 @@ class Dropdownmeta extends CommonDBTM
                         $field .= ITILCategory::dropdown($opt);
                     }
 
-                    $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
+                    $field .= Html::hidden($nameitil . "_plugin_servicecatalog_itilcategories_id_key", ['value' => $data['id']]);
                 }
 
                 if ($readonly == 1 || $hidden == 1) {
@@ -428,7 +428,7 @@ class Dropdownmeta extends CommonDBTM
                         $itemtype = $splitter[0];
                         $items_id = $splitter[1];
                     }
-                    $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . htmlescape($value) . "' >";
+                    $field .= Html::hidden($namefield . "[" . $data['id'] . "]", ['value' => $value]);
                     // The itemtype half is carved out of a session value the requester controls, so
                     // it is validated before being resolved into a table name rather than trusted:
                     // only a real CommonDBTM may be read, and only at a positive row id.
@@ -1459,18 +1459,13 @@ class Dropdownmeta extends CommonDBTM
                 }
             }
 
-            $title = "<i class=\"ti ti-device-floppy\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
-            $nextsteptitle = __(
-                'Next',
-                'metademands',
-            ) . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
 
             foreach ($check_values as $idc => $check_value) {
                 foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
                     if ($tasks_id) {
                         if (MetademandTask::setUsedTask($tasks_id, 0)) {
                             $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                            $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                            $script .= "plugin_metademands_wizard_setNextBtnTitle('post')";
                             $script .= "});";
                         }
                     }
@@ -1531,7 +1526,7 @@ class Dropdownmeta extends CommonDBTM
                                   used: 0 },
                                   success: function(response){
                                        if (response != 1) {
-                                           document.getElementById('nextBtn').innerHTML = '$title'
+                                           plugin_metademands_wizard_setNextBtnTitle('post')
                                        }
                                     },
                                 });
@@ -1544,7 +1539,7 @@ class Dropdownmeta extends CommonDBTM
                                   used: 1 },
                                   success: function(response){
                                        if (response != 1) {
-                                           document.getElementById('nextBtn').innerHTML = '$nextsteptitle'
+                                           plugin_metademands_wizard_setNextBtnTitle('next')
                                        }
                                     },
                                 });
@@ -1567,13 +1562,13 @@ class Dropdownmeta extends CommonDBTM
                                 if ($idc == $k) {
                                     if (MetademandTask::setUsedTask($tasks_id, 1)) {
                                         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                        $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                                        $script .= "plugin_metademands_wizard_setNextBtnTitle('next')";
                                         $script .= "});";
                                     }
                                 } else {
                                     if (MetademandTask::setUsedTask($tasks_id, 0)) {
                                         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                        $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                                        $script .= "plugin_metademands_wizard_setNextBtnTitle('post')";
                                         $script .= "});";
                                     }
                                 }
@@ -1978,8 +1973,6 @@ class Dropdownmeta extends CommonDBTM
     public static function checkConditions($data, $metaparams)
     {
 
-        $submittitle   = $metaparams['submittitle'] ?? '';
-        $nextsteptitle = $metaparams['nextsteptitle'] ?? '';
         $use_condition = $metaparams['use_condition'] ?? '';
         $show_rule     = $metaparams['show_rule'] ?? '';
         $show_button   = $metaparams['show_button'] ?? '';
@@ -1996,8 +1989,6 @@ class Dropdownmeta extends CommonDBTM
 
             $root_doc = PLUGIN_METADEMANDS_WEBDIR;
             $onchange = "window.metademandconditionsparams = {};
-                        metademandconditionsparams.submittitle = '$submittitle';
-                        metademandconditionsparams.nextsteptitle = '$nextsteptitle';
                         metademandconditionsparams.use_condition = '$use_condition';
                         metademandconditionsparams.show_rule = '$show_rule';
                         metademandconditionsparams.show_button = '$show_button';
