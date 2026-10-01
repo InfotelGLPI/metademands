@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-30 16:51+0000\n"
+"POT-Creation-Date: 2026-09-30 17:00+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -400,7 +400,7 @@ msgid "Checkbox"
 msgstr "Casilla de verificación"
 
 #: src/Metademand.php:3588 src/Metademand.php:4824
-#: src/Ticket_Metademand.php:840
+#: src/Ticket_Metademand.php:841
 msgid "Child Ticket"
 msgstr "Ticket Niño"
 
@@ -470,7 +470,7 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: src/Ticket_Metademand.php:463
+#: src/Ticket_Metademand.php:464
 msgctxt "status"
 msgid "Closed"
 msgstr "Cerrado"
@@ -1332,7 +1332,7 @@ msgstr ""
 msgid "In progress"
 msgstr "En curso"
 
-#: src/Ticket_Metademand.php:457
+#: src/Ticket_Metademand.php:458
 msgctxt "status"
 msgid "In progress"
 msgstr "En curso"
@@ -1944,7 +1944,7 @@ msgid "Parent ticket tag"
 msgstr "Etiqueta de ticket para padres"
 
 #: src/Metademand.php:3605 src/Metademand.php:4843
-#: src/Ticket_Metademand.php:852
+#: src/Ticket_Metademand.php:853
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
 msgstr[0] "Ticket para padre"
@@ -2761,7 +2761,7 @@ msgstr "Color del título"
 msgid "Title for Service Catalog widget"
 msgstr "Título del widget Catálogo de servicios"
 
-#: src/Ticket_Metademand.php:460
+#: src/Ticket_Metademand.php:461
 msgctxt "status"
 msgid "To close"
 msgstr "Para cerrar"

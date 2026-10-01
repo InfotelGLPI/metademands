@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.7.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-30 16:51+0000\n"
+"POT-Creation-Date: 2026-09-30 17:00+0000\n"
 "PO-Revision-Date: 2020-10-12 18:05+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -391,7 +391,7 @@ msgid "Checkbox"
 msgstr "Checkbox"
 
 #: src/Metademand.php:3588 src/Metademand.php:4824
-#: src/Ticket_Metademand.php:840
+#: src/Ticket_Metademand.php:841
 msgid "Child Ticket"
 msgstr "Child Ticket"
 
@@ -460,7 +460,7 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: src/Ticket_Metademand.php:463
+#: src/Ticket_Metademand.php:464
 msgctxt "status"
 msgid "Closed"
 msgstr ""
@@ -1304,7 +1304,7 @@ msgstr ""
 msgid "In progress"
 msgstr ""
 
-#: src/Ticket_Metademand.php:457
+#: src/Ticket_Metademand.php:458
 msgctxt "status"
 msgid "In progress"
 msgstr ""
@@ -1908,7 +1908,7 @@ msgid "Parent ticket tag"
 msgstr "Parent ticket tag"
 
 #: src/Metademand.php:3605 src/Metademand.php:4843
-#: src/Ticket_Metademand.php:852
+#: src/Ticket_Metademand.php:853
 #, fuzzy
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
@@ -2713,7 +2713,7 @@ msgstr ""
 msgid "Title for Service Catalog widget"
 msgstr ""
 
-#: src/Ticket_Metademand.php:460
+#: src/Ticket_Metademand.php:461
 msgctxt "status"
 msgid "To close"
 msgstr ""
