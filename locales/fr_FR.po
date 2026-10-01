@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-01 06:42+0000\n"
+"POT-Creation-Date: 2026-10-01 10:07+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -30,7 +30,7 @@ msgstr ""
 msgid "%1$s %2$s successfully created"
 msgstr "%1$s %2$s créés avec succès"
 
-#: src/Fields/Dropdown.php:546
+#: src/Fields/Dropdown.php:526
 #, php-format
 msgid "%d level"
 msgid_plural "%d levels"
@@ -47,7 +47,7 @@ msgstr "(6 champs maximum)"
 msgid "(if VAT 20%)"
 msgstr "(si TVA 20%)"
 
-#: src/Fields/Basket.php:1566
+#: src/Fields/Basket.php:1034
 msgid "* The prices are estimates and do not act as an estimate"
 msgstr "* Les prix sont des estimations et ne constituent pas une estimation"
 
@@ -75,7 +75,7 @@ msgstr "Un problème est survenu, le formulaire n'a pas été envoyé"
 msgid "AND"
 msgstr "ET"
 
-#: src/Fields/Basket.php:457
+#: src/Fields/Basket.php:456
 msgid "Accessory"
 msgstr "Accessoire"
 
@@ -293,7 +293,7 @@ msgstr "Attribuer le ticket à"
 msgid "Background color"
 msgstr "Couleur de l'arrière plan"
 
-#: src/Fields/Basket.php:70
+#: src/Fields/Basket.php:69
 msgid "Basket"
 msgstr "Panier"
 
@@ -331,8 +331,8 @@ msgstr "Bloc"
 msgid "Block %s"
 msgstr "Bloc %s"
 
-#: src/Fields/Radio.php:211 src/Fields/Dropdownmeta.php:1074
-#: src/Fields/Checkbox.php:184 src/Fields/Dropdown.php:549
+#: src/Fields/Radio.php:193 src/Fields/Dropdownmeta.php:1074
+#: src/Fields/Checkbox.php:182 src/Fields/Dropdown.php:529
 msgid "Block display"
 msgstr "Affichage en bloc"
 
@@ -399,7 +399,7 @@ msgstr "Catégorie"
 msgid "Category of the metademand"
 msgstr "Catégorie de la métademande"
 
-#: src/Fields/Checkbox.php:62
+#: src/Fields/Checkbox.php:60
 msgid "Checkbox"
 msgstr "Case à cocher"
 
@@ -435,9 +435,9 @@ msgstr "Tickets enfants récupèrent les informations du ticket parent"
 msgid "Choose a template"
 msgstr "Choisissez un gabarit"
 
-#: src/Fields/Radio.php:210 src/Fields/Dropdownmeta.php:1070
-#: src/Fields/Yesno.php:186 src/Fields/Checkbox.php:183
-#: src/Fields/Dropdownmultiple.php:542 src/Fields/Dropdown.php:541
+#: src/Fields/Radio.php:192 src/Fields/Dropdownmeta.php:1070
+#: src/Fields/Yesno.php:167 src/Fields/Checkbox.php:181
+#: src/Fields/Dropdownmultiple.php:542 src/Fields/Dropdown.php:521
 msgid "Classic display"
 msgstr "Affichage classique"
 
@@ -666,7 +666,7 @@ msgstr "Date supérieure ou égale à maintenant"
 msgid "Default (%s)"
 msgstr "Defaut (%s)"
 
-#: src/Fields/Yesno.php:170 src/Fields/Dropdownmultiple.php:517
+#: src/Fields/Yesno.php:151 src/Fields/Dropdownmultiple.php:517
 #: templates/fields/field_customvalue_add.html.twig:61
 #: templates/fields/field_customvalue_list.html.twig:107
 msgid "Default value"
@@ -725,7 +725,7 @@ msgstr "Supprimer le formulaire"
 #: templates/list_of_templates.html.twig:87
 #: templates/fields/freetable_fields.html.twig:146
 #: templates/fields/freetable_fields.html.twig:148
-#: templates/fields/field_upload.html.twig:36
+#: templates/fields/field_upload.html.twig:35
 #: templates/fields/field_customvalue_list.html.twig:139
 #: templates/fields/field_customvalue_list.html.twig:141
 #: templates/field_list.html.twig:247
@@ -783,8 +783,8 @@ msgstr "Date de départ"
 msgid "Description"
 msgstr "Description"
 
-#: src/Fields/Basket.php:157 src/Fields/Basket.php:1502
-#: src/Fields/Basket.php:1768 src/Fields/Basket.php:1936
+#: src/Fields/Basket.php:156 src/Fields/Basket.php:970
+#: src/Fields/Basket.php:1198 src/Fields/Basket.php:1366
 #: src/Basketobject.php:142 src/Basketobject.php:260
 #: templates/basketobject_form.html.twig:39
 msgid "Designation"
@@ -1002,8 +1002,8 @@ msgstr "Erreur lors de l'attribution au groupe suivant"
 msgid "Error when creating export archive"
 msgstr "Erreur lors de la création de l'archive"
 
-#: src/Fields/Basket.php:165 src/Fields/Basket.php:1506
-#: src/Fields/Basket.php:1779
+#: src/Fields/Basket.php:164 src/Fields/Basket.php:974
+#: src/Fields/Basket.php:1209
 msgid "Estimated unit price"
 msgstr "Prix unitaire estimé"
 
@@ -1149,13 +1149,13 @@ msgstr "Paramètres globaux"
 msgid "Glpi Object"
 msgstr "Objet GLPI"
 
-#: src/Fields/Basket.php:1562
+#: src/Fields/Basket.php:1030
 msgid "Grand total"
 msgstr "Total général"
 
 #: src/MetademandPdf.php:523 src/MetademandPdf.php:656
 #: src/Fields/Freetable.php:275 src/Fields/Freetable.php:554
-#: src/Fields/Basket.php:1563 src/Fields/Basket.php:1869
+#: src/Fields/Basket.php:1031 src/Fields/Basket.php:1299
 msgid "Grand total (HT)"
 msgstr "Total général (HT)"
 
@@ -1261,8 +1261,8 @@ msgstr ""
 "Si des blocs enfants existent, ces blocs sont masqués lorsque vous "
 "désélectionnez l'option configurée"
 
-#: src/Fields/Tel.php:164 src/Fields/Text.php:162 src/Fields/Textarea.php:174
-#: src/Fields/Email.php:159 src/Fields/Url.php:130
+#: src/Fields/Tel.php:163 src/Fields/Text.php:161 src/Fields/Textarea.php:171
+#: src/Fields/Email.php:158 src/Fields/Url.php:129
 msgid "If field empty"
 msgstr "Si le champ est vide"
 
@@ -1613,7 +1613,7 @@ msgstr "Métademandes à clore"
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
-#: src/Fields/Number.php:122 src/Fields/Range.php:161
+#: src/Fields/Number.php:122 src/Fields/Range.php:145
 msgid "Minimal mandatory"
 msgstr "Minimum obligatoire"
 
@@ -1747,7 +1747,7 @@ msgstr "Pas de fichier fourni"
 msgid "No items on basket"
 msgstr "Pas d'éléments dans le panier"
 
-#: src/Fields/Dropdown.php:544
+#: src/Fields/Dropdown.php:524
 msgid "No limit"
 msgstr "Sans limite"
 
@@ -1788,7 +1788,7 @@ msgstr "Pas d'espaces, pas de caractères spéciaux"
 msgid "No visibility defined"
 msgstr "Pas de visibilité définie"
 
-#: src/Fields/Textarea.php:151
+#: src/Fields/Textarea.php:148
 msgid "Not available with Rich text option"
 msgstr "Non disponible avec l'option Texte Riche"
 
@@ -1797,16 +1797,16 @@ msgstr "Non disponible avec l'option Texte Riche"
 msgid "Not empty"
 msgstr "Non vide"
 
-#: src/Fields/Radio.php:256 src/Fields/Radio.php:269
+#: src/Fields/Radio.php:238 src/Fields/Radio.php:251
 #: src/Fields/Dropdownmeta.php:1212 src/Fields/Dropdownmeta.php:1222
 #: src/Fields/Dropdownmeta.php:1243 src/Fields/Ldapdropdown.php:325
-#: src/Fields/Ldapdropdown.php:361 src/Fields/Checkbox.php:227
-#: src/Fields/Checkbox.php:240 src/Fields/Dropdownobject.php:738
+#: src/Fields/Ldapdropdown.php:361 src/Fields/Checkbox.php:225
+#: src/Fields/Checkbox.php:238 src/Fields/Dropdownobject.php:738
 #: src/Fields/Dropdownobject.php:741 src/Fields/Dropdownobject.php:751
 #: src/Fields/Dropdownobject.php:774 src/Fields/Dropdownobject.php:790
 #: src/Fields/Dropdownobject.php:801 src/Fields/Dropdownmultiple.php:725
-#: src/Fields/Dropdown.php:633 src/Fields/Dropdown.php:670
-#: src/Fields/Basket.php:472
+#: src/Fields/Dropdown.php:613 src/Fields/Dropdown.php:650
+#: src/Fields/Basket.php:471
 msgid "Not null value"
 msgstr "Valeur non nulle"
 
@@ -1870,13 +1870,13 @@ msgstr "Observateur"
 msgid "Obsolete translations"
 msgstr "Traductions obsolètes"
 
-#: src/Fields/Basket.php:1827
+#: src/Fields/Basket.php:1257
 msgid "On catalog"
 msgstr "Sur catalogue"
 
-#: src/Fields/Basket.php:237 src/Fields/Basket.php:358
-#: src/Fields/Basket.php:452 src/Fields/Basket.php:1611
-#: src/Fields/Basket.php:1644 src/Fields/Basket.php:1827
+#: src/Fields/Basket.php:236 src/Fields/Basket.php:357
+#: src/Fields/Basket.php:451 src/Fields/Basket.php:1079
+#: src/Fields/Basket.php:1112 src/Fields/Basket.php:1257
 msgid "On quotation"
 msgstr "Sur devis"
 
@@ -1937,7 +1937,7 @@ msgstr "Ordre"
 msgid "Order of execution and grouping of conditions"
 msgstr "Ordre d'exécution et regroupement des conditions"
 
-#: src/Fields/Basket.php:1772
+#: src/Fields/Basket.php:1202
 msgid "Order type"
 msgstr "Type de commande"
 
@@ -2047,9 +2047,9 @@ msgstr "Modèles publics"
 msgid "Publisher"
 msgstr "Éditeur"
 
-#: src/Fields/Basket.php:183 src/Fields/Basket.php:1514
-#: src/Fields/Basket.php:1777 src/Fields/Basket.php:1938
-#: src/Fields/Basket.php:1978
+#: src/Fields/Basket.php:182 src/Fields/Basket.php:982
+#: src/Fields/Basket.php:1207 src/Fields/Basket.php:1368
+#: src/Fields/Basket.php:1408
 msgid "Quantity"
 msgstr "Quantité"
 
@@ -2057,11 +2057,11 @@ msgstr "Quantité"
 msgid "Queries to run"
 msgstr "Requêtes à exécuter"
 
-#: src/Fields/Radio.php:64
+#: src/Fields/Radio.php:61
 msgid "Radio button"
 msgstr "Bouton radio"
 
-#: src/Fields/Range.php:54
+#: src/Fields/Range.php:53
 msgid "Range"
 msgstr "Plage"
 
@@ -2097,8 +2097,8 @@ msgstr ""
 "Redirection vers la liste des tickets lors du changement d'utilisateur en "
 "mode pas à pas"
 
-#: src/Fields/Basket.php:156 src/Fields/Basket.php:1501
-#: src/Fields/Basket.php:1767 src/Fields/Basket.php:1935
+#: src/Fields/Basket.php:155 src/Fields/Basket.php:969
+#: src/Fields/Basket.php:1197 src/Fields/Basket.php:1365
 #: src/Basketobject.php:159 templates/basketobject_form.html.twig:57
 msgid "Reference"
 msgstr "Référence"
@@ -2291,15 +2291,15 @@ msgctxt "button"
 msgid "Search"
 msgstr "Rechercher"
 
-#: src/Fields/Basket.php:419
+#: src/Fields/Basket.php:418
 msgid "Search for description.."
 msgstr "Chercher une description.."
 
-#: src/Fields/Basket.php:418
+#: src/Fields/Basket.php:417
 msgid "Search for names.."
 msgstr "Chercher un nom.."
 
-#: src/Fields/Basket.php:417
+#: src/Fields/Basket.php:416
 msgid "Search.."
 msgstr "Chercher.."
 
@@ -2331,7 +2331,7 @@ msgctxt "button"
 msgid "See your basket"
 msgstr "Voir votre panier"
 
-#: src/Fields/Basket.php:186
+#: src/Fields/Basket.php:185
 msgid "Select"
 msgstr "Sélectionner"
 
@@ -2398,7 +2398,7 @@ msgstr "Liste déroulante spécifique"
 msgid "Specific parameters"
 msgstr "Paramètres spécifiques"
 
-#: tests/FieldParameterSpecificTest.php:195 src/Fields/Dropdown.php:543
+#: tests/FieldParameterSpecificTest.php:195 src/Fields/Dropdown.php:523
 msgid "Splitted display"
 msgstr "Affichage divisé"
 
@@ -2430,7 +2430,7 @@ msgstr[2] "Étapes d'un formulaire de métademandes"
 msgid "Step by step settings"
 msgstr "Paramètres du mode pas à pas"
 
-#: src/Fields/Number.php:118 src/Fields/Range.php:157
+#: src/Fields/Number.php:118 src/Fields/Range.php:141
 msgid "Step for number"
 msgstr "Pas pour les nombre"
 
@@ -2462,7 +2462,7 @@ msgstr "Affichage du bouton de validation"
 msgid "Suggested queries"
 msgstr "Requêtes suggérées"
 
-#: src/Fields/Yesno.php:187
+#: src/Fields/Yesno.php:168
 msgid "Switch display"
 msgstr "Affichage type Switch"
 
@@ -2530,11 +2530,11 @@ msgstr "Nom du gabarit"
 msgid "Templates"
 msgstr "Gabarits"
 
-#: src/Freetablefield.php:220 src/Fields/Text.php:59
+#: src/Freetablefield.php:220 src/Fields/Text.php:58
 msgid "Text"
 msgstr "Texte"
 
-#: src/Fields/Textarea.php:62
+#: src/Fields/Textarea.php:61
 msgid "Textarea"
 msgstr "Zone de commentaire"
 
@@ -2553,7 +2553,7 @@ msgstr ""
 msgid "The default value has changed since the last translation"
 msgstr "La valeur par défaut a été modifiée depuis la dernière traduction"
 
-#: src/Fields/Textarea.php:884
+#: src/Fields/Textarea.php:506
 msgid "The description field is mandatory"
 msgstr "Le champ description est obligatoire"
 
@@ -2784,7 +2784,7 @@ msgstr "Groupe de techniciens des tickets cibles"
 msgid "Ticket technician of target tickets"
 msgstr "Technicien des tickets cibles"
 
-#: src/Fields/Time.php:54
+#: src/Fields/Time.php:53
 msgid "Time"
 msgstr "Heure"
 
@@ -2827,14 +2827,14 @@ msgstr "Trop de documents ont été envoyées, maximum %s. Merci de corriger: %s
 msgid "Tools"
 msgstr "Outils"
 
-#: src/Fields/Basket.php:203 src/Fields/Basket.php:211
-#: src/Fields/Basket.php:1518 src/Fields/Basket.php:1867
-#: src/Fields/Basket.php:1869
+#: src/Fields/Basket.php:202 src/Fields/Basket.php:210
+#: src/Fields/Basket.php:986 src/Fields/Basket.php:1297
+#: src/Fields/Basket.php:1299
 msgid "Total"
 msgstr "Total"
 
-#: src/Fields/Basket.php:196 src/Fields/Basket.php:1517
-#: src/Fields/Basket.php:1783 src/Fields/Basket.php:1951
+#: src/Fields/Basket.php:195 src/Fields/Basket.php:985
+#: src/Fields/Basket.php:1213 src/Fields/Basket.php:1381
 msgid "Total (HT)"
 msgstr "Total (HT)"
 
@@ -2897,13 +2897,13 @@ msgstr "Impossible de créer le fichier d'exportation"
 msgid "Unable to upload the file"
 msgstr "Impossible de télécharger le fichier"
 
-#: src/Fields/Basket.php:174 src/Fields/Basket.php:1509
-#: src/Fields/Basket.php:1775 src/Fields/Basket.php:1944
+#: src/Fields/Basket.php:173 src/Fields/Basket.php:977
+#: src/Fields/Basket.php:1205 src/Fields/Basket.php:1374
 msgid "Unit"
 msgstr "Unité"
 
-#: src/Fields/Basket.php:177 src/Fields/Basket.php:1511
-#: src/Fields/Basket.php:1782 src/Fields/Basket.php:1947
+#: src/Fields/Basket.php:176 src/Fields/Basket.php:979
+#: src/Fields/Basket.php:1212 src/Fields/Basket.php:1377
 msgid "Unit price (HT)"
 msgstr "Prix unitaire (HT)"
 
@@ -3039,11 +3039,11 @@ msgstr "Validé par %s le %s"
 msgid "Value"
 msgstr "Valeur"
 
-#: src/Condition.php:573 src/Fields/Radio.php:242
-#: src/Fields/Dropdownmeta.php:1144 src/Fields/Yesno.php:227
-#: src/Fields/Ldapdropdown.php:297 src/Fields/Checkbox.php:215
+#: src/Condition.php:573 src/Fields/Radio.php:224
+#: src/Fields/Dropdownmeta.php:1144 src/Fields/Yesno.php:208
+#: src/Fields/Ldapdropdown.php:297 src/Fields/Checkbox.php:213
 #: src/Fields/Dropdownobject.php:682 src/Fields/Dropdownmultiple.php:616
-#: src/Fields/Dropdown.php:605 src/Fields/Basket.php:471
+#: src/Fields/Dropdown.php:585 src/Fields/Basket.php:470
 #: templates/condition_list.html.twig:73
 #: templates/field_option_options.html.twig:102
 #: templates/condition_form.html.twig:48
@@ -3092,7 +3092,7 @@ msgstr ""
 msgid "What you want to do ?"
 msgstr "Que voulez-vous faire ?"
 
-#: src/Fields/Basket.php:433
+#: src/Fields/Basket.php:432
 msgid "With quantity"
 msgstr "Avec la quantité"
 
@@ -3101,7 +3101,7 @@ msgid "With this option, some assignment rules will not be respected."
 msgstr ""
 "Avec cette option, certaines règles d'affectation ne seront pas respectées."
 
-#: src/Fields/Basket.php:441
+#: src/Fields/Basket.php:440
 msgid "With unit price (HT)"
 msgstr "Avec le prix unitaire (HT)"
 
@@ -3117,7 +3117,7 @@ msgstr "Aperçu du formulaire"
 msgid "Yes"
 msgstr "Oui"
 
-#: src/Fields/Yesno.php:60
+#: src/Fields/Yesno.php:58
 msgid "Yes / No"
 msgstr "Oui / Non"
 
