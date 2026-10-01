@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-01 10:07+0000\n"
+"POT-Creation-Date: 2026-10-01 10:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -423,7 +423,7 @@ msgstr ""
 
 #: src/Fields/Radio.php:192 src/Fields/Dropdownmeta.php:1070
 #: src/Fields/Yesno.php:167 src/Fields/Checkbox.php:181
-#: src/Fields/Dropdownmultiple.php:542 src/Fields/Dropdown.php:521
+#: src/Fields/Dropdownmultiple.php:440 src/Fields/Dropdown.php:521
 msgid "Classic display"
 msgstr ""
 
@@ -649,7 +649,7 @@ msgstr ""
 msgid "Default (%s)"
 msgstr ""
 
-#: src/Fields/Yesno.php:151 src/Fields/Dropdownmultiple.php:517
+#: src/Fields/Yesno.php:151 src/Fields/Dropdownmultiple.php:415
 #: templates/fields/field_customvalue_add.html.twig:61
 #: templates/fields/field_customvalue_list.html.twig:107
 msgid "Default value"
@@ -830,7 +830,7 @@ msgstr ""
 msgid "Display type of the field"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:518
+#: src/Fields/Dropdownmultiple.php:416
 msgid "Display value in the dropdown"
 msgstr ""
 
@@ -866,7 +866,7 @@ msgstr ""
 msgid "Done on"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:543
+#: src/Fields/Dropdownmultiple.php:441
 msgid "Double column display"
 msgstr ""
 
@@ -1757,7 +1757,7 @@ msgstr ""
 #: src/Fields/Checkbox.php:238 src/Fields/Dropdownobject.php:738
 #: src/Fields/Dropdownobject.php:741 src/Fields/Dropdownobject.php:751
 #: src/Fields/Dropdownobject.php:774 src/Fields/Dropdownobject.php:790
-#: src/Fields/Dropdownobject.php:801 src/Fields/Dropdownmultiple.php:725
+#: src/Fields/Dropdownobject.php:801 src/Fields/Dropdownmultiple.php:623
 #: src/Fields/Dropdown.php:613 src/Fields/Dropdown.php:650
 #: src/Fields/Basket.php:471
 msgid "Not null value"
@@ -2220,7 +2220,7 @@ msgstr ""
 msgid "Schema check"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:383 src/Fields/Dropdownmultiple.php:386
+#: templates/fields/field_multiselect.html.twig:30
 msgid "Search"
 msgstr ""
 
@@ -2273,7 +2273,7 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:519
+#: src/Fields/Dropdownmultiple.php:417
 msgid "Select all"
 msgstr ""
 
@@ -2484,7 +2484,7 @@ msgstr ""
 msgid "The default value has changed since the last translation"
 msgstr ""
 
-#: src/Fields/Textarea.php:506
+#: tests/FieldWizardDisplayTest.php:376 src/Fields/Textarea.php:489
 msgid "The description field is mandatory"
 msgstr ""
 
@@ -2814,7 +2814,7 @@ msgstr ""
 msgid "Unknown table"
 msgstr ""
 
-#: src/Fields/Dropdownmultiple.php:520
+#: src/Fields/Dropdownmultiple.php:418
 msgid "Unselect all"
 msgstr ""
 
@@ -2943,7 +2943,7 @@ msgstr ""
 #: src/Condition.php:573 src/Fields/Radio.php:224
 #: src/Fields/Dropdownmeta.php:1144 src/Fields/Yesno.php:208
 #: src/Fields/Ldapdropdown.php:297 src/Fields/Checkbox.php:213
-#: src/Fields/Dropdownobject.php:682 src/Fields/Dropdownmultiple.php:616
+#: src/Fields/Dropdownobject.php:682 src/Fields/Dropdownmultiple.php:514
 #: src/Fields/Dropdown.php:585 src/Fields/Basket.php:470
 #: templates/condition_list.html.twig:73
 #: templates/field_option_options.html.twig:102
