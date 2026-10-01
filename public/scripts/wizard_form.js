@@ -40,6 +40,7 @@
  */
 
 /* global updateActiveTab, tinyMCE, glpi_html_dialog, basketSearchInit, SignaturePad, getFlatPickerLocale,
+   onTinyMCEChange, submitparentForm, strip_tags,
    addLine, editLine, removeLine, confirmUpdateLine */
 
 (function () {
@@ -459,6 +460,303 @@
             locale: getFlatPickerLocale(config.language, config.region),
             minuteIncrement: config.step,
         });
+    }
+
+    /**
+     * Bind the double column list of a multiple dropdown (Fields/Dropdownmultiple.php):
+     * search inputs above both columns, and the moved options colored by their new side
+     * (green when picked, red when given back, grey when moved again).
+     *
+     * @param {HTMLSelectElement} select the left column, carrying the search placeholder
+     */
+    function initMultiselect(select) {
+        if (select.dataset.mdMultiselectInit) {
+            return;
+        }
+        if (typeof $.fn.multiselect === 'undefined') {
+            // The library tag precedes the list but may not have run yet: retry once it did.
+            const lib = document.querySelector('script[src*="multiselect2"]');
+            if (lib) {
+                lib.addEventListener('load', function () {
+                    initMultiselect(select);
+                }, {once: true});
+            }
+            return;
+        }
+        select.dataset.mdMultiselectInit = '1';
+
+        const search = $('<input type="text" name="q" autocomplete="off" class="searchCol">')
+            .attr('placeholder', select.dataset.mdMultiselect);
+        $(select).multiselect({
+            search: {
+                left: search.clone(),
+                right: search.clone(),
+            },
+            keepRenderingSort: true,
+            fireSearch: function (value) {
+                return value.length > 2;
+            },
+            moveFromAtoB: function (Multiselect, $source, $destination, $options) {
+                const self = Multiselect;
+
+                $options.each(function (index, option) {
+                    const $option = $(option);
+
+                    if (self.options.ignoreDisabled && $option.is(':disabled')) {
+                        return true;
+                    }
+
+                    if ($option.is('optgroup') || $option.parent().is('optgroup')) {
+                        const $sourceGroup = $option.is('optgroup') ? $option : $option.parent();
+                        const optgroupSelector = 'optgroup[' + self.options.matchOptgroupBy + "='" + $sourceGroup.prop(self.options.matchOptgroupBy) + "']";
+                        let $destinationGroup = $destination.find(optgroupSelector);
+
+                        if (!$destinationGroup.length) {
+                            $destinationGroup = $sourceGroup.clone(true);
+                            $destinationGroup.empty();
+
+                            $destination.move($destinationGroup);
+                        }
+
+                        if ($option.is('optgroup')) {
+                            const disabledSelector = self.options.ignoreDisabled ? ':not(:disabled)' : '';
+                            $destinationGroup.move($option.find('option' + disabledSelector));
+                        } else {
+                            $destinationGroup.move($option);
+                        }
+
+                        $sourceGroup.removeIfEmpty();
+                    } else {
+                        $destination.move($option);
+                        // Color change when the value switches sides
+                        $destination[0].value = $options[index].value;
+                        const destOption = $destination[0].options[$destination[0].selectedIndex];
+                        if (destOption.style.color !== 'red' && destOption.style.color !== 'green') {
+                            destOption.style.color = $destination[0].name === 'from[]' ? 'red' : 'green';
+                        } else {
+                            destOption.style.color = '#555555';
+                        }
+                    }
+                });
+                return self;
+            },
+        });
+    }
+
+    // (Un)select all the "display in the dropdown" checkboxes of the custom values form
+    $(document).on('click', 'a[data-md-check-all]', function (event) {
+        event.preventDefault();
+        const checked = this.dataset.mdCheckAll === '1';
+        $(this).closest('form').find('input[type="checkbox"]').prop('checked', checked);
+    });
+
+    /**
+     * Check the checkboxes linked to the values of a multiple dropdown when they are picked
+     * (Fields/Dropdownmultiple.php::checkboxScript()). They are never unchecked.
+     *
+     * @param {HTMLElement} marker
+     */
+    function initCheckboxTrigger(marker) {
+        if (marker.dataset.mdCheckboxInit) {
+            return;
+        }
+        marker.dataset.mdCheckboxInit = '1';
+
+        const config = JSON.parse(marker.dataset.mdCheckboxTrigger);
+        const classic = config.source.id === undefined;
+
+        // jQuery: Select2 only triggers a jQuery change event
+        $(document).on('change', sourceSelector(config.source), function () {
+            const values = $(this).val();
+            config.rules.forEach(function (rule) {
+                // Classic: any selected value, double column: the single value highlighted on the left
+                const matches = classic
+                    ? [].concat(values ?? []).map(String).includes(rule.value)
+                    : String(values) === rule.value;
+                const checkbox = document.getElementById(rule.target);
+                if (matches && checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+        });
+    }
+
+    /**
+     * Bind the rich text editor of a textarea (Fields/Textarea.php), a fork of the core
+     * Html::initEditorSystem(): the comment of the field fills the empty editor as rich
+     * text, cleared on the first click or key and never submitted.
+     *
+     * @param {HTMLTextAreaElement} textarea
+     */
+    function initRichText(textarea) {
+        if (textarea.dataset.mdRichtextInit) {
+            return;
+        }
+        if (typeof tinyMCE === 'undefined') {
+            // The library is loaded with the page footer: retry once it ran.
+            const lib = document.querySelector('script[src*="lib/tinymce"]');
+            if (lib) {
+                lib.addEventListener('load', function () {
+                    initRichText(textarea);
+                }, {once: true});
+            }
+            return;
+        }
+        textarea.dataset.mdRichtextInit = '1';
+
+        const config = JSON.parse(textarea.dataset.mdRichtext);
+        const $textarea = $(textarea);
+        const layout = config.layout;
+
+        // The wizard step came back from Ajax: drop the editor of the replaced textarea
+        const stale = tinyMCE.get(textarea.id);
+        if (stale && stale.getElement() !== textarea) {
+            stale.remove();
+        }
+
+        const settings = {
+            license_key: 'gpl',
+
+            link_default_target: '_blank',
+            branding: false,
+            target: textarea,
+            text_patterns: false,
+            paste_webkit_styles: 'all',
+
+            plugins: config.plugins,
+
+            // Appearance
+            skin_url: config.skin_url,
+            body_class: 'rich_text_container',
+            content_css: config.content_css,
+            highlight_on_focus: false,
+
+            min_height: config.height,
+            height: config.height, // Must be used with min_height to prevent "height jump" when the page is loaded
+            resize: true,
+
+            // disable path indicator in bottom bar
+            elementpath: false,
+
+            // inline toolbar configuration
+            menubar: false,
+            toolbar: layout === 'classic'
+                ? 'styles | bold italic | forecolor backcolor | bullist numlist outdent indent | emoticons table link image | code fullscreen'
+                : false,
+            quickbars_insert_toolbar: layout === 'inline'
+                ? 'emoticons quicktable quickimage quicklink | bullist numlist | outdent indent '
+                : false,
+            quickbars_selection_toolbar: layout === 'inline'
+                ? 'bold italic | styles | forecolor backcolor '
+                : false,
+            contextmenu: layout === 'classic'
+                ? false
+                : 'copy paste | emoticons table image link | undo redo | code fullscreen',
+
+            // Content settings
+            entity_encoding: 'raw',
+            invalid_elements: config.invalid_elements,
+            readonly: config.readonly,
+            relative_urls: false,
+            remove_script_host: false,
+
+            // Misc options
+            browser_spellcheck: true,
+            cache_suffix: config.cache_suffix,
+
+            // Iframes are disabled by default. We assume that administrator that enable it are aware of the potential security issues.
+            sandbox_iframes: false,
+
+            setup: function (editor) {
+                // "required" state handling
+                if ($textarea.attr('required') === 'required') {
+                    $textarea.removeAttr('required'); // Necessary to bypass browser validation
+
+                    editor.on('submit', function (e) {
+                        if ($textarea.val() === '') {
+                            const field = $textarea.closest('.form-field').find('label').text().replace('*', '').trim();
+                            alert(config.mandatory_msg.replace('%s', field));
+                            e.preventDefault();
+
+                            // Prevent other events to run
+                            // Needed to not break single submit forms
+                            e.stopPropagation();
+                        }
+                    });
+                    editor.on('keyup', function () {
+                        editor.save();
+                        $(editor.container).toggleClass('required', $textarea.val() === '');
+                    });
+                    editor.on('init', function () {
+                        if (strip_tags($textarea.val()) === '') {
+                            $(editor.container).addClass('required');
+                        }
+                    });
+                    editor.on('paste', function () {
+                        // Pasting with the context menu fires no keyup
+                        $(editor.container).removeClass('required');
+                    });
+                }
+                editor.on('Change', function (e) {
+                    // Unsaved changes tracking, shared with the other form inputs (common.js)
+                    onTinyMCEChange(e);
+                });
+                // ctrl + enter submit the parent form
+                editor.addShortcut('ctrl+13', 'submit', function () {
+                    editor.save();
+                    submitparentForm($textarea);
+                });
+
+                // The comment of the field fills the empty editor
+                editor.on('init', function () {
+                    if ($textarea.val() === '') {
+                        editor.setContent(config.placeholder);
+                    }
+                });
+                // Cleared on the first click or key in the editor
+                const placeholderManager = function () {
+                    if (editor.dom.get('placeholder')) {
+                        editor.undoManager.transact(function () {
+                            editor.setContent('');
+                        });
+                    }
+                };
+                editor.once('click tap keydown', placeholderManager);
+                editor.on('Undo', function () {
+                    // Back to the original content: watch for the next click again
+                    if (!editor.undoManager.hasUndo()) {
+                        editor.once('click tap keydown', placeholderManager);
+                    }
+                });
+                // Never submitted: every <div> is removed upon serialization
+                editor.on('PreInit', function () {
+                    editor.serializer.addNodeFilter('div', function (nodes) {
+                        nodes.forEach(function (node) {
+                            node.remove();
+                        });
+                    });
+                });
+            },
+            content_style: `
+                #placeholder {
+                    color: #aaa;
+                    display: flex;
+                    flex-direction: column;
+                    -webkit-user-select: none; /* Prevent any selections on the element */
+                    user-select: none;
+                }
+
+                #placeholder * {
+                    -webkit-user-select: none; /* Prevent any selections on the element */
+                    user-select: none;
+                }`,
+        };
+        if (config.language) {
+            settings.language = config.language;
+            settings.language_url = config.language_url;
+        }
+
+        tinyMCE.init(settings);
     }
 
     /**
@@ -1368,6 +1666,9 @@
         {selector: 'input[type="range"][data-md-range-value]', init: initRange},
         {selector: 'select[data-md-chained-locations]', init: initChainedLocations},
         {selector: '[data-md-timepicker]', init: initTimepicker},
+        {selector: 'textarea[data-md-richtext]', init: initRichText},
+        {selector: 'select[data-md-multiselect]', init: initMultiselect},
+        {selector: '[data-md-checkbox-trigger]', init: initCheckboxTrigger},
     ];
 
     /**

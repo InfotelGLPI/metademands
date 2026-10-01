@@ -353,29 +353,27 @@ class Textarea extends CommonDBTM
 
         $required = $p['required'] ? 'required' : '';
         $display = '';
+        // Rich text editor bound by public/scripts/wizard_form.js (data-md-richtext)
+        $editor_attr = '';
+        if ($p['enable_richtext']) {
+            $editor_attr = ' data-md-richtext="' . htmlescape((string) json_encode(self::getEditorConfig(
+                false,
+                $p['enable_images'],
+                $p['rows'] * 24,
+                $p['placeholder'],
+            ))) . '"';
+        }
         // Escaped exactly like Html::textarea() in the core. This method is a fork of it,
-        // kept only for the editor height and placeholder that initEditorSystem() below
+        // kept only for the editor height and placeholder that getEditorConfig() below
         // takes as extra arguments, and the escapes had been dropped along the way. The
         // value is an answer typed by a user, stored raw since GLPI 10 and replayed to the
         // other actors of a step form, so the missing escape on it was a stored XSS: a
         // closing </textarea> in the answer was enough to break out of the element.
         // Escaping does not harm the rich text, TinyMCE reads the decoded .value.
         $display .= "<textarea class='form-control' name='" . htmlescape($p['name']) . "' id='" . htmlescape($p['editor_id']) . "'
-                             rows='" . ((int) $p['rows']) . "' cols='" . ((int) $p['cols']) . "' $required>"
+                             rows='" . ((int) $p['rows']) . "' cols='" . ((int) $p['cols']) . "' $required$editor_attr>"
             . htmlescape($p['value']) . "</textarea>";
 
-        if ($p['enable_richtext']) {
-            $height = $p['rows'] * 24;
-            $display .= self::initEditorSystem(
-                $p['editor_id'],
-                $p['rand'],
-                false,
-                false,
-                $p['enable_images'],
-                $height,
-                $p['placeholder'],
-            );
-        }
         if (!$p['enable_fileupload'] && $p['enable_richtext'] && $p['enable_images']) {
             $p_rt = $p;
             $p_rt['display'] = false;
@@ -402,27 +400,24 @@ class Textarea extends CommonDBTM
     }
 
     /**
-     * Init the Editor System to a textarea
+     * Settings of the rich text editor of a textarea, read by the initRichText widget of
+     * public/scripts/wizard_form.js. A fork of Html::initEditorSystem(): the comment of the
+     * field is shown inside the editor as rich text (cleared on the first click or key,
+     * never submitted) where the core only offers a plain text placeholder.
      *
-     * @param string $name name of the html textarea to use
-     * @param string $rand rand of the html textarea to use (if empty no image paste system)(default '')
-     * @param boolean $display display or get js script (true by default)
-     * @param boolean $readonly editor will be readonly or not
-     * @param boolean $enable_images enable image pasting in rich text
+     * @param bool   $readonly            editor will be readonly or not
+     * @param bool   $enable_images       enable image pasting in rich text
+     * @param int    $editor_height       editor default height
+     * @param string $placeholder_comment comment shown in the empty editor
      *
-     * @return void|string
-     *    integer if param display=true
-     *    string if param display=false (HTML code)
+     * @return array<string, mixed>
      **/
-    public static function initEditorSystem(
-        $id,
-        $rand = '',
-        $display = true,
+    public static function getEditorConfig(
         $readonly = false,
         $enable_images = true,
         int $editor_height = 150,
         $placeholder_comment = ''
-    ) {
+    ): array {
         global $CFG_GLPI, $DB;
 
         // load tinymce lib
@@ -452,9 +447,6 @@ class Textarea extends CommonDBTM
         // Fix & encoding so it can be loaded as expected in debug mode
         $content_css = str_replace('&amp;', '&', $content_css);
         $skin_url = preg_replace('/^.*href="([^"]+)".*$/', '$1', Html::css('css/tinymce_empty_skin', ['force_no_version' => true], false));
-        $content_css = jsescape($content_css);
-        $cache_suffix = '?v=' . FrontEnd::getVersionCacheKey(GLPI_VERSION);
-        $readonlyjs = $readonly ? 'true' : 'false';
 
         $invalid_elements = 'applet,canvas,embed,form,object';
         if (!$enable_images) {
@@ -482,206 +474,25 @@ class Textarea extends CommonDBTM
         if ($DB->use_utf8mb4) {
             $plugins[] = 'emoticons';
         }
-        $pluginsjs = json_encode($plugins);
 
-        $language_opts = '';
+        $config = [
+            'plugins'          => $plugins,
+            'skin_url'         => $skin_url,
+            'content_css'      => $content_css,
+            'height'           => $editor_height,
+            'invalid_elements' => $invalid_elements,
+            'readonly'         => (bool) $readonly,
+            'cache_suffix'     => '?v=' . FrontEnd::getVersionCacheKey(GLPI_VERSION),
+            'layout'           => (string) ($_SESSION['glpirichtext_layout'] ?? ''),
+            // Sanitized here, set as the editor content by the widget
+            'placeholder'      => '<div id="placeholder">' . RichText::getSafeHtml($placeholder_comment) . '</div>',
+            'mandatory_msg'    => __('The description field is mandatory', 'servicecatalog'),
+        ];
         if ($language !== 'en_GB') {
-            $language_opts = json_encode([
-                'language' => $language,
-                'language_url' => $language_url,
-            ]);
+            $config['language']     = $language;
+            $config['language_url'] = $language_url;
         }
 
-        // The sink below is an ES6 template literal, where ${...} is evaluated as
-        // JavaScript: addslashes() escapes the quotes, the backslash and NUL, but neither
-        // the backquote nor ${, so it never protected this site. getSafeHtml() sanitizes
-        // HTML and has no reason to drop those characters, which are not HTML-significant.
-        // Build the whole fragment here and let json_encode() emit its own delimiters,
-        // exactly as src/Wizard.php:1490 already does -- hence the unquoted sink.
-        $placeholder = RichText::getSafeHtml($placeholder_comment);
-        $placeholder_content = json_encode(
-            '<div id="placeholder">' . $placeholder . '</div>',
-            JSON_HEX_TAG | JSON_HEX_AMP,
-        );
-        $mandatory_field_msg = json_encode(__('The description field is mandatory', 'servicecatalog'));
-        // init tinymce
-        $js = <<<JS
-         $(function() {
-            var is_dark = false;//$('html').css('--is-dark').trim() === 'true'
-            var richtext_layout = "{$_SESSION['glpirichtext_layout']}";
-
-            // init editor
-            tinyMCE.init(Object.assign({
-               license_key: 'gpl',
-
-               link_default_target: '_blank',
-               branding: false,
-               selector: '#{$id}',
-               text_patterns: false,
-               paste_webkit_styles: 'all',
-
-               plugins: {$pluginsjs},
-
-               // Appearance
-               skin_url: '{$skin_url}',
-               body_class: 'rich_text_container',
-               content_css: '{$content_css}',
-               highlight_on_focus: false,
-
-               min_height: $editor_height,
-                height: $editor_height, // Must be used with min_height to prevent "height jump" when the page is loaded
-               resize: true,
-
-               // disable path indicator in bottom bar
-               elementpath: false,
-
-                // inline toolbar configuration
-               menubar: false,
-               toolbar: richtext_layout == 'classic'
-                  ? 'styles | bold italic | forecolor backcolor | bullist numlist outdent indent | emoticons table link image | code fullscreen'
-                  : false,
-               quickbars_insert_toolbar: richtext_layout == 'inline'
-                  ? 'emoticons quicktable quickimage quicklink | bullist numlist | outdent indent '
-                  : false,
-               quickbars_selection_toolbar: richtext_layout == 'inline'
-                  ? 'bold italic | styles | forecolor backcolor '
-                  : false,
-               contextmenu: richtext_layout == 'classic'
-                  ? false
-                  : 'copy paste | emoticons table image link | undo redo | code fullscreen',
-
-               // Content settings
-               entity_encoding: 'raw',
-               invalid_elements: '{$invalid_elements}',
-               readonly: {$readonlyjs},
-               relative_urls: false,
-               remove_script_host: false,
-
-               // Misc options
-               browser_spellcheck: true,
-               cache_suffix: '{$cache_suffix}',
-
-               // Security options
-               // Iframes are disabled by default. We assume that administrator that enable it are aware of the potential security issues.
-               sandbox_iframes: false,
-
-               setup: function(editor) {
-                  // "required" state handling
-                  if ($('#$id').attr('required') == 'required') {
-                     $('#$id').removeAttr('required'); // Necessary to bypass browser validation
-
-                     editor.on('submit', function (e) {
-                        if ($('#$id').val() == '') {
-                           const field = $('#$id').closest('.form-field').find('label').text().replace('*', '').trim();
-                           alert({$mandatory_field_msg}.replace('%s', field));
-                           e.preventDefault();
-
-                           // Prevent other events to run
-                           // Needed to not break single submit forms
-                           e.stopPropagation();
-                        }
-                     });
-                     editor.on('keyup', function (e) {
-                        editor.save();
-                        if ($('#$id').val() == '') {
-                           $(editor.container).addClass('required');
-                        } else {
-                           $(editor.container).removeClass('required');
-                        }
-                     });
-                     editor.on('init', function (e) {
-                        if (strip_tags($('#$id').val()) == '') {
-                           $(editor.container).addClass('required');
-                        }
-                     });
-                     editor.on('paste', function (e) {
-                        // Remove required on paste event
-                        // This is only needed when pasting with right click (context menu)
-                        // Pasting with Ctrl+V is already handled by keyup event above
-                        $(editor.container).removeClass('required');
-                     });
-                  }
-                  editor.on('Change', function (e) {
-                     // Nothing fancy here. Since this is only used for tracking unsaved changes,
-                     // we want to keep the logic in common.js with the other form input events.
-                     onTinyMCEChange(e);
-                  });
-                  // ctrl + enter submit the parent form
-                  editor.addShortcut('ctrl+13', 'submit', function() {
-                     editor.save();
-                     submitparentForm($('#$id'));
-                  });
-                  editor.on('init', () => {
-                     if ($('#$id').val() == '') {
-                     editor.setContent($placeholder_content);
-                     }
-                  });
-                  // When the editor is clicked we monitor what is being clicked and
-                  // take appropriate actions. This is how we dedect if a insert template
-                  // button has been clicked. This event is triggered for every click inside
-                  // TinyMCE.
-                  // https://www.tiny.cloud/docs/advanced/events/
-                  const placeholderManager = (e) => {
-
-                     // Check if the content contains the placeholder inserted above.
-                     // The get() function looks for an id attribute.
-                     // https://www.tiny.cloud/docs/api/tinymce.dom/tinymce.dom.domutils/#get
-                     const placeholderExists = editor.dom.get('placeholder');
-
-                     if (placeholderExists) {
-
-                        // In this demo we want to start an empty document with a title.
-                           // This does not force having a title for a document, it's simply
-                           // a convenience feature.
-                           editor.undoManager.transact(() => {
-                              editor.setContent('');
-                           });
-                     }
-                  };
-
-                  // Bind the click event listener to the placeholder manager function
-                  editor.once('click tap keydown', placeholderManager);
-
-                  editor.on('Undo', () => {
-                     // Rebind the click event listener when the editor is reverted back
-                     // to the original content
-                     if (!editor.undoManager.hasUndo()) {
-                        editor.once('click tap keydown', placeholderManager);
-                     }
-                  });
-                  editor.on('PreInit', () => {
-                     // To prevent the placeholder to be submitted out of TinyMCE we
-                     // remove it upon serialization. In this case, any <div> tag
-                     // will be removed, so adapt it to your needs.
-                     // https://www.tiny.cloud/docs/api/tinymce.dom/tinymce.dom.serializer/#addnodefilter
-                     editor.serializer.addNodeFilter('div', nodes => {
-                        nodes.forEach(node => {
-                           node.remove();
-                        });
-                     });
-                  });
-               },
-               content_style: `
-                #placeholder {
-                    color: #aaa;
-                    display: flex;
-                    flex-direction: column;
-                    -webkit-user-select: none; /* Prevent any selections on the element */
-                    user-select: none;
-                }
-
-                #placeholder * {
-                    -webkit-user-select: none; /* Prevent any selections on the element */
-                    user-select: none;
-                }`
-            }, {$language_opts}));
-         });
-JS;
-
-        if ($display) {
-            echo Html::scriptBlock($js);
-        } else {
-            return Html::scriptBlock($js);
-        }
+        return $config;
     }
 }

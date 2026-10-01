@@ -33,6 +33,7 @@ use Glpi\Application\View\TemplateRenderer;
 use Glpi\Tests\DbTestCase;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Fields\Basket;
+use GlpiPlugin\Metademands\Fields\Textarea;
 use GlpiPlugin\Metademands\Fields\Time;
 use GlpiPlugin\Metademands\Metademand;
 
@@ -180,7 +181,6 @@ class FieldWizardDisplayTest extends DbTestCase
             'mode'                   => 'objects',
             'form_target'            => '/front/x.php',
             'hidden_fields'          => ['fields_id' => self::MARKUP],
-            'script_html'            => '',
             'type_name'              => 'Type',
             'default_value_label'    => 'Default',
             'display_dropdown_label' => 'Display',
@@ -193,6 +193,8 @@ class FieldWizardDisplayTest extends DbTestCase
         $this->assertMatchesRegularExpression('/name=[\'"]default\[4\][\'"]/', $html);
         $this->assertStringContainsString('name="custom[4]" value="4" checked', $html);
         $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
+        $this->assertStringContainsString('<a href="#" data-md-check-all="1">All</a>', $html);
+        $this->assertStringContainsString('<a href="#" data-md-check-all="0">None</a>', $html);
     }
 
     public function testUploadDeleteLinkEncodesThePostedFields(): void
@@ -241,6 +243,9 @@ class FieldWizardDisplayTest extends DbTestCase
         $this->assertNoInjectedScript($html);
         $this->assertStringNotContainsString('required', $html);
         $this->assertStringContainsString('selected value="2"', $html);
+        $this->assertStringNotContainsString('<script', $html);
+        $this->assertStringContainsString('id="multiselect7" class=\'formCol\'', $html);
+        $this->assertStringContainsString('data-md-multiselect="' . htmlescape(__('Search')) . '..."', $html);
 
         $html = $this->render('field_location_chained', [
             'name' => 'field[9]', 'id' => 'loc9', 'is_required' => true,
@@ -337,5 +342,37 @@ class FieldWizardDisplayTest extends DbTestCase
         $this->assertSame(15, $config['step']);
         $this->assertArrayHasKey('language', $config);
         $this->assertArrayHasKey('region', $config);
+    }
+
+    public function testRichTextareaDescribesItsEditor(): void
+    {
+        $this->login();
+
+        $html = Textarea::textarea([
+            'name'            => 'field[42]',
+            'editor_id'       => 'field42',
+            'value'           => self::MARKUP,
+            'placeholder'     => '<b>Hint</b>' . self::MARKUP,
+            'enable_richtext' => true,
+            'enable_images'   => false,
+            'required'        => true,
+            'rows'            => 4,
+            'display'         => false,
+        ]);
+
+        $this->assertNoInjectedScript($html);
+        $this->assertStringNotContainsString('<script', $html);
+        $this->assertSame(1, preg_match('/id=\'field42\'[^>]* required data-md-richtext="([^"]*)">/', $html, $matches));
+        $config = json_decode(html_entity_decode($matches[1], ENT_QUOTES), true);
+        $this->assertSame(96, $config['height']);
+        $this->assertFalse($config['readonly']);
+        $this->assertStringContainsString(',img', $config['invalid_elements']);
+        $this->assertNotContains('image', $config['plugins']);
+        // The core editor adds autolink, this fork never did
+        $this->assertNotContains('autolink', $config['plugins']);
+        // Rich text comment, sanitized on the server side
+        $this->assertStringStartsWith('<div id="placeholder"><b>Hint</b>', $config['placeholder']);
+        $this->assertStringNotContainsString('<script', $config['placeholder']);
+        $this->assertSame(__('The description field is mandatory', 'servicecatalog'), $config['mandatory_msg']);
     }
 }

@@ -27,6 +27,7 @@
 
 <div class='row'>
     <div class='zone'><select name='from[]' id="multiselect{{ id }}" class='formCol' size='8' multiple='multiple'
+                              data-md-multiselect="{{ __('Search') }}..."
                               style='font-size: 1em;'>{% for opt in left_options %}
                 <option value="{{ opt.value }}">{{ opt.text }}</option>{% endfor %}</select></div>
     <div class="centralCol" style='width: 10%;'>

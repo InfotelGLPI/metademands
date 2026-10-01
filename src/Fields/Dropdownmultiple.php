@@ -143,8 +143,6 @@ class Dropdownmultiple extends CommonDBTM
 
             if ($data["display_type"] != self::CLASSIC_DISPLAY) {
                 $field .= self::loadMultiselectDiv($namefield, $data['plugin_metademands_metademands_id'], $data['id'], $data['item'], $required, $list, $value);
-
-                $field .= self::loadMultiselectScript($namefield, $data['id']);
             } else {
                 $opt = [
                     'values' => $value,
@@ -196,8 +194,6 @@ class Dropdownmultiple extends CommonDBTM
                         $custom_values,
                         $value,
                     );
-
-                    $field .= self::loadMultiselectScript($namefield, $data['id']);
                 } else {
                     if (count($custom_values) > 0) {
                         foreach ($custom_values as $k => $val) {
@@ -295,8 +291,6 @@ class Dropdownmultiple extends CommonDBTM
 
                 if ($data["display_type"] != self::CLASSIC_DISPLAY) {
                     $field .= self::loadMultiselectDiv($namefield, $data['plugin_metademands_metademands_id'], $data['id'], $data['item'], $required, $list, $value);
-
-                    $field .= self::loadMultiselectScript($namefield, $data['id']);
                 } else {
                     $field = \Dropdown::showFromArray(
                         $namefield . "[" . $data['id'] . "]",
@@ -372,85 +366,6 @@ class Dropdownmultiple extends CommonDBTM
         ]);
     }
 
-    public static function loadMultiselectScript($namefield, $id)
-    {
-        $script = Html::scriptBlock(
-            '$(document).ready(function() {
-                            var tohide = {};
-                            $("#multiselect' . $id . '").multiselect({
-                                      search: {
-                                          left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __(
-                "Search",
-            ) . '...\" />",
-                                          right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __(
-                "Search",
-            ) . '...\" />",
-                                      },
-                                      keepRenderingSort: true,
-                                      fireSearch: function(value) {
-                                          return value.length > 2;
-                                      },
-                                      moveFromAtoB: function(Multiselect, $source, $destination, $options, event, silent, skipStack ) {
-                                        let self = Multiselect;
-
-                                        $options.each(function(index, option) {
-                                            let $option = $(option);
-
-                                            if (self.options.ignoreDisabled && $option.is(":disabled")) {
-                                                return true;
-                                            }
-
-                                            if ($option.is("optgroup") || $option.parent().is("optgroup")) {
-                                                let $sourceGroup = $option.is("optgroup") ? $option : $option.parent();
-                                                let optgroupSelector = "optgroup[" + self.options.matchOptgroupBy + "=\'" + $sourceGroup.prop(self.options.matchOptgroupBy) + "\']";
-                                                let $destinationGroup = $destination.find(optgroupSelector);
-
-                                                if (!$destinationGroup.length) {
-                                                    $destinationGroup = $sourceGroup.clone(true);
-                                                    $destinationGroup.empty();
-
-                                                    $destination.move($destinationGroup);
-                                                }
-
-                                                if ($option.is("optgroup")) {
-                                                    let disabledSelector = "";
-
-                                                    if (self.options.ignoreDisabled) {
-                                                        disabledSelector = ":not(:disabled)";
-                                                    }
-
-                                                    $destinationGroup.move($option.find("option" + disabledSelector));
-                                                } else {
-                                                    $destinationGroup.move($option);
-                                                }
-
-                                                $sourceGroup.removeIfEmpty();
-                                            } else {
-                                                $destination.move($option);
-                                                //Color change when multiselect value is switch
-                                                $destination[0].value = $options[index].value;
-                                                let selected = $destination[0].selectedIndex;
-                                                let destOption = $destination[0].options[selected];
-                                                if(destOption.style.color!="red" && destOption.style.color!="green") {
-                                                    if($destination[0].name=="from"){
-                                                        destOption.style.color = "red";
-                                                    } else{
-                                                        destOption.style.color = "green";
-                                                    }
-                                                } else{
-                                                    destOption.style.color="#555555";
-                                                }
-                                            }
-                                        });
-                                        return self;
-
-                                      }
-                                  });
-                            });',
-        );
-        return $script;
-    }
-
     public static function showFieldCustomValues($params)
     {
         $custom_values = $params['custom_values'];
@@ -481,22 +396,6 @@ class Dropdownmultiple extends CommonDBTM
                     ];
                 }
 
-                $script_html = Html::scriptBlock("$(function () {
-                    $('#checkall').click(function () {
-                            var checkboxes = document.querySelectorAll('input[type=\"checkbox\"]');
-                            for (var i = 0; i < checkboxes.length; i++) {
-                            if (checkboxes[i].type == 'checkbox')
-                            checkboxes[i].checked = true;
-                        }
-                    });
-                    $('#uncheckall').click(function () {
-                            var checkboxes = document.querySelectorAll('input[type=\"checkbox\"]');
-                            for (var i = 0; i < checkboxes.length; i++) {
-                            if (checkboxes[i].type == 'checkbox')
-                            checkboxes[i].checked = false;
-                        }
-                    });
-                });");
 
                 $items = [];
                 foreach ($found_items as $key => $v) {
@@ -512,7 +411,6 @@ class Dropdownmultiple extends CommonDBTM
                     'mode'                   => 'objects',
                     'form_target'            => $target,
                     'hidden_fields'          => $hidden_fields,
-                    'script_html'            => $script_html,
                     'type_name'              => FieldCustomvalue::getTypeName(2),
                     'default_value_label'    => _n('Default value', 'Default values', 1, 'metademands'),
                     'display_dropdown_label' => __('Display value in the dropdown', 'metademands'),
@@ -879,57 +777,42 @@ class Dropdownmultiple extends CommonDBTM
         FieldOption::displayBlockTrigger($data, ['name' => 'field[' . $data['id'] . ']', 'match' => 'prefix'], 'options', $options);
     }
 
-    public static function checkboxScript($data, $idc)
+    /**
+     * Check the checkboxes linked to the values of the field when they are picked:
+     * a marker read by public/scripts/wizard_form.js (initCheckboxTrigger).
+     *
+     * @param array $data field with its options (checkbox_id / checkbox_value per value)
+     */
+    public static function checkboxScript($data)
     {
-        if ($data["display_type"] == self::CLASSIC_DISPLAY) {
-            $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-
-            $checkbox_id = $data['options'][$idc]['checkbox_id'];
-            $checkbox_value = $data['options'][$idc]['checkbox_value'];
-
-            $custom_values = $data['custom_values'];
-
-            $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
-
-            if (isset($checkbox_id) && $checkbox_id > 0) {
-                if ($data["item"] == "other") {
-                    $title = json_encode($custom_values[$idc]['name']);
-                    $script .= "if ($(value).attr('title') == $title) {
-                                    document.getElementById('field[$checkbox_id][$checkbox_value]').checked=true;
-                                }";
-                } else {
-                    $script .= "if ($(value).attr('title') == '" . $data["item"]::getFriendlyNameById($idc) . "') {
-                                    document.getElementById('field[$checkbox_id][$checkbox_value]').checked=true;
-                                }";
-                }
+        $classic = $data['display_type'] == self::CLASSIC_DISPLAY;
+        $rules = [];
+        foreach ($data['options'] ?? [] as $idc => $option) {
+            if (empty($option['checkbox_id']) || empty($option['checkbox_value'])) {
+                continue;
             }
-
-            $script .= "});
-                        });";
-
-            echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
-        } else {
-            $script = "$('#multiselect" . $data["id"] . "').on('change', function() {";
-
-            if (isset($data['options'][$idc]['hidden_link'])
-                && !empty($data['options'][$idc]['hidden_link'])) {
-                $checkbox_id = $data['options'][$idc]['checkbox_id'];
-                $checkbox_value = $data['options'][$idc]['checkbox_value'];
-
-                //                $script .= "$.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {";
-
-                if (isset($checkbox_id) && $checkbox_id > 0) {
-                    $script .= "
-                           if($(this).val() == '$idc'){
-                              document.getElementById('field[$checkbox_id][$checkbox_value]').checked=true;
-                           }
-                        ";
-                }
-                $script .= "});";
+            // The double column script was only complete with a linked field to show
+            if (!$classic && empty($option['hidden_link'])) {
+                continue;
             }
-
-            echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
+            $rules[] = [
+                'value'  => (string) $idc,
+                'target' => 'field[' . (int) $option['checkbox_id'] . '][' . (int) $option['checkbox_value'] . ']',
+            ];
         }
+        if (count($rules) == 0) {
+            return;
+        }
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/checkbox_trigger.html.twig', [
+            'config' => [
+                // Classic: every selected value, double column: the value picked on the left
+                'source' => $classic
+                    ? ['name' => 'field[' . $data['id'] . ']', 'match' => 'prefix']
+                    : ['id' => 'multiselect' . $data['id']],
+                'rules'  => $rules,
+            ],
+        ]);
     }
 
     public static function checkConditions($data, $metaparams)

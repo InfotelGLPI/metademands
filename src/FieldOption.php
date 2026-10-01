@@ -2122,23 +2122,8 @@ class FieldOption extends CommonDBChild
 
     public static function checkboxScript($data)
     {
-        if (isset($data['options'])) {
-            $check_values = $data['options'];
-
-            if (is_array($check_values)) {
-                if (count($check_values) > 0) {
-                    foreach ($check_values as $idc => $check_value) {
-                        if (!empty($data['options'][$idc]['checkbox_id'])
-                            && !empty($data['options'][$idc]['checkbox_value'])) {
-                            switch ($data['type']) {
-                                case 'dropdown_multiple':
-                                    Dropdownmultiple::checkboxScript($data, $idc);
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
+        if (($data['type'] ?? '') == 'dropdown_multiple' && is_array($data['options'] ?? null)) {
+            Dropdownmultiple::checkboxScript($data);
         }
     }
 

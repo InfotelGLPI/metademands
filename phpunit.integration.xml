@@ -20,6 +20,7 @@
         <file>tests/TaskTriggerTest.php</file>
         <file>tests/MandatoryTriggerTest.php</file>
         <file>tests/HiddenTriggerTest.php</file>
+        <file>tests/CheckboxTriggerTest.php</file>
         <file>tests/BlockTriggerTest.php</file>
         <file>tests/FieldCustomvalueListTest.php</file>
         <file>tests/FieldParameterGlobalTest.php</file>

@@ -34,7 +34,8 @@
  #   - objects: the field is bound to a GLPI itemtype; render a form + table of
  #     that itemtype's items, each with a default-value dropdown and a
  #     "display in dropdown" checkbox. `hidden_fields` are the hidden inputs
- #     (name => value), `script_html` wires the (un)select all links, each item
+ #     (name => value), the (un)select all links are wired by
+ #     public/scripts/wizard_form.js (data-md-check-all), each item
  #     carries its key, name, default value and checked state.
  #   - list: free custom values, delegated to field_customvalue_list.html.twig
  #     with the `list` context built by FieldCustomvalue::getListContext().
@@ -52,15 +53,13 @@
       {%- for hidden_name, hidden_value in hidden_fields %}
       <input type="hidden" name="{{ hidden_name }}" value="{{ hidden_value }}">
       {%- endfor %}
-      {# raw: Html::scriptBlock() of the (un)select all links, no data (§3.2) #}
-      {{- script_html|raw }}
       <table class="tab_cadre_fixe">
          <tr class="tab_bg_1">
             <th>{{ type_name }}</th>
             <th width="20%">{{ default_value_label }}</th>
             <th width="20%">
                {{ display_dropdown_label }}<br>
-               <a href="#" id="checkall">{{ select_all_label }}</a> / <a href="#" id="uncheckall">{{ unselect_all_label }}</a>
+               <a href="#" data-md-check-all="1">{{ select_all_label }}</a> / <a href="#" data-md-check-all="0">{{ unselect_all_label }}</a>
             </th>
          </tr>
          {%- for it in items %}

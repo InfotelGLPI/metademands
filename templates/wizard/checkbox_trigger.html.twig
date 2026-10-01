@@ -25,24 +25,11 @@
  # --------------------------------------------------------------------------
  #}
 
-{#- Textarea field (Fields\Textarea::showWizardField()).
+
+{#- Multiple dropdown whose picked values check linked checkboxes:
+ #  public/scripts/wizard_form.js (initCheckboxTrigger) binds the handler.
  #
- #  - is_richtext: rich text editor, else a classic <textarea>
- #  - rich text: textarea_html (editor widget of Fields\Textarea::textarea()) and
- #    drop_zone_id (document drop zone, hidden)
- #  - classic: is_required, rows, cols, comment (placeholder), value, name_attr, id_attr
--#}
-{%- if is_richtext -%}
-{# raw: rich text <textarea> (editor settings in data-md-richtext) and drop zone, from getFieldInput() (§3.2) #}
-{{ textarea_html|raw }}
-<style>
-    .fileupload.only-uploaded-files,
-    #{{ drop_zone_id }} {
-        display: none;
-    }
-</style>
-{%- else -%}
-<textarea{% if is_required %} required='required'{% endif %} class='form-control' rows='{{ rows }}' cols='{{ cols }}'
-               placeholder="{{ comment }}"
-               name='{{ name_attr }}' id='{{ id_attr }}'>{{ value }}</textarea>
-{%- endif -%}
+ #  Expected context:
+ #    config : see Fields\Dropdownmultiple::checkboxScript()
+ #}
+<div class="d-none" data-md-checkbox-trigger="{{ config|json_encode }}"></div>
