@@ -25,13 +25,14 @@
  # --------------------------------------------------------------------------
  #}
 
-{#- Upload field (Fields\Upload::showWizardField()).
+{#- Field whose changes re-evaluate the conditions of the metademand:
+ #  public/scripts/wizard_form.js (initConditionTrigger) publishes the parameters
+ #  as window.metademandconditionsparams and binds the handler.
  #
- #  - files: already uploaded files {name, post}, post holding the fields of the delete
- #    request, posted to delete_url like Html::getSimpleForm() does
- #  - file_options: options of Html::file(), null when max_upload is already reached
- #  One physical line so no inter-element whitespace enters the output.
--#}
-{% for file in files %}{{ file.name }}&nbsp;{% set post = {'delete_basket_file': 'delete_basket_file'}|merge(file.post)|merge({'_glpi_csrf_token': csrf_token(), '_glpi_simple_form': 1}) %}<a  class='pointer'  onclick="submitGetLink({{ delete_url|json_encode }}, {{ post|json_encode }});" ><span class='fas fa-times-circle' title='{{ _x('button', 'Delete permanently') }}'><span class='sr-only'>{{ _x('button', 'Delete permanently') }}</span></span></a>
-    <br>{% endfor %}{% if file_options is not null %}{% do call('Html::file', [file_options]) %}{% endif %}
-{#- -#}
+ #  Expected context:
+ #    params : see Condition::displayTrigger()
+ #    source : see Condition::displayTrigger()
+ #}
+<div class="d-none"
+     data-md-condition-trigger="{{ params|json_encode }}"
+     data-md-condition-source="{{ source|json_encode }}"></div>

@@ -33,6 +33,7 @@ use Glpi\Application\View\TemplateRenderer;
 use Glpi\Tests\DbTestCase;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Fields\Basket;
+use GlpiPlugin\Metademands\Fields\Time;
 use GlpiPlugin\Metademands\Metademand;
 
 /**
@@ -202,7 +203,6 @@ class FieldWizardDisplayTest extends DbTestCase
             'files'        => [['name' => self::MARKUP, 'post' => ['id' => self::MARKUP]]],
             'delete_url'   => '/plugins/metademands/front/wizard.form.php',
             'file_options' => null,
-            'script_html'  => '',
         ]);
 
         $this->assertNoInjectedScript($html);
@@ -214,13 +214,15 @@ class FieldWizardDisplayTest extends DbTestCase
     public function testSwitchRangeMultiselectAndLocationCarryStatesAsBooleans(): void
     {
         $html = $this->render('field_switch', [
-            'id' => 'sw1', 'name' => 'field[1]', 'is_checked' => true, 'value' => 2, 'script_html' => '',
+            'id' => 'sw1', 'name' => 'field[1]', 'is_checked' => true, 'value' => 2,
         ]);
+        $this->assertStringNotContainsString('<script', $html);
         $this->assertStringContainsString("checked='checked'", $html);
+        $this->assertStringContainsString("data-md-switch='field[1]'", $html);
         $this->assertStringContainsString('type="hidden" name="field[1]" id="field[1]" value="2"', $html);
 
         $html = $this->render('field_range', [
-            'script_html' => '', 'field_id' => 'r1', 'id' => 1, 'name' => 'field[1]', 'value' => 4,
+            'field_id' => 'r1', 'id' => 1, 'name' => 'field[1]', 'value' => 4,
             'min' => 0, 'max' => 10, 'step' => 5, 'is_required' => true, 'minimal_mandatory' => 2,
             'show_all_ticks' => true,
         ]);
@@ -228,6 +230,8 @@ class FieldWizardDisplayTest extends DbTestCase
         $this->assertStringContainsString("minimal_mandatory='2'", $html);
         $this->assertStringContainsString('range.css', $html);
         $this->assertSame(3, substr_count($html, '<span>'));
+        $this->assertStringNotContainsString('<script', $html);
+        $this->assertStringContainsString("data-md-range-value='rangevalue_1'", $html);
 
         $html = $this->render('field_multiselect', [
             'id' => 7, 'name' => 'field[7][]', 'is_required' => false,
@@ -239,10 +243,17 @@ class FieldWizardDisplayTest extends DbTestCase
         $this->assertStringContainsString('selected value="2"', $html);
 
         $html = $this->render('field_location_chained', [
-            'script_html' => '', 'name' => 'field[9]', 'id' => 'loc9', 'is_required' => true,
+            'name' => 'field[9]', 'id' => 'loc9', 'is_required' => true,
+            'chained' => ['data' => ['Site' => [3 => self::MARKUP]], 'selected' => '3'],
         ]);
+        $this->assertNoInjectedScript($html);
         $this->assertStringContainsString('jquery.chained.selects', $html);
         $this->assertStringContainsString('id="loc9-dropdown" required', $html);
+        $this->assertSame(1, preg_match('/data-md-chained-locations="([^"]*)"/', $html, $matches));
+        $this->assertSame(
+            ['data' => ['Site' => ['3' => self::MARKUP]], 'selected' => '3', 'target' => 'loc9'],
+            json_decode(html_entity_decode($matches[1], ENT_QUOTES), true),
+        );
         $this->assertStringContainsString('<input type="hidden" name="field[9]" id="loc9">', $html);
     }
 
@@ -306,5 +317,25 @@ class FieldWizardDisplayTest extends DbTestCase
         ]);
         $this->assertStringContainsString('id="tooltip_user3"', $html);
         $this->assertStringNotContainsString('alert-info', $html);
+    }
+
+    public function testTimeFieldDescribesItsPicker(): void
+    {
+        $this->login();
+
+        $html = Time::showTimeField('field[5]', [
+            'value'    => self::MARKUP,
+            'display'  => false,
+            'rand'     => 12,
+            'timestep' => 15,
+        ]);
+
+        $this->assertNoInjectedScript($html);
+        $this->assertStringNotContainsString('<script', $html);
+        $this->assertSame(1, preg_match('/id="showtime12" data-md-timepicker="([^"]*)"/', $html, $matches));
+        $config = json_decode(html_entity_decode($matches[1], ENT_QUOTES), true);
+        $this->assertSame(15, $config['step']);
+        $this->assertArrayHasKey('language', $config);
+        $this->assertArrayHasKey('region', $config);
     }
 }

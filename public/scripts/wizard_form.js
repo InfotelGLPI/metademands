@@ -39,7 +39,7 @@
  * is plain DOM.
  */
 
-/* global updateActiveTab, tinyMCE, glpi_html_dialog, basketSearchInit, SignaturePad,
+/* global updateActiveTab, tinyMCE, glpi_html_dialog, basketSearchInit, SignaturePad, getFlatPickerLocale,
    addLine, editLine, removeLine, confirmUpdateLine */
 
 (function () {
@@ -229,8 +229,7 @@
     }
 
     /**
-     * Drop the "required" flag of every input of a block (and of its sub-block),
-     * as FieldOption::resetMandatoryBlockFields() does in the generated scripts.
+     * Drop the "required" flag of every input of a block (and of its sub-block).
      *
      * @param {number} block
      */
@@ -245,8 +244,12 @@
             });
     }
 
-    // A checkbox option hides its child blocks on each click (Fields/Checkbox.php).
-    $(document).on('click', 'input[type="checkbox"][data-md-hide-blocks]', function () {
+    // A checkbox option hides its child blocks on each click (Fields/Checkbox.php),
+    // a radio option once checked (Fields/Radio.php).
+    $(document).on('click', 'input[type="checkbox"][data-md-hide-blocks], input[type="radio"][data-md-hide-blocks]', function () {
+        if (this.type === 'radio' && !this.checked) {
+            return;
+        }
         JSON.parse(this.dataset.mdHideBlocks).forEach(function (block) {
             sessionStorage.setItem('hiddenbloc' + block, block);
             resetMandatoryBlock(block);
@@ -359,6 +362,104 @@
         }
         $('#nextBtn').show();
     });
+
+    // A yes / no switch (Fields/Yesno.php) posts its state through a hidden input:
+    // 2 when checked, 1 otherwise.
+    $(document).on('change', 'input[type="checkbox"][data-md-switch]', function () {
+        const hidden = document.getElementById(this.dataset.mdSwitch);
+        if (hidden) {
+            hidden.value = this.checked ? '2' : '1';
+        }
+        this.toggleAttribute('checked', this.checked);
+    });
+
+    /**
+     * Mirror a range slider (Fields/Range.php) into its value label and paint the
+     * part of the track below the value.
+     *
+     * @param {HTMLInputElement} slider
+     */
+    function initRange(slider) {
+        if (slider.dataset.mdRangeInit) {
+            return;
+        }
+        slider.dataset.mdRangeInit = '1';
+
+        const label = document.getElementById(slider.dataset.mdRangeValue);
+        const update = function () {
+            if (label) {
+                label.textContent = slider.value;
+            }
+            // Account for the min offset in the progress
+            const range = slider.max - slider.min;
+            const progress = range > 0 ? (slider.value - slider.min) / range * 100 : 0;
+            slider.style.background = 'linear-gradient(to right, #f50 ' + progress + '%, #ccc ' + progress + '%)';
+        };
+        update();
+        slider.addEventListener('input', update);
+    }
+
+    /**
+     * Build a cascading location selector (Fields/Dropdown.php): one select per
+     * level of the tree, the chosen location landing in the hidden input.
+     *
+     * @param {HTMLSelectElement} select
+     */
+    function initChainedLocations(select) {
+        if (select.dataset.mdChainedInit) {
+            return;
+        }
+        if (typeof $.fn.chainedSelects === 'undefined') {
+            // The library tag precedes the select but may not have run yet: retry once it did.
+            const lib = document.querySelector('script[src*="jquery.chained.selects"]');
+            if (lib) {
+                lib.addEventListener('load', function () {
+                    initChainedLocations(select);
+                }, {once: true});
+            }
+            return;
+        }
+        select.dataset.mdChainedInit = '1';
+
+        const config = JSON.parse(select.dataset.mdChainedLocations);
+        $(select).chainedSelects({
+            placeholder: '',
+            data: config.data,
+            loggingEnabled: false,
+            selectedKey: config.selected,
+            autoSelectSingleOptions: true,
+            onSelectedCallback: function (id) {
+                const target = document.getElementById(config.target);
+                if (target) {
+                    target.value = id;
+                }
+            },
+        });
+    }
+
+    /**
+     * Bind the time picker of a time field (Fields/Time.php).
+     *
+     * @param {HTMLElement} wrapper
+     */
+    function initTimepicker(wrapper) {
+        if (wrapper.dataset.mdTimepickerInit) {
+            return;
+        }
+        wrapper.dataset.mdTimepickerInit = '1';
+
+        const config = JSON.parse(wrapper.dataset.mdTimepicker);
+        $(wrapper).flatpickr({
+            dateFormat: 'H:i:S',
+            wrap: true, // controls in addition to the input (clear and open buttons)
+            enableTime: true,
+            noCalendar: true,
+            enableSeconds: true,
+            time_24hr: true,
+            locale: getFlatPickerLocale(config.language, config.region),
+            minuteIncrement: config.step,
+        });
+    }
 
     /**
      * Bind a signature pad (Fields/Signature.php): upload on save, removal on clear.
@@ -683,7 +784,576 @@
         }
     }
 
+    /**
+     * Re-evaluate the conditions of the metademand when a field changes, as the
+     * script each Fields class generated did: publish the parameters, then bind
+     * the elements present now (an Ajax reload of the field brings a new marker).
+     *
+     * @param {HTMLElement} marker the element emitted by wizard/condition_trigger.html.twig
+     */
+    function initConditionTrigger(marker) {
+        if (marker.dataset.mdConditionInit) {
+            return;
+        }
+        marker.dataset.mdConditionInit = '1';
+
+        let params;
+        let source;
+
+        try {
+            params = JSON.parse(marker.dataset.mdConditionTrigger);
+            source = JSON.parse(marker.dataset.mdConditionSource);
+        } catch (e) {
+            return;
+        }
+
+        window.metademandconditionsparams = params;
+
+        const check = function () {
+            window.plugin_metademands_wizard_checkConditions(window.metademandconditionsparams);
+        };
+
+        if (source.richtext) {
+            // tinyMCE fires no change event while typing
+            if (typeof tinyMCE !== 'undefined' && params.use_richtext) {
+                params.richtext_ids.forEach(function (id) {
+                    const editor = tinyMCE.get('field' + id);
+                    if (editor) {
+                        editor.on('keyup', check);
+                    }
+                });
+            }
+            return;
+        }
+
+        let selector;
+        if (source.id) {
+            selector = '#' + CSS.escape(source.id);
+        } else {
+            selector = '[name' + (source.match === 'prefix' ? '^' : '') + '="' + CSS.escape(source.name) + '"]';
+        }
+
+        // jQuery: Select2 only triggers a jQuery change event
+        $(selector).on('change', check);
+    }
+
+    /**
+     * jQuery selector of the inputs described by a {name, match} source.
+     *
+     * @param {{name: string, match: string}} source
+     *
+     * @return {string}
+     */
+    function sourceSelector(source) {
+        if (source.id !== undefined) {
+            return '#' + CSS.escape(source.id);
+        }
+        return '[name' + (source.match === 'prefix' ? '^' : '') + '="' + CSS.escape(source.name) + '"]';
+    }
+
+    /**
+     * Text of a selected option, without the empty choice label.
+     *
+     * @param {HTMLElement} option
+     *
+     * @return {string}
+     */
+    function optionText(option) {
+        return $(option).text().replaceAll('-----', '');
+    }
+
+    /**
+     * Regex of a rule checked on the label of the selected options. Some fields
+     * injected the pattern as a JS regex literal: accept /pattern/flags for them.
+     *
+     * @param {Object} rule {value, literal?}
+     *
+     * @return {RegExp}
+     */
+    function ruleRegex(rule) {
+        const pattern = rule.value;
+        const literal = rule.literal && pattern.match(/^\/(.*)\/([a-z]*)$/s);
+        return literal ? new RegExp(literal[1], literal[2]) : new RegExp(pattern);
+    }
+
+    /**
+     * Whether the current state of the field fulfils a rule of a task.
+     *
+     * @param {string} mode   see MetademandTask::displayTaskTrigger()
+     * @param {Object} rule   {tasks_id, value, any, regex?, label?}
+     * @param {jQuery} inputs the inputs of the field
+     *
+     * @return {boolean}
+     */
+    function taskRuleMatches(mode, rule, inputs) {
+        switch (mode) {
+            case 'filled':
+                return inputs.toArray().some((input) => String($(input).val() ?? '').trim().length > 0);
+            case 'select': {
+                const value = inputs.is(':radio') ? inputs.filter(':checked').val() : inputs.first().val();
+                if (rule.regex) {
+                    return inputs.find('option:selected').toArray()
+                        .some((option) => ruleRegex(rule).test(optionText(option)));
+                }
+                return value !== undefined && value != 0 && (value == rule.value || rule.any);
+            }
+            case 'options':
+                if (rule.regex) {
+                    return inputs.find('option:selected').toArray()
+                        .some((option) => ruleRegex(rule).test(optionText(option)));
+                }
+                return [].concat(inputs.val() ?? []).some((value) => value != 0 && (value == rule.value || rule.any));
+            case 'listed':
+                return inputs.find('option').toArray().some((option) => option.value == rule.value);
+            case 'checked':
+                return inputs.filter(':checked').toArray().some((input) => rule.any || input.value == rule.value);
+            case 'switch':
+                return inputs.filter(':checked').length > 0;
+            case 'quantity':
+                return inputs.toArray().some((input) => Number(input.value) > 0);
+            case 'multiple':
+                return inputs.find('option:selected').toArray().some(function (option) {
+                    if (!rule.regex) {
+                        return $(option).text() === rule.label;
+                    }
+                    return ruleRegex({value: rule.value, literal: true}).test(optionText(option));
+                });
+            case 'values':
+                return [].concat(inputs.val() ?? []).some((value) => value == rule.value);
+        }
+        return false;
+    }
+
+    /**
+     * Flag the child metademands linked to the values of a field as used or not when
+     * the field changes, as the script each Fields class generated did, and update
+     * the next button title.
+     *
+     * @param {HTMLElement} marker the element emitted by wizard/task_trigger.html.twig
+     */
+    function initTaskTrigger(marker) {
+        if (marker.dataset.mdTaskInit) {
+            return;
+        }
+        marker.dataset.mdTaskInit = '1';
+
+        let config;
+
+        try {
+            config = JSON.parse(marker.dataset.mdTaskTrigger);
+        } catch (e) {
+            return;
+        }
+
+        const inputs = $(sourceSelector(config.source));
+
+        const update = function () {
+            const used = new Map();
+            config.rules.forEach(function (rule) {
+                used.set(rule.tasks_id, used.get(rule.tasks_id) || taskRuleMatches(config.mode, rule, inputs));
+            });
+
+            used.forEach(function (is_used, tasks_id) {
+                // jQuery: the core ajaxSend hook adds the CSRF token
+                $.post(config.url, {tasks_id: tasks_id, used: is_used ? 1 : 0}, function (response) {
+                    if (response != 1) {
+                        window.plugin_metademands_wizard_setNextBtnTitle(is_used ? config.next_title : 'post');
+                    }
+                });
+                if (!is_used && config.mode === 'filled') {
+                    window.plugin_metademands_wizard_setNextBtnTitle('post');
+                }
+            });
+        };
+
+        inputs.on('change', update);
+
+        // Restore the value kept in session, then flag its tasks
+        restoreValue(inputs, config.restore, update);
+        if (config.initial_title) {
+            window.plugin_metademands_wizard_setNextBtnTitle(config.initial_title);
+        }
+    }
+
+    /**
+     * Put back the value of a field kept in session, then run its handler.
+     *
+     * @param {jQuery}    inputs  the inputs of the field
+     * @param {Object}    restore {val} (a value, or the values of a multiple select),
+     *                            {check} (the values to check) or {refresh}
+     * @param {Function}  update  the handler bound to the field
+     */
+    function restoreValue(inputs, restore, update) {
+        if (!restore) {
+            return;
+        }
+        if (restore.val !== undefined) {
+            if (inputs.is(':radio')) {
+                inputs.filter((i, input) => input.value == restore.val).prop('checked', true);
+                update();
+            } else {
+                inputs.val(restore.val).trigger('change');
+            }
+        } else if (restore.check !== undefined) {
+            inputs.filter((i, input) => restore.check.includes(input.value)).prop('checked', true);
+            update();
+        } else if (restore.refresh) {
+            update();
+        }
+    }
+
+    /**
+     * Make a field mandatory: red star, required inputs.
+     *
+     * @param {number}  key    id of the field
+     * @param {Object}  config see FieldOption::displayMandatoryTrigger()
+     */
+    function setFieldMandatory(key, config) {
+        $('#metademands_wizard_red' + key).html('*');
+        const name = 'field[' + key + ']';
+        $(config.target_match === 'contains' ? '[name*="' + CSS.escape(name) + '"]' : '[name="' + CSS.escape(name) + '"]')
+            .attr('required', 'required');
+        $('[name="' + CSS.escape('field[' + key + '-2]') + '"]').attr('required', 'required');
+        // File and checkbox fields: the first input of the field
+        if (config.inner.includes(key)) {
+            $('[id-field="field' + key + '"] div input').first().attr('required', 'required');
+        }
+    }
+
+    /**
+     * Make a field optional again: no red star, no required nor invalid input.
+     *
+     * @param {number}  key    id of the field
+     * @param {Object}  config see FieldOption::displayMandatoryTrigger()
+     */
+    function unsetFieldMandatory(key, config) {
+        $('#metademands_wizard_red' + key).html('');
+        $('div[id-field="field' + key + '"]').find(':input').removeAttr('required').removeClass('invalid');
+        const name = 'field[' + key + ']';
+        $(config.target_match === 'contains' ? '[name*="' + CSS.escape(name) + '"]' : '[name="' + CSS.escape(name) + '"]')
+            .removeAttr('required');
+        $('[name="' + CSS.escape('field[' + key + '-2]') + '"]').removeAttr('required');
+    }
+
+    /**
+     * Make the fields linked to the values of a field mandatory or not when the
+     * field changes, as the script each Fields class generated did.
+     *
+     * @param {HTMLElement} marker the element emitted by wizard/mandatory_trigger.html.twig
+     */
+    function initMandatoryTrigger(marker) {
+        if (marker.dataset.mdMandatoryInit) {
+            return;
+        }
+        marker.dataset.mdMandatoryInit = '1';
+
+        let config;
+
+        try {
+            config = JSON.parse(marker.dataset.mdMandatoryTrigger);
+        } catch (e) {
+            return;
+        }
+
+        const inputs = $(sourceSelector(config.source));
+
+        const update = function () {
+            // A field is mandatory as soon as one of the values linked to it matches
+            const mandatory = new Map();
+            config.rules.forEach(function (rule) {
+                const matches = taskRuleMatches(config.mode, rule, inputs) !== Boolean(rule.negate);
+                rule.targets.forEach(function (key) {
+                    mandatory.set(key, mandatory.get(key) || matches);
+                });
+            });
+            mandatory.forEach(function (is_mandatory, key) {
+                if (is_mandatory) {
+                    setFieldMandatory(key, config);
+                } else {
+                    unsetFieldMandatory(key, config);
+                }
+            });
+        };
+
+        inputs.on('change', update);
+        if (config.mode === 'listed') {
+            // The multiselect plugin moves options without any change event
+            inputs.each(function () {
+                new MutationObserver(update).observe(this, {childList: true, subtree: true});
+            });
+        }
+
+        config.show.forEach((key) => $('[id-field="field' + key + '"]').show());
+        // Upload fields linked to the value kept in session
+        config.uploads.forEach(function (key) {
+            $('#fileupload_info_ticketfield' + key).nextAll('input').first().attr('required', 'required');
+        });
+
+        restoreValue(inputs, config.restore, update);
+    }
+
+    /**
+     * Empty the inputs of a hidden field and make them optional, so that its value
+     * is neither submitted nor blocking the submission.
+     *
+     * @param {number} key id of the field
+     */
+    function resetHiddenField(key) {
+        $('div[id-field="field' + key + '"]').find(':input').each(function () {
+            switch (this.type) {
+                case 'password':
+                case 'text':
+                case 'textarea':
+                case 'file':
+                case 'date':
+                case 'number':
+                case 'range':
+                case 'tel':
+                case 'email':
+                case 'url':
+                    $(this).val('');
+                    break;
+                case 'select-one':
+                case 'select-multiple':
+                    // Only when needed: the change cascades to the fields it shows
+                    if ([].concat($(this).val() ?? []).join() !== '0') {
+                        $(this).val('0').trigger('change');
+                    }
+                    break;
+                case 'checkbox':
+                case 'radio':
+                    if (this.checked) {
+                        this.click();
+                        this.checked = false;
+                    }
+                    break;
+            }
+            $(this).removeAttr('required').removeClass('invalid');
+        });
+        $('[name="' + CSS.escape('field[' + key + ']') + '"]').removeAttr('required');
+        $('[name="' + CSS.escape('field[' + key + '-2]') + '"]').removeAttr('required');
+    }
+
+    /**
+     * Show or hide the fields linked to the values of a field when the field
+     * changes, as the script each Fields class generated did.
+     *
+     * @param {HTMLElement} marker the element emitted by wizard/hidden_trigger.html.twig
+     */
+    function initHiddenTrigger(marker) {
+        if (marker.dataset.mdHiddenInit) {
+            return;
+        }
+        marker.dataset.mdHiddenInit = '1';
+
+        let config;
+
+        try {
+            config = JSON.parse(marker.dataset.mdHiddenTrigger);
+        } catch (e) {
+            return;
+        }
+
+        const inputs = $(sourceSelector(config.source));
+        const field = (key) => $('[id-field="field' + key + '"], [id-field="field' + key + '-2"]');
+
+        /**
+         * @param {boolean} reset empty the hidden fields and hide the blocks of the
+         *                       values which no longer match (not when displayed)
+         */
+        const update = function (reset) {
+            // A field is shown as soon as one of the values linked to it matches
+            const visible = new Map();
+            const opened = new Set();
+            const closed = new Set();
+            config.rules.forEach(function (rule) {
+                const matches = taskRuleMatches(config.mode, rule, inputs) !== Boolean(rule.negate);
+                rule.targets.forEach(function (key) {
+                    visible.set(key, visible.get(key) || matches);
+                });
+                rule.blocks.forEach((block) => (matches ? opened : closed).add(block));
+            });
+            visible.forEach(function (is_visible, key) {
+                if (is_visible) {
+                    field(key).show();
+                } else {
+                    field(key).hide();
+                    if (reset) {
+                        resetHiddenField(key);
+                    }
+                }
+            });
+            if (!reset) {
+                return;
+            }
+            // Blocks opened by a value which no longer matches
+            closed.forEach(function (block) {
+                if (opened.has(block)) {
+                    return;
+                }
+                $('[bloc-id="bloc' + block + '"], [bloc-id="subbloc' + block + '"]').hide();
+                $('#ablock' + block).css('display', 'none');
+            });
+        };
+
+        // Restore the value kept in session before binding the handler, then show
+        // the fields linked to the current state (default values included)
+        restoreValue(inputs, config.restore, () => {});
+        update(false);
+
+        inputs.on('change', () => update(true));
+        if (config.mode === 'listed') {
+            // The multiselect plugin moves options without any change event
+            inputs.each(function () {
+                new MutationObserver(() => update(true)).observe(this, {childList: true, subtree: true});
+            });
+        }
+
+        // Upload fields linked to the value kept in session
+        config.uploads.forEach(function (key) {
+            $('#fileupload_info_ticketfield' + key).nextAll('input').first().attr('required', 'required');
+        });
+    }
+
+    /**
+     * Empty the inputs of a hidden block (and of its sub-block) and make them optional.
+     *
+     * @param {number}  block   rank of the block
+     * @param {boolean} selects also put the selects back to the empty choice
+     */
+    function emptyBlock(block, selects) {
+        $('div[bloc-id="bloc' + block + '"], div[bloc-id="subbloc' + block + '"]').find(':input').each(function () {
+            switch (this.type) {
+                case 'password':
+                case 'text':
+                case 'textarea':
+                case 'file':
+                case 'date':
+                case 'number':
+                case 'range':
+                case 'tel':
+                case 'email':
+                case 'url':
+                    $(this).val('');
+                    if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
+                        tinymce.get(this.id).setContent('');
+                    }
+                    break;
+                case 'select-one':
+                case 'select-multiple': {
+                    // Multiselect field: its chosen options go back to the left list
+                    const multiselect = /^(multiselect\d+)_to$/.exec(this.id ?? '');
+                    if (multiselect !== null) {
+                        if (selects && this.options.length > 0) {
+                            $('#' + multiselect[1] + '_leftAll').trigger('click');
+                        }
+                        break;
+                    }
+                    // Only when needed: the change cascades to the blocks it shows
+                    if (selects && [].concat($(this).val() ?? []).join() !== '0') {
+                        $(this).val('0').trigger('change');
+                    }
+                    break;
+                }
+                case 'checkbox':
+                case 'radio':
+                    this.checked = false;
+                    break;
+            }
+            $(this).removeClass('invalid');
+        });
+    }
+
+    /**
+     * Show or hide the blocks linked to the values of a field when the field
+     * changes, as the script each Fields class generated did.
+     *
+     * @param {HTMLElement} marker the element emitted by wizard/block_trigger.html.twig
+     */
+    function initBlockTrigger(marker) {
+        if (marker.dataset.mdBlockInit) {
+            return;
+        }
+        marker.dataset.mdBlockInit = '1';
+
+        let config;
+
+        try {
+            config = JSON.parse(marker.dataset.mdBlockTrigger);
+        } catch (e) {
+            return;
+        }
+
+        const inputs = $(sourceSelector(config.source));
+        const toggle = function (block, visible) {
+            $('[bloc-id="bloc' + block + '"], [bloc-id="subbloc' + block + '"]').toggle(visible);
+            $('#ablock' + block).css('display', visible ? 'block' : 'none');
+        };
+
+        /**
+         * @param {boolean} reset the field changed (not when displayed)
+         */
+        const update = function (reset) {
+            // A block is shown as soon as one of the values linked to it matches
+            const shown = new Set();
+            const hidden = new Set();
+            config.rules.forEach(function (rule) {
+                if (taskRuleMatches(config.mode, rule, inputs) !== Boolean(rule.negate)) {
+                    rule.blocks.concat(rule.open).forEach((block) => shown.add(block));
+                } else {
+                    rule.blocks.concat(rule.childs).forEach((block) => hidden.add(block));
+                }
+            });
+
+            hidden.forEach(function (block) {
+                if (shown.has(block)) {
+                    return;
+                }
+                toggle(block, false);
+                resetMandatoryBlock(block);
+                if (reset || config.empty) {
+                    emptyBlock(block, reset);
+                }
+            });
+            shown.forEach(function (block) {
+                toggle(block, true);
+            });
+            // Mandatory fields of the blocks shown
+            config.mandatory.forEach(function (field) {
+                if (!shown.has(field.block)) {
+                    return;
+                }
+                const name = CSS.escape('field[' + field.id + ']');
+                $('[name="' + name + '"], [check="' + name + '"]').attr('required', 'required');
+                if (field.upload) {
+                    $('[id-field="field' + field.id + '"] div input').first().prop('required', true);
+                }
+            });
+            if (reset && config.step && shown.size > 0) {
+                window.plugin_metademands_wizard_setNextBtnTitle('next');
+            }
+        };
+
+        // Restore the value kept in session before binding the handler, then show
+        // the blocks linked to the current state (default values included)
+        restoreValue(inputs, config.restore, () => {});
+        update(false);
+
+        inputs.on('change', () => update(true));
+        if (config.mode === 'listed') {
+            // The multiselect plugin moves options without any change event
+            inputs.each(function () {
+                new MutationObserver(() => update(true)).observe(this, {childList: true, subtree: true});
+            });
+        }
+    }
+
     const WIDGETS = [
+        {selector: '[data-md-task-trigger]', init: initTaskTrigger},
+        {selector: '[data-md-mandatory-trigger]', init: initMandatoryTrigger},
+        {selector: '[data-md-hidden-trigger]', init: initHiddenTrigger},
+        {selector: '[data-md-block-trigger]', init: initBlockTrigger},
+        {selector: '[data-md-condition-trigger]', init: initConditionTrigger},
         {selector: '[data-metademands-wizard-params]', init: initWizardParams},
         {selector: '[data-metademands-redirect-on-close]', init: initRedirectOnClose},
         {selector: '[data-metademands-basket-order]', init: initBasketOrder},
@@ -695,6 +1365,9 @@
         {selector: 'table[data-md-basket-search]', init: initBasketSearch},
         {selector: 'table[data-md-freetable-params]', init: initFreetable},
         {selector: 'canvas[data-md-signature]', init: initSignature},
+        {selector: 'input[type="range"][data-md-range-value]', init: initRange},
+        {selector: 'select[data-md-chained-locations]', init: initChainedLocations},
+        {selector: '[data-md-timepicker]', init: initTimepicker},
     ];
 
     /**

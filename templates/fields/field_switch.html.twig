@@ -29,12 +29,11 @@
  #
  #  - id, name, is_checked: the checkbox
  #  - value: value of the hidden input actually submitted (1 = no, 2 = yes)
- #  - script_html: Html::scriptBlock() mirroring the checkbox into the hidden input
+ #  The checkbox is mirrored into the hidden input by public/scripts/wizard_form.js
+ #  (data-md-switch).
  #  One physical line so no inter-element whitespace enters the output.
 -#}
 <label class='ios-switch-sm'><input type='checkbox' id='{{ id }}' name='{{ name }}'{% if is_checked %} checked='checked'{% endif %}
-                                    isswitch='isswitch'><span class='slider'><span class='checkmark-on'><i
+                                    isswitch='isswitch' data-md-switch='{{ name }}'><span class='slider'><span class='checkmark-on'><i
                 class='ti ti-check'></i></span><span class='checkmark-off'></span><span class='checkmark-empty'></span></span></label><input type="hidden" name="{{ name }}" id="{{ name }}" value="{{ value }}">
-{#- raw: Html::scriptBlock() of the toggle, ids only (§3.2) -#}
-{{ script_html|raw }}
 {#- -#}

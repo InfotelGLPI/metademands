@@ -16,6 +16,11 @@
         <file>tests/FreetableFieldsTest.php</file>
         <file>tests/BasketlineSummaryTest.php</file>
         <file>tests/ConditionListTest.php</file>
+        <file>tests/ConditionTriggerTest.php</file>
+        <file>tests/TaskTriggerTest.php</file>
+        <file>tests/MandatoryTriggerTest.php</file>
+        <file>tests/HiddenTriggerTest.php</file>
+        <file>tests/BlockTriggerTest.php</file>
         <file>tests/FieldCustomvalueListTest.php</file>
         <file>tests/FieldParameterGlobalTest.php</file>
         <file>tests/GroupListTest.php</file>

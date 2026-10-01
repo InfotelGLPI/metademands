@@ -66,7 +66,6 @@ class Upload extends CommonDBTM
             $value = " ";
         }
         $randupload = mt_rand();
-        $namedrop = 'dropdoc' . $randupload;
 
         $arrayFiles = json_decode($value, true);
 
@@ -113,7 +112,6 @@ class Upload extends CommonDBTM
                 'files'        => $files,
                 'delete_url'   => Wizard::getFormURL(),
                 'file_options' => $can_add ? $file_options : null,
-                'script_html'  => Html::scriptBlock("$('#$namedrop').show();"),
             ],
         );
     }

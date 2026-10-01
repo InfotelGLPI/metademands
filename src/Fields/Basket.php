@@ -48,7 +48,6 @@ use GlpiPlugin\Orderfollowup\Material;
 use GlpiPlugin\Orderfollowup\Metademand as OrderMetademand;
 use PluginOrdermaterialMaterial;
 use PluginOrdermaterialMetademand;
-use Session;
 use Toolbox;
 
 /**
@@ -574,631 +573,100 @@ class Basket extends CommonDBTM
 
     public static function fieldsMandatoryScript($data)
     {
-        $check_values = $data['options'] ?? [];
-        $id = $data["id"];
-        $name = "field[" . $data["id"] . "]";
-
-        $onchange = "";
-        $pre_onchange = "";
-        $post_onchange = "";
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-        if ($debug) {
-            $pre_onchange = "console.log('fieldsHiddenScript-basket $id');";
-        }
-        $withquantity = false;
-        $custom_values = isset($data['custom_values']) ? FieldParameter::_unserialize(
-            $data['custom_values'],
-        ) : [];
+        $custom_values = isset($data['custom_values']) ? FieldParameter::_unserialize($data['custom_values']) : [];
         if (isset($custom_values[0]) && $custom_values[0] == 1) {
-            $withquantity = true;
-        }
-
-        if (count($check_values) > 0) {
-            //Si la valeur est en session
-            if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
-            }
-
-            if ($withquantity == false) {
-                $onchange = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-            } else {
-                $name = "quantity[" . $data["id"] . "]";
-
-                $onchange = "$('[name^=\"$name\"]').change(function() {";
-            }
-
-            $onchange .= "var tohide = {};";
-            $display = 0;
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['fields_link'] as $fields_link) {
-                    if ($withquantity == false) {
-                        $onchange .= " if (this.checked){";
-                        //                                        foreach ($hidden_link as $key => $fields) {
-                        $onchange .= " if ($(this).val() == $idc || $idc == -1) { ";
-                    } else {
-                        $onchange .= "if ($(this).val() > 0 ) { ";
-                    }
-                    $onchange .= "if ($fields_link in tohide) {
-                             } else {
-                                tohide[$fields_link] = true;
-                             }
-                             tohide[$fields_link] = false;
-                          ";
-
-                    if (isset($data['value']) && $idc == $data['value']) {
-                        $display = $fields_link;
-                    }
-
-                    $onchange .= "$.each(tohide, function( key, value ) {
-                                if (value == true) {
-                                   var id = '#metademands_wizard_red'+ key;
-                                   $(id).html('');
-                                   sessionStorage.setItem('hiddenlink$name', key);
-                                    " . FieldOption::resetMandatoryFieldsByField($name) . "
-                                    $('[name =\"field['+key+']\"]').removeAttr('required');
-                                    $('[name =\"field['+key+'-2]\"]').removeAttr('required');
-                                } else {
-                                     var id = '#metademands_wizard_red'+ key;
-                                     var fieldid = 'field'+ key;
-                                     $(id).html('*');
-                                     $('[name =\"field[' + key + ']\"]').attr('required', 'required');
-                                     $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
-                                    //Special case Upload field
-                                      sessionStorage.setItem('mandatoryfile$name', key);
-                                     " . FieldOption::checkMandatoryFile($fields_link, $name) . "
-                                }
-                            });";
-
-                    if ($withquantity == false) {
-                        $onchange .= "} else {";
-
-                        $onchange .= "if($(this).val() == $idc){
-                                if($fields_link in tohide){
-
-                                }else{
-                                   tohide[$fields_link] = true;
-                                }
-                                $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){";
-                        $onchange .= "if($(value).val() == $idc || $idc == -1 ){
-                                       tohide[$fields_link] = false;
-                                    }";
-                        $onchange .= "});";
-
-                        $onchange .= "}";
-
-                        $onchange .= "$.each( tohide, function( key, value ) {
-                                if (value == true) {
-                                   var id = '#metademands_wizard_red'+ key;
-                                   $(id).html('');
-                                   sessionStorage.setItem('hiddenlink$name', key);
-                                   " . FieldOption::resetMandatoryFieldsByField($name) . "
-                                   $('[name =\"field['+key+']\"]').removeAttr('required');
-                                   $('[name =\"field['+key+'-2]\"]').removeAttr('required');
-                                } else {
-                                    var id = '#metademands_wizard_red'+ key;
-                                    var fieldid = 'field'+ key;
-                                    $(id).html('*');
-                                    $('[name =\"field[' + key + ']\"]').attr('required', 'required');
-                                    $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
-                                    //Special case Upload field
-                                      sessionStorage.setItem('mandatoryfile$name', key);
-                                     " . FieldOption::checkMandatoryFile($fields_link, $name) . "
-                                }
-                             });";
-                        $onchange .= "}
-                        }";
-                    } else {
-                        $onchange .= "} else {";
-
-                        $onchange .= "
-//                                      var id = '#metademands_wizard_red'+ key;
-//                                      $(id).html('');
-//                                      sessionStorage.setItem('hiddenlink$name', key);
-                                      " . FieldOption::resetMandatoryFieldsByField($name) . "
-                                      $('[id-field =\"field" . $fields_link . "\"]').removeAttr('required');";
-
-                        $onchange .= "}";
-                    }
-                }
-            }
-
-            if ($display > 0) {
-                $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
-            }
-
-            $onchange .= "});";
-
-            echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
+            // With quantities: any quantity above zero
+            FieldOption::displayMandatoryTrigger(
+                $data,
+                ['name' => 'quantity[' . $data['id'] . ']', 'match' => 'prefix'],
+                'quantity',
+                ['current' => isset($data['value']) && !is_array($data['value']) ? [$data['value']] : []],
             );
+            return;
         }
+        $values = $data['value'] ?? [];
+        $values = is_array($values) ? $values : [$values];
+        $options = [
+            'any'     => [-1],
+            'current' => $values,
+        ];
+        if (count($values) > 0) {
+            $options['restore'] = ['check' => array_map('strval', array_values($values))];
+        }
+        FieldOption::displayMandatoryTrigger($data, ['name' => 'field[' . $data['id'] . ']', 'match' => 'prefix'], 'checked', $options);
     }
 
     public static function taskScript($data)
     {
-        $check_values = $data['options'] ?? [];
-        $metaid = $data['plugin_metademands_metademands_id'];
-        $id = $data["id"];
-
-        $script = "";
-        $script2 = "";
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-        if ($debug) {
-            $script = "console.log('taskScript-basket $id');";
+        $custom_values = isset($data['custom_values']) ? FieldParameter::_unserialize($data['custom_values']) : [];
+        $withquantity = isset($custom_values[0]) && $custom_values[0] == 1;
+        $options = [
+            'any'        => [-1],
+            'defaults'   => MetademandTask::getDefaultValues($data['default'] ?? ''),
+            'next_title' => 'savenext',
+        ];
+        if ($withquantity) {
+            MetademandTask::displayTaskTrigger(
+                $data,
+                ['name' => 'quantity[' . $data['id'] . ']', 'match' => 'prefix'],
+                'quantity',
+                $options,
+            );
+            return;
         }
-
-        if (count($check_values) > 0) {
-            //Si la valeur est en session
-            if (isset($data['value'])) {
-                $script2 .= "$('[name^=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
-            }
-
-
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
-                    if ($tasks_id) {
-                        if (MetademandTask::setUsedTask($tasks_id, 0)) {
-                            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                            $script .= "plugin_metademands_wizard_setNextBtnTitle('post')";
-                            $script .= "});";
-                        }
-                    }
-                }
-            }
-
-            $withquantity = false;
-            $custom_values = isset($data['custom_values']) ? FieldParameter::_unserialize(
-                $data['custom_values'],
-            ) : [];
-            if (isset($custom_values[0]) && $custom_values[0] == 1) {
-                $withquantity = true;
-            }
-
-            if ($withquantity == false) {
-                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-            } else {
-                $name = "quantity[" . $data["id"] . "]";
-
-                $script .= "$('[name^=\"$name\"]').change(function() {";
-            }
-
-            $script .= "var tohide = {};";
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
-                    if ($withquantity == false) {
-                        $script .= " if (this.checked){";
-                        //                                        foreach ($hidden_link as $key => $fields) {
-                        $script .= " if ($(this).val() == $idc || $idc == -1) { ";
-                    } else {
-                        $script .= "if ($(this).val() > 0 ) { ";
-                    }
-                    $script .= "if ($tasks_id in tohide) {
-                         } else {
-                            tohide[$tasks_id] = true;
-                         }
-                         tohide[$tasks_id] = false;
-                      ";
-
-                    $script .= "$.each( tohide, function( key, value ) {
-                        if (value == true) {
-                            $.ajax({
-                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
-                                     type: 'POST',
-                                     data: { tasks_id: $tasks_id,
-                                  used: 0 },
-                                  success: function(response){
-                                       if (response != 1) {
-                                           plugin_metademands_wizard_setNextBtnTitle('post')
-                                       }
-                                    },
-                                });
-                        } else {
-                             $.ajax({
-                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
-                                     type: 'POST',
-                                     data: { tasks_id: $tasks_id,
-                                  used: 1 },
-                                  success: function(response){
-                                       if (response != 1) {
-                                           plugin_metademands_wizard_setNextBtnTitle('savenext')
-                                       }
-                                    },
-                                });
-                        }
-                    });
-              ";
-                    $script .= "} else {
-                $.ajax({
-                                 url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
-                                 type: 'POST',
-                                 data: { tasks_id: $tasks_id,
-                              used: 0 },
-                                  success: function(response){
-                                       if (response != 1) {
-                                           plugin_metademands_wizard_setNextBtnTitle('post')
-                                       }
-                                    },
-                            });
-                         }
-
-            ";
-                    if ($withquantity == false) {
-                        $script .= "}";
-                    }
-                }
-            }
-            $script .= "});";
-
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['plugin_metademands_tasks_id'] as $tasks_id) {
-                    if (is_array(FieldParameter::_unserialize($data['default']))) {
-                        $default_values = FieldParameter::_unserialize($data['default']);
-
-                        foreach ($default_values as $k => $v) {
-                            if ($v == 1) {
-                                if ($idc == $k) {
-                                    if (MetademandTask::setUsedTask($tasks_id, 1)) {
-                                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                        $script .= "plugin_metademands_wizard_setNextBtnTitle('savenext')";
-                                        $script .= "});";
-                                    }
-                                } else {
-                                    if (MetademandTask::setUsedTask($tasks_id, 0)) {
-                                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                        $script .= "plugin_metademands_wizard_setNextBtnTitle('post')";
-                                        $script .= "});";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+        if (isset($data['value']) && is_array($data['value'])) {
+            $options['restore'] = ['check' => array_map('strval', array_values($data['value']))];
         }
+        MetademandTask::displayTaskTrigger($data, ['name' => 'field[' . $data['id'] . ']', 'match' => 'prefix'], 'checked', $options);
     }
 
     public static function fieldsHiddenScript($data)
     {
-        $check_values = $data['options'] ?? [];
-        $id = $data["id"];
-        $name = "field[" . $data["id"] . "]";
-
-        $onchange = "";
-        $pre_onchange = "";
-        $post_onchange = "";
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-        if ($debug) {
-            $pre_onchange = "console.log('fieldsHiddenScript-basket $id');";
-        }
-
-        //add childs by idc
-        $childs_by_checkvalue = [];
-        foreach ($check_values as $idc => $check_value) {
-            if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
-                $childs_blocks = json_decode($check_value['childs_blocks'], true);
-                if (isset($childs_blocks)
-                    && is_array($childs_blocks)
-                    && count($childs_blocks) > 0) {
-                    foreach ($childs_blocks as $childs) {
-                        if (is_array($childs)) {
-                            foreach ($childs as $child) {
-                                $childs_by_checkvalue[$idc][] = $child;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        $withquantity = false;
-        $custom_values = isset($data['custom_values']) ? FieldParameter::_unserialize(
-            $data['custom_values'],
-        ) : [];
+        $custom_values = isset($data['custom_values']) ? FieldParameter::_unserialize($data['custom_values']) : [];
         if (isset($custom_values[0]) && $custom_values[0] == 1) {
-            $withquantity = true;
-        }
-
-        if (count($check_values) > 0) {
-            //default hide of all hidden links
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
-                    $('[id-field =\"field" . $hidden_link . "-2\"]').hide();";
-                }
-            }
-
-            //Si la valeur est en session
-            if (isset($data['value'])) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
-            }
-
-            if ($withquantity == false) {
-                $onchange = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-            } else {
-                $name = "quantity[" . $data["id"] . "]";
-
-                $onchange = "$('[name^=\"$name\"]').change(function() {";
-            }
-
-            $onchange .= "var tohide = {};";
-            $display = 0;
-
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['hidden_link'] as $hidden_link) {
-                    if ($withquantity == false) {
-                        $onchange .= " if (this.checked){";
-                        //                                        foreach ($hidden_link as $key => $fields) {
-                        $onchange .= " if ($(this).val() == $idc || $idc == -1) { ";
-                    } else {
-                        $onchange .= "if ($(this).val() > 0 ) { ";
-                    }
-                    $onchange .= "if ($hidden_link in tohide) {
-                         } else {
-                            tohide[$hidden_link] = true;
-                         }
-                         tohide[$hidden_link] = false;
-                      ";
-
-                    if (isset($data['value']) && $idc == $data['value']) {
-                        $display = $hidden_link;
-                    }
-
-                    //checkbox
-                    $onchange .= "$.each(tohide, function( key, value ) {
-                            if (value == true) {
-                            $('[id-field =\"field'+key+'\"]').hide();
-                            $('[id-field =\"field'+key+'-2\"]').hide();
-                               sessionStorage.setItem('hiddenlink$name', key);
-                                " . FieldOption::resetMandatoryFieldsByFieldForHidden($name);
-
-                    if (is_array($childs_by_checkvalue)) {
-                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                            if ($idc == $k) {
-                                foreach ($childs_blocks as $childs) {
-                                    $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
-                                            $('[bloc-id =\"subbloc" . $childs . "\"]').hide();
-                                            if (document.getElementById('ablock" . $childs . "'))
-                                            document.getElementById('ablock" . $childs . "').style.display = 'none';";
-                                }
-                            }
-                        }
-                    }
-                    $onchange .= "} else {
-                                $('[id-field =\"field'+key+'\"]').show();
-                                $('[id-field =\"field'+key+'-2\"]').show();
-                            }
-                        });";
-
-                    if ($withquantity == false) {
-                        $onchange .= "} else {";
-
-                        $onchange .= "if($(this).val() == $idc){
-                            if($hidden_link in tohide){
-
-                            }else{
-                               tohide[$hidden_link] = true;
-                            }
-                            $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){";
-                        $onchange .= "if($(value).val() == $idc || $idc == -1 ){
-                                   tohide[$hidden_link] = false;
-                                }";
-                        $onchange .= "});";
-
-                        $onchange .= "}";
-
-                        $onchange .= "$.each( tohide, function( key, value ) {
-                            if (value == true) {
-                               $('[id-field =\"field'+key+'\"]').hide();
-                               $('[id-field =\"field'+key+'-2\"]').hide();
-                               sessionStorage.setItem('hiddenlink$name', key);
-                               " . FieldOption::resetMandatoryFieldsByFieldForHidden($name) . "
-                               $('[name =\"field['+key+']\"]').removeAttr('required');
-                               $('[name =\"field['+key+'-2]\"]').removeAttr('required');
-                            } else {
-                               $('[id-field =\"field'+key+'\"]').show();
-                               $('[id-field =\"field'+key+'-2\"]').show();
-                            }
-                         });";
-
-                        $onchange .= "}
-                }";
-                    } else {
-                        $onchange .= "} else {";
-
-                        $onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
-                        $('[id-field =\"field" . $hidden_link . "-2\"]').hide();";
-
-                        $onchange .= "}";
-                    }
-                }
-            }
-
-            if ($display > 0) {
-                $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
-                $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
-            }
-
-            $onchange .= "});";
-
-            echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
+            // With quantities: any quantity above zero
+            FieldOption::displayHiddenTrigger(
+                $data,
+                ['name' => 'quantity[' . $data['id'] . ']', 'match' => 'prefix'],
+                'quantity',
+                ['current' => isset($data['value']) && !is_array($data['value']) ? [$data['value']] : []],
             );
+            return;
         }
+        $values = $data['value'] ?? [];
+        $values = is_array($values) ? $values : [$values];
+        $options = [
+            'any'     => [-1],
+            'current' => $values,
+        ];
+        if (count($values) > 0) {
+            $options['restore'] = ['check' => array_map('strval', array_values($values))];
+        }
+        FieldOption::displayHiddenTrigger($data, ['name' => 'field[' . $data['id'] . ']', 'match' => 'prefix'], 'checked', $options);
     }
 
     public static function blocksHiddenScript($data)
     {
-        $check_values = $data['options'] ?? [];
-        $id = $data["id"];
-
-        $withquantity = false;
-        $custom_values = isset($data['custom_values']) ? FieldParameter::_unserialize(
-            $data['custom_values'],
-        ) : [];
+        $custom_values = isset($data['custom_values']) ? FieldParameter::_unserialize($data['custom_values']) : [];
         if (isset($custom_values[0]) && $custom_values[0] == 1) {
-            $withquantity = true;
+            // With quantities: any quantity above zero
+            FieldOption::displayBlockTrigger(
+                $data,
+                ['name' => 'quantity[' . $data['id'] . ']', 'match' => 'prefix'],
+                'quantity',
+                [],
+            );
+            return;
         }
-
-        if (count($check_values) > 0) {
-            if ($withquantity == false) {
-                $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-            } else {
-                $name = "quantity[" . $data["id"] . "]";
-
-                $script = "$('[name^=\"$name\"]').change(function() {";
-            }
-
-            $script2 = "";
-            $script .= "var tohide = {};";
-            $display = 0;
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['hidden_block'] as $hidden_block) {
-                    if ($withquantity == false) {
-                        $script .= " if (this.checked){ ";
-
-                        $script .= "if($(this).val() == $idc || $idc == -1 ){ ";
-                    } else {
-                        $script .= "if($(this).val() > 0 ){ ";
-                    }
-                    $script .= " if ($hidden_block in tohide) {
-                             } else {
-                                tohide[$hidden_block] = true;
-                             }
-                             tohide[$hidden_block] = false;
-                          }";
-
-                    $script2 .= "if (document.getElementById('ablock" . $hidden_block . "'))
-                document.getElementById('ablock" . $hidden_block . "').style.display = 'none';
-                $('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
-                $('[bloc-id =\"subbloc" . $hidden_block . "\"]').hide();";
-                    if (isset($data['value']) && $idc == $data['value']) {
-                        $display = $hidden_block;
-                    }
-
-                    $script .= "$.each( tohide, function( key, value ) {
-                            if(value == true){
-                             $('[bloc-id =\"bloc'+key+'\"]').hide();
-                             $('[bloc-id =\"subbloc'+key+'\"]').hide();
-                             var id = 'ablock'+ key;
-                             if (document.getElementById(id))
-                             document.getElementById(id).style.display = 'none';
-                             $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
-                                switch(this.type) {
-                                       case 'password':
-                                       case 'text':
-                                       case 'textarea':
-                                       case 'file':
-                                       case 'date':
-                                       case 'number':
-                                        case 'range':
-                                       case 'tel':
-                                       case 'email':
-                                       case 'url':
-                                           jQuery(this).val('');
-                                           break;
-                                       case 'select-one':
-                                       case 'select-multiple':
-                                           jQuery(this).val('0').trigger('change');
-                                           jQuery(this).val('0');
-                                           break;
-                                       case 'checkbox':
-                                       case 'radio':
-                                           this.checked = false;
-                                           break;
-                                   }
-                               });
-                            } else {
-                             var id = 'ablock'+ key;
-                            if (document.getElementById(id))
-                            document.getElementById(id).style.display = 'block';
-                            $('[bloc-id =\"bloc'+key+'\"]').show();
-
-                            }
-
-                         });";
-
-                    if ($withquantity == false) {
-                        $script .= " } else { ";
-                        //                                        foreach ($hidden_block as $key => $fields) {
-                        $script .= "if ($(this).val() == $idc) {
-                                 if ($hidden_block in tohide) {
-
-                                 } else {
-                                    tohide[$hidden_block] = true;
-                                 }
-                                 $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){";
-                        $script .= "if ($(value).val() == $idc || $idc == -1 ) {
-                                   tohide[$hidden_block] = false;
-                                }";
-                        $script .= " });
-                        }
-                        ";
-                        $script .= " }";
-                    }
-                    if (isset($data['value']) && $idc == $data['value']) {
-                        $display = $hidden_block;
-                    }
-
-                    $script .= "$.each( tohide, function( key, value ) {
-                            if(value == true){
-                                 var id = 'ablock'+ key;
-                                if (document.getElementById(id))
-                                document.getElementById(id).style.display = 'none';
-                                 $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                 $('[bloc-id =\"subbloc'+key+'\"]').hide();
-                                 $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
-                                    switch(this.type) {
-                                           case 'password':
-                                           case 'text':
-                                           case 'textarea':
-                                           case 'file':
-                                           case 'date':
-                                           case 'number':
-                                            case 'range':
-                                           case 'tel':
-                                           case 'email':
-                                           case 'url':
-                                               jQuery(this).val('');
-                                               break;
-                                           case 'select-one':
-                                           case 'select-multiple':
-                                               jQuery(this).val('0').trigger('change');
-                                               jQuery(this).val('0');
-                                               break;
-                                           case 'checkbox':
-                                           case 'radio':
-                                                if(this.checked == true) {
-                                                    this.click();
-                                                    this.checked = false;
-                                                    break;
-                                                }
-                                       }
-                                   });
-                            } else {
-                                 var id = 'ablock'+ key;
-                                 if (document.getElementById(id))
-                                 document.getElementById(id).style.display = 'block';
-                                $('[bloc-id =\"bloc'+key+'\"]').show();
-                                $('[bloc-id =\"subbloc'+key+'\"]').show();
-                            }
-                        });
-                        ";
-                }
-            }
-            $script .= "});";
-
-            if ($display > 0) {
-                $script2 .= "$('[bloc-id =\"bloc" . $display . "\"]').show();
-                            $('[bloc-id =\"subbloc" . $display . "\"]').show();";
-            }
-
-            echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+        $values = $data['value'] ?? [];
+        $values = is_array($values) ? $values : [$values];
+        $options = [
+            'any' => [-1],
+        ];
+        if (count($values) > 0) {
+            $options['restore'] = ['check' => array_map('strval', array_values($values))];
         }
+        FieldOption::displayBlockTrigger($data, ['name' => 'field[' . $data['id'] . ']', 'match' => 'prefix'], 'checked', $options);
     }
     /**
      * Label and value of one field of a basket, as a pair of table cells. The method
@@ -1655,50 +1123,12 @@ class Basket extends CommonDBTM
 
     public static function checkConditions($data, $metaparams)
     {
-        $use_condition = $metaparams['use_condition'] ?? '';
-        $show_rule     = $metaparams['show_rule'] ?? '';
-        $show_button   = $metaparams['show_button'] ?? '';
-        $use_richtext  = $metaparams['use_richtext'] ?? '';
-        $richtext_id   = $metaparams['richtext_id'] ?? 0;
-
-        $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
-        $condition_fields = [];
-        foreach ($conditions as $cid => $condition) {
-            $condition_fields[] = $condition['plugin_metademands_fields_id'];
-        }
-
-        if ($show_rule != Condition::SHOW_RULE_ALWAYS && in_array($data['id'], $condition_fields)) {
-            $withquantity = false;
-            $custom_values = isset($data['custom_values']) ? FieldParameter::_unserialize(
-                $data['custom_values'],
-            ) : [];
-            if (isset($custom_values[0]) && $custom_values[0] == 1) {
-                $withquantity = true;
-            }
-
-            $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-            $onchange = "window.metademandconditionsparams = {};
-                        metademandconditionsparams.use_condition = '$use_condition';
-                        metademandconditionsparams.show_rule = '$show_rule';
-                        metademandconditionsparams.show_button = '$show_button';
-                        metademandconditionsparams.use_richtext = '$use_richtext';
-                        metademandconditionsparams.richtext_ids = {$richtext_id};
-                        metademandconditionsparams.root_doc = '$root_doc';";
-
-            if ($withquantity == false) {
-                $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-            } else {
-                $name = "quantity[" . $data["id"] . "]";
-
-                $onchange .= "$('[name^=\"$name\"]').change(function() {";
-            }
-            $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
-            $onchange .= "});";
-
-            echo Html::scriptBlock(
-                '$(document).ready(function() {' . $onchange . '});',
-            );
-        }
+        $custom_values = isset($data['custom_values'])
+            ? FieldParameter::_unserialize($data['custom_values'])
+            : [];
+        // With quantities, the conditions test the quantity selects
+        $name = (isset($custom_values[0]) && $custom_values[0] == 1 ? 'quantity[' : 'field[') . $data['id'] . ']';
+        Condition::displayTrigger($data, $metaparams, ['name' => $name, 'match' => 'prefix']);
     }
 
     public static function getFieldValue(

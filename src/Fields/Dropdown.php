@@ -36,7 +36,6 @@ use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Resources\Resource;
-use Html;
 use Location;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldOption;
@@ -187,12 +186,6 @@ class Dropdown extends CommonDBTM
         $name           = $opt['name'];
         $id             = $opt['fields_id'];
 
-        // Everything below is interpolated into a <script>: a location name or a stored
-        // value carrying `</script>` would otherwise close the block early. Only HEX_TAG
-        // and HEX_AMP, the quote flags would break the JS literals.
-        $locations_json = json_encode($locations, JSON_HEX_TAG | JSON_HEX_AMP);
-        $value_json     = json_encode((string) $opt['value'], JSON_HEX_TAG | JSON_HEX_AMP);
-        $id_json        = json_encode((string) $id, JSON_HEX_TAG | JSON_HEX_AMP);
 
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_location_chained.html.twig',
@@ -200,23 +193,10 @@ class Dropdown extends CommonDBTM
                 'name'        => $name,
                 'id'          => $id,
                 'is_required' => !empty($opt['required']),
-                'script_html' => Html::scriptBlock("function loadSplittedLocations() {
-                            $('#' + {$id_json} + '-dropdown').chainedSelects({
-                                placeholder: '',
-                                data: {$locations_json},
-                                loggingEnabled: false,
-                                selectedKey: {$value_json},
-                                autoSelectSingleOptions: true,
-                                onSelectedCallback: function (id) {
-                                    document.getElementById({$id_json}).value = id;
-                                },
-                            });
-                        }
-
-                        $(document).ready(function () {
-                            loadSplittedLocations();
-                        });
-                     "),
+                'chained'     => [
+                    'data'     => $locations,
+                    'selected' => (string) $opt['value'],
+                ],
             ],
         );
     }
@@ -739,600 +719,61 @@ class Dropdown extends CommonDBTM
 
     public static function fieldsMandatoryScript($data)
     {
-        $check_values = $data['options'] ?? [];
-        $id = $data["id"];
-
-        $name = "field[" . $data["id"] . "]";
-        if ($data["item"] == "ITILCategory_Metademands") {
-            $name = "field_plugin_servicecatalog_itilcategories_id";
+        $name = 'field[' . $data['id'] . ']';
+        if ($data['item'] == 'ITILCategory_Metademands') {
+            $name = 'field_plugin_servicecatalog_itilcategories_id';
         }
-
-        $onchange = "";
-        $pre_onchange = "";
-        $post_onchange = "";
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-        if ($debug) {
-            $onchange = "console.log('fieldsMandatoryScript-dropdown $id');";
+        $options = ['any' => [0]];
+        if (isset($data['value']) && $data['value'] > 0) {
+            $options['restore'] = ['val' => (string) $data['value']];
+            $options['current'] = [$data['value']];
         }
-
-        if (count($check_values) > 0) {
-            //Si la valeur est en session
-            if (isset($data['value']) &&  $data['value'] > 0) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
-            }
-
-
-            $onchange .= "$('[name=\"$name\"]').change(async function() {";
-
-            $onchange .= "var tohide = {};";
-
-            $display = 0;
-            $compteur = 0;
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['fields_link'] as $fields_link) {
-                    $onchange .= "if ($fields_link in tohide) {
-                        } else {
-                            tohide[$fields_link] = true;
-                        }";
-
-                    if ($check_value['check_type_value'] == 2) {
-                        $onchange .= "
-                        let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
-                        let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
-
-                        if(regex$compteur.test(val$compteur)) {
-                            tohide[$fields_link] = false;
-                        }
-                        ";
-                        $compteur += 1;
-                    } else {
-                        $onchange .= "if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0)) {
-                            tohide[$fields_link] = false;
-                        }";
-                    }
-
-
-                    if (isset($data['value']) && $idc == $data['value']) {
-                        $display = $fields_link;
-                    }
-
-                    $onchange .= "$.each( tohide, function( key, value ) {
-                        if (value == true) {
-                            var id = '#metademands_wizard_red'+ key;
-                            $(id).html('');
-                            sessionStorage.setItem('hiddenlink$name', key);
-                            " . FieldOption::resetMandatoryFieldsByField($name) . "
-                            $('[name =\"field['+ key +']\"]').removeAttr('required');
-                        } else {
-                             var id = '#metademands_wizard_red'+ key;
-                             var fieldid = 'field'+ key;
-                             $(id).html('*');
-                             $('[name =\"field[' + key + ']\"]').attr('required', 'required');
-                             $('[name =\"field[' + key + '-2]\"]').attr('required', 'required');
-                             //Special case Upload field
-                                  sessionStorage.setItem('mandatoryfile$name', key);
-                                 " . FieldOption::checkMandatoryFile($fields_link, $name) . "
-                        }
-                    });
-              ";
-                }
-
-                if ($display > 0) {
-                    $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
-                }
-
-            }
-            $onchange .= "});";
-            echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
-            );
-        }
+        FieldOption::displayMandatoryTrigger($data, ['name' => $name, 'match' => 'exact'], 'select', $options);
     }
 
 
     public static function taskScript($data)
     {
-
-        $check_values = $data['options'] ?? [];
-        $metaid = $data['plugin_metademands_metademands_id'];
-        $id = $data["id"];
-
-        $script = "";
-        $script2 = "";
-        $compteur = 0;
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-        if ($debug) {
-            $script = "console.log('taskScript-dropdown $id');";
+        $options = [
+            'any'      => [0],
+            'defaults' => MetademandTask::getDefaultValues($data['default'] ?? ''),
+        ];
+        if (isset($data['value']) && $data['value'] > 0) {
+            $options['restore'] = ['val' => (string) $data['value']];
         }
-
-        if (count($check_values) > 0) {
-            //Si la valeur est en session
-            if (isset($data['value']) &&  $data['value'] > 0) {
-                $script2 .= "$('[name^=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
-            }
-
-
-
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
-                    if ($tasks_id) {
-                        if (MetademandTask::setUsedTask($tasks_id, 0)) {
-                            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                            $script .= "plugin_metademands_wizard_setNextBtnTitle('post')";
-                            $script .= "});";
-                        }
-                    }
-                }
-            }
-
-            $name = "field[" . $data["id"] . "]";
-            $script .= "$('[name=\"$name\"]').change(async function() {";
-            $script .= "var tohide = {};";
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($data['options'][$idc]['plugin_metademands_tasks_id'] as $tasks_id) {
-                    $script .= "if ($tasks_id in tohide) {
-                        } else {
-                            tohide[$tasks_id] = true;
-                        }
-                       ";
-
-                    if ($check_value['check_type_value'] == 2) {
-                        $script .= "
-                        let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
-                        let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
-
-                        if(regex$compteur.test(val$compteur)) {
-                            tohide[$tasks_id] = false;
-                        }
-                        ";
-                        $compteur += 1;
-                    } else {
-                        $script .= "if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
-                            tohide[$tasks_id] = false;
-                        }";
-                    }
-
-                    $script .= "$.each( tohide, function( key, value ) {
-                        if (value == true) {
-                            $.ajax({
-                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
-                                     type: 'POST',
-                                     data: { tasks_id: $tasks_id,
-                                  used: 0 },
-                                  success: function(response){
-                                       if (response != 1) {
-                                           plugin_metademands_wizard_setNextBtnTitle('post')
-                                       }
-                                    },
-                                });
-                        } else {
-                             $.ajax({
-                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
-                                     type: 'POST',
-                                     data: { tasks_id: $tasks_id,
-                                  used: 1 },
-                                  success: function(response){
-                                       if (response != 1) {
-                                           plugin_metademands_wizard_setNextBtnTitle('next')
-                                       }
-                                    },
-                                });
-
-                        }
-                    });
-              ";
-                }
-            }
-            $script .= "});";
-
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['plugin_metademands_tasks_id'] as $tasks_id) {
-                    if (is_array(FieldParameter::_unserialize($data['default']))) {
-                        $default_values = FieldParameter::_unserialize($data['default']);
-
-                        foreach ($default_values as $k => $v) {
-                            if ($v == 1) {
-                                if ($idc == $k) {
-                                    if (MetademandTask::setUsedTask($tasks_id, 1)) {
-                                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                        $script .= "plugin_metademands_wizard_setNextBtnTitle('next')";
-                                        $script .= "});";
-                                    }
-                                } else {
-                                    if (MetademandTask::setUsedTask($tasks_id, 0)) {
-                                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                                        $script .= "plugin_metademands_wizard_setNextBtnTitle('post')";
-                                        $script .= "});";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-        }
+        MetademandTask::displayTaskTrigger($data, ['name' => 'field[' . $data['id'] . ']', 'match' => 'exact'], 'select', $options);
     }
 
     public static function fieldsHiddenScript($data)
     {
-
-        $check_values = $data['options'] ?? [];
-        $id = $data["id"];
-
-        $name = "field[" . $data["id"] . "]";
-
-        $onchange = "";
-        $pre_onchange = "";
-        $post_onchange = "";
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-        if ($debug) {
-            $onchange = "console.log('fieldsHiddenScript-dropdown $id');";
+        $options = ['any' => [0, -1], 'negate' => [0]];
+        if (isset($data['value']) && $data['value'] > 0) {
+            $options['restore'] = ['val' => (string) $data['value']];
+            $options['current'] = [$data['value']];
         }
-
-        //add childs by idc
-        $childs_by_checkvalue = [];
-        foreach ($check_values as $idc => $check_value) {
-            if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
-                $childs_blocks = json_decode($check_value['childs_blocks'], true);
-                if (isset($childs_blocks)
-                    && is_array($childs_blocks)
-                    && count($childs_blocks) > 0) {
-                    foreach ($childs_blocks as $childs) {
-                        if (is_array($childs)) {
-                            foreach ($childs as $child) {
-                                $childs_by_checkvalue[$idc][] = $child;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if (count($check_values) > 0) {
-            //default hide of all hidden links
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();
-                    $('[id-field =\"field" . $hidden_link . "-2\"]').hide();";
-                }
-            }
-
-            //Si la valeur est en session
-            if (isset($data['value']) &&  $data['value'] > 0) {
-                $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
-            }
-
-            $onchange .= "$('[name=\"$name\"]').change(async function() {";
-
-            $onchange .= "var tohide = {};";
-            $display = 0;
-
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['hidden_link'] as $hidden_link) {
-                    $onchange .= "if ($hidden_link in tohide) {
-                        } else {
-                            tohide[$hidden_link] = true;
-                        }
-                        ";
-                }
-            }
-
-            $compteur = 0;
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['hidden_link'] as $hidden_link) {
-                    if ($check_value['check_type_value'] == 2) {
-                        $onchange .= "
-                        let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
-                        let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
-
-                        if(regex$compteur.test(val$compteur)) {
-                            tohide[$hidden_link] = false;
-                        }
-                        ";
-                        $compteur += 1;
-                    } else {
-                        $onchange .= "if ( ($(this).val() == $idc ||  ($(this).val() != 0 && $idc == -1 ))) {
-                            tohide[$hidden_link] = false;
-                        }";
-                    }
-                }
-            }
-
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['hidden_link'] as $hidden_link) {
-                    if (isset($data['value']) && $idc == $data['value']) {
-                        $display = $hidden_link;
-                    }
-
-                    $onchange .= "$.each( tohide, function( key, value ) {
-                        if (value == true) {
-                            $('[id-field =\"field'+key+'\"]').hide();
-                            $('[id-field =\"field'+key+'-2\"]').hide();
-                            sessionStorage.setItem('hiddenlink$name', key);
-                            $('[name =\"field['+key+']\"]').removeAttr('required');
-                            $('[name =\"field['+key+'-2]\"]').removeAttr('required');
-                            " . FieldOption::resetMandatoryFieldsByFieldForHidden($name);
-
-                    if (is_array($childs_by_checkvalue)) {
-                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                            if ($idc == $k) {
-                                foreach ($childs_blocks as $childs) {
-                                    $onchange .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
-                                            $('[bloc-id =\"subbloc" . $childs . "\"]').hide();
-                                            if (document.getElementById('ablock" . $childs . "'))
-                                                document.getElementById('ablock" . $childs . "').style.display = 'none';";
-                                }
-                            }
-                        }
-                    }
-                    $onchange .= "} else {
-                            $('[id-field =\"field'+key+'\"]').show();
-                            $('[id-field =\"field'+key+'-2\"]').show();
-                        }
-                    });
-              ";
-                }
-            }
-
-            if ($display > 0) {
-                $pre_onchange .= "$('[id-field =\"field" . $display . "\"]').show();";
-                $pre_onchange .= FieldOption::setMandatoryFieldsByField($id, $display);
-            }
-            $onchange .= "});";
-
-            echo Html::scriptBlock('$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});');
-        }
+        FieldOption::displayHiddenTrigger($data, ['name' => 'field[' . $data['id'] . ']', 'match' => 'exact'], 'select', $options);
     }
 
     public static function blocksHiddenScript($data)
     {
-        $metaid = $data['plugin_metademands_metademands_id'];
-        $check_values = $data['options'] ?? [];
-        $id = $data["id"];
-
-        $name = "field[" . $data["id"] . "]";
-        if ($data["item"] == "ITILCategory_Metademands") {
-            $name = "field_plugin_servicecatalog_itilcategories_id";
-        }
-
-        //add childs by idc
-        $childs_by_checkvalue = [];
-        foreach ($check_values as $idc => $check_value) {
-            if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
-                $childs_blocks = json_decode($check_value['childs_blocks'], true);
-                if (isset($childs_blocks)
-                    && is_array($childs_blocks)
-                    && count($childs_blocks) > 0) {
-                    foreach ($childs_blocks as $childs) {
-                        if (is_array($childs)) {
-                            foreach ($childs as $child) {
-                                $childs_by_checkvalue[$idc][] = $child;
-                            }
-                        }
-                    }
-                }
+        $name = 'field[' . $data['id'] . ']';
+        if ($data['item'] == 'ITILCategory_Metademands') {
+            $name = 'field_plugin_servicecatalog_itilcategories_id';
+            // The category chosen in the service catalog
+            if (!isset($data['value']) && isset($_GET['itilcategories_id'])) {
+                $data['value'] = (int) $_GET['itilcategories_id'];
             }
         }
-
-        $onchange = "";
-        $pre_onchange = "";
-        $post_onchange = "";
-        $debug = (isset($_SESSION['glpi_use_mode'])
-        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-        if ($debug) {
-            $onchange = "console.log('blocksHiddenScript-dropdownmeta $id');";
+        $options = ['any' => [0, -1]];
+        if (isset($data['value']) && $data['value'] > 0) {
+            $options['restore'] = ['val' => (string) $data['value']];
         }
-
-        if (count($check_values) > 0) {
-            //Initialize default value - force change after onchange fonction
-            foreach ($check_values as $idc => $check_value) {
-                //Default values
-                if (isset($data['custom_values'])
-                    && is_array($data['custom_values'])
-                    && count($data['custom_values']) > 0) {
-                    $custom_values = $data['custom_values'];
-                    foreach ($custom_values as $k => $custom_value) {
-                        if ($k == $idc && $custom_value['is_default'] == 1) {
-                            $post_onchange .= "$('[name=\"$name\"]').prop('checked', true).trigger('change');";
-
-                            if (is_array($childs_by_checkvalue)) {
-                                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                                    if ($idc == $k) {
-                                        foreach ($childs_blocks as $childs) {
-                                            $options = getAllDataFromTable(
-                                                'glpi_plugin_metademands_fieldoptions',
-                                                ['hidden_block' => $childs],
-                                            );
-                                            if (count($options) == 0) {
-                                                $post_onchange .= "if (document.getElementById('ablock" . $childs . "'))
-                                            document.getElementById('ablock" . $childs . "').style.display = 'block';
-                                            $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                             " . Fieldoption::setMandatoryBlockFields(
-                                                    $metaid,
-                                                    $childs,
-                                                );
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            //by default - hide all
-            $pre_onchange .= Fieldoption::hideAllblockbyDefault($data);
-            if (!isset($data['value'])) {
-                $pre_onchange .= Fieldoption::emptyAllblockbyDefault($check_values);
-            }
-
-            //Si la valeur est en session
-            // The value is encoded at the sink below: it travels POST -> session -> database ->
-            // another user's session, and the `> 0` test degrades to a string comparison as soon
-            // as it is not numeric, so it cannot keep a payload out of the emitted JS.
-            if (isset($data['value']) &&  $data['value'] > 0) {
-                if ($data["display_type"] == self::BLOCK_DISPLAY) {
-                    $values = $data['value'];
-                    $pre_onchange .= "$('[name=\"$name\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").prop('checked', true).trigger('change');";
-                } else {
-                    $pre_onchange .= "$('[name=\"$name\"]').val(" . json_encode((string) $data['value'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) . ").trigger('change');";
-                }
-            }
-
-
-            $onchange .= "$('[name=\"$name\"]').change(async function() {";
-
-            $onchange .= "var tohide = {};";
-            $display = 0;
-            $compteur = 0;
-            foreach ($check_values as $idc => $check_value) {
-                foreach ($check_value['hidden_block'] as $hidden_block) {
-                    $onchange .= "if ($hidden_block in tohide) {
-                      } else {
-                        tohide[$hidden_block] = true;
-                      }";
-
-                    if ($check_value['check_type_value'] == 2) {
-                        $onchange .= "
-                        let regex$compteur = new RegExp(" . json_encode((string) $idc) . ");
-                        let val$compteur = $('[name=\"$name\"] option:selected').text().replaceAll('" . \Dropdown::EMPTY_VALUE . "', '');
-
-                        if(regex$compteur.test(val$compteur)) {
-                            tohide[$hidden_block] = false;
-                        }
-                        ";
-                        $compteur += 1;
-                    } else {
-                        $onchange .= "if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0  || $idc == -1)) {
-                        tohide[$hidden_block] = false;
-                    }";
-                    }
-
-
-                    $onchange .= "$.each( tohide, function( key, value ) {
-                    if (value == true) {
-                       var id = 'ablock'+ key;
-                        if (document.getElementById(id))
-                        document.getElementById(id).style.display = 'none';
-                        $('[bloc-id =\"bloc'+ key +'\"]').hide();
-                        $('[bloc-id =\"subbloc'+ key +'\"]').hide();
-                        sessionStorage.setItem('hiddenbloc$name', key);
-                        " . Fieldoption::setEmptyBlockFields($name) . "";
-                    $hidden = Fieldoption::resetMandatoryBlockFields($name);
-                    $onchange .= "$hidden";
-                    if (is_array($childs_by_checkvalue)) {
-                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                            if ($idc == $k) {
-                                foreach ($childs_blocks as $childs) {
-                                    $onchange .= "if (document.getElementById('ablock" . $childs . "'))
-                                document.getElementById('ablock" . $childs . "').style.display = 'none';
-                                $('[bloc-id =\"bloc" . $childs . "\"]').hide();
-                                $('[bloc-id =\"subbloc" . $childs . "\"]').hide();";
-                                }
-                            }
-                        }
-                    }
-                    $onchange .= "} else {
-                        var id = 'ablock'+ key;
-                        if (document.getElementById(id))
-                        document.getElementById(id).style.display = 'block';
-                        $('[bloc-id =\"bloc'+ key +'\"]').show();
-                        $('[bloc-id =\"subbloc'+ key +'\"]').show();
-                        ";
-
-                    $hidden = Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
-
-                    $onchange .= "$hidden";
-                    if (is_array($childs_by_checkvalue)) {
-                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                            if ($idc == $k) {
-                                foreach ($childs_blocks as $childs) {
-                                    $options = getAllDataFromTable(
-                                        'glpi_plugin_metademands_fieldoptions',
-                                        ['hidden_block' => $childs],
-                                    );
-                                    if (count($options) == 0) {
-                                        $onchange .= "if (document.getElementById('ablock" . $childs . "'))
-                                document.getElementById('ablock" . $childs . "').style.display = 'block';
-                                $('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                $('[bloc-id =\"subbloc" . $childs . "\"]').show();";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    $onchange .= "}
-                });
-          ";
-
-                    if (isset($data['value']) && $idc == $data['value']) {
-                        $display = $hidden_block;
-                    }
-
-                    if ($data["item"] == "ITILCategory_Metademands") {
-                        if (isset($_GET['itilcategories_id']) && $idc == (int) $_GET['itilcategories_id']) {
-                            $pre_onchange .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
-                        $('[bloc-id =\"subbloc" . $hidden_block . "\"]').show();
-                          " . Fieldoption::setMandatoryBlockFields($metaid, $hidden_block);
-                        }
-                    }
-                }
-            }
-            if ($display > 0) {
-                $pre_onchange .= "if (document.getElementById('ablock" . $display . "'))
-                        document.getElementById('ablock" . $display . "').style.display = 'block';
-                        $('[bloc-id =\"bloc" . $display . "\"]').show();
-                        $('[bloc-id =\"subbloc" . $display . "\"]').show();";
-            }
-
-            $onchange .= "});";
-
-            echo Html::scriptBlock(
-                '$(document).ready(function() {' . $pre_onchange . " " . $onchange . " " . $post_onchange . '});',
-            );
-        }
+        FieldOption::displayBlockTrigger($data, ['name' => $name, 'match' => 'exact'], 'select', $options);
     }
 
     public static function checkConditions($data, $metaparams)
     {
-
-        $use_condition = $metaparams['use_condition'] ?? '';
-        $show_rule     = $metaparams['show_rule'] ?? '';
-        $show_button   = $metaparams['show_button'] ?? '';
-        $use_richtext  = $metaparams['use_richtext'] ?? '';
-        $richtext_id   = $metaparams['richtext_id'] ?? 0;
-
-        $conditions = Condition::conditionsTab($data['plugin_metademands_metademands_id']);
-        $condition_fields = [];
-        foreach ($conditions as $cid => $condition) {
-            $condition_fields[] = $condition['plugin_metademands_fields_id'];
-        }
-
-        if ($show_rule != Condition::SHOW_RULE_ALWAYS && in_array($data['id'], $condition_fields)) {
-            $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-            $onchange = "window.metademandconditionsparams = {};
-                        metademandconditionsparams.use_condition = '$use_condition';
-                        metademandconditionsparams.show_rule = '$show_rule';
-                        metademandconditionsparams.show_button = '$show_button';
-                        metademandconditionsparams.use_richtext = '$use_richtext';
-                        metademandconditionsparams.richtext_ids = {$richtext_id};
-                        metademandconditionsparams.root_doc = '$root_doc';";
-            $name = "field[" . $data["id"] . "]";
-            $onchange .= "$('[name=\"$name\"]').change(function() {";
-            $onchange .= "plugin_metademands_wizard_checkConditions(metademandconditionsparams);";
-            $onchange .= "});";
-
-            echo Html::scriptBlock(
-                '$(document).ready(function() {' . $onchange . '});',
-            );
-        }
+        Condition::displayTrigger($data, $metaparams, ['name' => 'field[' . $data['id'] . ']', 'match' => 'exact']);
     }
 
     public static function getFieldValue($field)

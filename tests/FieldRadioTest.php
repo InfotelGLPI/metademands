@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands\Tests;
 
 use Glpi\Tests\DbTestCase;
 use GlpiPlugin\Metademands\FieldCustomvalue;
+use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\Fields\Radio;
 
 /**
@@ -140,5 +141,40 @@ class FieldRadioTest extends DbTestCase
         $this->assertStringNotContainsString('<input required', $html);
         $this->assertMatchesRegularExpression("/class='form-hint'><b>Help<\/b>\s*<\/small>/", $html);
         $this->assertStringNotContainsString('alert(1)', $html);
+    }
+
+    public function testCheckedOptionHidesItsChildBlocksWithoutScript(): void
+    {
+        global $DB;
+
+        $this->login();
+
+        [$values, $first, $second] = $this->createCustomValues();
+        // Stored directly: the field of the custom values does not exist
+        $DB->insert(FieldOption::getTable(), [
+            'plugin_metademands_fields_id' => self::FIELD_ID,
+            'check_value'                  => $second,
+            'childs_blocks'                => '[9005,9006]',
+        ]);
+
+        $html = $this->render(['custom_values' => $values], null);
+
+        $this->assertStringNotContainsString('<script', $html);
+        $this->assertSame(1, substr_count($html, 'data-md-hide-blocks'));
+        $this->assertMatchesRegularExpression(
+            "/value='$second' data-md-hide-blocks='\[9005,9006\]'>/",
+            $html,
+        );
+
+        // Only the ids of the "field" namespace were targeted by the legacy script
+        ob_start();
+        Radio::showWizardField(
+            ['id' => self::FIELD_ID, 'custom_values' => $values, 'comment' => '', 'icon' => '',
+                'row_display' => 0, 'display_type' => 0, 'is_mandatory' => 0],
+            'basket',
+            null,
+            false,
+        );
+        $this->assertStringNotContainsString('data-md-hide-blocks', (string) ob_get_clean());
     }
 }

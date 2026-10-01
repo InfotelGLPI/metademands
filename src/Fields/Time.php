@@ -31,7 +31,6 @@ namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
-use Html;
 use Locale;
 use GlpiPlugin\Metademands\Field;
 
@@ -81,7 +80,6 @@ class Time extends CommonDBTM
      *   - display    : boolean display or get string (default true)
      *   - rand       : specific random value (default generated one)
      *   - required   : required field (will add required attribute)
-     *   - on_change  : function to execute when date selection changed
      * @return string
      */
     public static function showTimeField($name, $options = [])
@@ -99,7 +97,6 @@ class Time extends CommonDBTM
             'display'    => true,
             'rand'       => mt_rand(),
             'required'   => false,
-            'on_change'  => '',
         ];
 
         foreach ($options as $key => $val) {
@@ -150,8 +147,15 @@ class Time extends CommonDBTM
         // posted, so it is escaped before landing in an HTML attribute.
         $value_attr = htmlspecialchars((string) $p['value'], ENT_QUOTES, 'UTF-8');
 
+        $locale = Locale::parseLocale($_SESSION['glpilanguage']);
+        $picker_attr = htmlspecialchars((string) json_encode([
+            'language' => $locale['language'] ?? '',
+            'region'   => $locale['region'] ?? '',
+            'step'     => (int) $p['timestep'],
+        ]), ENT_QUOTES, 'UTF-8');
+
         $output = <<<HTML
-         <div class="input-group flex-grow-1 flatpickr" id="showtime{$p['rand']}">
+         <div class="input-group flex-grow-1 flatpickr" id="showtime{$p['rand']}" data-md-timepicker="{$picker_attr}">
             <input type="text" name="{$name}" value="{$value_attr}"
                    {$required} {$disabled} data-input class="form-control rounded-start ps-2">
             <a class="input-button" data-toggle>
@@ -160,25 +164,6 @@ class Time extends CommonDBTM
             $clear
          </div>
 HTML;
-        $locale = Locale::parseLocale($_SESSION['glpilanguage']);
-        $js = <<<JS
-      $(function() {
-         $("#showtime{$p['rand']}").flatpickr({
-            dateFormat: 'H:i:S',
-            wrap: true, // permits to have controls in addition to input (like clear or open date buttons)
-            enableTime: true,
-            noCalendar: true, // only time picker
-            enableSeconds: true,
-            time_24hr: true,
-            locale: getFlatPickerLocale("{$locale['language']}", "{$locale['region']}"),
-            minuteIncrement: {$p['timestep']},
-            onChange: function(selectedDates, dateStr, instance) {
-               {$p['on_change']}
-            }
-         });
-      });
-JS;
-        $output .= Html::scriptBlock($js);
 
         if ($p['display']) {
             echo $output;

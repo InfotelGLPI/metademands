@@ -27,17 +27,16 @@
 
 {#- Range slider (Fields\Range::showWizardField()).
  #
- #  - script_html: Html::scriptBlock() mirroring the value into the label
  #  - field_id, id, name, value, min, max, step: the slider (integers but name)
  #  - is_required, minimal_mandatory: mandatory field, minimal value when mandatory
  #  - show_all_ticks: one tick per step, else the bounds only
+ #  The value label and the progress gradient follow the slider through
+ #  public/scripts/wizard_form.js (data-md-range-value).
 -#}
 <link rel="stylesheet" type="text/css" href="{{ css_path('/plugins/metademands/css/range.css') }}">
-{#- raw: Html::scriptBlock() of the slider, ids only (§3.2) -#}
-{{ script_html|raw }}
 <div class='range'>
     <div class='range-slider'><input type='range' id='{{ field_id }}'{% if is_required %} required='required'{% endif %}{% if minimal_mandatory > 0 %} minimal_mandatory='{{ minimal_mandatory }}'{% endif %}
-                                     isnumber='isnumber' name='{{ name }}' value='{{ value }}' min='{{ min }}'
+                                     isnumber='isnumber' data-md-range-value='rangevalue_{{ id }}' name='{{ name }}' value='{{ value }}' min='{{ min }}'
                                      max='{{ max }}' step='{{ step }}'>
         <div class='sliderticks'>{% if show_all_ticks %}{% for i in range(min, max, step) %}
                 <span>{{ i }}</span>{% endfor %}{% else %}<span>{{ min }}</span><span>{{ max }}</span>{% endif %}</div>

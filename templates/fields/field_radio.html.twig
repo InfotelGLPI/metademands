@@ -30,7 +30,9 @@
  #  - is_required: the choice is mandatory
  #  - options: {key, name, is_checked, has_comment, comment_html, icon}, where
  #    comment_html is sanitized by RichText::getSafeHtml() (shown by |safe_html in the
- #    block display, escaped into the tooltip attribute otherwise) -#}
+ #    block display, escaped into the tooltip attribute otherwise), hide_blocks the
+ #    blocks hidden when the option is checked, by public/scripts/wizard_form.js
+ #    (data-md-hide-blocks) -#}
 {% if is_block %}
 <div class='row flex-row'>{% endif -%}
     {%- for opt in options -%}
@@ -52,7 +54,7 @@
                         <div class='me-2 ms-auto'><input{% if is_required %} required{% endif %} class='form-check-input' type='radio'
                                                                                 name='{{ namefield }}[{{ id }}]'
                                                                                 id='{{ namefield }}[{{ id }}][{{ opt.key }}]'
-                                                                                value='{{ opt.key }}'{% if opt.is_checked %} checked{% endif %}>
+                                                                                value='{{ opt.key }}'{% if opt.hide_blocks %} data-md-hide-blocks='{{ opt.hide_blocks|json_encode }}'{% endif %}{% if opt.is_checked %} checked{% endif %}>
                         </div>
                     </div>
                 </label></div>
@@ -60,7 +62,7 @@
             <div class='form-check {{ inline }}'><input{% if is_required %} required{% endif %} class='form-check-input' type='radio'
                                                                                name='{{ namefield }}[{{ id }}]'
                                                                                id='{{ namefield }}[{{ id }}][{{ opt.key }}]'
-                                                                               value='{{ opt.key }}'{% if opt.is_checked %} checked{% endif %}><label
+                                                                               value='{{ opt.key }}'{% if opt.hide_blocks %} data-md-hide-blocks='{{ opt.hide_blocks|json_encode }}'{% endif %}{% if opt.is_checked %} checked{% endif %}><label
                     class='form-check-label'
                     for='{{ namefield }}[{{ id }}][{{ opt.key }}]'>{{ opt.name }}{% if opt.has_comment %}&nbsp;<span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top"
                         data-bs-html="true" data-bs-title="{{ opt.comment_html }}">?</span>{% endif %}</label>

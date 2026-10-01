@@ -31,7 +31,6 @@ namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
-use Html;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
 
@@ -94,25 +93,10 @@ class Range extends CommonDBTM
         $tick_count     = $step > 0 ? (int) floor(($max - $min) / $step) + 1 : 0;
         $show_all_ticks = $tick_count <= 20;
 
-        // IIFE to scope variables, supporting multiple Range fields per page
-        $js = "(function() {
-            const sliderEl    = document.querySelector('#$field_id');
-            const sliderValue = document.querySelector('#rangevalue_{$data['id']}');
-            const updateSlider = (val) => {
-                sliderValue.textContent = val;
-                // Account for min offset in progress calculation
-                const range    = sliderEl.max - sliderEl.min;
-                const progress = range > 0 ? (val - sliderEl.min) / range * 100 : 0;
-                sliderEl.style.background = `linear-gradient(to right, #f50 \${progress}%, #ccc \${progress}%)`;
-            };
-            updateSlider(sliderEl.value);
-            sliderEl.addEventListener('input', (event) => updateSlider(event.target.value));
-        })();";
 
         echo TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_range.html.twig',
             [
-                'script_html'    => Html::scriptBlock('$(document).ready(function() {' . $js . '});'),
                 'field_id'       => $field_id,
                 'name'           => $name,
                 'value'          => $value,

@@ -26,16 +26,16 @@
  #}
 
 {#-
- # Cascading location selector: the <select> driven by jquery.chained.selects.js, the
- # script wiring it, and the hidden input carrying the value actually submitted.
+ # Cascading location selector: the <select> driven by jquery.chained.selects.js, wired
+ # by public/scripts/wizard_form.js (data-md-chained-locations), and the hidden input
+ # carrying the value actually submitted.
  #
  # Expected context:
- #  - script_html: Html::scriptBlock() building the cascade
+ #  - chained:     {data (location tree), selected (current value)}
  #  - name, id:    name and id of the field
  #  - is_required: whether the field is mandatory
 -#}
 <script src="{{ js_path('/plugins/metademands/lib/cascading-dropdowns/jquery.chained.selects.js') }}"></script>
-<select class="chained-select" name="{{ name }}-dropdown" id="{{ id }}-dropdown"{% if is_required %} required{% endif %}></select>
-{# raw: Html::scriptBlock() of the cascade, data encoded with JSON_HEX_TAG|JSON_HEX_AMP (§3.2) #}
-{{ script_html|raw }}
+<select class="chained-select" name="{{ name }}-dropdown" id="{{ id }}-dropdown"{% if is_required %} required{% endif %}
+        data-md-chained-locations="{{ chained|merge({target: id})|json_encode }}"></select>
 <input type="hidden" name="{{ name }}" id="{{ id }}">

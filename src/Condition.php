@@ -743,6 +743,53 @@ class Condition extends CommonDBChild
         return $tab;
     }
 
+    /**
+     * Re-evaluate the conditions of the metademand whenever the given field changes.
+     *
+     * Replaces the script each Fields class generated: a marker read by
+     * public/scripts/wizard_form.js (initConditionTrigger) publishes the condition
+     * parameters and binds the change handler.
+     *
+     * @param array $data       the field, with its id and its metademand id
+     * @param array $metaparams from Wizard::getConditionsParams()
+     * @param array $source     what the handler listens to:
+     *                          ['name' => ..., 'match' => 'exact'|'prefix'] for inputs,
+     *                          ['id' => ...] for one element,
+     *                          ['richtext' => true] for the rich text editors
+     *
+     * @return void
+     */
+    public static function displayTrigger(array $data, array $metaparams, array $source): void
+    {
+        $show_rule = $metaparams['show_rule'] ?? '';
+        if ($show_rule == self::SHOW_RULE_ALWAYS) {
+            return;
+        }
+
+        $condition_fields = array_column(
+            self::conditionsTab((int) $data['plugin_metademands_metademands_id']),
+            'plugin_metademands_fields_id',
+        );
+        if (!in_array($data['id'], $condition_fields)) {
+            return;
+        }
+
+        // Same keys and value types as the legacy inline literal: quoted scalars stay strings.
+        $params = [
+            'use_condition' => (string) ($metaparams['use_condition'] ?? ''),
+            'show_rule'     => (string) $show_rule,
+            'show_button'   => (string) ($metaparams['show_button'] ?? ''),
+            'use_richtext'  => (string) ($metaparams['use_richtext'] ?? ''),
+            'richtext_ids'  => json_decode($metaparams['richtext_id'] ?? '[]', true) ?? [],
+            'root_doc'      => PLUGIN_METADEMANDS_WEBDIR,
+        ];
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/condition_trigger.html.twig', [
+            'params' => $params,
+            'source' => $source,
+        ]);
+    }
+
     public static function showPhpLogic($int)
     {
         $return = '';

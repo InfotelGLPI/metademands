@@ -29,16 +29,15 @@
  #
  #  - is_richtext: rich text editor, else a classic <textarea>
  #  - rich text: textarea_html (editor widget of Fields\Textarea::textarea()) and
- #    script_html (hides the document dropdown)
+ #    drop_zone_id (document drop zone, hidden)
  #  - classic: is_required, rows, cols, comment (placeholder), value, name_attr, id_attr
 -#}
 {%- if is_richtext -%}
 {# raw: rich text editor widget and its init script, from getFieldInput() (§3.2) #}
 {{ textarea_html|raw }}
-{# raw: Html::scriptBlock() hiding the document dropdown, no data (§3.2) #}
-{{ script_html|raw }}
 <style>
-    .fileupload.only-uploaded-files {
+    .fileupload.only-uploaded-files,
+    #{{ drop_zone_id }} {
         display: none;
     }
 </style>

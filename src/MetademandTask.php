@@ -386,6 +386,141 @@ class MetademandTask extends CommonDBChild
         return false;
     }
 
+    /**
+     * Flag the child metademands linked to the values of a field as used or not when
+     * the field changes.
+     *
+     * Replaces the script the Fields classes generated: a marker read by
+     * public/scripts/wizard_form.js (initTaskTrigger) binds the change handler,
+     * which posts to ajax/set_session.php and updates the next button title.
+     *
+     * Modes, i.e. when a task is used:
+     * - filled:   the field is not empty (text fields)
+     * - select:   the selected value is the checked one, or any value when `any` (or a regex on its label)
+     * - checked:  a checked input has the checked value, or any value when `any`
+     * - switch:   the yes / no switch is on
+     * - quantity: a quantity is above zero
+     * - multiple: a selected option has the label of the checked value (or matches a regex)
+     * - values:   the selected values contain the checked one
+     *
+     * @param array  $data    the field, with its options
+     * @param array  $source  what the handler listens to: ['name' => ..., 'match' => 'exact'|'prefix'] or ['id' => ...]
+     * @param string $mode    see above
+     * @param array  $options
+     *  - any:        checked values meaning "any value"
+     *  - labels:     label of each checked value, for the multiple mode
+     *  - defaults:   default values of the field, which flag their tasks as used at once
+     *  - restore:    ['val' => ...] or ['check' => [...]], value kept in session
+     *  - next_title: next button title when a task is used ('next' or 'savenext')
+     *
+     * @return void
+     */
+    public static function displayTaskTrigger(array $data, array $source, string $mode = 'filled', array $options = []): void
+    {
+        $check_values = $data['options'] ?? [];
+        if (count($check_values) == 0) {
+            return;
+        }
+
+        $any        = $options['any'] ?? [];
+        $labels     = $options['labels'] ?? [];
+        $defaults   = $options['defaults'] ?? [];
+        $next_title = $options['next_title'] ?? 'next';
+
+        $rules = [];
+        foreach ($check_values as $idc => $check_value) {
+            foreach ($check_value['plugin_metademands_tasks_id'] ?? [] as $tasks_id) {
+                if (!$tasks_id) {
+                    continue;
+                }
+                // Hide the child metademand until the field gets a matching value
+                self::setUsedTask($tasks_id, 0);
+                $rules[] = [
+                    'tasks_id' => (int) $tasks_id,
+                    'value'    => (string) $idc,
+                    'any'      => in_array($idc, $any),
+                    'regex'    => ($check_value['check_type_value'] ?? 0) == 2,
+                    'label'    => (string) ($labels[$idc] ?? ''),
+                ];
+            }
+        }
+        if (count($rules) == 0) {
+            return;
+        }
+
+        // Default values flag their tasks as used, the others as not used
+        $initial_title = null;
+        foreach ($rules as $rule) {
+            foreach ($defaults as $default) {
+                if ($rule['value'] == $default) {
+                    if (self::setUsedTask($rule['tasks_id'], 1)) {
+                        $initial_title = $next_title;
+                    }
+                } else {
+                    self::setUsedTask($rule['tasks_id'], 0);
+                }
+            }
+        }
+
+        $config = [
+            'source'     => $source,
+            'mode'       => $mode,
+            'rules'      => $rules,
+            'url'        => PLUGIN_METADEMANDS_WEBDIR . '/ajax/set_session.php',
+            'next_title' => $next_title,
+        ];
+        if (isset($options['restore'])) {
+            $config['restore'] = $options['restore'];
+        } elseif ($mode === 'filled' && isset($data['value']) && is_scalar($data['value'])) {
+            $config['restore'] = ['val' => (string) $data['value']];
+        }
+        if ($initial_title !== null) {
+            $config['initial_title'] = $initial_title;
+        }
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/task_trigger.html.twig', [
+            'config' => $config,
+        ]);
+    }
+
+    /**
+     * Keys of the custom values checked by default.
+     *
+     * @param mixed $custom_values
+     *
+     * @return array
+     */
+    public static function getDefaultCustomValues($custom_values): array
+    {
+        $defaults = [];
+        if (is_array($custom_values)) {
+            foreach ($custom_values as $key => $custom_value) {
+                if (($custom_value['is_default'] ?? 0) == 1) {
+                    $defaults[] = $key;
+                }
+            }
+        }
+
+        return $defaults;
+    }
+
+    /**
+     * Keys set to 1 in the serialized default values of a field.
+     *
+     * @param mixed $default
+     *
+     * @return array
+     */
+    public static function getDefaultValues($default): array
+    {
+        $values = FieldParameter::_unserialize($default ?? '');
+        if (!is_array($values)) {
+            return [];
+        }
+
+        return array_keys(array_filter($values, static fn($value) => $value == 1));
+    }
+
 
     /**
      * @param       $metademands_id

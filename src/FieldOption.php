@@ -1676,6 +1676,339 @@ class FieldOption extends CommonDBChild
         }
     }
 
+    /**
+     * Make the fields linked to the values of a field mandatory or not when the
+     * field changes.
+     *
+     * Replaces the script the Fields classes generated: a marker read by
+     * public/scripts/wizard_form.js (initMandatoryTrigger) binds the change handler.
+     * A linked field gets its red star and required inputs as soon as one of its
+     * values matches, otherwise it loses them, as well as the invalid state of its
+     * inputs.
+     *
+     * Modes are those of MetademandTask::displayTaskTrigger(), plus:
+     * - options: a selected option has the checked value, or any value when `any` (or a regex on its label)
+     * - listed:  the checked value is in the list (right side of a multiselect)
+     *
+     * @param array  $data    the field, with its options
+     * @param array  $source  what the handler listens to: ['name' => ..., 'match' => 'exact'|'prefix'] or ['id' => ...]
+     * @param string $mode    see above
+     * @param array  $options
+     *  - any:           checked values meaning "any value"
+     *  - negate:        checked values making the linked fields mandatory when they do NOT match
+     *  - regex_literal: the regex of the checked values is a JS literal (/pattern/flags)
+     *  - target_match:  'contains' to flag every input whose name contains field[<id>]
+     *  - restore:       ['val' => ...], ['check' => [...]] or ['refresh' => true], value kept in session
+     *  - current:       values of the field kept in session, whose linked upload fields are required at once
+     *  - show_current:  also show the fields linked to the current values
+     *
+     * @return void
+     */
+    public static function displayMandatoryTrigger(array $data, array $source, string $mode, array $options = []): void
+    {
+        $check_values = $data['options'] ?? [];
+        if (count($check_values) == 0) {
+            return;
+        }
+
+        $any     = $options['any'] ?? [];
+        $negate  = $options['negate'] ?? [];
+        $current = $options['current'] ?? [];
+
+        $rules   = [];
+        $inner   = [];
+        $uploads = [];
+        $show    = [];
+        $field   = new Field();
+        foreach ($check_values as $idc => $check_value) {
+            $targets = [];
+            foreach ($check_value['fields_link'] ?? [] as $fields_link) {
+                $fields_link = (int) $fields_link;
+                if ($fields_link <= 0) {
+                    continue;
+                }
+                $targets[] = $fields_link;
+                if (!$field->getFromDB($fields_link)) {
+                    continue;
+                }
+                // The first input of file and checkbox fields carries the required state
+                if (in_array($field->fields['type'], ['file', 'checkbox'])) {
+                    $inner[] = $fields_link;
+                }
+                if (in_array($idc, $current)) {
+                    if (!empty($options['show_current'])) {
+                        $show[] = $fields_link;
+                    }
+                    if ($field->fields['type'] == 'upload'
+                        && countElementsInTable(self::getTable(), [
+                            'plugin_metademands_fields_id' => $data['id'],
+                            'hidden_link'                  => $fields_link,
+                        ]) > 0) {
+                        $uploads[] = $fields_link;
+                    }
+                }
+            }
+            if (count($targets) == 0) {
+                continue;
+            }
+            $rules[] = [
+                'value'   => (string) $idc,
+                'any'     => in_array($idc, $any),
+                'negate'  => in_array($idc, $negate),
+                'regex'   => ($check_value['check_type_value'] ?? 0) == 2,
+                'literal' => !empty($options['regex_literal']),
+                'targets' => $targets,
+            ];
+        }
+        if (count($rules) == 0) {
+            return;
+        }
+
+        $config = [
+            'source'       => $source,
+            'mode'         => $mode,
+            'rules'        => $rules,
+            'target_match' => $options['target_match'] ?? 'exact',
+            'inner'        => array_values(array_unique($inner)),
+            'uploads'      => array_values(array_unique($uploads)),
+            'show'         => array_values(array_unique($show)),
+        ];
+        if (isset($options['restore'])) {
+            $config['restore'] = $options['restore'];
+        }
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/mandatory_trigger.html.twig', [
+            'config' => $config,
+        ]);
+    }
+
+    /**
+     * Show or hide the fields linked to the values of a field when the field changes.
+     *
+     * Replaces the script the Fields classes generated: a marker read by
+     * public/scripts/wizard_form.js (initHiddenTrigger) binds the change handler.
+     * The linked fields are hidden at first. A linked field is shown as soon as one
+     * of its values matches, otherwise it is hidden and its inputs are emptied, and
+     * the child blocks of the values which no longer match are hidden. When the form
+     * is displayed, the fields linked to the current state are shown, nothing is emptied.
+     *
+     * Modes are those of displayMandatoryTrigger().
+     *
+     * @param array  $data    the field, with its options
+     * @param array  $source  what the handler listens to: ['name' => ..., 'match' => 'exact'|'prefix'] or ['id' => ...]
+     * @param string $mode    see above
+     * @param array  $options
+     *  - any:           checked values meaning "any value"
+     *  - negate:        checked values showing the linked fields when they do NOT match
+     *  - regex_literal: the regex of the checked values is a JS literal (/pattern/flags)
+     *  - restore:       ['val' => ...], ['check' => [...]] or ['refresh' => true], value kept in session
+     *  - current:       values of the field kept in session, whose linked upload fields are required at once
+     *
+     * @return void
+     */
+    public static function displayHiddenTrigger(array $data, array $source, string $mode, array $options = []): void
+    {
+        $check_values = $data['options'] ?? [];
+        if (count($check_values) == 0) {
+            return;
+        }
+
+        $any     = $options['any'] ?? [];
+        $negate  = $options['negate'] ?? [];
+        $current = $options['current'] ?? [];
+
+        $rules   = [];
+        $uploads = [];
+        $field   = new Field();
+        foreach ($check_values as $idc => $check_value) {
+            $targets = [];
+            foreach ($check_value['hidden_link'] ?? [] as $hidden_link) {
+                $hidden_link = (int) $hidden_link;
+                if ($hidden_link <= 0) {
+                    continue;
+                }
+                $targets[] = $hidden_link;
+                if (!in_array($idc, $current)) {
+                    continue;
+                }
+                // Upload fields shown for the value kept in session are required
+                if ($field->getFromDB($hidden_link)
+                    && $field->fields['type'] == 'upload'
+                    && countElementsInTable(self::getTable(), [
+                        'plugin_metademands_fields_id' => $data['id'],
+                        'hidden_link'                  => $hidden_link,
+                    ]) > 0) {
+                    $uploads[] = $hidden_link;
+                }
+            }
+            if (count($targets) == 0) {
+                continue;
+            }
+
+            // Blocks opened by this value, hidden when it no longer matches
+            $blocks = [];
+            $childs_blocks = !empty($check_value['childs_blocks'])
+                ? json_decode($check_value['childs_blocks'], true)
+                : [];
+            foreach (is_array($childs_blocks) ? $childs_blocks : [] as $childs) {
+                foreach (is_array($childs) ? $childs : [] as $child) {
+                    $blocks[] = (int) $child;
+                }
+            }
+
+            $rules[] = [
+                'value'   => (string) $idc,
+                'any'     => in_array($idc, $any),
+                'negate'  => in_array($idc, $negate),
+                'regex'   => ($check_value['check_type_value'] ?? 0) == 2,
+                'literal' => !empty($options['regex_literal']),
+                'targets' => $targets,
+                'blocks'  => array_values(array_unique($blocks)),
+            ];
+        }
+        if (count($rules) == 0) {
+            return;
+        }
+
+        $config = [
+            'source'  => $source,
+            'mode'    => $mode,
+            'rules'   => $rules,
+            'uploads' => array_values(array_unique($uploads)),
+        ];
+        if (isset($options['restore'])) {
+            $config['restore'] = $options['restore'];
+        }
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/hidden_trigger.html.twig', [
+            'config' => $config,
+        ]);
+    }
+
+    /**
+     * Show or hide the blocks linked to the values of a field when the field changes.
+     *
+     * Replaces the script the Fields classes generated: a marker read by
+     * public/scripts/wizard_form.js (initBlockTrigger) binds the change handler.
+     * A linked block is shown as soon as one of its values matches, with the child
+     * blocks no other field controls, and its mandatory fields become required.
+     * Otherwise it is hidden with the child blocks of the value, its inputs are
+     * emptied and made optional. When the form is displayed, the blocks follow the
+     * current state, and are emptied only when the field has no value yet.
+     *
+     * Modes are those of displayMandatoryTrigger().
+     *
+     * @param array  $data    the field, with its options
+     * @param array  $source  what the handler listens to: ['name' => ..., 'match' => 'exact'|'prefix'] or ['id' => ...]
+     * @param string $mode    see above
+     * @param array  $options
+     *  - any:           checked values meaning "any value"
+     *  - negate:        checked values showing the linked blocks when they do NOT match
+     *  - regex_literal: the regex of the checked values is a JS literal (/pattern/flags)
+     *  - restore:       ['val' => ...] or ['check' => [...]], value kept in session
+     *
+     * @return void
+     */
+    public static function displayBlockTrigger(array $data, array $source, string $mode, array $options = []): void
+    {
+        $check_values = $data['options'] ?? [];
+        if (count($check_values) == 0) {
+            return;
+        }
+
+        $any    = $options['any'] ?? [];
+        $negate = $options['negate'] ?? [];
+
+        $rules = [];
+        $ranks = [];
+        // Child blocks no field option controls are opened with their parent value
+        $controlled = [];
+        foreach ($check_values as $idc => $check_value) {
+            $blocks = [];
+            foreach ($check_value['hidden_block'] ?? [] as $hidden_block) {
+                if ((int) $hidden_block > 0) {
+                    $blocks[] = (int) $hidden_block;
+                }
+            }
+            if (count($blocks) == 0) {
+                continue;
+            }
+
+            $childs = [];
+            $childs_blocks = !empty($check_value['childs_blocks'])
+                ? json_decode($check_value['childs_blocks'], true)
+                : [];
+            foreach (is_array($childs_blocks) ? $childs_blocks : [] as $group) {
+                foreach (is_array($group) ? $group : [] as $child) {
+                    $childs[] = (int) $child;
+                }
+            }
+            $childs = array_values(array_unique($childs));
+
+            $open = [];
+            foreach ($childs as $child) {
+                $controlled[$child] ??= countElementsInTable(self::getTable(), ['hidden_block' => $child]) > 0;
+                if (!$controlled[$child]) {
+                    $open[] = $child;
+                }
+            }
+
+            $blocks  = array_values(array_unique($blocks));
+            $ranks   = array_merge($ranks, $blocks, $open);
+            $rules[] = [
+                'value'   => (string) $idc,
+                'any'     => in_array($idc, $any),
+                'negate'  => in_array($idc, $negate),
+                'regex'   => ($check_value['check_type_value'] ?? 0) == 2,
+                'literal' => !empty($options['regex_literal']),
+                'blocks'  => $blocks,
+                'childs'  => $childs,
+                'open'    => $open,
+            ];
+        }
+        if (count($rules) == 0) {
+            return;
+        }
+
+        $metaid = $data['plugin_metademands_metademands_id'] ?? 0;
+
+        // Mandatory fields of the blocks, required while their block is shown
+        $mandatory = [];
+        $ranks     = array_values(array_unique($ranks));
+        $fields    = (new Field())->find(['plugin_metademands_metademands_id' => $metaid, 'rank' => $ranks]);
+        if (count($fields) > 0) {
+            $parameters = (new FieldParameter())->find([
+                'plugin_metademands_fields_id' => array_keys($fields),
+                'is_mandatory'                 => 1,
+            ]);
+            foreach ($parameters as $parameter) {
+                $field = $fields[$parameter['plugin_metademands_fields_id']];
+                $mandatory[] = [
+                    'id'     => (int) $field['id'],
+                    'block'  => (int) $field['rank'],
+                    'upload' => $field['type'] == 'upload',
+                ];
+            }
+        }
+
+        $metademand = new Metademand();
+        $config = [
+            'source'    => $source,
+            'mode'      => $mode,
+            'rules'     => $rules,
+            'mandatory' => $mandatory,
+            'step'      => $metademand->getFromDB($metaid) && $metademand->fields['step_by_step_mode'] == 1,
+            // Nothing kept in session: the inputs of the hidden blocks are emptied
+            'empty'     => !isset($data['value']),
+        ];
+        if (isset($options['restore'])) {
+            $config['restore'] = $options['restore'];
+        }
+
+        TemplateRenderer::getInstance()->display('@metademands/wizard/block_trigger.html.twig', [
+            'config' => $config,
+        ]);
+    }
     public static function fieldsHiddenScript($data, $itilcategories_id = 0)
     {
         global $PLUGIN_HOOKS;
@@ -1858,281 +2191,6 @@ class FieldOption extends CommonDBChild
         }
     }
 
-    public static function hideAllblockbyDefault($data = [])
-    {
-        $metaid = $data['plugin_metademands_metademands_id'] ?? 0;
-        $check_values = $data['options'] ?? [];
-        $id = $data["id"] ?? 0;
-
-        $script = '';
-        $hidden_blocks = [];
-        $childs = [];
-        $childs_blocks = [];
-
-        foreach ($check_values as $idc => $check_value) {
-            foreach ($check_value['hidden_block'] as $hidden_block) {
-                if ($hidden_block > 0 && !in_array($hidden_block, $hidden_blocks)) {
-                    $hidden_blocks[] = $hidden_block;
-                }
-            }
-
-            $childs_blocks[] = json_decode($check_value['childs_blocks'], true);
-        }
-
-        if (isset($childs_blocks) && count($childs_blocks) > 0) {
-            foreach ($childs_blocks as $k => $childs_block) {
-                if (is_array($childs_block)) {
-                    foreach ($childs_block as $childs_bloc) {
-                        $childs[] = $childs_bloc;
-                    }
-                }
-            }
-        }
-
-        //Fonction to drop loaded hidden_block & child_blocks from default hiding if exists in session
-        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-
-            if (!is_array($session_value)
-                && isset($check_values[$session_value])) {
-                if (($key = array_search($check_values[$session_value]['hidden_block'], $hidden_blocks)) !== false) {
-                    unset($hidden_blocks[$key]);
-                }
-                $session_childs_blocks = [];
-                if (isset($check_values[$session_value]['childs_blocks'])) {
-                    $session_childs_blocks[] = json_decode($check_values[$session_value]['childs_blocks'], true);
-                }
-                if (count($session_childs_blocks) > 0) {
-                    foreach ($session_childs_blocks as $k => $session_childs_block) {
-                        if (is_array($session_childs_block)) {
-                            foreach ($session_childs_block as $session_childs) {
-                                if (is_array($session_childs)) {
-                                    foreach ($session_childs as $session_child) {
-                                        foreach ($childs as $k => $child) {
-                                            if (($key = array_search($session_child, $child)) !== false) {
-                                                unset($childs[$k][$key]);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } elseif (is_array($session_value)) {
-                foreach ($session_value as $k => $fieldSession) {
-                    if (isset($check_values[$fieldSession])) {
-                        if (($key = array_search($check_values[$fieldSession]['hidden_block'], $hidden_blocks)) !== false) {
-                            unset($hidden_blocks[$key]);
-                        }
-                        $session_childs_blocks = [];
-                        if (isset($check_values[$fieldSession]['childs_blocks'])) {
-                            $session_childs_blocks[] = json_decode($check_values[$fieldSession]['childs_blocks'], true);
-                        }
-                        if (count($session_childs_blocks) > 0) {
-                            foreach ($session_childs_blocks as $k => $session_childs_block) {
-                                if (is_array($session_childs_block)) {
-                                    foreach ($session_childs_block as $session_childs) {
-                                        if (is_array($session_childs)) {
-                                            foreach ($session_childs as $session_child) {
-                                                foreach ($childs as $k => $child) {
-                                                    if (($key = array_search($session_child, $child)) !== false) {
-                                                        unset($childs[$k][$key]);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-        // Object literals inlined in the <script> block built below: without the HEX
-        // flags a value holding "</script>" closes the element early, even though the
-        // JSON itself stays syntactically valid.
-        $json_flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
-        $json_hidden_blocks = json_encode($hidden_blocks, $json_flags);
-        $json_childs_blocks = json_encode($childs, $json_flags);
-
-        $script .= "var hidden_blocks = {$json_hidden_blocks};
-                    var child_blocks = {$json_childs_blocks};
-                    var tohideblock = {};";
-
-        //Prepare subblocks
-        $script .= "
-
-                    if (typeof answer === 'undefined') {
-                          answer = false;
-                    }
-
-                    if(answer === false){
-                         $.each( hidden_blocks, function( key, value ) {
-                            tohideblock[value] = true;
-                        });
-                    }
-                    $.each( child_blocks, function( key, value ) {
-                        tohideblock[value] = true;
-                    });
-                    $.each(tohideblock, function( key, value ) {
-                                if (value == true) {
-                                    $('[bloc-id=\"bloc'+key+'\"]').hide();
-                                    $('[bloc-id=\"subbloc'+key+'\"]').hide();
-                                    $.each(tohideblock, function( key, value ) {
-                                        $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
-                                             switch(this.type) {
-                                                case 'checkbox':
-                                                case 'radio':
-                                                     var checkname = this.name;
-                                                     $(\"[name^='\"+checkname+\"']\").removeAttr('required');
-                                                    break;
-                                            }
-                                            jQuery(this).removeAttr('required');
-
-                                        });
-                                    });
-                                }
-                            });";
-
-        return $script;
-    }
-
-
-    public static function emptyAllblockbyDefault($check_values)
-    {
-        $script = '';
-        $hidden_blocks = [];
-        $childs = [];
-        $childs_blocks = [];
-        foreach ($check_values as $idc => $check_value) {
-            foreach ($check_value['hidden_block'] as $hidden_block) {
-                if ($hidden_block > 0) {
-                    $hidden_blocks[] = $hidden_block;
-                }
-            }
-
-            $childs_blocks[] = json_decode($check_value['childs_blocks'], true);
-        }
-
-        if (isset($childs_blocks) && count($childs_blocks) > 0) {
-            foreach ($childs_blocks as $k => $childs_block) {
-                if (is_array($childs_block)) {
-                    foreach ($childs_block as $childs_bloc) {
-                        $childs[] = $childs_bloc;
-                    }
-                }
-            }
-        }
-
-        // Object literals inlined in the <script> block built below: without the HEX
-        // flags a value holding "</script>" closes the element early, even though the
-        // JSON itself stays syntactically valid.
-        $json_flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
-        $json_hidden_blocks = json_encode($hidden_blocks, $json_flags);
-        $json_childs_blocks = json_encode($childs, $json_flags);
-
-        $script .= "var hidden_blocks = {$json_hidden_blocks};
-                    var child_blocks = {$json_childs_blocks};
-                    var tohideblock = {};";
-        $script .= "//by default - hide all
-                    $.each( hidden_blocks, function( key, value ) {
-                        tohideblock[value] = true;
-                    });
-                    $.each( child_blocks, function( key, value ) {
-                        tohideblock[value] = true;
-                    });
-                    $.each(tohideblock, function( key, value ) {
-                                if (value == true) {
-                                    $.each(tohideblock, function( key, value ) {
-                                        $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
-                                             switch(this.type) {
-                                                case 'password':
-                                                case 'text':
-                                                case 'textarea':
-                                                case 'file':
-                                                case 'date':
-                                                case 'number':
-                                                case 'range':
-                                                case 'tel':
-                                                case 'email':
-                                                case 'url':
-                                                    jQuery(this).val('');
-                                                    if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
-                                                        tinymce.get(this.id).setContent('');
-                                                    }
-                                                    break;
-                                                case 'select-one':
-                                                case 'select-multiple':
-                                                    //jQuery(this).val('0').trigger('change');
-                                                    break;
-                                                case 'checkbox':
-                                                case 'radio':
-                                                     this.checked = false;
-                                                     var checkname = this.name;
-                                                     $(\"[name^='\"+checkname+\"']\").removeAttr('required');
-                                            }
-                                            jQuery(this).removeAttr('required');
-                                            regex = /multiselectfield.*_to/g;
-                                            totest = this.id;
-                                            found = totest.match(regex);
-                                            if(found !== null) {
-                                              regex = /multiselectfield[0-9]*/;
-                                               found = totest.match(regex);
-                                               $('#'+found[0]+'_leftAll').click();
-                                            }
-                                        });
-                                    });
-                                }
-                            });";
-
-        return $script;
-    }
-
-    public static function setMandatoryBlockFields($metaid, $blockid)
-    {
-
-        $script = '';
-
-        $use_as_step = 0;
-        $metademands = new Metademand();
-        $metademands->getFromDB($metaid);
-        if ($metademands->fields['step_by_step_mode'] == 1) {
-            $use_as_step = 1;
-        }
-
-        if ($blockid > 0) {
-            $fields = new Field();
-            $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metaid, 'rank' => $blockid]);
-            if (is_array($fields_data) && count($fields_data) > 0) {
-                foreach ($fields_data as $data) {
-                    $fieldparameter = new FieldParameter();
-                    if ($fieldparameter->getFromDBByCrit(
-                        ['plugin_metademands_fields_id' => $data['id'], 'is_mandatory' => 1],
-                    )) {
-                        $id = $data['id'];
-                        if ($id > 0) {
-                            $script .= "$(\"[name='field[$id]']\").attr('required', 'required');";
-                            $script .= "$(\"[check='field[$id]']\").attr('required', 'required');";
-                            if ($data['type'] == 'upload') {
-                                $script .= "document.querySelector(\"[id-field='field$id'] div input\").required = true;";
-                            }
-                        }
-                    }
-                }
-            }
-
-            if ($use_as_step == 1) {
-                $script .= "plugin_metademands_wizard_setNextBtnTitle('next'); ";
-            }
-        }
-
-        return $script;
-    }
-
     /**
      * Normalize the list of child block numbers.
      *
@@ -2175,227 +2233,6 @@ class FieldOption extends CommonDBChild
         return parent::prepareInputForUpdate($input);
     }
 
-    public static function resetMandatoryBlockFields($name)
-    {
-        // Escaped for a JS string context: most callers pass a field name, the block
-        // callers a block number read back from childs_blocks.
-        $name = jsescape($name);
-
-        return "var blocid = sessionStorage.getItem('hiddenbloc$name');
-                                     $('div[bloc-id=\"bloc' + blocid + '\"]').find(':input').each(function() {
-                                     switch(this.type) {
-                                            case 'checkbox':
-                                            case 'radio':
-                                                var checkname = this.name;
-                                                $(\"[name^='\"+checkname+\"']\").removeAttr('required');
-                                        }
-                                        jQuery(this).removeAttr('required');
-                                    });
-                                    $('div[bloc-id=\"subbloc' + blocid + '\"]').find(':input').each(function() {
-                                     switch(this.type) {
-                                            case 'checkbox':
-                                            case 'radio':
-                                                var checkname = this.name;
-                                                $(\"[name^='\"+checkname+\"']\").removeAttr('required');
-                                        }
-                                        jQuery(this).removeAttr('required');
-                                    });
-                                    ";
-    }
-
-    public static function setEmptyBlockFields($name)
-    {
-        // Same JS string context as resetMandatoryBlockFields() above.
-        $name = jsescape($name);
-
-        return "var blocid = sessionStorage.getItem('hiddenbloc$name');
-                                $('div[bloc-id=\"bloc' + blocid + '\"]').find(':input').each(function() {
-                                     switch(this.type) {
-                                            case 'password':
-                                            case 'text':
-                                            case 'textarea':
-                                            case 'file':
-                                            case 'date':
-                                            case 'number':
-                                            case 'range':
-                                            case 'tel':
-                                            case 'email':
-                                            case 'url':
-                                                jQuery(this).val('');
-                                                if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
-                                                    tinymce.get(this.id).setContent('');
-                                                }
-                                                break;
-                                            case 'select-one':
-                                            case 'select-multiple':
-                                                jQuery(this).val('0').trigger('change');
-                                                break;
-                                            case 'checkbox':
-                                            case 'radio':
-                                                 this.checked = false;
-                                        }
-                                         jQuery(this).removeAttr('required');
-                                        jQuery(this).removeClass('invalid');
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                                    });
-                                    $('div[bloc-id=\"subbloc' + blocid + '\"]').find(':input').each(function() {
-                                     switch(this.type) {
-                                            case 'password':
-                                            case 'text':
-                                            case 'textarea':
-                                            case 'file':
-                                            case 'date':
-                                            case 'number':
-                                            case 'range':
-                                            case 'tel':
-                                            case 'email':
-                                            case 'url':
-                                                jQuery(this).val('');
-                                                if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
-                                                    tinymce.get(this.id).setContent('');
-                                                }
-                                                break;
-                                            case 'select-one':
-                                            case 'select-multiple':
-                                                jQuery(this).val('0').trigger('change');
-                                                break;
-                                            case 'checkbox':
-                                            case 'radio':
-                                                 this.checked = false;
-                                        }
-                                         jQuery(this).removeAttr('required');
-                                        jQuery(this).removeClass('invalid');
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                                    });
-                            ";
-    }
-
-
-    public static function setMandatoryFieldsByField($field_id, $hidden_link)
-    {
-        //cannot be used for multples values like checkbox or radio
-        $script = '';
-        $fieldoptions = new FieldOption();
-        $fields_data = $fieldoptions->find(
-            ['plugin_metademands_fields_id' => $field_id, 'hidden_link' => $hidden_link],
-        );
-
-        if (is_array($fields_data) && count($fields_data) > 0) {
-            foreach ($fields_data as $data) {
-                if ($data['fields_link'] == $hidden_link && $hidden_link > 0) {
-                    //                    $script .= "$(\"[name='field[$hidden_link]']\").attr('required', 'required');";
-                }
-                $field =  new Field();
-                if ($field->getFromDB($hidden_link) && $field->fields['type'] == 'upload') {
-                    $script .= "
-                    var div = document.getElementById('fileupload_info_ticketfield$hidden_link');
-                    if (!div) return;
-                    var nextElem = div.nextElementSibling;
-                    while (nextElem && nextElem.tagName !== 'INPUT') {
-                        nextElem = nextElem.nextElementSibling;
-                    }
-                     if (nextElem) {
-                        nextElem.setAttribute('required', 'required');
-                    }";
-                }
-            }
-        }
-        return $script;
-    }
-
-
-    public static function resetMandatoryFieldsByField($name)
-    {
-
-        return "var fieldid = sessionStorage.getItem('hiddenlink$name');
-                            $('div[id-field=\"field' + fieldid + '\"]').find(':input').each(function() {
-                                        jQuery(this).removeAttr('required');
-                                        jQuery(this).removeClass('invalid');
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                            });";
-    }
-
-    public static function resetMandatoryFieldsByFieldForHidden($name)
-    {
-
-        return "var fieldid = sessionStorage.getItem('hiddenlink$name');
-                            $('div[id-field=\"field' + fieldid + '\"]').find(':input').each(function() {
-                                     switch(this.type) {
-                                            case 'password':
-                                            case 'text':
-                                            case 'textarea':
-                                            case 'file':
-                                            case 'date':
-                                            case 'number':
-                                            case 'range':
-                                            case 'tel':
-                                            case 'email':
-                                            case 'url':
-                                                jQuery(this).val('');
-                                                break;
-                                            case 'select-one':
-                                            case 'select-multiple':
-                                                jQuery(this).val('0').trigger('change');
-                                                break;
-                                            case 'checkbox':
-                                            case 'radio':
-                                            if(this.checked == true) {
-                                                this.click();
-                                                this.checked = false;
-                                                break;
-                                            }
-                                        }
-                                        jQuery(this).removeAttr('required');
-                                        jQuery(this).removeClass('invalid');
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                            });";
-    }
-
-    public static function checkMandatoryFile($fields_link, $name)
-    {
-        $field = new Field();
-        if ($field->getFromDB($fields_link)) {
-            if ($field->fields['type'] == 'file'
-            || $field->fields['type'] == 'checkbox') {
-                return "
-                var field = sessionStorage.getItem('mandatoryfile$name');
-                var fieldid = 'field'+ field;
-
-                if (document.querySelector('[id-field=\"' + fieldid + '\"] div input')){
-                    document.querySelector('[id-field=\"' + fieldid + '\"] div input').required = true;
-                }
-                ";
-            }
-        }
-    }
     /**
      * check fields_link to be mandatory
      * @param $id
