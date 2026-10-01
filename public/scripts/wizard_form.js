@@ -245,6 +245,14 @@
             });
     }
 
+    // Once a radio group flagged by the validation is answered, the whole group is no
+    // longer in error (its other options keep the invalid class otherwise).
+    $(document).on('change', '#wizard_form input[type="radio"]', function () {
+        if (this.checked && this.classList.contains('invalid')) {
+            $('[name="' + CSS.escape(this.name) + '"]').removeClass('invalid');
+        }
+    });
+
     // A checkbox option hides its child blocks on each click (Fields/Checkbox.php),
     // a radio option once checked (Fields/Radio.php).
     $(document).on('click', 'input[type="checkbox"][data-md-hide-blocks], input[type="radio"][data-md-hide-blocks]', function () {

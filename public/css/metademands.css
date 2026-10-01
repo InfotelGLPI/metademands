@@ -424,7 +424,9 @@ button.clear-basket {
     font-weight: unset;
 }
 
-input.invalid {
+/* Not on a checked radio / checkbox: the forced background hides its checked state, the
+   choice looked lost once the submission was blocked by another mandatory field */
+input.invalid:not(:checked) {
     background-color: var(--md-invalid-bg, #ffdddd)!important;
 }
 
