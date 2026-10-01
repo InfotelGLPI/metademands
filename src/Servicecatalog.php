@@ -119,8 +119,10 @@ class Servicecatalog extends CommonGLPI
         $list        = "";
         $metademands = Wizard::selectMetademands(true, "3");
 
-        foreach ($metademands as $id => $name) {
-            $list .= $name . '<br>';
+        // The service catalog reads this as HTML (RichText::getTextFromHtml()): escaped
+        // names come back as typed
+        foreach ($metademands as $name) {
+            $list .= htmlescape($name) . '<br>';
         }
         $list .= "(...)";
         return $list;

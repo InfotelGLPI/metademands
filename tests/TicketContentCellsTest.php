@@ -59,6 +59,7 @@ use GlpiPlugin\Metademands\Fields\Titleblock;
 use GlpiPlugin\Metademands\Fields\Url;
 use GlpiPlugin\Metademands\Fields\Yesno;
 use GlpiPlugin\Metademands\Freetablefield;
+use GlpiPlugin\Metademands\Metademand;
 use Location;
 use PHPUnit\Framework\Attributes\DataProvider;
 use User;
@@ -269,6 +270,57 @@ class TicketContentCellsTest extends DbTestCase
         $content = $this->renderContent(Dropdownmeta::class, 'Label', '5', true, ['item' => 'priority', 'hidden' => 0]);
 
         $this->assertStringEndsWith('<td colspan="1">' . htmlspecialchars(\Ticket::getPriorityName(5), ENT_QUOTES) . '</td>', $content);
+    }
+
+    /**
+     * Dropdownmultiple on locations renders their names as plain text: a separator in
+     * markup would be escaped by the template and shown as is.
+     */
+    public function testDropdownmultipleRendersTheLocationNamesAsText(): void
+    {
+        $ids = [];
+        foreach ([self::XSS_LABEL, 'Second'] as $name) {
+            $ids[] = $this->createItem(Location::class, [
+                'name'        => $name,
+                'entities_id' => $this->getTestRootEntity(true),
+            ])->getID();
+        }
+
+        $content = $this->renderContent(Dropdownmultiple::class, 'Label', '', true, ['value' => $ids, 'item' => Location::class]);
+
+        $this->assertStringNotContainsString('<img', $content);
+        $this->assertStringNotContainsString('&lt;br&gt;', $content);
+        $this->assertStringEndsWith(
+            '<td colspan="1">' . htmlspecialchars(self::XSS_LABEL, ENT_QUOTES, 'UTF-8') . ', Second</td>',
+            $content,
+        );
+    }
+
+    /**
+     * A son ticket section: titled table when framed, the sanitized content alone otherwise.
+     */
+    public function testContentSectionSanitizesTheContentAndEscapesTheTitle(): void
+    {
+        $content = '<p>Text</p><script>alert(1)</script>';
+
+        $framed = Metademand::renderContentSection(self::XSS_LABEL, $content, true);
+        $this->assertStringNotContainsString('<script>', $framed);
+        $this->assertStringNotContainsString('<img', $framed);
+        $this->assertStringStartsWith(
+            '<table class="tab_cadre" style="width: 100%;border:0;background:none;word-break: unset;">'
+            . '<tr><th colspan="2">' . htmlspecialchars(self::XSS_LABEL, ENT_QUOTES, 'UTF-8') . '</th></tr>'
+            . '<tr><td colspan="2"><p>Text</p>',
+            $framed,
+        );
+        $this->assertStringEndsWith('</td></tr></table><br>', $framed);
+
+        $fixed = Metademand::renderContentSection('Child', $content, true, 'tab_cadre_fixe');
+        $this->assertStringStartsWith('<table class="tab_cadre_fixe" style="width: 100%;"><tr><th colspan="2">Child</th>', $fixed);
+
+        $bare = Metademand::renderContentSection('Child', $content, false);
+        $this->assertStringStartsWith('<p>Text</p>', $bare);
+        $this->assertStringNotContainsString('Child', $bare);
+        $this->assertStringNotContainsString('<script>', $bare);
     }
 
     /**

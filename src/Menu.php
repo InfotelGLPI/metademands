@@ -58,12 +58,12 @@ class Menu extends CommonDBTM
         if (Metademand::canCreate()) {
             $menu['page']            = Metademand::getSearchURL(false);
             $menu['links']['search'] = Metademand::getSearchURL(false);
-            $image                 = "<i class='ti ti-share' title='" . __('Create a metademand', 'metademands') . "'></i>&nbsp;" . __('Create a metademand', 'metademands');
+            $image                 = "<i class='ti ti-share' title='" . __s('Create a metademand', 'metademands') . "'></i>&nbsp;" . __s('Create a metademand', 'metademands');
             $menu['links'][$image] = Wizard::getFormURL(false);
 
         } elseif (Session::haveRight('plugin_metademands_createmeta', READ)) {
             $menu['page']            = Wizard::getFormURL(false);
-            $image                 = "<i class='ti ti-share' title='" . __('Create a metademand', 'metademands') . "'></i>&nbsp;" . __('Create a metademand', 'metademands');
+            $image                 = "<i class='ti ti-share' title='" . __s('Create a metademand', 'metademands') . "'></i>&nbsp;" . __s('Create a metademand', 'metademands');
             $menu['links'][$image] = Wizard::getFormURL(false);
         }
 
@@ -77,13 +77,13 @@ class Menu extends CommonDBTM
 
         if (Metademand::canCreate()) {
             $menu['links']['template'] = '/plugins/metademands/front/setup.templates.php?add=0';
-            $image                 = "<i class='ti ti-upload' title='" . __('Import metademands', 'metademands') . "'></i>&nbsp;" . __('Import metademands', 'metademands');
+            $image                 = "<i class='ti ti-upload' title='" . __s('Import metademands', 'metademands') . "'></i>&nbsp;" . __s('Import metademands', 'metademands');
             $menu['links'][$image] = Export::getFormURL(false) . "?import_form=1";
         }
 
         if ((Session::haveRight("plugin_metademands", READ)
             || Session::haveRight("plugin_metademands_fillform", READ))) {
-            $image                 = "<i class='ti ti-edit' title='" . __('My metademands', 'metademands') . "'></i>&nbsp;" . __('My metademands', 'metademands');
+            $image                 = "<i class='ti ti-edit' title='" . __s('My metademands', 'metademands') . "'></i>&nbsp;" . __s('My metademands', 'metademands');
             $menu['links'][$image] = Stepform::getSearchURL(false);
         }
 

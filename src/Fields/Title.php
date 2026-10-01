@@ -57,7 +57,7 @@ class Title extends CommonDBTM
         return __('Title');
     }
 
-    public static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
+    public static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_url)
     {
         $debug = isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
@@ -103,7 +103,7 @@ class Title extends CommonDBTM
             'has_label2'          => $has_label2,
             'label2'              => $label2,
             'preview'             => (bool) $preview,
-            'config_url'          => $config_link !== '' ? Toolbox::getItemTypeFormURL(Field::class) . '?id=' . $data['id'] : '',
+            'config_url'          => $config_url,
             'has_comment'         => $has_comment,
             'comment'             => $comment,
         ]);

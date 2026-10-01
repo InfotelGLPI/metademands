@@ -2196,7 +2196,8 @@ class Dropdownmultiple extends CommonDBTM
                     $parseValue[] = $field["item"]::getFriendlyNameById($value);
                 }
             }
-            return implode('<br>', $parseValue);
+            // Plain text: the ticket content and the basket summary escape it
+            return implode(', ', $parseValue);
         }
     }
 

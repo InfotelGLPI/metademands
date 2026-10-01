@@ -126,10 +126,7 @@
             <div class="row mb-3">
                 <div class="col-6">
                     <label class="form-label fw-bold">
-                        {%- if is_new -%}
-                            <span id="show_item_object" style="display:none">{{ __('Object') }}<span style="color:red">&nbsp;*&nbsp;</span></span>
-                            <span id="show_item_label_title" style="display:none"></span>
-                        {%- else -%}
+                        {%- if not is_new -%}
                             {{ __('Object', 'metademands') }}
                         {%- endif -%}
                     </label>

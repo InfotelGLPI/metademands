@@ -3582,31 +3582,19 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             $content = "";
                                             $son_ticket_data['content'] = $mail->fields['content'] ?? "";
                                             if (!empty($son_ticket_data['content'])) {
-                                                if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
-                                                    $content = "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'>";
-                                                    $content .= "<tr><th colspan='2'>" . __(
-                                                        'Child Ticket',
-                                                        'metademands',
-                                                    )
-                                                        . "</th></tr><tr><td colspan='2'>";
-                                                }
-
-                                                $content .= RichText::getSafeHtml(
+                                                $content .= self::renderContentSection(
+                                                    __('Child Ticket', 'metademands'),
                                                     $son_ticket_data['content'],
+                                                    isset($task->fields['formatastable']) && $task->fields['formatastable'] == true,
                                                 );
-
-                                                if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
-                                                    $content .= "</td></tr></table><br>";
-                                                }
                                             }
 
                                             if (!empty($parent_fields_content['content'])) {
-                                                $content .= "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'><tr><th colspan='2'>";
-                                                $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands')
-                                                    . "</th></tr><tr><td colspan='2'>" . RichText::getSafeHtml(
-                                                        $parent_fields_content['content'],
-                                                    );
-                                                $content .= "</td></tr></table><br>";
+                                                $content .= self::renderContentSection(
+                                                    _n('Parent tickets', 'Parent tickets', 1, 'metademands'),
+                                                    $parent_fields_content['content'],
+                                                    true,
+                                                );
                                             }
 
                                             $metatask = new Task();
@@ -3949,6 +3937,29 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         }
 
         return $form;
+    }
+
+    /**
+     * Render a section of a son ticket content: its own content, or the content
+     * reported from its parent (§4.8 of docs/TWIG_MIGRATION.md).
+     *
+     * @param string $title       plain text, shown when framed
+     * @param string $content     rich text, sanitized by the template
+     * @param bool   $framed      in a titled table, or the content only
+     * @param string $table_class 'tab_cadre' or 'tab_cadre_fixe'
+     */
+    public static function renderContentSection(
+        string $title,
+        string $content,
+        bool $framed,
+        string $table_class = 'tab_cadre'
+    ): string {
+        return TemplateRenderer::getInstance()->render('@metademands/ticket_content/section.html.twig', [
+            'title'       => $title,
+            'content'     => $content,
+            'framed'      => $framed,
+            'table_class' => $table_class,
+        ]);
     }
 
     /**
@@ -4818,36 +4829,26 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $config = new Config();
                     $config->getFromDB(1);
 
+                    // formatastable only drives the presentation : the configured blocks
+                    // must be reported on the son ticket in both cases.
+                    $format_as_table = isset($task->fields['formatastable'])
+                        && $task->fields['formatastable'] == true;
+
                     if (!empty($son_ticket_data['content'])) {
-                        if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
-                            $content = "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'>";
-                            $content .= "<tr><th colspan='2'>" . __('Child Ticket', 'metademands')
-                                . "</th></tr><tr><td colspan='2'>";
-                        }
-
-                        $content .= RichText::getSafeHtml($son_ticket_data['content']);
-
-                        if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
-                            $content .= "</td></tr></table><br>";
-                        }
+                        $content .= self::renderContentSection(
+                            __('Child Ticket', 'metademands'),
+                            $son_ticket_data['content'],
+                            $format_as_table,
+                        );
                     }
 
-                    if ($config->getField('childs_parent_content') == 1) {
-                        if (!empty($parent_fields_content['content'])) {
-                            // formatastable only drives the presentation : the configured blocks
-                            // must be reported on the son ticket in both cases.
-                            $format_as_table = isset($task->fields['formatastable'])
-                                && $task->fields['formatastable'] == true;
-                            if ($format_as_table) {
-                                $content .= "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'><tr><th colspan='2'>";
-                                $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands')
-                                    . "</th></tr><tr><td colspan='2'>";
-                            }
-                            $content .= RichText::getSafeHtml($parent_fields_content['content']);
-                            if ($format_as_table) {
-                                $content .= "</td></tr></table><br>";
-                            }
-                        }
+                    if ($config->getField('childs_parent_content') == 1
+                        && !empty($parent_fields_content['content'])) {
+                        $content .= self::renderContentSection(
+                            _n('Parent tickets', 'Parent tickets', 1, 'metademands'),
+                            $parent_fields_content['content'],
+                            $format_as_table,
+                        );
                     }
 
                     $son_ticket_data['content'] = $content;
@@ -6653,24 +6654,6 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         }
 
         return $text;
-    }
-
-    /**
-     * @param $state
-     *
-     * @return string
-     */
-    public static function getStateItem($state)
-    {
-        switch ($state) {
-            case self::TODO:
-                return "<span><i class=\"fas fa-2x fa-hourglass-half\"></i></span>";
-            case self::DONE:
-                return "<span><i class=\"fas fa-2x fa-check\"></i></span>";
-            case self::FAIL:
-                return "<span><i class=\"fas fa-2x fa-times\"></i></span>";
-        }
-        return "";
     }
 
     /**

@@ -1921,7 +1921,6 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
      * @param        $data
      * @param        $metademands_data
      * @param bool $preview
-     * @param string $config_link
      * @param int $itilcategories_id
      */
     public static function displayFieldByType(
@@ -2023,12 +2022,9 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             $wrapper_class = "col-md-12 $bottomclass $class";
         }
 
-        $config_link = "";
+        $config_url = '';
         if (Session::getCurrentInterface() == 'central' && $preview) {
-            $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL(
-                Field::class,
-            ) . "?id=" . $data['id'] . "'>";
-            $config_link .= "<i class='ti ti-settings'></i></a>";
+            $config_url = Toolbox::getItemTypeFormURL(Field::class) . '?id=' . $data['id'];
         }
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
@@ -2133,7 +2129,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         // Widget: getFieldInput() echoes the widget internally but the parent_field case
         // returns a string, so capture both the buffered output and the return value.
         ob_start();
-        $field_ret = self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0, $preview, $config_link);
+        $field_ret = self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0, $preview, $config_url);
         $field_html = ob_get_clean();
         if (is_string($field_ret)) {
             $field_html .= $field_ret;
@@ -2190,7 +2186,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'upload'                  => $upload,
             'debug'                   => $debug,
             'preview'                 => (bool) $preview,
-            'config_url'              => $config_link !== '' ? Toolbox::getItemTypeFormURL(Field::class) . '?id=' . $data['id'] : '',
+            'config_url'              => $config_url,
             'show_comment_tooltip'    => $show_comment_tooltip,
             'comment_html'            => $comment_tooltip,
             'is_mandatory_star'       => $is_mandatory_star,
@@ -2287,7 +2283,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         $itilcategories_id = 0,
         $idline = 0,
         $preview = false,
-        $config_link = ''
+        $config_url = ''
     ) {
         global $PLUGIN_HOOKS;
 
@@ -2312,7 +2308,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             case 'title-block':
             case 'informations':
             case 'title':
-                $class::showWizardField($data, $namefield, $value, $on_order, $preview, $config_link);
+                $class::showWizardField($data, $namefield, $value, $on_order, $preview, $config_url);
                 break;
             case 'tel':
             case 'email':
@@ -3657,7 +3653,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
      *    - used     : ID of the requester user
      *    - multiple : allow multiple choice
      *
-     * @return void
+     * @return int|string|void the dropdown random number when displayed, its HTML otherwise
      */
     public static function dropdownMyDevices(
         $userID = 0,
@@ -4002,14 +3998,12 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 }
             }
 
-            $return = "<span id='show_items_id_requester'>";
             $required = $params['required'] ?? 0;
-            $return .= \Dropdown::showFromArray(
+            $return = \Dropdown::showFromArray(
                 $params['name'],
                 $my_devices,
                 ['rand' => $rand, 'display' => false, 'value' => $params['value'], 'required' => $required],
             );
-            $return .= "</span>";
 
             if ($display) {
                 echo $return;

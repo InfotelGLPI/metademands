@@ -1,0 +1,48 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#-
+ # Section of a son ticket content (§4.8 of docs/TWIG_MIGRATION.md): the
+ # content of the son ticket, or the content reported from its parent. The
+ # output is stored in the ticket and sent by notifications, so it keeps inline
+ # styles and stays on a single line.
+ #
+ # @param string title         plain text, shown when framed
+ # @param string content       rich text, sanitized here
+ # @param bool   framed        in a titled table, or the content only
+ # @param string table_class   'tab_cadre' (created tickets) or 'tab_cadre_fixe'
+ #}
+{%- if framed -%}
+    {%- if table_class == 'tab_cadre_fixe' -%}
+        <table class="tab_cadre_fixe" style="width: 100%;">
+    {%- else -%}
+        <table class="tab_cadre" style="width: 100%;border:0;background:none;word-break: unset;">
+    {%- endif -%}
+    <tr><th colspan="2">{{ title }}</th></tr><tr><td colspan="2">{{ content|safe_html }}</td></tr></table><br>
+{%- else -%}
+    {{ content|safe_html }}
+{%- endif -%}

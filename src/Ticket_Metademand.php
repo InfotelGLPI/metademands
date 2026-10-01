@@ -34,7 +34,6 @@ use CommonGLPI;
 use CommonITILObject;
 use DBConnection;
 use Glpi\Application\View\TemplateRenderer;
-use Glpi\RichText\RichText;
 use GlpiPlugin\Resources\Resource;
 use Group_User;
 use Migration;
@@ -836,23 +835,20 @@ class Ticket_Metademand extends CommonDBTM
                         $content = "";
                         $son_ticket_data['content'] = $mail->fields['content'];
                         if (!empty($son_ticket_data['content'])) {
-                            if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
-                                $content = "<table class='tab_cadre_fixe' style='width: 100%;'>";
-                                $content .= "<tr><th colspan='2'>" . __('Child Ticket', 'metademands')
-                                    . "</th></tr><tr><td colspan='2'>";
-                            }
-
-                            $content .= RichText::getSafeHtml($son_ticket_data['content']);
-
-                            if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
-                                $content .= "</td></tr></table><br>";
-                            }
+                            $content .= Metademand::renderContentSection(
+                                __('Child Ticket', 'metademands'),
+                                $son_ticket_data['content'],
+                                isset($task->fields['formatastable']) && $task->fields['formatastable'] == true,
+                                'tab_cadre_fixe',
+                            );
                         }
                         if (!empty($parent_fields_content['content'])) {
-                            $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>";
-                            $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands')
-                                . "</th></tr><tr><td colspan='2'>" . RichText::getSafeHtml($parent_fields_content['content']);
-                            $content .= "</td></tr></table><br>";
+                            $content .= Metademand::renderContentSection(
+                                _n('Parent tickets', 'Parent tickets', 1, 'metademands'),
+                                $parent_fields_content['content'],
+                                true,
+                                'tab_cadre_fixe',
+                            );
                         }
                         //replace #id# in title with the value
                         do {

@@ -745,12 +745,6 @@ parameters:
 			path: src/Field.php
 
 		-
-			message: '#^Method GlpiPlugin\\Metademands\\Field\:\:dropdownMyDevices\(\) with return type void returns string but should not return anything\.$#'
-			identifier: return.void
-			count: 1
-			path: src/Field.php
-
-		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$config_link$#'
 			identifier: parameter.notFound
 			count: 1
@@ -1372,12 +1366,6 @@ parameters:
 			message: '#^Result of && is always false\.$#'
 			identifier: booleanAnd.alwaysFalse
 			count: 2
-			path: src/Fields/Dropdownmeta.php
-
-		-
-			message: '#^Result of static method GlpiPlugin\\Metademands\\Field\:\:dropdownMyDevices\(\) \(void\) is used\.$#'
-			identifier: staticMethod.void
-			count: 1
 			path: src/Fields/Dropdownmeta.php
 
 		-

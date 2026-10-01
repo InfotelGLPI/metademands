@@ -58,7 +58,7 @@ class Information extends CommonDBTM
         return __('Informations', 'metademands');
     }
 
-    public static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
+    public static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_url)
     {
 
         $display = "alert-info";
@@ -109,7 +109,7 @@ class Information extends CommonDBTM
             'comment'       => $comment,
             'label2'        => $label2,
             'preview'       => (bool) $preview,
-            'config_url'    => $config_link !== '' ? Toolbox::getItemTypeFormURL(Field::class) . '?id=' . $data['id'] : '',
+            'config_url'    => $config_url,
         ]);
     }
 
