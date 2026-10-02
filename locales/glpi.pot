@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-02 10:13+0000\n"
+"POT-Creation-Date: 2026-10-02 11:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1147,7 +1147,7 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
-#: hook.php:592
+#: hook.php:594
 msgid "Group child ticket"
 msgstr ""
 
@@ -1406,7 +1406,7 @@ msgstr ""
 msgid "Link this to a user field"
 msgstr ""
 
-#: hook.php:603
+#: hook.php:605
 msgid "Link to metademands"
 msgstr ""
 
@@ -1521,7 +1521,7 @@ msgstr ""
 msgid "Metademand"
 msgstr ""
 
-#: hook.php:563
+#: hook.php:565
 msgid "Metademand approver"
 msgstr ""
 
@@ -1533,7 +1533,7 @@ msgstr ""
 msgid "Metademand need a validation"
 msgstr ""
 
-#: hook.php:576
+#: hook.php:578
 msgid "Metademand status"
 msgstr ""
 
@@ -1558,11 +1558,11 @@ msgstr ""
 msgid "Metademands statuses updated"
 msgstr ""
 
-#: src/Metademand.php:6135 hook.php:1025
+#: src/Metademand.php:6135 hook.php:1027
 msgid "Metademands to be closed"
 msgstr ""
 
-#: src/Metademand.php:6217 hook.php:1042
+#: src/Metademand.php:6217 hook.php:1044
 msgid "Metademands to be validated"
 msgstr ""
 
@@ -2138,11 +2138,11 @@ msgstr ""
 msgid "Rule"
 msgstr ""
 
-#: src/Metademand.php:5974 hook.php:1008
+#: src/Metademand.php:5974 hook.php:1010
 msgid "Running metademands"
 msgstr ""
 
-#: src/Metademand.php:6042 hook.php:1059
+#: src/Metademand.php:6042 hook.php:1061
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -2450,7 +2450,7 @@ msgid ""
 "maintenance mode"
 msgstr ""
 
-#: hook.php:615
+#: hook.php:617
 msgid "Technician child ticket"
 msgstr ""
 

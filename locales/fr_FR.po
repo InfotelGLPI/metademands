@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-01 10:45+0000\n"
+"POT-Creation-Date: 2026-10-02 11:28+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -1171,7 +1171,7 @@ msgstr "Total général (TTC)"
 msgid "Group"
 msgstr "Groupe"
 
-#: hook.php:592
+#: hook.php:594
 msgid "Group child ticket"
 msgstr "Groupe des tickets enfants"
 
@@ -1450,7 +1450,7 @@ msgstr "Lier ce champ à un champ du plugin \"fields\""
 msgid "Link this to a user field"
 msgstr "Lier ce champ à un champ utilisateur"
 
-#: hook.php:603
+#: hook.php:605
 msgid "Link to metademands"
 msgstr "Lié à une métademande"
 
@@ -1568,7 +1568,7 @@ msgstr "Meta-Demandes associées"
 msgid "Metademand"
 msgstr "Métademande"
 
-#: hook.php:563
+#: hook.php:565
 msgid "Metademand approver"
 msgstr "Valideur de la métademande"
 
@@ -1580,7 +1580,7 @@ msgstr "Fichier Métademande à importer"
 msgid "Metademand need a validation"
 msgstr "La métademande nécessite une validation"
 
-#: hook.php:576
+#: hook.php:578
 msgid "Metademand status"
 msgstr "Statut de la métademande"
 
@@ -1605,11 +1605,11 @@ msgstr "Liste des métademandes"
 msgid "Metademands statuses updated"
 msgstr "Statuts des métademandes mis à jour"
 
-#: src/Metademand.php:6135 hook.php:1025
+#: src/Metademand.php:6135 hook.php:1027
 msgid "Metademands to be closed"
 msgstr "Métademandes à clore"
 
-#: src/Metademand.php:6217 hook.php:1042
+#: src/Metademand.php:6217 hook.php:1044
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
@@ -2200,11 +2200,11 @@ msgstr "Lieu racine"
 msgid "Rule"
 msgstr "Règle"
 
-#: src/Metademand.php:5974 hook.php:1008
+#: src/Metademand.php:5974 hook.php:1010
 msgid "Running metademands"
 msgstr "Métademandes en cours"
 
-#: src/Metademand.php:6042 hook.php:1059
+#: src/Metademand.php:6042 hook.php:1061
 msgid "Running metademands with tickets of my groups"
 msgstr "Métademandes en cours avec des tickets affectés à mes groupes"
 
@@ -2518,7 +2518,7 @@ msgstr ""
 "L'arborescence des tickets ne peut pas être modifiée car des tickets enfants "
 "existent ou activer le mode maintenance"
 
-#: hook.php:615
+#: hook.php:617
 msgid "Technician child ticket"
 msgstr "Techniciens des tickets enfants"
 
