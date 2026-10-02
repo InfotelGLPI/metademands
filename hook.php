@@ -385,7 +385,9 @@ function plugin_metademands_uninstall()
     Profile::removeRightsFromSession();
     Profile::removeRightsFromDB();
 
-    CronTask::unregister("Metademands");
+    // Deleted by its exact itemtype: CronTask::unregister()'s LIKE pattern does not match the
+    // backslashes of a namespaced itemtype, so the task stayed listed in the automatic actions.
+    $DB->delete('glpi_crontasks', ['itemtype' => Metademand::class]);
 
     return true;
 }
