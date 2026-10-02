@@ -637,6 +637,34 @@ function plugin_metademands_getAddSearchOptions($itemtype)
  *
  * @return string
  */
+/**
+ * The clause for an option the plugin does not filter on.
+ *
+ * Returning " " looked like "no clause" but is not empty for the core: it wraps it in a
+ * QueryExpression that renders as nothing, and the "all fields" search then joins it with OR
+ * into an invalid "... OR )" (SQL error 1064). Returning nothing is not an option either: the
+ * core would fall back on its generic search on this column. "false" is the neutral element of
+ * the OR the all-fields search joins the columns with (the core passes an empty $link here,
+ * the OR being added by the caller), and it is what the core itself returns for a criterion
+ * it cannot apply (SQLProvider::getWhereCriteria(), "Invalid search").
+ *
+ * @param string $link
+ */
+function plugin_metademands_neutral_where($link): string
+{
+    return ' false ';
+}
+
+/**
+ * @param $link
+ * @param $nott
+ * @param $type
+ * @param $ID
+ * @param $val
+ * @param $searchtype
+ *
+ * @return string
+ */
 function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype)
 {
 
@@ -671,7 +699,7 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
             switch ($searchtype) {
                 case 'equals':
                     if ($val === '0') {
-                        return " ";
+                        return ' true '; // explicit "any" filter: keep every ticket
                     }
                     if ($val == 'mygroups') {
                         return " $link (`glpi_groups_metademands`.`id` IN ('" . implode(
@@ -692,7 +720,7 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
                     ) . "')) ";
                     break;
                 case 'contains':
-                    return " ";
+                    return plugin_metademands_neutral_where($link);
                     break;
             }
             break;
@@ -701,7 +729,7 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
             switch ($searchtype) {
                 case 'equals':
                     if ($val === '0') {
-                        return " ";
+                        return ' true '; // explicit "any" filter: keep every ticket
                     }
                     // Cast to int: id from the search criterion value, concatenated raw
                     // into a QueryExpression by the core — a SQL injection sink otherwise.
@@ -713,13 +741,13 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
                     return " $link (`glpi_users_metademands`.`id` NOT IN ('" . (int) $val . "')) ";
                     break;
                 case 'contains':
-                    return " ";
+                    return plugin_metademands_neutral_where($link);
                     break;
             }
 
             break;
         case "glpi_plugin_metademands_tickets_tasks.tickets_id":
-            return " ";
+            return plugin_metademands_neutral_where($link);
             break;
     }
     return "";
