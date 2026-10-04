@@ -1235,21 +1235,8 @@ class FieldParameter extends CommonDBChild
 
         $migration->executeMigration();
 
-        $query = $DB->buildDelete(
-            "glpi_plugin_metademands_drafts_values",
-            [
-                'plugin_metademands_drafts_id' => 0,
-            ],
-        );
-        $DB->doQuery($query);
-
-        $query = $DB->buildDelete(
-            "glpi_plugin_metademands_forms_values",
-            [
-                'plugin_metademands_forms_id' => 0,
-            ],
-        );
-        $DB->doQuery($query);
+        $DB->delete("glpi_plugin_metademands_drafts_values", ['plugin_metademands_drafts_id' => 0]);
+        $DB->delete("glpi_plugin_metademands_forms_values", ['plugin_metademands_forms_id' => 0]);
 
         foreach ($DB->request([
             'SELECT'    => [

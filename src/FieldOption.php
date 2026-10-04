@@ -2988,16 +2988,13 @@ class FieldOption extends CommonDBChild
             $fieldopt->delete(["id" => $opt["id"]], 1);
         }
 
-        $query = $DB->buildUpdate(
+        // Child blocks stored as an empty JSON string ("") become an empty JSON list. The
+        // criterion used to be '\"\"' -- backslashes included -- which matched no row.
+        $DB->update(
             "glpi_plugin_metademands_fieldoptions",
-            [
-                'childs_blocks' => '[]',
-            ],
-            [
-                'childs_blocks' => '\"\"',
-            ],
+            ['childs_blocks' => '[]'],
+            ['childs_blocks' => '""'],
         );
-        $DB->doQuery($query);
 
         $migration->dropField($table_fields, "check_value");
         $migration->migrationOneTable($table_fields);
