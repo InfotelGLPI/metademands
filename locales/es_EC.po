@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-02 11:28+0000\n"
+"POT-Creation-Date: 2026-10-02 11:42+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -1593,11 +1593,11 @@ msgstr ""
 msgid "Metademands statuses updated"
 msgstr ""
 
-#: src/Metademand.php:6135 hook.php:1027
+#: src/Metademand.php:6135 hook.php:1055
 msgid "Metademands to be closed"
 msgstr "Cierre de Metademandas"
 
-#: src/Metademand.php:6217 hook.php:1044
+#: src/Metademand.php:6217 hook.php:1072
 msgid "Metademands to be validated"
 msgstr "Metademandas a validar"
 
@@ -2182,11 +2182,11 @@ msgstr ""
 msgid "Rule"
 msgstr "Regla"
 
-#: src/Metademand.php:5974 hook.php:1010
+#: src/Metademand.php:5974 hook.php:1038
 msgid "Running metademands"
 msgstr "Ejecución de metademandas"
 
-#: src/Metademand.php:6042 hook.php:1061
+#: src/Metademand.php:6042 hook.php:1089
 msgid "Running metademands with tickets of my groups"
 msgstr "Ejecutar metademandas con tickets de mis grupos"
 

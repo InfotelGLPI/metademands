@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-02 11:28+0000\n"
+"POT-Creation-Date: 2026-10-02 11:42+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -1605,11 +1605,11 @@ msgstr "Liste des métademandes"
 msgid "Metademands statuses updated"
 msgstr "Statuts des métademandes mis à jour"
 
-#: src/Metademand.php:6135 hook.php:1027
+#: src/Metademand.php:6135 hook.php:1055
 msgid "Metademands to be closed"
 msgstr "Métademandes à clore"
 
-#: src/Metademand.php:6217 hook.php:1044
+#: src/Metademand.php:6217 hook.php:1072
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
@@ -2200,11 +2200,11 @@ msgstr "Lieu racine"
 msgid "Rule"
 msgstr "Règle"
 
-#: src/Metademand.php:5974 hook.php:1010
+#: src/Metademand.php:5974 hook.php:1038
 msgid "Running metademands"
 msgstr "Métademandes en cours"
 
-#: src/Metademand.php:6042 hook.php:1061
+#: src/Metademand.php:6042 hook.php:1089
 msgid "Running metademands with tickets of my groups"
 msgstr "Métademandes en cours avec des tickets affectés à mes groupes"
 

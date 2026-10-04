@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.7.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-02 11:28+0000\n"
+"POT-Creation-Date: 2026-10-02 11:42+0000\n"
 "PO-Revision-Date: 2020-10-12 18:05+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1561,11 +1561,11 @@ msgstr ""
 msgid "Metademands statuses updated"
 msgstr ""
 
-#: src/Metademand.php:6135 hook.php:1027
+#: src/Metademand.php:6135 hook.php:1055
 msgid "Metademands to be closed"
 msgstr ""
 
-#: src/Metademand.php:6217 hook.php:1044
+#: src/Metademand.php:6217 hook.php:1072
 msgid "Metademands to be validated"
 msgstr ""
 
@@ -2142,11 +2142,11 @@ msgstr ""
 msgid "Rule"
 msgstr ""
 
-#: src/Metademand.php:5974 hook.php:1010
+#: src/Metademand.php:5974 hook.php:1038
 msgid "Running metademands"
 msgstr ""
 
-#: src/Metademand.php:6042 hook.php:1061
+#: src/Metademand.php:6042 hook.php:1089
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
