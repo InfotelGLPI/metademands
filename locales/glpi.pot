@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-05 23:08+0000\n"
+"POT-Creation-Date: 2026-10-05 23:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -183,7 +183,7 @@ msgstr ""
 msgid "Add your signature"
 msgstr ""
 
-#: src/Field.php:2768 src/Field.php:2853 src/Field.php:4263
+#: src/Field.php:2772 src/Field.php:2857 src/Field.php:4267
 #: templates/field_form.html.twig:76
 msgid "Additional label"
 msgstr ""
@@ -306,7 +306,7 @@ msgstr ""
 msgid "Blank Template"
 msgstr ""
 
-#: src/Field.php:883 src/Field.php:2835 src/Wizard.php:1867 src/Step.php:416
+#: src/Field.php:883 src/Field.php:2839 src/Wizard.php:1867 src/Step.php:416
 #: src/Step.php:470 templates/field_existing_form.html.twig:62
 #: templates/field_search_form.html.twig:44 templates/step_form.html.twig:39
 #: templates/field_form.html.twig:112
@@ -382,7 +382,7 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: tests/AjaxTemplatesTest.php:132 src/Field.php:1651
+#: tests/AjaxTemplatesTest.php:132 src/Field.php:1655
 msgid "Category of the metademand"
 msgstr ""
 
@@ -780,7 +780,7 @@ msgstr ""
 msgid "Destructive queries"
 msgstr ""
 
-#: src/Field.php:3491 src/Fields/Dropdownmeta.php:701
+#: src/Field.php:3495 src/Fields/Dropdownmeta.php:701
 msgid "Devices own by my groups"
 msgstr ""
 
@@ -1495,7 +1495,7 @@ msgstr ""
 msgid "Maximum depth"
 msgstr ""
 
-#: src/Field.php:2037
+#: src/Field.php:2041
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr ""
@@ -1574,11 +1574,11 @@ msgstr ""
 msgid "Missing table"
 msgstr ""
 
-#: src/Field.php:2939
+#: src/Field.php:2943
 msgid "Modify color"
 msgstr ""
 
-#: src/Field.php:2938
+#: src/Field.php:2942
 msgid "Modify icon"
 msgstr ""
 
@@ -1595,7 +1595,7 @@ msgstr ""
 msgid "My metademands"
 msgstr ""
 
-#: src/Field.php:1649
+#: src/Field.php:1653
 msgid "My values"
 msgstr ""
 
@@ -1792,7 +1792,7 @@ msgstr ""
 msgid "OR"
 msgstr ""
 
-#: tests/AjaxTemplatesTest.php:130 src/Field.php:2770
+#: tests/AjaxTemplatesTest.php:130 src/Field.php:2774
 #: templates/field_search_form.html.twig:52 templates/field_list.html.twig:162
 #: templates/ajax/reload_item.html.twig:37 templates/field_form.html.twig:129
 msgid "Object"
@@ -1876,7 +1876,7 @@ msgid ""
 "Options aren't available for a field whose value is linked to a user field"
 msgstr ""
 
-#: src/Field.php:2844
+#: src/Field.php:2848
 msgid "Order"
 msgstr ""
 
@@ -3044,7 +3044,7 @@ msgstr ""
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 
-#: src/Field.php:2963 src/Field.php:2990 src/Field.php:3006 src/Field.php:3029
+#: src/Field.php:2967 src/Field.php:2994 src/Field.php:3010 src/Field.php:3033
 msgid "You cannot do this for this field"
 msgstr ""
 
