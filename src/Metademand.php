@@ -7269,7 +7269,7 @@ HTML;
             item: $this,
             key: 'name',
             name: __('Name'),
-            value: $this->fields['name'],
+            value: $this->fields['name'] ?? '',
             category: $meta_category,
         );
 
@@ -7277,7 +7277,7 @@ HTML;
             item: $this,
             key: 'comment',
             name: __('Comments'),
-            value: $this->fields['comment'],
+            value: $this->fields['comment'] ?? '',
             category: $meta_category,
         );
 

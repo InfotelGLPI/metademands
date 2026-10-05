@@ -90,7 +90,7 @@ class Basketobjecttype extends CommonDropdown implements ProvideTranslationsInte
                     item: $this,
                     key: 'name',
                     name: __('Name'),
-                    value: $this->fields['name'],
+                    value: $this->fields['name'] ?? '',
                 ),
             ],
         ];

@@ -258,14 +258,14 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
             item: $this,
             key: 'name',
             name: __('Designation', 'metademands'),
-            value: $this->fields['name'],
+            value: $this->fields['name'] ?? '',
         );
 
         $handlers[$key][] = new TranslationHandler(
             item: $this,
             key: 'description',
             name: __('Description'),
-            value: $this->fields['description'],
+            value: $this->fields['description'] ?? '',
             is_rich_text: false,
         );
 

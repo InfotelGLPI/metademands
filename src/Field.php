@@ -1634,6 +1634,10 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
     {
         global $PLUGIN_HOOKS;
 
+        // The `item` column is NULL for fields bound to no object, and null is not a valid
+        // array offset any more (PHP 8.5)
+        $value ??= '';
+
         switch ($type) {
             case 'basket':
                 $basketobject = new Basketobjecttype();
@@ -4253,7 +4257,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             item: $this,
             key: 'name',
             name: __('Name'),
-            value: $this->fields['name'],
+            value: $this->fields['name'] ?? '',
             category: $category,
         );
 
@@ -4261,7 +4265,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             item: $this,
             key: 'label2',
             name: __('Additional label', 'metademands'),
-            value: $this->fields['label2'],
+            value: $this->fields['label2'] ?? '',
             is_rich_text: true,
             category: $category,
         );
@@ -4270,7 +4274,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             item: $this,
             key: 'comment',
             name: __('Comments'),
-            value: $this->fields['comment'],
+            value: $this->fields['comment'] ?? '',
             is_rich_text: true,
             category: $category,
         );
@@ -4297,14 +4301,14 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     item: $this,
                     key: 'custom' . $rank,
                     name: $custom['name'],
-                    value: $custom['name'],
+                    value: $custom['name'] ?? '',
                     category: $category,
                 );
                 $handlers[$key][] = new TranslationHandler(
                     item: $this,
                     key: 'commentcustom' . $rank,
                     name: __('Comment') . ' ' . $custom['name'],
-                    value: null,
+                    value: $custom['comment'] ?? '',
                     category: $category,
                 );
             }
@@ -4320,7 +4324,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     item: $this,
                     key: 'freetablecol' . $col['rank'],
                     name: $col['name'],
-                    value: $col['name'],
+                    value: $col['name'] ?? '',
                     category: $category,
                 );
             }
