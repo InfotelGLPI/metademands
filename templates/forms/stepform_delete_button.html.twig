@@ -36,7 +36,6 @@
 -#}
 <form method="post" action="{{ delete_action }}" class="d-inline">
     <input type="hidden" name="plugin_metademands_stepforms_id" value="{{ stepforms_id }}">
-    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
     <button type="submit" name="{{ delete_button }}" value="1" class="btn btn-link text-danger p-0"
             title="{{ _x('button', 'Delete form', 'metademands') }}">
         <i class="ti ti-trash"></i><span class="sr-only">{{ _x('button', 'Delete form', 'metademands') }}</span>

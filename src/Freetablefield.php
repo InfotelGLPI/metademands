@@ -44,11 +44,11 @@ use Session;
  */
 class Freetablefield extends CommonDBChild
 {
-    public static $itemtype = Field::class;
-    public static $items_id = 'plugin_metademands_fields_id';
-    public $dohistory = true;
+    public static string $itemtype = Field::class;
+    public static string $items_id = 'plugin_metademands_fields_id';
+    public bool $dohistory = true;
 
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     public const TYPE_TEXT = 1;
     public const TYPE_SELECT = 2;

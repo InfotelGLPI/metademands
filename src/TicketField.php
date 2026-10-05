@@ -55,8 +55,8 @@ use User;
  */
 class TicketField extends CommonDBChild
 {
-    public static $itemtype = Metademand::class;
-    public static $items_id = 'plugin_metademands_metademands_id';
+    public static string $itemtype = Metademand::class;
+    public static string $items_id = 'plugin_metademands_metademands_id';
 
     //4 => requester
     //71 => requester group
@@ -75,7 +75,7 @@ class TicketField extends CommonDBChild
         71,
     ];
 
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     /**
      * functions mandatory

@@ -35,8 +35,7 @@ Html::header_nocache();
 
 // This endpoint mutates state (a display flag of the caller's own session), so it must
 // not be reachable through GET: reading $_POST restores the core CSRF coverage, which
-// only applies to non-GET requests. All callers are jQuery $.ajax with type: 'POST',
-// to which the core adds the X-Glpi-Csrf-Token header (js/common.js ajaxSend).
+// only applies to non-GET requests. All callers are jQuery $.ajax with type: 'POST'.
 // Gate on the same rights as the wizard entry point (see setup.php).
 Session::checkSeveralRightsOr([
     'plugin_metademands' => READ,

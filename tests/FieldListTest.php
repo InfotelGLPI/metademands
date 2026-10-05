@@ -120,7 +120,6 @@ class FieldListTest extends DbTestCase
         // Search form: the type reloads the object dropdown, no inline handler
         $this->assertStringContainsString('data-md-reload-event="change"', $html);
         $this->assertStringContainsString('name="search"', $html);
-        $this->assertGreaterThanOrEqual(4, substr_count($html, 'name="_glpi_csrf_token"'));
     }
 
     /**

@@ -200,17 +200,17 @@ function plugin_init_metademands()
 
         $PLUGIN_HOOKS[Hooks::ITEM_TRANSFER]['metademands'] = 'plugin_item_transfer_metademands';
 
-        if (Session::haveRight("plugin_metademands", READ)
-            || Session::haveRight('plugin_metademands_createmeta', READ)) {
+        if (Session::haveRight(Metademand::$rightname, READ)
+            || Session::haveRight(Profile::RIGHT_CREATEMETA, READ)) {
             $PLUGIN_HOOKS[Hooks::MENU_TOADD]['metademands'] = [
                 'helpdesk' => Menu::class,
                 'management' => Basketobject::class,
             ];
         }
 
-        if (Session::haveRight("plugin_metademands", READ)
+        if (Session::haveRight(Metademand::$rightname, READ)
             && !Plugin::isPluginActive('servicecatalog')
-            && !Session::haveRight("plugin_metademands_in_menu", READ)) {
+            && !Session::haveRight(Profile::RIGHT_IN_MENU, READ)) {
             $PLUGIN_HOOKS[Hooks::HELPDESK_MENU_ENTRY]['metademands'] = PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php';
             $PLUGIN_HOOKS[Hooks::HELPDESK_MENU_ENTRY_ICON]['metademands'] = Metademand::getIcon();
         }
@@ -219,7 +219,7 @@ function plugin_init_metademands()
             || (isset($_SESSION["plugin_metademands_on_login_loaded"])
             && $_SESSION["plugin_metademands_on_login_loaded"] == 0)) {
             if (Session::getCurrentInterface() == "helpdesk"
-                && Session::haveRight('plugin_metademands_on_login', READ)) {
+                && Session::haveRight(Profile::RIGHT_ON_LOGIN, READ)) {
                 $_SESSION["plugin_metademands_on_login_loaded"] = 1;
                 //                Html::redirect(PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php');
 
@@ -243,7 +243,7 @@ function plugin_init_metademands()
         }
         // END TEST Redirect
 
-        if (Session::haveRight("config", UPDATE)) {
+        if (Session::haveRight(\Config::$rightname, UPDATE)) {
             $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['metademands'] = 'front/config.form.php';
         }
 
@@ -299,8 +299,8 @@ function plugin_version_metademands()
         'homepage' => 'https://github.com/InfotelGLPI/metademands',
         'requirements' => [
             'glpi' => [
-                'min' => '11.0',
-                'max' => '12.0',
+                'min' => '11.0.99',
+                'max' => '12.0.99',
                 'dev' => false,
             ],
         ],

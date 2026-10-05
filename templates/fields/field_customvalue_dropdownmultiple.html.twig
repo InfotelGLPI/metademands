@@ -75,7 +75,6 @@
             </td>
          </tr>
       </table>
-      <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
    </form>
 {%- elseif mode == 'list' %}
 {% include '@metademands/fields/field_customvalue_list.html.twig' with list only %}

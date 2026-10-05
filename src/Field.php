@@ -111,12 +111,12 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 {
     use Clonable;
 
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
-    public static $itemtype = Metademand::class;
-    public static $items_id = 'plugin_metademands_metademands_id';
+    public static string $itemtype = Metademand::class;
+    public static string $items_id = 'plugin_metademands_metademands_id';
 
-    public $dohistory = true;
+    public bool $dohistory = true;
     // Request type
     public const MAX_FIELDS = 40;
 
@@ -3400,7 +3400,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 $my_devices[__('My devices')] = $devices;
             }
             // My group items
-            if (Session::haveRight("show_group_hardware", "1")) {
+            if (Session::haveRight(\Profile::HELPDESK_RIGHT_SHOW_GROUP_HARDWARE, 1)) {
                 $iterator = $DB->request([
                     'SELECT' => [
                         'glpi_groups_users.groups_id',
@@ -3752,7 +3752,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 $my_devices[__('My devices')] = $devices;
             }
             // My group items
-            if (Session::haveRight("show_group_hardware", "1")) {
+            if (Session::haveRight(\Profile::HELPDESK_RIGHT_SHOW_GROUP_HARDWARE, 1)) {
                 $iterator = $DB->request([
                     'SELECT' => [
                         'glpi_groups_users.groups_id',

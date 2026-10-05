@@ -46,7 +46,7 @@ use GlpiPlugin\Metademands\Freetablefield as MetaFreetablefield;
  **/
 class Freetable extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     /**
      * Return the localized name of the current Type

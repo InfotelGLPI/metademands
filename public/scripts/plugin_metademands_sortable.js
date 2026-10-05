@@ -57,13 +57,6 @@ function plugin_metademands_parseParams(element, attribute) {
     }
 }
 
-function plugin_metademands_csrfToken() {
-    // GLPI exposes the current CSRF token through this meta tag; core's jQuery
-    // ajaxSend hook reads it the same way (see js/common.js getAjaxCsrfToken).
-    const meta = document.querySelector('meta[property="glpi:csrf_token"]');
-    return meta !== null ? meta.getAttribute("content") : null;
-}
-
 function plugin_metademands_sendOrder(container, detail) {
     const url = container.getAttribute("data-md-url");
     if (!url || !detail || !detail.origin || !detail.destination) {
@@ -103,20 +96,12 @@ function plugin_metademands_sendOrder(container, detail) {
     const params = plugin_metademands_parseParams(container, "data-md-params");
     Object.keys(params).forEach((key) => body.set(key, params[key]));
 
-    // GLPI 11's CheckCsrfListener requires a CSRF token on every POST.
-    // X-Requested-With routes the request through the AJAX branch, which reads the
-    // token from the X-Glpi-Csrf-Token header with preserve_token:true (so
-    // successive reorders stay valid); credentials carry the session cookie. This
-    // mirrors the former jQuery.ajax transport (core's ajaxSend hook set the same
-    // header) — without it the endpoint answers 403.
+    // The core CSRF check validates same-origin POST requests from the browser
+    // Sec-Fetch-Site/Origin headers; credentials carry the session cookie.
     const headers = {
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         "X-Requested-With": "XMLHttpRequest",
     };
-    const csrf_token = plugin_metademands_csrfToken();
-    if (csrf_token) {
-        headers["X-Glpi-Csrf-Token"] = csrf_token;
-    }
     fetch(url, {
         method: "POST",
         credentials: "same-origin",

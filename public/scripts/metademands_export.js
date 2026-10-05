@@ -32,7 +32,7 @@
  * The export is posted through Ajax to avoid the length limit of a GET request,
  * and the returned archive is saved through a temporary link. The sub form is
  * injected by the massive action modal, hence the delegated handler; the core
- * ajaxSend hook adds the CSRF header to the jQuery request.
+ * CSRF check validates the same-origin POST from the browser headers.
  */
 
 (function () {

@@ -85,7 +85,6 @@
      aria-labelledby="metademand-tr-modal-title-{{ lang }}">
     <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
         <form class="modal-content" method="POST" action="{{ ajax_url }}">
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}"/>
             <input type="hidden" name="action" value="save_translations"/>
             <input type="hidden" name="translation_class" value="{{ translation_class }}"/>
             <input type="hidden" name="meta_translation_id" value="{{ translation.getID() }}"/>
@@ -141,7 +140,6 @@
         {% if canedit %}
             <form id="metademand-tr-delete-{{ lang }}"
                   method="POST" action="{{ ajax_url }}" hidden>
-                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}"/>
                 <input type="hidden" name="action" value="delete_language"/>
                 <input type="hidden" name="translation_class" value="{{ translation_class }}"/>
                 <input type="hidden" name="items_id" value="{{ metademand.getID() }}"/>

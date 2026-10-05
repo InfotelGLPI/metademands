@@ -29,12 +29,13 @@
 
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Metademand;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 // This endpoint had no control at all; it is only used by the condition configuration screens.
-Session::checkRight('plugin_metademands', READ);
+Session::checkRight(Metademand::$rightname, READ);
 
 $show_check_value = true;
 

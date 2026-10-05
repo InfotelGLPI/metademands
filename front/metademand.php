@@ -35,7 +35,7 @@ Html::header(Metademand::getTypeName(2), '', "helpdesk", Menu::class);
 
 $meta = new Metademand();
 
-if ($meta->canView() || Session::haveRight("config", UPDATE)) {
+if ($meta->canView() || Session::haveRight(\Config::$rightname, UPDATE)) {
     Search::show(Metademand::class);
 } else {
     throw new AccessDeniedHttpException();

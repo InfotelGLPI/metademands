@@ -29,10 +29,11 @@
 
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Metademand;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
-Session::checkRight("plugin_metademands", UPDATE);
+Session::checkRight(Metademand::$rightname, UPDATE);
 
 $fields_id = (int) ($_POST['fields_id'] ?? 0);
 $rand = (int) ($_POST['rand'] ?? 0);

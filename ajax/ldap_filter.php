@@ -33,7 +33,7 @@ use Glpi\Exception\Http\BadRequestHttpException;
 // browser cannot be talked into sniffing it as a document.
 header('Content-Type: text/plain; charset=UTF-8');
 
-Session::checkRight('config', UPDATE);
+Session::checkRight(\Config::$rightname, UPDATE);
 
 $authldap = new AuthLdap();
 if (!$authldap->getFromDB((int) ($_POST['value'] ?? 0))) {

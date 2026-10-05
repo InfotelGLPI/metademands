@@ -111,7 +111,6 @@
                                 <i class="ti ti-settings"></i>
                                 <span class="sr-only">{{ _x('button', 'Do you want to fix them ?', 'metademands') }}</span>
                             </button>
-                            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                         </form>
                     </div>
                 </div>
@@ -262,13 +261,11 @@
                         'ontop': false,
                         'display': false
                     }])|raw }}
-                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                     </form>
 
                     <form id="{{ panel.purge_form_id }}" method="post" action="{{ form_url }}">
                         <input type="hidden" name="plugin_metademands_metademands_id" value="{{ meta_id }}">
                         <input type="hidden" name="purge" value="1">
-                        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                     </form>
                 {% endif %}
             {% endif %}

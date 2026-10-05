@@ -30,6 +30,7 @@
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Ticket_Field;
 use GlpiPlugin\Metademands\TicketField;
+use GlpiPlugin\Metademands\Metademand;
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
@@ -58,7 +59,7 @@ if (isset($_POST["add"])) {
     $ticketField->redirectToList();
 } elseif (isset($_POST['template_sync'])) {
     // Syncing mandatory template fields is a configuration change: require the plugin update right.
-    Session::checkRight('plugin_metademands', UPDATE);
+    Session::checkRight(Metademand::$rightname, UPDATE);
     TicketField::updateMandatoryTicketFields($_POST);
     Html::back();
 } else {

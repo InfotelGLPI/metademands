@@ -64,7 +64,7 @@ use Toolbox;
  */
 class Export extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     /** Upper bound accepted for an imported meta-demand XML document, in bytes. */
     private const MAX_IMPORT_XML_BYTES = 5 * 1024 * 1024;

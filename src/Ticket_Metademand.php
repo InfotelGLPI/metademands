@@ -47,7 +47,7 @@ use UserEmail;
  */
 class Ticket_Metademand extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     public static $itemtype = Metademand::class;
     public static $items_id = 'plugin_metademands_metademands_id';
@@ -324,9 +324,9 @@ class Ticket_Metademand extends CommonDBTM
     {
         global $DB;
 
-        if (!Session::haveRight("ticket", \Ticket::READALL)
-          && !Session::haveRight("ticket", \Ticket::READASSIGN)
-          && !Session::haveRight("ticket", CREATE)) {
+        if (!Session::haveRight(\Ticket::$rightname, \Ticket::READALL)
+          && !Session::haveRight(\Ticket::$rightname, \Ticket::READASSIGN)
+          && !Session::haveRight(\Ticket::$rightname, CREATE)) {
             return false;
         }
 
@@ -1643,7 +1643,7 @@ class Ticket_Metademand extends CommonDBTM
             }
             $metaStatus = new self();
             if ($metaStatus->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])
-                && Session::haveRight('plugin_metademands', READ)
+                && Session::haveRight(Metademand::$rightname, READ)
                 && Session::getCurrentInterface() == 'central') {
                 if ($not_change_status == 0) {
                     $validationmeta = new MetademandValidation();

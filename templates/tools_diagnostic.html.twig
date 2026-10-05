@@ -38,7 +38,6 @@
         {% for name, value in fields %}
             <input type="hidden" name="{{ name }}" value="{{ value }}">
         {% endfor %}
-        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
         {% if icon %}
             <button type="submit" name="{{ button }}" value="1" class="btn btn-link p-0" title="{{ label }}">
                 <i class="{{ icon }}"></i><span class="sr-only">{{ label }}</span>

@@ -39,10 +39,10 @@ use Session;
  */
 class GroupConfig extends CommonDBChild
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
-    public static $itemtype = Metademand::class;
-    public static $items_id = 'plugin_metademands_metademands_id';
+    public static string $itemtype = Metademand::class;
+    public static string $items_id = 'plugin_metademands_metademands_id';
 
     /**
      * functions mandatory

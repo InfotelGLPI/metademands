@@ -78,7 +78,6 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
                 'draft_name' => $draft_name,
                 'metademand_name' => $metademand_name,
                 'confirmation' => $confirmation,
-                '_glpi_csrf_token' => Session::getNewCSRFToken(),
             ],
         );
 

@@ -89,7 +89,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
     public static $PARENT_PREFIX = '';
     public static $SON_PREFIX = '';
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     public const STEP_INIT = 0;
     public const STEP_LIST = 1;
@@ -101,7 +101,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     public const DONE = 2; // done
     public const FAIL = 3; // Failed
 
-    public $dohistory = true;
+    public bool $dohistory = true;
     private $config;
 
     public function __construct()
@@ -290,7 +290,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 [
                     'object_to_create' => 'Ticket',
                 ],
-                [1],
+                [new QueryExpression('true')],
             );
             $DB->doQuery($query);
         }
@@ -1206,7 +1206,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             return true;
         }
 
-        if (!Session::haveRight('show_group_hardware', 1)) {
+        if (!Session::haveRight(\Profile::HELPDESK_RIGHT_SHOW_GROUP_HARDWARE, 1)) {
             return false;
         }
 
@@ -2849,7 +2849,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $requested_requester = (int) $values['fields']['_users_id_requester'];
                         if ($requested_requester !== Session::getLoginUserID()
                             && !(Session::getCurrentInterface() === 'central'
-                                && Session::haveRight('ticket', CREATE))) {
+                                && Session::haveRight(\Ticket::$rightname, CREATE))) {
                             $values['fields']['_users_id_requester'] = Session::getLoginUserID();
                         }
                     }
@@ -5124,7 +5124,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         if ($metaValidation->getFromDBByCrit(['tickets_id' => $tickets_id])
             && ($metaValidation->fields['validate'] == MetademandValidation::TO_VALIDATE
                 || $metaValidation->fields['validate'] == MetademandValidation::TO_VALIDATE_WITHOUTTASK)
-            && Session::haveRight('plugin_metademands', READ)
+            && Session::haveRight(Metademand::$rightname, READ)
             && $is_central) {
             $tovalidate = 1;
 
@@ -6844,8 +6844,8 @@ HTML;
 
         // Render through Twig so the template name ($templname, from the raw
         // `template_name` column) is auto-escaped instead of concatenated into
-        // an <a> verbatim (stored XSS defense). The delete form carries its own
-        // CSRF token, mirroring Html::showSimpleForm().
+        // an <a> verbatim (stored XSS defense). The delete form is a POST form,
+        // mirroring Html::showSimpleForm().
         $rows = [];
         foreach ($templates as $template) {
             $templname = $template["template_name"];

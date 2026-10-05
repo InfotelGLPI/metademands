@@ -44,7 +44,7 @@ use Toolbox;
  **/
 class Configstep extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     public static $itemtype = Metademand::class;
     public static $items_id = 'plugin_metademands_metademands_id';

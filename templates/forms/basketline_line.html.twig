@@ -57,12 +57,11 @@
             </td>
             <td class="center">
                 <button type="button" class="btn btn-danger" title="{{ _x('button', 'Delete this line', 'metademands') }}"
-                        data-md-basketline-post="{{ {'delete_basket_line': idline, 'metademands_id': metademands_id, '_glpi_csrf_token': csrf_token()}|json_encode }}">
+                        data-md-basketline-post="{{ {'delete_basket_line': idline, 'metademands_id': metademands_id}|json_encode }}">
                     <i class="ti ti-trash"></i>
                     <span class="sr-only">{{ _x('button', 'Delete this line', 'metademands') }}</span>
                 </button>
             </td>
         </tr>
     </table>
-    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
 </form>

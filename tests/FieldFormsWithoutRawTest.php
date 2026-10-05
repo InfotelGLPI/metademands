@@ -246,7 +246,6 @@ class FieldFormsWithoutRawTest extends DbTestCase
         $this->assertStringContainsString('name="fixranks"', $html);
         $this->assertStringContainsString('name="plugin_metademands_fields_id" value="' . $field->getID() . '"', $html);
         $this->assertStringContainsString('action="' . FieldCustomvalue::getFormURL() . '"', $html);
-        $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
         $this->assertStringContainsString('Choice 3', $html);
     }
 

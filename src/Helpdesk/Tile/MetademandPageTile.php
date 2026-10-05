@@ -42,10 +42,11 @@ use Html;
 use Migration;
 use Override;
 use Session;
+use GlpiPlugin\Metademands\Profile;
 
 final class MetademandPageTile extends CommonDBTM implements TileInterface, ProvideTranslationsInterface
 {
-    public static $rightname = 'config';
+    public static string $rightname = 'config';
 
     public const PAGE_LIST_METADEMANDS = 'metademand';
 
@@ -111,7 +112,7 @@ final class MetademandPageTile extends CommonDBTM implements TileInterface, Prov
     #[Override]
     public function isAvailable(SessionInfo $session_info): bool
     {
-        return Session::haveRight("plugin_metademands_createmeta", 1);
+        return Session::haveRight(Profile::RIGHT_CREATEMETA, 1);
     }
 
     #[Override]

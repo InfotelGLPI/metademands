@@ -33,7 +33,7 @@ use GlpiPlugin\Metademands\Metademand;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkRight("plugin_metademands", UPDATE);
+Session::checkRight(Metademand::$rightname, UPDATE);
 
 // Field::reorder() builds its update criteria straight from $_POST, so the posted
 // meta-demand identifier never meets the caller's entity. The right bit above is global,

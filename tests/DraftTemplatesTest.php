@@ -108,7 +108,7 @@ class DraftTemplatesTest extends DbTestCase
 
         $html = $this->renderDraft(['plugin_metademands_id' => $id]);
 
-        $this->assertStringContainsString('<input type="hidden" name="_glpi_csrf_token"', $html);
+        $this->assertStringNotContainsString('_glpi_csrf_token', $html);
         $this->assertStringContainsString('<input type="hidden" name="step" value="1">', $html);
         $this->assertStringContainsString('<input type="hidden" name="metademands_id" value="' . $id . '">', $html);
         $this->assertStringContainsString(

@@ -36,7 +36,7 @@ use GlpiPlugin\Metademands\Metademand;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkRight("plugin_metademands", UPDATE);
+Session::checkRight(Metademand::$rightname, UPDATE);
 
 // reorder() is handed $_POST directly, so CommonDBChild::can() never runs and the only
 // remaining check is a right bit that is global rather than per entity. Derive the parent

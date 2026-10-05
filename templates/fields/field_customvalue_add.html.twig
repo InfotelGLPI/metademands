@@ -37,7 +37,6 @@
 {% import 'components/form/fields_macros.html.twig' as fields %}
 
 <form method="post" action="{{ form_target }}">
-    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="rank" value="{{ rank }}">
     <input type="hidden" name="fields_id" value="{{ fields_id }}">
     <div class="d-flex align-items-center gap-2 flex-wrap py-1 px-2"

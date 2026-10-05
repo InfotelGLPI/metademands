@@ -39,7 +39,7 @@ use GlpiPlugin\Metademands\Tools;
 
 /**
  * Forms whose widgets used to be captured and injected with |raw: the templates now
- * call the widgets themselves and own their <form>, CSRF token and buttons.
+ * call the widgets themselves and own their <form> and buttons.
  */
 class TemplatesWithoutRawTest extends DbTestCase
 {
@@ -62,7 +62,7 @@ class TemplatesWithoutRawTest extends DbTestCase
         return (string) ob_get_clean();
     }
 
-    public function testToolsActionsArePostFormsWithCsrf(): void
+    public function testToolsActionsArePostForms(): void
     {
         $this->login();
         $_SESSION['glpiactiveprofile'][Tools::$rightname] = ALLSTANDARDRIGHT;
@@ -71,10 +71,10 @@ class TemplatesWithoutRawTest extends DbTestCase
 
         $this->assertStringNotContainsString('submitGetLink', $html);
         $this->assertStringContainsString('name="change_global_status"', $html);
-        $this->assertSame(substr_count($html, '<form '), substr_count($html, 'name="_glpi_csrf_token"'));
+        $this->assertStringNotContainsString('_glpi_csrf_token', $html);
     }
 
-    public function testExportFormsOwnTheirButtonsAndCsrf(): void
+    public function testExportFormsOwnTheirButtons(): void
     {
         $this->login();
         $metademand = $this->createMetademand();
@@ -83,12 +83,10 @@ class TemplatesWithoutRawTest extends DbTestCase
         $this->assertStringContainsString('name="plugin_metademands_metademands_id" value="' . $metademand->getID() . '"', $html);
         $this->assertStringContainsString('name="exportMetademandsXML"', $html);
         $this->assertStringContainsString('name="exportMetademandsJSON"', $html);
-        $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
         $this->assertStringContainsString('</form>', $html);
 
         $html = $this->capture(fn() => Export::showImportForm());
         $this->assertStringContainsString('name="import_file"', $html);
-        $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
     }
 
     public function testConditionFormsRenderTheirDropdowns(): void
@@ -132,7 +130,6 @@ class TemplatesWithoutRawTest extends DbTestCase
 
         $this->assertStringContainsString('name="plugin_metademands_metademands_id" value="' . $metademand->getID() . '"', $html);
         $this->assertStringContainsString('show_massiveaction_field', $html);
-        $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
         $this->assertLessThan(strpos($html, 'name="update"'), strpos($html, 'show_massiveaction_field'));
     }
 }

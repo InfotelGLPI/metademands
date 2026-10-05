@@ -672,7 +672,7 @@ class Dropdownmeta extends CommonDBTM
             'empty_message' => $found ? '' : __('No equipment founded', 'metademands'),
         ]];
 
-        if (Session::haveRight('show_group_hardware', '1')) {
+        if (Session::haveRight(\Profile::HELPDESK_RIGHT_SHOW_GROUP_HARDWARE, 1)) {
             $entity_restrict = (int) $_SESSION['glpiactive_entity'];
             $groups = self::getRequesterGroups($users_id_requester, $entity_restrict);
 

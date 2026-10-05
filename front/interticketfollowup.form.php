@@ -36,7 +36,7 @@ use GlpiPlugin\Metademands\Ticket;
 
 // This controller had no page guard at all: the only control was carried by check(-1, CREATE),
 // which boils down to the global right bit anyway.
-Session::checkRight('plugin_metademands_followup', CREATE);
+Session::checkRight(Interticketfollowup::$rightname, CREATE);
 
 $fup = new Interticketfollowup();
 

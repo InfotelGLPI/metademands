@@ -41,7 +41,7 @@ use Session;
 
 abstract class AbstractMetademandTranslation extends ItemTranslation
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     public static function getTypeName($nb = 0): string
     {

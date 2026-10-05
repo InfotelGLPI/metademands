@@ -40,8 +40,8 @@ use Migration;
  */
 class Basketobjecttype extends CommonDropdown implements ProvideTranslationsInterface
 {
-    public static $rightname = "dropdown";
-    public $can_be_translated = true;
+    public static string $rightname = "dropdown";
+    public bool $can_be_translated = true;
 
     /**
      * @param int $nb

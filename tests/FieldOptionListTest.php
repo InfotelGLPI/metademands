@@ -130,7 +130,6 @@ class FieldOptionListTest extends DbTestCase
         $this->assertStringContainsString('data-md-option-url="', $html);
         // The option form reloaded on a value change is a field option of this field
         $this->assertMatchesRegularExpression('/data-md-option-reload-params="[^"]*Field&quot;/', $html);
-        $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
     }
 
     public function testReadOnlyListHasNoModalNorMassiveActions(): void

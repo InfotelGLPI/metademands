@@ -39,7 +39,7 @@ Html::header_nocache();
 // This modal is only reachable behind the field-list admin UI (Field::listFields()
 // gates it on can(..., UPDATE)). Enforce the metademands update right server-side so
 // a low-privilege user cannot enumerate and read arbitrary subitems by posting here.
-Session::checkRight('plugin_metademands', UPDATE);
+Session::checkRight(Metademand::$rightname, UPDATE);
 
 if (!isset($_POST['type'])) {
     throw new NotFoundHttpException();

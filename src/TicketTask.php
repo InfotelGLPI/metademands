@@ -43,10 +43,10 @@ use Toolbox;
  */
 class TicketTask extends CommonDBChild
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
-    public static $itemtype = Task::class;
-    public static $items_id = 'plugin_metademands_tasks_id';
+    public static string $itemtype = Task::class;
+    public static string $items_id = 'plugin_metademands_tasks_id';
 
     /**
      * functions mandatory

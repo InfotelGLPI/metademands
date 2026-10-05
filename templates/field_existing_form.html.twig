@@ -37,7 +37,6 @@
 -#}
 
 <form name="form" method="post" action="{{ action }}">
-    {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
     {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
     {{ inputs.hidden('id', field_id) }}
 

@@ -29,7 +29,6 @@
 
 {# Formulaire 1 : règle d'affichage du bouton Soumettre #}
 <form name="form_rule" method="post" action="{{ rule_action }}">
-    {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
     {{ inputs.hidden('id', metademand_id) }}
 
     <div class="card mt-2">
@@ -58,7 +57,6 @@
 {# Formulaire 2 : ajout d'une condition (uniquement si la règle n'est pas "Toujours affiché") #}
 {% if show_rule != show_rule_always %}
 <form name="form_condition" method="post" action="{{ condition_action }}">
-    {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
     {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
 
     <div class="card mt-3">

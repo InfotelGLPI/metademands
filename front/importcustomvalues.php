@@ -29,8 +29,9 @@
 
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldCustomvalue;
+use GlpiPlugin\Metademands\Metademand;
 
-Session::checkRight("plugin_metademands", UPDATE);
+Session::checkRight(Metademand::$rightname, UPDATE);
 
 if (isset($_POST['importreplacecsv']) && isset($_POST['plugin_metademands_fields_id'])) {
     // The right bit above is global and carries no entity boundary, while this import purges then

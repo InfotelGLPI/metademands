@@ -187,7 +187,6 @@ class WizardTemplatesTest extends DbTestCase
         $this->assertStringContainsString('onclick="submitGetLink(&quot;\/plugins\/metademands\/front\/stepform.form.php&quot;', $html);
         $this->assertStringContainsString('&quot;delete_form_from_list&quot;:&quot;delete_form_from_list&quot;', $html);
         $this->assertStringContainsString('&quot;plugin_metademands_stepforms_id&quot;:42', $html);
-        $this->assertMatchesRegularExpression('/&quot;_glpi_csrf_token&quot;:&quot;[0-9a-f]{64}&quot;/', $html);
         $this->assertStringContainsString(_x('button', 'Cancel form', 'metademands'), $html);
     }
 

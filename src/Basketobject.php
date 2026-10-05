@@ -47,8 +47,8 @@ use PluginOrdermaterialMaterial;
  */
 class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
 {
-    public $dohistory = true;
-    public static $rightname = "plugin_metademands";
+    public bool $dohistory = true;
+    public static string $rightname = "plugin_metademands";
 
     public static function install(Migration $migration)
     {

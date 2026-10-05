@@ -32,7 +32,7 @@ use GlpiPlugin\Metademands\Export;
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Metademand;
 
-if (Session::haveRight("plugin_metademands", CREATE)) {
+if (Session::haveRight(Metademand::$rightname, CREATE)) {
 
     if (isset($_POST["exportFormGLPIXML"])) {
 

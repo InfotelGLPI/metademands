@@ -45,7 +45,7 @@ class Draft extends CommonDBTM
     public const DEFAULT_MODE = 1;
     public const BASKET_MODE = 2;
 
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     public static function getIcon()
     {

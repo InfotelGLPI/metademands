@@ -30,8 +30,9 @@
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\Ticket_Metademand;
+use GlpiPlugin\Metademands\Metademand;
 
-Session::checkRight("plugin_metademands", UPDATE);
+Session::checkRight(Metademand::$rightname, UPDATE);
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";

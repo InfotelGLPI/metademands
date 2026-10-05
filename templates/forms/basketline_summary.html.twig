@@ -41,7 +41,7 @@
                     </h2>
                     <div class="mydraft right" style="position: absolute;top: 0;margin-top: 10px;;right: 0;">
                         <button type="button" class="btn btn-primary"
-                                data-md-basketline-post="{{ {'clear_basket': 1, 'metademands_id': metademands_id, '_glpi_csrf_token': csrf_token()}|json_encode }}">
+                                data-md-basketline-post="{{ {'clear_basket': 1, 'metademands_id': metademands_id}|json_encode }}">
                             <i class="ti ti-trash"></i>
                             <span>{{ _x('button', 'Clear the basket', 'metademands') }}</span>
                         </button>
@@ -60,7 +60,7 @@
     <div class="row">
         <div class="bt-feature col-md-12 ">
             <button type="button" class="btn btn-primary"
-                    data-md-basketline-post="{{ {'clean_form': 1, 'metademands_id': metademands_id, 'step': step_show, '_glpi_csrf_token': csrf_token()}|json_encode }}">
+                    data-md-basketline-post="{{ {'clean_form': 1, 'metademands_id': metademands_id, 'step': step_show}|json_encode }}">
                 {{ __('Previous') }}
             </button>
             <span style="float:right">

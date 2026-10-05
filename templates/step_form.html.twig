@@ -28,7 +28,6 @@
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
 
 <form name="form" method="post" action="{{ action }}">
-    {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
     {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
     {% if not is_new %}{{ inputs.hidden('id', step_id) }}{% endif %}
 

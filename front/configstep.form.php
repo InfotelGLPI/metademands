@@ -30,7 +30,7 @@
 use GlpiPlugin\Metademands\Configstep;
 use GlpiPlugin\Metademands\Metademand;
 
-Session::checkRight('plugin_metademands', UPDATE);
+Session::checkRight(Metademand::$rightname, UPDATE);
 
 $stepConfig = new Configstep();
 

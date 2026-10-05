@@ -39,7 +39,7 @@ use GlpiPlugin\Metademands\Group;
 // The only action handled here is a deletion, so the page guard must express that and
 // not the modification bit: plugin_metademands offers both DELETE (trashbin, the items
 // that carry is_deleted) and PURGE (definitive), since Metademand::maybeDeleted() is true.
-Session::checkRightsOr("plugin_metademands", [DELETE, PURGE]);
+Session::checkRightsOr(Metademand::$rightname, [DELETE, PURGE]);
 
 // Do not forward the client-controllable PHP_SELF/PATH_INFO to Html::header(); the
 // $url param is unused in GLPI 11, pass an empty string (as elsewhere in the plugin).

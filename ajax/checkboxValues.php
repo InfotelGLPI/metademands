@@ -29,6 +29,7 @@
 
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldCustomvalue;
+use GlpiPlugin\Metademands\Metademand;
 
 header("Content-Type: text/html; charset=UTF-8");
 
@@ -36,7 +37,7 @@ Html::header_nocache();
 
 // This endpoint had no control at all and listed the custom values of any field of the instance.
 // Field is a CommonDBChild, so check() resolves the parent metademand and its entity boundary.
-Session::checkRight('plugin_metademands', READ);
+Session::checkRight(Metademand::$rightname, READ);
 
 $KO          = false;
 $fields = new Field();

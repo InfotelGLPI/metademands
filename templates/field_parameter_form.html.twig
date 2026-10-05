@@ -40,7 +40,6 @@
 {% do call('Html::requireJs', ['tinymce']) %}
 
 <form name="form" method="post" action="{{ form_action }}">
-    {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
     {{ inputs.hidden('plugin_metademands_fields_id', field_parent_id) }}
     {{ inputs.hidden('type', field_type) }}
     {{ inputs.hidden('item', field_item) }}

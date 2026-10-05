@@ -89,10 +89,10 @@ class BasketlineSummaryTest extends DbTestCase
         $this->assertSame(2, substr_count($html, '<form'));
         $this->assertMatchesRegularExpression('/name="update_basket_line"\s+value="1"/', $html);
         $this->assertMatchesRegularExpression('/name="update_basket_line"\s+value="2"/', $html);
-        // Each line form carries its hidden fields and token, without the core helpers
+        // Each line form carries its hidden fields, without the core helpers
         // (the summary holds one more meta-demand field, read by the wizard form)
         $this->assertSame(3, substr_count($html, '<input type="hidden" name="form_metademands_id"'));
-        $this->assertSame(2, substr_count($html, '<input type="hidden" name="_glpi_csrf_token"'));
+        $this->assertStringNotContainsString('_glpi_csrf_token', $html);
         $this->assertStringNotContainsString('onclick', $html);
 
         // The order payload is an escaped attribute, not an inline script
@@ -106,7 +106,7 @@ class BasketlineSummaryTest extends DbTestCase
         $this->assertStringContainsString('current_ticket_id=12&meta_validated=&metademands_id=', $order['wizard_url']);
         $this->assertStringEndsWith('/front/wizard.form.php', $order['wizard_form_url']);
 
-        // Clear, delete of each line and previous post their own fields, with a token
+        // Clear, delete of each line and previous post their own fields
         preg_match_all('/data-md-basketline-post="([^"]*)"/', $html, $matches);
         $this->assertCount(4, $matches[1]);
         [$clear, $delete1, $delete2, $previous] = array_map(
@@ -120,7 +120,7 @@ class BasketlineSummaryTest extends DbTestCase
         $this->assertSame(1, $previous['clean_form']);
         $this->assertSame(Metademand::STEP_SHOW, $previous['step']);
         foreach ([$clear, $delete1, $delete2, $previous] as $fields) {
-            $this->assertNotEmpty($fields['_glpi_csrf_token']);
+            $this->assertArrayNotHasKey('_glpi_csrf_token', $fields);
         }
     }
 }

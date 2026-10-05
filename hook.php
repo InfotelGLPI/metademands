@@ -558,7 +558,7 @@ function plugin_metademands_getAddSearchOptions($itemtype)
 
     $sopt = [];
     if ($itemtype == "Ticket") {
-        if (Session::haveRight("plugin_metademands", READ)) {
+        if (Session::haveRight(Metademand::$rightname, READ)) {
             $sopt[9499]['table']         = 'glpi_users';
             $sopt[9499]['field']         = 'name';
             $sopt[9499]['linkfield']     = 'users_id';
@@ -1119,6 +1119,9 @@ function plugin_metademands_getDropdown()
     }
 }
 
+/**
+ * @return array<int|string, mixed> criteria consumed as is by SQLProvider
+ */
 function plugin_metademands_addDefaultWhere($itemtype)
 {
 
@@ -1128,7 +1131,7 @@ function plugin_metademands_addDefaultWhere($itemtype)
             // connected user. Qualify the column so the WHERE stays
             // unambiguous should the search later join another table that
             // also exposes a `users_id` column.
-            $currentUser = (int) Session::getLoginUserID();
-            return Draft::getTable() . ".users_id = $currentUser";
+            return [Draft::getTableField('users_id') => (int) Session::getLoginUserID()];
     }
+    return [];
 }

@@ -38,7 +38,7 @@ use Migration;
  */
 class Stepform_Actor extends CommonDBTM
 {
-    public static $rightname = "plugin_metademands";
+    public static string $rightname = "plugin_metademands";
 
     public static function install(Migration $migration)
     {

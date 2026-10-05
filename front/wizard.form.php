@@ -37,6 +37,7 @@ use GlpiPlugin\Metademands\Stepform;
 use GlpiPlugin\Metademands\Wizard;
 use GlpiPlugin\Resources\Resource;
 use GlpiPlugin\Servicecatalog\Main;
+use GlpiPlugin\Metademands\Profile;
 
 // Page guard. The menu entry (setup.php) and the helpdesk tile
 // (MetademandPageTile::isAvailable()) gate on the first two rights, and
@@ -135,7 +136,7 @@ $config->getFromDB(1);
 //    && Plugin::isPluginActive('servicecatalog')
 //    && ($_GET['step'] == Metademand::STEP_INIT || $_GET['step'] == Metademand::STEP_LIST)
 //    && $config->getField('display_buttonlist_servicecatalog') == 0
-//    && Session::haveRight("plugin_servicecatalog", READ)) {
+//    && Session::haveRight(Profile::RIGHT_SERVICECATALOG, READ)) {
 //
 //    Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
 //
@@ -285,7 +286,7 @@ if (isset($_POST['update_basket_line'])) {
         Html::header($name, '', "helpdesk", Menu::class, "wizard");
     } else {
         if (Plugin::isPluginActive('servicecatalog')
-            && Session::haveRight("plugin_servicecatalog", READ)) {
+            && Session::haveRight(Profile::RIGHT_SERVICECATALOG, READ)) {
             Main::showDefaultHeaderHelpdesk($name);
         } else {
             Html::helpHeader($name);
@@ -351,7 +352,7 @@ if (isset($_POST['update_basket_line'])) {
 
     if (Session::getCurrentInterface() != 'central'
         && Plugin::isPluginActive('servicecatalog')
-        && Session::haveRight("plugin_servicecatalog", READ)) {
+        && Session::haveRight(Profile::RIGHT_SERVICECATALOG, READ)) {
         Main::showNavBarFooter('metademands');
     }
 

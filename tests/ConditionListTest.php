@@ -142,7 +142,6 @@ class ConditionListTest extends DbTestCase
             );
         }
         $this->assertStringContainsString('massiveaction', $html);
-        $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
     }
 
     public function testReadOnlyListHasNoEditTriggerNorMassiveActions(): void

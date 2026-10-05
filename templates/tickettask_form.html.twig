@@ -43,7 +43,6 @@
                 <form name="form_ticket" method="post"
                       action="{{ form_action }}?_in_modal=1&id={{ field_id }}"
                       enctype="multipart/form-data">
-                    {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
                     {{ inputs.hidden('plugin_metademands_tasks_id', tasks_id) }}
                     {% if tickettemplates_id > 0 %}
                         {{ inputs.hidden('_tickettemplates_id', tickettemplates_id) }}

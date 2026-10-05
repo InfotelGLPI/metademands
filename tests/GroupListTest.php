@@ -78,8 +78,8 @@ class GroupListTest extends DbTestCase
         $this->assertStringContainsString('Added &lt;b&gt;group&lt;/b&gt;', $html);
         $this->assertStringContainsString('item[' . Group::class . '][' . $link->getID() . ']', $html);
 
-        // Add form and massive actions form, each with its token
-        $this->assertSame(substr_count($html, '<form'), substr_count($html, 'name="_glpi_csrf_token"'));
+        // Add form and massive actions form, without CSRF token (GLPI 12)
+        $this->assertStringNotContainsString('_glpi_csrf_token', $html);
         $this->assertSame(2, substr_count($html, '<form'));
         $this->assertSame(2, substr_count($html, '</form>'));
     }

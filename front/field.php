@@ -26,11 +26,12 @@
  * along with metademands. If not, see <http://www.gnu.org/licenses/>.
  * --------------------------------------------------------------------------
  */
+use GlpiPlugin\Metademands\Metademand;
 
 // Same right as the other field administration screens (ajax/reorderfields.php,
 // ajax/show_conditions.php): this controller writes the search criteria of the field
 // list into the session, it is not reachable from the helpdesk interface.
-Session::checkRight('plugin_metademands', UPDATE);
+Session::checkRight(Metademand::$rightname, UPDATE);
 
 if (isset($_POST["search"])) {
     $metademands_id = (int) ($_POST["plugin_metademands_metademands_id"] ?? 0);

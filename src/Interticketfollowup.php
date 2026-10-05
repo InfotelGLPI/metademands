@@ -51,7 +51,7 @@ use Session;
 
 class Interticketfollowup extends CommonITILObject
 {
-    public static $rightname = 'plugin_metademands_followup';
+    public static string $rightname = 'plugin_metademands_followup';
 
 
     /**
@@ -335,7 +335,7 @@ class Interticketfollowup extends CommonITILObject
             && $_SESSION['glpiactiveprofile']['interface'] == 'central'
             && ($item->fields['status'] != \Ticket::SOLVED
                 && $item->fields['status'] != \Ticket::CLOSED)
-            && Session::haveRight("plugin_metademands_followup", READ)) {
+            && Session::haveRight(Interticketfollowup::$rightname, READ)) {
             $itemtypes['interticketfollowup'] = [
                 'type'  => Interticketfollowup::class,
                 'class' => Interticketfollowup::class,

@@ -39,7 +39,7 @@ if (!isset($_GET["metademands_id"])) {
 
 Session::checkCentralAccess();
 
-Session::checkRight("plugin_metademands", READ);
+Session::checkRight(Metademand::$rightname, READ);
 
 // checkCentralAccess() only proves access to the central interface: without a
 // business-right + entity check any technician could enumerate other entities'

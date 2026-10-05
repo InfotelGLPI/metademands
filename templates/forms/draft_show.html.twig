@@ -45,7 +45,6 @@
                                 first match, and duplicating an id across iterations is invalid HTML. -#}
                             <form {% if loop.first %}id="wizard_form" {% endif %}method="post" class="formCustomDraft"
                                   action="{{ form_action }}" enctype="multipart/form-data">
-                                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                                 {{ include('@metademands/wizard/hidden_inputs.html.twig', {'inputs': form.hidden_inputs}, false) }}
                                 {# raw: wizard form printed by the Field::getFieldInput() widgets (constructForm(), §3.2) #}
                                 {{ form.form_html|raw }}

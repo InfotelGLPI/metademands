@@ -37,7 +37,7 @@
  *    every "__VALUE__" parameter takes the selected value.
  *
  * jQuery load() is kept on purpose: it posts the parameters exactly like the
- * legacy code did, and the core ajaxSend hook adds the CSRF header. Delegated
+ * legacy code did, and the core CSRF check validates it. Delegated
  * jQuery handlers are required for the change case, since select2 fires a
  * jQuery event that native listeners do not receive.
  */

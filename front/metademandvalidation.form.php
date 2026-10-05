@@ -34,7 +34,7 @@ use GlpiPlugin\Metademands\MetademandValidation;
 // Require the dedicated business right: this endpoint both discloses (GET) and
 // performs (POST) the validation of a metademand. It is gated for the button in
 // MetademandValidation::showActionsForm() but must also be enforced server-side.
-Session::checkRight('plugin_metademands_validatemeta', READ);
+Session::checkRight(MetademandValidation::$rightname, READ);
 
 $metavalidation = new MetademandValidation();
 

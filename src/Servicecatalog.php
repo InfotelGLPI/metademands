@@ -38,7 +38,7 @@ use Session;
  */
 class Servicecatalog extends CommonGLPI
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     public $dohistory = false;
 

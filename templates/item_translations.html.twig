@@ -113,7 +113,6 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <form method="POST" action="{{ ajax_url }}">
-                        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}"/>
                         <input type="hidden" name="action" value="init_language"/>
                         <input type="hidden" name="items_id" value="{{ item.getID() }}"/>
                         <input type="hidden" name="itemtype" value="{{ item.getType() }}"/>

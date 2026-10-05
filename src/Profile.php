@@ -41,7 +41,19 @@ use Session;
  */
 class Profile extends \Profile
 {
-    public static $rightname = "profile";
+    public static string $rightname = "profile";
+
+    public const RIGHT_UPDATEMETA  = 'plugin_metademands_updatemeta';
+    public const RIGHT_ON_LOGIN    = 'plugin_metademands_on_login';
+    public const RIGHT_IN_MENU     = 'plugin_metademands_in_menu';
+    public const RIGHT_CREATEMETA  = 'plugin_metademands_createmeta';
+    public const RIGHT_FILLFORM    = 'plugin_metademands_fillform';
+    public const RIGHT_CANCELFORM  = 'plugin_metademands_cancelform';
+    public const RIGHT_PUBLICFORMS = 'plugin_metademands_publicforms';
+
+    // Rights of the servicecatalog plugin, which may not be installed
+    public const RIGHT_SERVICECATALOG                  = 'plugin_servicecatalog';
+    public const RIGHT_SERVICECATALOG_REDIRECT_ON_MENU = 'plugin_servicecatalog_redirect_on_menu';
     /**
      * @param int $nb
      *

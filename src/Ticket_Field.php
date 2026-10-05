@@ -42,7 +42,7 @@ class Ticket_Field extends CommonDBTM
 {
     public $itemtype = Metademand::class;
 
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     /**
      * functions mandatory

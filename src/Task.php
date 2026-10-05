@@ -35,6 +35,7 @@ use CommonGLPI;
 use DBConnection;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\DBAL\QueryExpression;
 use Html;
 use MassiveAction;
 use Migration;
@@ -46,10 +47,10 @@ use Toolbox;
  */
 class Task extends CommonDBChild
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
-    public static $itemtype = Metademand::class;
-    public static $items_id = 'plugin_metademands_metademands_id';
+    public static string $itemtype = Metademand::class;
+    public static string $items_id = 'plugin_metademands_metademands_id';
 
     public const TICKET_TYPE     = 0;
     public const METADEMAND_TYPE = 1;
@@ -163,7 +164,7 @@ class Task extends CommonDBChild
                 [
                     'formatastable' => 1,
                 ],
-                [1],
+                [new QueryExpression('true')],
             );
             $DB->doQuery($query);
         }
@@ -425,7 +426,7 @@ class Task extends CommonDBChild
             }
         } else {
             $type = "-1";
-            if (Session::haveRight('ticket', CREATE)) {
+            if (Session::haveRight(\Ticket::$rightname, CREATE)) {
                 $type = self::TICKET_TYPE;
             }
             if ($item->fields['force_create_tasks'] == 1) {
@@ -780,7 +781,7 @@ class Task extends CommonDBChild
     {
         $metademands = new Metademand();
 
-        if (Session::haveRight('ticket', CREATE)) {
+        if (Session::haveRight(\Ticket::$rightname, CREATE)) {
             if ($metademands_id == 0) {
                 $options[self::TICKET_TYPE] = __('Ticket');
             } elseif ($metademands->getFromDB($metademands_id)
@@ -911,7 +912,7 @@ class Task extends CommonDBChild
     //      $tasks  = new self();
     //      $result = $tasks->getTaskTypes();
     //
-    //      if (!Session::haveRight("ticket", CREATE)) {
+    //      if (!Session::haveRight(\Ticket::$rightname, CREATE)) {
     //         unset($result[0]);// unset ticket option
     //      }
     //

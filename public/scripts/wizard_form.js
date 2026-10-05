@@ -1260,7 +1260,7 @@
             });
 
             used.forEach(function (is_used, tasks_id) {
-                // jQuery: the core ajaxSend hook adds the CSRF token
+                // jQuery POST, validated by the core CSRF check
                 $.post(config.url, {tasks_id: tasks_id, used: is_used ? 1 : 0}, function (response) {
                     if (response != 1) {
                         window.plugin_metademands_wizard_setNextBtnTitle(is_used ? config.next_title : 'post');

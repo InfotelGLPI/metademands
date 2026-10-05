@@ -29,6 +29,7 @@
 
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
+use GlpiPlugin\Metademands\Metademand;
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
@@ -36,7 +37,7 @@ if (empty($_GET["id"])) {
 
 // The parent field is dereferenced right away, before any branch is entered: keep a page guard
 // here, the branches below then bind their own control to the row they write.
-Session::checkRightsOr('plugin_metademands', [CREATE, UPDATE, DELETE]);
+Session::checkRightsOr(Metademand::$rightname, [CREATE, UPDATE, DELETE]);
 
 $field = new Field();
 $field->getFromDB($_POST['plugin_metademands_fields_id']);

@@ -50,7 +50,7 @@ class Form extends CommonDBTM
         return "ti ti-file-spark";
     }
 
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
 
     public static function install(Migration $migration)
@@ -330,7 +330,7 @@ class Form extends CommonDBTM
      */
     public static function canPublish(): bool
     {
-        return Session::haveRight('plugin_metademands_publicforms', READ);
+        return Session::haveRight(Profile::RIGHT_PUBLICFORMS, READ);
     }
 
     /**

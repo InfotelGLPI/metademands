@@ -140,8 +140,8 @@ class FieldCustomvalueListTest extends DbTestCase
         $this->assertStringContainsString('data-md-confirm="', $html);
         $this->assertStringContainsString('data-bs-target="#md-customvalue-import42"', $html);
 
-        // Row forms + delete forms + import form, each with its token
-        $this->assertSame(substr_count($html, '<form'), substr_count($html, 'name="_glpi_csrf_token"'));
+        // Row forms + delete forms + import form, without CSRF token (GLPI 12)
+        $this->assertStringNotContainsString('_glpi_csrf_token', $html);
         $this->assertSame(5, substr_count($html, '<form'));
     }
 
@@ -218,7 +218,6 @@ class FieldCustomvalueListTest extends DbTestCase
         $this->assertHasName('default_values[3]', $html);
         $this->assertHasName('icon[3]', $html);
         $this->assertStringContainsString('name="_blank_picture[3]"', $html);
-        $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
         $this->assertStringContainsString('bg-secondary-lt', $html);
         $this->assertNoPluginInlineScript($html);
     }

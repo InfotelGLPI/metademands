@@ -31,13 +31,14 @@ header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\Metademand;
 
 // Page guard. The entity check below existed but no right bit did, so any authenticated
 // user could enumerate the users, groups and ITIL categories of their own entity. The
 // only caller is TicketTask::showTicketTaskForm(), whose entry point
 // ajax/showAddTaskForm.php:42 gates on plugin_metademands READ -- replay that bit, not a
 // stronger one, which would lock out the screen's legitimate readers.
-Session::checkRight('plugin_metademands', READ);
+Session::checkRight(Metademand::$rightname, READ);
 
 // The 'entity' option below overrides the session entity restriction in the dropdowns.
 // Re-validate the requested entity against the caller's own perimeter to prevent

@@ -36,7 +36,7 @@ if (strpos($_SERVER['PHP_SELF'], "dropdownITILCategories.php")) {
 
 // This endpoint is reachable directly, not only through ajax/type_object.php: gate it on its
 // own before any branching, so the category list is never served to a caller without rights.
-Session::checkRight("plugin_metademands", READ);
+Session::checkRight(Metademand::$rightname, READ);
 
 //$opt = ['entity' => $_POST["entity_restrict"]];
 $condition  = [];

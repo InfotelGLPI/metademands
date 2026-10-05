@@ -726,7 +726,8 @@ class MetademandPdf extends \TCPDF
                 }
 
                 if (!empty($elt['name'])) {
-                    $widths[] = $this->GetStringWidth($elt['name']);
+                    // Without $getarray, TCPDF 7 returns the total width as a float
+                    $widths[] = (float) $this->GetStringWidth($elt['name']);
                 }
             }
             if (count($widths) > 0) {

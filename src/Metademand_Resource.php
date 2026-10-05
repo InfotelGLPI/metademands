@@ -50,7 +50,7 @@ use UserCategory;
  */
 class Metademand_Resource extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     /**
      * functions mandatory

@@ -39,7 +39,7 @@ Html::header_nocache();
 // This endpoint had no control at all: the rendered form discloses the notification recipients,
 // the assigned groups and the ticket templates of the requested metademand. Require the plugin
 // right, then confront the requested object with the entity perimeter of the session.
-Session::checkRight('plugin_metademands', READ);
+Session::checkRight(Metademand::$rightname, READ);
 
 $metademand = new Metademand();
 $metademand->check((int) ($_POST["plugin_metademands_metademands_id"] ?? 0), READ);

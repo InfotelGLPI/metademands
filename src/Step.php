@@ -51,10 +51,10 @@ use User;
  **/
 class Step extends CommonDBChild
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
-    public static $itemtype = Metademand::class;
-    public static $items_id = 'plugin_metademands_metademands_id';
+    public static string $itemtype = Metademand::class;
+    public static string $items_id = 'plugin_metademands_metademands_id';
 
     /**
      * Return the localized name of the current Type
@@ -888,7 +888,7 @@ class Step extends CommonDBChild
                 // code prefixed it a second time and redirected to a 404 on any
                 // instance not served from the web root.
                 if (Plugin::isPluginActive('servicecatalog')
-                    && Session::haveRight("plugin_servicecatalog", READ)) {
+                    && Session::haveRight(Profile::RIGHT_SERVICECATALOG, READ)) {
                     $redirect_url = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.php";
                 } else {
                     $redirect_url = $CFG_GLPI['root_doc'] . '/front/ticket.php';

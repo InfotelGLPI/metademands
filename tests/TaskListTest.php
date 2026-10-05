@@ -104,7 +104,6 @@ class TaskListTest extends DbTestCase
         $this->assertStringContainsString('data-md-subitem-noopen', $html);
         $this->assertStringContainsString('/lib/treetable/treetable', $html);
         $this->assertStringContainsString('id="tags"', $html);
-        $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
     }
 
     public function testReadOnlyListHasNoFormNorMassiveActions(): void

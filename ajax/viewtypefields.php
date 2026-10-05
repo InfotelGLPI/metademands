@@ -34,7 +34,7 @@ use GlpiPlugin\Metademands\Metademand;
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-Session::checkRight("plugin_metademands", UPDATE);
+Session::checkRight(Metademand::$rightname, UPDATE);
 
 if (!isset($_POST['step'])) {
     $_POST['step'] = 'default';

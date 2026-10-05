@@ -50,7 +50,7 @@ use User;
  */
 class MetademandValidation extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands_validatemeta';
+    public static string $rightname = 'plugin_metademands_validatemeta';
 
     public const VALIDATE_WITHOUT_TASK = 3; // meta validate without task
     public const TASK_CREATION = 2; // task_created
@@ -546,7 +546,7 @@ class MetademandValidation extends CommonDBTM
             && ($item->fields['status'] != \Ticket::SOLVED
                 && $item->fields['status'] != \Ticket::CLOSED)
             && $item->fields['is_deleted'] != 1
-            && Session::haveRight('plugin_metademands_validatemeta', READ)) {
+            && Session::haveRight(MetademandValidation::$rightname, READ)) {
             $style = "btn-green";
             $title = "";
             if ($metaValidation->fields["validate"] == self::TO_VALIDATE

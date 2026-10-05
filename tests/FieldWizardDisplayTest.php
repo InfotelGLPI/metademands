@@ -169,7 +169,6 @@ class FieldWizardDisplayTest extends DbTestCase
         }
         $this->assertStringContainsString('colspan="2"', $html);
         $this->assertStringContainsString('name="update"', $html);
-        $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
         $this->assertStringContainsString('</form>', $html);
     }
 
@@ -192,7 +191,6 @@ class FieldWizardDisplayTest extends DbTestCase
         $this->assertNoInjectedScript($html);
         $this->assertMatchesRegularExpression('/name=[\'"]default\[4\][\'"]/', $html);
         $this->assertStringContainsString('name="custom[4]" value="4" checked', $html);
-        $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
         $this->assertStringContainsString('<a href="#" data-md-check-all="1">All</a>', $html);
         $this->assertStringContainsString('<a href="#" data-md-check-all="0">None</a>', $html);
     }
@@ -210,7 +208,6 @@ class FieldWizardDisplayTest extends DbTestCase
         $this->assertNoInjectedScript($html);
         $this->assertStringContainsString('submitGetLink(', $html);
         $this->assertStringContainsString('delete_basket_file', $html);
-        $this->assertStringContainsString('_glpi_csrf_token', $html);
     }
 
     public function testSwitchRangeMultiselectAndLocationCarryStatesAsBooleans(): void

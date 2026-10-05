@@ -779,7 +779,6 @@ function plugin_metademands_wizard_displayStepMsg(metademandparams)
             type: 'POST',
             data:
                 {
-                    '_glpi_csrf_token': metademandparams.token,
                     plugin_metademands_metademands_id: metademandparams.id,
                     block_id: id_bloc
             },

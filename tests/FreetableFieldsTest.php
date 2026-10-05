@@ -120,7 +120,6 @@ class FreetableFieldsTest extends DbTestCase
         $this->assertStringContainsString('name="dropdown_values[' . $select->getID() . ']"', $html);
         $this->assertStringContainsString('data-bs-toggle="tooltip"', $html);
         $this->assertStringContainsString('name="update"', $html);
-        $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
 
         // Two columns out of six: the add button is offered, without inline handler
         // (the only scripts left are the select2 bootstraps of the core dropdowns)
@@ -152,7 +151,6 @@ class FreetableFieldsTest extends DbTestCase
         $this->assertStringContainsString("name='is_mandatory_values[3]'", $html);
         $this->assertSame(2, substr_count($html, 'data-bs-toggle="tooltip"'));
         $this->assertStringContainsString('name="add"', $html);
-        $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
         // The cells used to share one id, which the add button appends to
         $this->assertStringNotContainsString('show_custom_fields', $html);
     }

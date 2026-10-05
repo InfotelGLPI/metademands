@@ -33,9 +33,10 @@
 
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\Metademand;
 
 if (Plugin::isPluginActive("metademands")) {
-    if (Session::haveRight("plugin_metademands", UPDATE)) {
+    if (Session::haveRight(Metademand::$rightname, UPDATE)) {
         Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/config.form.php");
     } else {
         throw new AccessDeniedHttpException();

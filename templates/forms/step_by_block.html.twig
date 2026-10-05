@@ -78,7 +78,7 @@
                                 {%- endif %}
                             </div>
                         </a>
-                        {#- raw: Html::showSimpleForm() output, a core-built link carrying its own escaping and CSRF token #}
+                        {#- raw: Html::showSimpleForm() output, a core-built link carrying its own escaping #}
                         <div class='btn flex-column' style='color:darkred'>{{ card.delete_form_html|raw }}</div>
                     </li>
                 {% endfor %}

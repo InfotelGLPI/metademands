@@ -72,10 +72,10 @@ class Condition extends CommonDBChild
     public const SHOW_RULE_HIDDEN = 2;
     public const SHOW_RULE_SHOWN = 3;
 
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
-    public static $itemtype = Metademand::class;
-    public static $items_id = 'plugin_metademands_metademands_id';
+    public static string $itemtype = Metademand::class;
+    public static string $items_id = 'plugin_metademands_metademands_id';
 
     public static $field_types_available = [
         '',
@@ -508,7 +508,7 @@ class Condition extends CommonDBChild
         $canedit = $item->can($item->fields['id'], UPDATE);
         $container = 'massMetaCondition' . $rand;
         $view_container_id = "viewcondition" . $item->getID() . $rand;
-        $can_link_field = Session::haveRight('plugin_metademands', UPDATE);
+        $can_link_field = Session::haveRight(Metademand::$rightname, UPDATE);
 
         $self = new self();
         $allConditions = $self->find(

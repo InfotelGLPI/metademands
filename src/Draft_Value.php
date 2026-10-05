@@ -39,7 +39,7 @@ use Migration;
  */
 class Draft_Value extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     public static function install(Migration $migration)
     {

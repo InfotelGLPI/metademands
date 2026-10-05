@@ -33,7 +33,7 @@ use GlpiPlugin\Metademands\Menu;
 
 if (Plugin::isPluginActive("metademands")) {
 
-    Session::checkRight("config", UPDATE);
+    Session::checkRight(\Config::$rightname, UPDATE);
 
     $config = new Config();
 

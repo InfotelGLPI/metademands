@@ -28,7 +28,6 @@
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
 
 <form name="form" method="post" action="{{ action }}">
-    {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
     {% if not is_new %}{{ inputs.hidden('id', item_id) }}{% endif %}
 
     <div class="card mt-2">

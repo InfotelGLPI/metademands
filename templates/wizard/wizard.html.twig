@@ -100,7 +100,6 @@
                 {% endif %}
                 {# raw: steps of the form, printed by Wizard::showWizardSteps() around the Wizard::constructForm() step form (§3.2); captured because it may redirect, which call() would turn into a Twig error #}
                 {{ steps|raw }}
-                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                 </form>
             {% endif %}
 

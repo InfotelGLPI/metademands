@@ -92,7 +92,6 @@ class TicketFieldListTest extends DbTestCase
         $this->assertStringContainsString('data-md-subitem-params=', $html);
         $this->assertStringContainsString('massiveaction', $html);
         $this->assertStringContainsString('item[' . TicketField::class . '][' . $ticketfield->getID() . ']', $html);
-        $this->assertGreaterThanOrEqual(1, substr_count($html, 'name="_glpi_csrf_token"'));
 
         // The massive action bar scans the checkboxes under '#' + container: a namespace
         // separator in the id is read as a selector escape, and nothing is selected

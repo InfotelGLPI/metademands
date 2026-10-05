@@ -30,8 +30,9 @@
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Metademands\Export;
+use GlpiPlugin\Metademands\Metademand;
 
-Session::checkRight("plugin_metademands", CREATE);
+Session::checkRight(Metademand::$rightname, CREATE);
 
 if (!isset($_POST["action"])
     || !isset($_POST["metademands"])

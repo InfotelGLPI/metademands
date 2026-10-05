@@ -51,7 +51,7 @@ use User;
  */
 class Wizard extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     /**
      * __contruct function where initialize some variables
@@ -148,7 +148,7 @@ class Wizard extends CommonDBTM
     public static function canCreate(): bool
     {
         if (Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE])
-            || Session::haveRight('plugin_metademands_createmeta', READ)) {
+            || Session::haveRight(Profile::RIGHT_CREATEMETA, READ)) {
             return true;
         }
         return false;
@@ -382,7 +382,7 @@ class Wizard extends CommonDBTM
 
         $settings_url = "";
         if (Session::getCurrentInterface() == 'central'
-            && Session::haveRight('plugin_metademands', UPDATE)
+            && Session::haveRight(Metademand::$rightname, UPDATE)
             && !$parameters['seeform']) {
             $settings_url = Toolbox::getItemTypeFormURL(Metademand::class) . "?id=" . $meta->getID();
         }
@@ -648,7 +648,7 @@ class Wizard extends CommonDBTM
             $denied_message = "";
             if (Session::getCurrentInterface() == 'central'
                 && !empty($parameters['tickets_id'])
-                && !Session::haveRight('ticket', UPDATE)) {
+                && !Session::haveRight(\Ticket::$rightname, UPDATE)) {
                 $denied_message = __("You don't have the right to update tickets", 'metademands');
             } elseif (!$canuse) {
                 $denied_message = __("You don't have the right to create meta-demand", 'metademands');
@@ -719,7 +719,7 @@ class Wizard extends CommonDBTM
                 $display_warning = Category::displayField($helpdesk_category, 'display_warning');
             }
             if (!empty($helpdesk_category->fields['knowbaseitems_id'])
-                && Session::haveRight('knowbase', KnowbaseItem::READFAQ)) {
+                && Session::haveRight(\KnowbaseItem::$rightname, KnowbaseItem::READFAQ)) {
                 $faq_url = PLUGIN_SERVICECATALOG_WEBDIR . "/front/faq.php?from_ticket=1"
                     . "&itilcategories_id=" . $itilcategories_id
                     . "&type=" . $meta->fields['type']
@@ -1330,7 +1330,7 @@ class Wizard extends CommonDBTM
                                 && $metademands->fields['can_update'] == true)
                             || ($meta_validated
                                 && $metademands->fields['can_clone'] == true))
-                        && Session::haveRight('plugin_metademands_updatemeta', READ)));
+                        && Session::haveRight(Profile::RIGHT_UPDATEMETA, READ)));
             $actions_margin = ($see_summary == 0);
 
             $show_print = !$preview
@@ -1355,7 +1355,6 @@ class Wizard extends CommonDBTM
     {
 
         $root_doc = PLUGIN_METADEMANDS_WEBDIR;
-        $token = Session::getNewCSRFToken();
 
         $see_summary = $metademands->fields['is_basket'] == 1 ? 1 : 0;
 
@@ -1472,7 +1471,6 @@ class Wizard extends CommonDBTM
         }
 
         $metaparams['root_doc'] = $root_doc;
-        $metaparams['token'] = $token;
         $metaparams['ID'] = $metademands->fields['id'];
         $metaparams['edit_model'] = $edit_model;
         $metaparams['use_model'] = $use_model;
@@ -1660,10 +1658,10 @@ class Wizard extends CommonDBTM
         $url = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php";
         if (isset($_SESSION['plugin_metademands'][$user_id]['redirect_wizard'])) {
             if (Plugin::isPluginActive('servicecatalog')
-                && Session::haveRight("plugin_servicecatalog", READ)) {
+                && Session::haveRight(Profile::RIGHT_SERVICECATALOG, READ)) {
                 if (method_exists(ServiceCatalogConfig::class, 'getMultiEntityRedirection') && ServiceCatalogConfig::getConfig()->getMultiEntityRedirection()) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
-                } elseif (Session::haveRight("plugin_servicecatalog_redirect_on_menu", READ)) {
+                } elseif (Session::haveRight(Profile::RIGHT_SERVICECATALOG_REDIRECT_ON_MENU, READ)) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
                 } else {
                     $type = $metademands->fields['type'];
@@ -1944,7 +1942,7 @@ class Wizard extends CommonDBTM
                             && !$metademands->fields['can_update'])
                         || ($meta_validated
                             && !$metademands->fields['can_clone']))
-                    || !Session::haveRight('plugin_metademands_updatemeta', READ))) {
+                    || !Session::haveRight(Profile::RIGHT_UPDATEMETA, READ))) {
                     Session::addMessageAfterRedirect(__("You don't have the right to modify this form or the metademand don't accept form modifications", 'metademands'), false, ERROR);
                     Html::back();
                 }
@@ -1952,7 +1950,7 @@ class Wizard extends CommonDBTM
                 $use_draft = $config['use_draft'] && $draft_id == 0;
 
                 $cancel_form = null;
-                if (Session::haveRight("plugin_metademands_cancelform", READ)
+                if (Session::haveRight(Profile::RIGHT_CANCELFORM, READ)
                     && isset(
                         $_SESSION['plugin_metademands'][$metademands->getID()]['plugin_metademands_stepforms_id'],
                     )) {
@@ -2493,7 +2491,6 @@ class Wizard extends CommonDBTM
             'paramUrl'               => $metaparams['paramUrl'],
             'edit_model'             => (string) $metaparams['edit_model'],
             'seeform'                => (string) $metaparams['seeform'],
-            'token'                  => $metaparams['token'],
             'id'                     => (string) $metaparams['ID'],
             'nameform'               => $metaparams['nameform'],
             'block_id'               => (string) $metaparams['block_id'],
@@ -2667,12 +2664,12 @@ class Wizard extends CommonDBTM
             return true;
         } else {
             if (Plugin::isPluginActive('servicecatalog')
-                && Session::haveRight("plugin_servicecatalog", READ)) {
+                && Session::haveRight(Profile::RIGHT_SERVICECATALOG, READ)) {
                 if (method_exists(ServiceCatalogConfig::class, 'getMultiEntityRedirection') && ServiceCatalogConfig::getConfig()->getMultiEntityRedirection()) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
                 } elseif (method_exists(ServiceCatalogConfig::class, 'getTicketRedirection') && ServiceCatalogConfig::getConfig()->getTicketRedirection() && isset($result) && isset($result['id']) && $result['id'] > 0) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/ticket.form.php?id=" . $result['id']);
-                } elseif (Session::haveRight("plugin_servicecatalog_redirect_on_menu", READ)) {
+                } elseif (Session::haveRight(Profile::RIGHT_SERVICECATALOG_REDIRECT_ON_MENU, READ)) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
                 } else {
                     $type = $metademands->fields['type'];
@@ -2685,7 +2682,7 @@ class Wizard extends CommonDBTM
                         Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
                     }
                 }
-            } elseif (Session::haveRight("plugin_metademands", READ)) {
+            } elseif (Session::haveRight(Metademand::$rightname, READ)) {
                 if (Plugin::isPluginActive('servicecatalog') && method_exists(ServiceCatalogConfig::class, 'getTicketRedirection') && ServiceCatalogConfig::getConfig()->getTicketRedirection() && isset($result) && isset($result['id']) && $result['id'] > 0) {
                     global $CFG_GLPI;
                     Html::redirect($CFG_GLPI['root_doc'] . "front/ticket.form.php?id=" . $result['id']);

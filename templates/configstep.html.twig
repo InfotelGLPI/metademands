@@ -28,7 +28,6 @@
 {% import "components/form/fields_macros.html.twig" as fields %}
 
 <form name="form" action="{{ action }}" method="post">
-    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="plugin_metademands_metademands_id" value="{{ metademand_id }}">
 
     <div class="card">

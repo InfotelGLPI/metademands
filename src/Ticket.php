@@ -43,7 +43,7 @@ use TicketTemplate;
  */
 class Ticket extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     /**
      * functions mandatory

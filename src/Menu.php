@@ -37,7 +37,7 @@ use Session;
  */
 class Menu extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     /**
      * @return string
@@ -61,7 +61,7 @@ class Menu extends CommonDBTM
             $image                 = "<i class='ti ti-share' title='" . __s('Create a metademand', 'metademands') . "'></i>&nbsp;" . __s('Create a metademand', 'metademands');
             $menu['links'][$image] = Wizard::getFormURL(false);
 
-        } elseif (Session::haveRight('plugin_metademands_createmeta', READ)) {
+        } elseif (Session::haveRight(Profile::RIGHT_CREATEMETA, READ)) {
             $menu['page']            = Wizard::getFormURL(false);
             $image                 = "<i class='ti ti-share' title='" . __s('Create a metademand', 'metademands') . "'></i>&nbsp;" . __s('Create a metademand', 'metademands');
             $menu['links'][$image] = Wizard::getFormURL(false);
@@ -70,7 +70,7 @@ class Menu extends CommonDBTM
         if (Metademand::canCreate()) {
             $menu['links']['add'] = '/plugins/metademands/front/setup.templates.php?add=1';
         }
-        if (Session::haveRight("config", UPDATE)) {
+        if (Session::haveRight(\Config::$rightname, UPDATE)) {
             //Entry icon in breadcrumb
             $menu['links']['config'] = Config::getFormURL(false);
         }
@@ -81,8 +81,8 @@ class Menu extends CommonDBTM
             $menu['links'][$image] = Export::getFormURL(false) . "?import_form=1";
         }
 
-        if ((Session::haveRight("plugin_metademands", READ)
-            || Session::haveRight("plugin_metademands_fillform", READ))) {
+        if ((Session::haveRight(Metademand::$rightname, READ)
+            || Session::haveRight(Profile::RIGHT_FILLFORM, READ))) {
             $image                 = "<i class='ti ti-edit' title='" . __s('My metademands', 'metademands') . "'></i>&nbsp;" . __s('My metademands', 'metademands');
             $menu['links'][$image] = Stepform::getSearchURL(false);
         }

@@ -82,7 +82,6 @@
                                 <form method="post" action="{{ target }}" style="display:inline">
                                     <input type="hidden" name="id" value="{{ template.id }}">
                                     <input type="hidden" name="withtemplate" value="1">
-                                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit" name="purge" value="1" class="btn btn-sm btn-outline-danger">
                                         {{ _x('button', 'Delete permanently') }}
                                     </button>

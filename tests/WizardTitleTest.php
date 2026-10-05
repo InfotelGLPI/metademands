@@ -37,7 +37,7 @@ use GlpiPlugin\Metademands\Wizard;
 /**
  * Frame of the wizard (wizard.html.twig): the title card, the models and drafts
  * drop-down and the abort message are included with their context, and the form
- * closes itself with its CSRF token.
+ * closes itself (GLPI 12: no CSRF token).
  */
 class WizardTitleTest extends DbTestCase
 {
@@ -85,8 +85,8 @@ class WizardTitleTest extends DbTestCase
         // The models and drafts drop-down is included inside the title card
         $this->assertStringContainsString('id="divnavforms"', $html);
         $this->assertStringContainsString('mydraft-withtitle', $html);
-        // The wizard form closes itself with a single CSRF token
-        $this->assertSame(1, substr_count($html, 'name="_glpi_csrf_token"'));
+        // The wizard form closes itself, without CSRF token (GLPI 12)
+        $this->assertStringNotContainsString('_glpi_csrf_token', $html);
         $this->assertSame(1, substr_count($html, '</form>'));
     }
 

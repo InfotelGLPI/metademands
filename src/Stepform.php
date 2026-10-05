@@ -49,7 +49,7 @@ use Glpi\Application\View\TemplateRenderer;
  */
 class Stepform extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     /**
      * functions mandatory
@@ -951,7 +951,7 @@ class Stepform extends CommonDBTM
      */
     public static function canCancelForm($stepforms_id)
     {
-        if (!Session::haveRight('plugin_metademands_cancelform', READ)) {
+        if (!Session::haveRight(Profile::RIGHT_CANCELFORM, READ)) {
             return false;
         }
 

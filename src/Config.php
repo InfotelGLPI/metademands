@@ -34,6 +34,7 @@ use CommonGLPI;
 use DBConnection;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\DBAL\QueryExpression;
 use Html;
 use Migration;
 use Session;
@@ -44,7 +45,7 @@ use Toolbox;
  */
 class Config extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands';
+    public static string $rightname = 'plugin_metademands';
 
     private static $instance;
 
@@ -366,7 +367,7 @@ class Config extends CommonDBTM
             [
                 'show_form_changes' => 0,
             ],
-            [1],
+            [new QueryExpression('true')],
         );
         $DB->doQuery($query);
 
