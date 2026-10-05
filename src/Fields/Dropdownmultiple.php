@@ -96,7 +96,7 @@ class Dropdownmultiple extends CommonDBTM
             $criteria['FROM'] = getTableForItemType($data['item']);
             $criteria['WHERE'][getTableForItemType($data['item']) . '.is_deleted'] = 0;
             $criteria['WHERE'][getTableForItemType($data['item']) . '.is_active'] = 1;
-            $criteria['ORDER'] = ['realname, firstname ASC'];
+            $criteria['ORDER'] = ['realname', 'firstname ASC'];
 
             if (!empty($data['custom_values'])) {
                 $options = FieldParameter::_unserialize($data['custom_values']);

@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands\Fields;
 
 use CommonDBTM;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\Locale\LanguageRegistry;
 use Glpi\RichText\RichText;
 use Glpi\Toolbox\FrontEnd;
 use Glpi\UI\ThemeManager;
@@ -423,14 +424,28 @@ class Textarea extends CommonDBTM
         // load tinymce lib
         Html::requireJs('tinymce');
 
-        $language = $_SESSION['glpilanguage'];
-        if (!file_exists(GLPI_ROOT . "/public/lib/tinymce-i18n/langs6/$language.js")) {
-            $language = $CFG_GLPI["languages"][$_SESSION['glpilanguage']][2];
-            if (!file_exists(GLPI_ROOT . "/public/lib/tinymce-i18n/langs6/$language.js")) {
-                $language = "en_GB";
+        // Same language resolution as Html::initEditorSystem(): GLPI 12 ships the TinyMCE 8
+        // translations (langs8) and resolves the fallbacks through the LanguageRegistry.
+        $language_RFC5646    = str_replace('_', '-', $_SESSION['glpilanguage']);
+        $language_regionless = preg_replace('/_.*$/', '', $_SESSION['glpilanguage']);
+        $expected_languages  = [$language_RFC5646, $language_regionless];
+        $main_language       = LanguageRegistry::getMainLanguage($language_regionless);
+        if ($main_language !== null) {
+            $expected_languages[] = str_replace('_', '-', $main_language);
+        }
+        $language     = 'en_GB';
+        $language_url = '';
+        foreach ($expected_languages as $expected_language) {
+            if (str_starts_with($expected_language, 'en')) {
+                // English is the default language and has no translation file
+                continue;
+            }
+            if (file_exists(GLPI_ROOT . "/public/lib/tinymce-i18n/langs8/$expected_language.js")) {
+                $language     = $expected_language;
+                $language_url = $CFG_GLPI['root_doc'] . '/lib/tinymce-i18n/langs8/' . $expected_language . '.js';
+                break;
             }
         }
-        $language_url = $CFG_GLPI['root_doc'] . '/lib/tinymce-i18n/langs6/' . $language . '.js';
 
         // Apply all GLPI styles to editor content
         $theme = ThemeManager::getInstance()->getCurrentTheme();

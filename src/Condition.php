@@ -717,7 +717,7 @@ class Condition extends CommonDBChild
         $dbu = new DbUtils();
         $criterias = [
             'plugin_metademands_metademands_id' => $metademands_id,
-            'ORDER' => 'order ASC, id ASC',
+            'ORDER' => ['order ASC', 'id ASC'],
         ];
         $field = new Field();
         $conditions = $dbu->getAllDataFromTable('glpi_plugin_metademands_conditions', $criterias);

@@ -1072,7 +1072,7 @@ class Export extends CommonDBTM
         }
 
         $criteria['WHERE'] = ['plugin_metademands_metademands_id' => $metademands_id];
-        $criteria['ORDER'] = ['rank, order'];
+        $criteria['ORDER'] = ['rank', 'order'];
 
         $fields = getAllDataFromTable(
             'glpi_plugin_metademands_fields',
