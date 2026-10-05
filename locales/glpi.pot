@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-05 22:51+0000\n"
+"POT-Creation-Date: 2026-10-05 23:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1235,7 +1235,7 @@ msgid ""
 "configured"
 msgstr ""
 
-#: src/Fields/Tel.php:163 src/Fields/Text.php:161 src/Fields/Textarea.php:171
+#: src/Fields/Tel.php:163 src/Fields/Text.php:161 src/Fields/Textarea.php:172
 #: src/Fields/Email.php:158 src/Fields/Url.php:129
 msgid "If field empty"
 msgstr ""
@@ -1741,7 +1741,7 @@ msgstr ""
 msgid "No visibility defined"
 msgstr ""
 
-#: src/Fields/Textarea.php:148
+#: src/Fields/Textarea.php:149
 msgid "Not available with Rich text option"
 msgstr ""
 
@@ -2466,7 +2466,7 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: src/Fields/Textarea.php:61
+#: src/Fields/Textarea.php:62
 msgid "Textarea"
 msgstr ""
 
@@ -2484,7 +2484,7 @@ msgstr ""
 msgid "The default value has changed since the last translation"
 msgstr ""
 
-#: tests/FieldWizardDisplayTest.php:373 src/Fields/Textarea.php:489
+#: tests/FieldWizardDisplayTest.php:373 src/Fields/Textarea.php:504
 msgid "The description field is mandatory"
 msgstr ""
 
