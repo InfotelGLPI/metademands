@@ -33,6 +33,7 @@ use CommonDBTM;
 use DBConnection;
 use Glpi\Helpdesk\HelpdeskTranslation;
 use Glpi\Helpdesk\Tile\Item_Tile;
+use Glpi\Helpdesk\Tile\LinkableToTilesInterface;
 use Glpi\Helpdesk\Tile\TileInterface;
 use Glpi\ItemTranslation\Context\ProvideTranslationsInterface;
 use Glpi\ItemTranslation\Context\TranslationHandler;
@@ -135,6 +136,60 @@ final class MetademandPageTile extends CommonDBTM implements TileInterface, Prov
                 HelpdeskTranslation::class,
             ],
         );
+    }
+
+    /**
+     * Link the new tile to its holder.
+     *
+     * Since GLPI core commit a6552e6345 ("Improve helpdesk tiles rights"), TilesManager::addTile()
+     * no longer creates the Item_Tile row itself: it passes the holder through `_itemtype_item` /
+     * `_items_id_item` and expects the tile to link itself (as the core TileRightTrait does), then
+     * fails with "Failed to link tile to item". Older cores pass nothing and still create the link,
+     * so nothing is done here in that case.
+     */
+    #[Override]
+    public function post_addItem()
+    {
+        parent::post_addItem();
+
+        $holder = getItemForItemtype($this->input['_itemtype_item'] ?? '');
+        $items_id = $this->input['_items_id_item'] ?? null;
+        if (
+            !$holder instanceof CommonDBTM
+            || !$holder instanceof LinkableToTilesInterface
+            || $items_id === null
+            || !$holder->getFromDB((int) $items_id)
+        ) {
+            return;
+        }
+
+        $item_tile = new Item_Tile();
+        $item_tile->add([
+            'itemtype_item' => $holder::class,
+            'items_id_item' => $holder->getID(),
+            'itemtype_tile' => self::class,
+            'items_id_tile' => $this->getID(),
+            'rank'          => $this->getNextTileRank($holder),
+        ]);
+    }
+
+    /**
+     * Rank following the last tile of the holder (unique per holder in glpi_helpdesks_tiles_items_tiles).
+     */
+    private function getNextTileRank(CommonDBTM $holder): int
+    {
+        global $DB;
+
+        $result = $DB->request([
+            'SELECT' => ['MAX' => 'rank AS max_rank'],
+            'FROM'   => Item_Tile::getTable(),
+            'WHERE'  => [
+                'itemtype_item' => $holder::class,
+                'items_id_item' => $holder->getID(),
+            ],
+        ])->current();
+
+        return ((int) ($result['max_rank'] ?? 0)) + 1;
     }
 
     #[Override]
