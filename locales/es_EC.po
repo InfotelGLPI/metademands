@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-05 23:34+0000\n"
+"POT-Creation-Date: 2026-10-06 08:27+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -1584,8 +1584,8 @@ msgstr "Validación de Metademanda"
 msgid "Metademands global status"
 msgstr ""
 
-#: src/Helpdesk/Tile/MetademandPageTile.php:65
-#: src/Helpdesk/Tile/MetademandPageTile.php:83
+#: src/Helpdesk/Tile/MetademandPageTile.php:66
+#: src/Helpdesk/Tile/MetademandPageTile.php:84
 msgid "Metademands list"
 msgstr ""
 
