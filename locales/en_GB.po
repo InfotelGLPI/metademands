@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.7.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-05 23:34+0000\n"
+"POT-Creation-Date: 2026-10-06 08:27+0000\n"
 "PO-Revision-Date: 2020-10-12 18:05+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1552,8 +1552,8 @@ msgstr ""
 msgid "Metademands global status"
 msgstr ""
 
-#: src/Helpdesk/Tile/MetademandPageTile.php:65
-#: src/Helpdesk/Tile/MetademandPageTile.php:83
+#: src/Helpdesk/Tile/MetademandPageTile.php:66
+#: src/Helpdesk/Tile/MetademandPageTile.php:84
 msgid "Metademands list"
 msgstr ""
 

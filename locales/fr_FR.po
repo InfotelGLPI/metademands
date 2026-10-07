@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-05 23:34+0000\n"
+"POT-Creation-Date: 2026-10-06 08:27+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
@@ -1596,8 +1596,8 @@ msgstr "Validation de la métademande"
 msgid "Metademands global status"
 msgstr "Statut global des métademandes"
 
-#: src/Helpdesk/Tile/MetademandPageTile.php:65
-#: src/Helpdesk/Tile/MetademandPageTile.php:83
+#: src/Helpdesk/Tile/MetademandPageTile.php:66
+#: src/Helpdesk/Tile/MetademandPageTile.php:84
 msgid "Metademands list"
 msgstr "Liste des métademandes"
 
