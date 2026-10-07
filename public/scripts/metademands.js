@@ -366,8 +366,8 @@ function plugin_metademands_wizard_validateForm(metademandparams)
                     fieldmandatory = true;
                 }
             }
-            const richtextarea = document.querySelector('textarea[id=\"' + fieldid + '\"]');
-            const nextDiv = richtextarea.nextElementSibling;
+            // The textarea itself: looking it up by id fails on fields that have none
+            const nextDiv = textarea.nextElementSibling;
 
             if (nextDiv && nextDiv.tagName.toLowerCase() === 'div') {
                 if (nextDiv.classList.contains('required')) {

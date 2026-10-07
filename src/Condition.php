@@ -974,8 +974,8 @@ class Condition extends CommonDBChild
     public static function showCheckValue($fields_id, $ID = -1)
     {
         $field = new Field();
+        $condition = new self();
         if ($ID > 0) {
-            $condition = new self();
             $condition->getFromDB($ID);
         }
         $metademand = new Metademand();
@@ -1112,7 +1112,7 @@ class Condition extends CommonDBChild
                         break;
                     case 'radio':
                     case 'checkbox':
-                        $options = [
+                        $option = [
                             'display_emptychoice' => false,
                         ];
                         if ($ID > 0) {
@@ -1125,7 +1125,7 @@ class Condition extends CommonDBChild
                         \Dropdown::showFromArray(
                             "$name",
                             $choices,
-                            $options,
+                            $option,
                         );
                         break;
                     case 'date':
