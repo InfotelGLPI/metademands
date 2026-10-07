@@ -25,6 +25,8 @@
  # --------------------------------------------------------------------------
  #}
 
+{% import '@metademands/forms/icon_macros.html.twig' as icons %}
+
 {#
  # Forms the current user has submitted and that are still in progress, one card each.
  # Read-only counterpart of stepform_waiting_form.html.twig: no link, no loadForm().
@@ -42,7 +44,7 @@
     <div class="card-header">
         <h5 class="card-title">
             {% if header_is_fa %}
-                <i class="fas {{ header_icon }} me-2"></i>
+                <i class="{{ icons.fa_class(header_icon) }} me-2"></i>
             {% else %}
                 <i class="ti {{ header_icon }} me-2"></i>
             {% endif %}
@@ -60,7 +62,7 @@
                         <div class="card h-100">
                             <div class="card-body text-center">
                                 {% if card.is_fa %}
-                                    <i class="fas {{ card.icon }} fa-4x"
+                                    <i class="{{ icons.fa_class(card.icon) }} fa-4x"
                                        style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>
                                 {% else %}
                                     <i class="ti {{ card.icon }}" style="font-size: 4em;"></i>

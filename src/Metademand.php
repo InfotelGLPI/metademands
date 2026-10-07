@@ -1840,7 +1840,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 return $display;
 
             case 'type':
-                return \Ticket::getTicketTypeName($values[$field]);
+                // Only tickets have a type: it is stored as 0 for changes and problems.
+                if (empty($values[$field])) {
+                    return '';
+                }
+                return htmlescape(\Ticket::getTicketTypeName($values[$field]));
 
             case 'object_to_create':
                 return self::getObjectTypeName($values[$field]);

@@ -25,6 +25,8 @@
  # --------------------------------------------------------------------------
  #}
 
+{% import '@metademands/forms/icon_macros.html.twig' as icons %}
+
 {#
  # Forms the current user still has to complete, one card per form.
  #
@@ -46,7 +48,7 @@
     <div class="card-header">
         <h5 class="card-title">
             {% if header_is_fa %}
-                <i class="fas {{ header_icon }} me-2"></i>
+                <i class="{{ icons.fa_class(header_icon) }} me-2"></i>
             {% else %}
                 <i class="ti {{ header_icon }} me-2"></i>
             {% endif %}
@@ -67,7 +69,7 @@
                                data-md-stepform="{{ card.id }}" data-md-stepform-meta="{{ card.metaID }}"
                                data-md-stepform-block="{{ card.block_id }}">
                                 {% if card.is_fa %}
-                                    <i class="fas {{ card.icon }} fa-4x"
+                                    <i class="{{ icons.fa_class(card.icon) }} fa-4x"
                                        style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>
                                 {% else %}
                                     <i class="ti {{ card.icon }}" style="font-size: 4em;"></i>
