@@ -884,7 +884,8 @@ class Stepform extends CommonDBTM
     private function showWaitingFormReadOnly()
     {
 
-        $stepforms = self::getWaitingFormsByMaker();
+        $stepforms = self::getWaitingForms();
+        $stepforms = self::getWaitingFormsByMaker($stepforms);
 
         // $meta is intentionally undefined here (matches legacy behavior): the header icon stays "ti-share".
         $icon = "ti-share";
