@@ -45,6 +45,8 @@ use Toolbox;
 use GlpiPlugin\Orderfollowup\Metademand as OrderMetademand;
 use GlpiPlugin\Orderfollowup\Freeinput;
 
+use function Safe\file_put_contents;
+
 // TCPDF is UTF-8 native: use the real euro codepoint, not the CP1252 byte chr(128).
 if (!defined('EURO')) {
     define('EURO', "\u{20AC}");
@@ -1427,7 +1429,9 @@ class MetademandPdf extends \TCPDF
         //Construction du chemin du fichier
         //      $filename = "metademand_" . $idTicket . ".pdf";
         $filename = $name . ".pdf";
-        $this->Output(GLPI_DOC_DIR . "/_uploads/" . $filename, 'F');
+        // TCPDF >= 7 expects a directory for the "F" destination: get the document as a
+        // string and write it at the expected path, whatever the TCPDF version.
+        file_put_contents(GLPI_DOC_DIR . "/_uploads/" . $filename, $this->Output($filename, 'S'));
 
         //Création du document
         $doc = new Document();
