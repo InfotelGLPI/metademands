@@ -2,26 +2,28 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 # Translators:
 # Kevin HAINRY <kevin.hainry@infotel.com>, 2021
 # Simon Thivet, 2024
 # Xavier CAILLAUD <thetsmr@gmail.com>, 2026
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-09 07:10+0000\n"
+"POT-Creation-Date: 2026-10-09 10:03+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
-"Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
+"Language-Team: French (France) (https://app.transifex.com/infotelGLPI/"
+"teams/96561/fr_FR/)\n"
+"Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr_FR\n"
-"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
+"1000000 == 0 ? 1 : 2;\n"
 
 #: src/Metademand.php:3864
 #, php-format
@@ -382,8 +384,8 @@ msgstr "Annuler le formulaire"
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
-"Attention toutes les lignes ne sont pas confirmées, êtes-vous sûr de vouloir"
-" continuer ?"
+"Attention toutes les lignes ne sont pas confirmées, êtes-vous sûr de vouloir "
+"continuer ?"
 
 #: templates/forms/ticket_validation.html.twig:54
 #: templates/tickettask_form_section.html.twig:88
@@ -814,8 +816,7 @@ msgid "Devices own by my groups"
 msgstr "Matériels appartenant à mes groupes"
 
 #: templates/wizard/wizard_breadcrumb.html.twig:63
-msgid ""
-"Did you know that there is an FAQ article that may be able to help you?"
+msgid "Did you know that there is an FAQ article that may be able to help you?"
 msgstr ""
 "Savez-vous qu'il existe un article de la FAQ qui peut peut-être vous aider ?"
 
@@ -880,8 +881,7 @@ msgstr "Voulez-vous les corriger ?"
 msgctxt "button"
 msgid "Do you want to fix them ? Warning you must check your options after!"
 msgstr ""
-"Voulez-vous les corriger ? Attention vous devrez vérifier les options après "
-"!"
+"Voulez-vous les corriger ? Attention vous devrez vérifier les options après !"
 
 #: templates/forms/stepform_waiting_warning.html.twig:44
 msgid "Do you want to see him ?"
@@ -1181,8 +1181,7 @@ msgstr "Total général (HT)"
 msgid "Grand total (TTC)"
 msgstr "Total général (TTC)"
 
-#: templates/group.html.twig:49
-#: templates/tickettask_form_section.html.twig:121
+#: templates/group.html.twig:49 templates/tickettask_form_section.html.twig:121
 #: templates/tickettask_form_section.html.twig:154
 #: templates/tickettask_form_section.html.twig:185
 #: templates/mailtask_form.html.twig:71 templates/step_form.html.twig:49
@@ -1237,8 +1236,8 @@ msgstr "Cacher le titre"
 
 #: templates/condition_list.html.twig:94
 #: templates/forms/stepform_list_from_metademand.html.twig:43
-#: templates/field_option_options.html.twig:96
-#: templates/task_list.html.twig:90 templates/field_list.html.twig:160
+#: templates/field_option_options.html.twig:96 templates/task_list.html.twig:90
+#: templates/field_list.html.twig:160
 msgid "ID"
 msgstr "ID"
 
@@ -1319,15 +1318,15 @@ msgstr ""
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
-"Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient"
-" obligatoire"
+"Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient "
+"obligatoire"
 
 #: src/FieldOption.php:1211
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
-"Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient"
-" visible"
+"Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient "
+"visible"
 
 #: src/FieldOption.php:1137
 msgid "If the value selected equals the value to check, the task is created"
@@ -2281,8 +2280,7 @@ msgctxt "button"
 msgid "Save as draft"
 msgstr "Sauvegarder comme brouillon"
 
-#: tests/FormListsTest.php:121
-#: templates/forms/private_models_list.html.twig:44
+#: tests/FormListsTest.php:121 templates/forms/private_models_list.html.twig:44
 #: templates/forms/private_models_list.html.twig:46
 msgctxt "button"
 msgid "Save as model"
@@ -2536,11 +2534,11 @@ msgstr "Tâches créées"
 
 #: src/Metademand.php:2006
 msgid ""
-"Tasks tree cannot be changed as unresolved related tickets exist or activate"
-" maintenance mode"
+"Tasks tree cannot be changed as unresolved related tickets exist or activate "
+"maintenance mode"
 msgstr ""
-"L'arborescence des tickets ne peut pas être modifiée car des tickets enfants"
-" existent ou activer le mode maintenance"
+"L'arborescence des tickets ne peut pas être modifiée car des tickets enfants "
+"existent ou activer le mode maintenance"
 
 #: hook.php:617
 msgid "Technician child ticket"
@@ -2602,16 +2600,15 @@ msgid ""
 "expected schema: data will be lost. Check that they are not used by another "
 "plugin or by a custom development before running them."
 msgstr ""
-"Les requêtes suivantes suppriment des colonnes ou des tables qui ne font pas"
-" partie du schéma attendu : des données seront perdues. Avant de les "
-"exécuter, vérifiez qu’elles ne sont pas utilisées par un autre plugin ou par"
-" un développement personnalisé."
+"Les requêtes suivantes suppriment des colonnes ou des tables qui ne font pas "
+"partie du schéma attendu : des données seront perdues. Avant de les "
+"exécuter, vérifiez qu’elles ne sont pas utilisées par un autre plugin ou par "
+"un développement personnalisé."
 
 #: front/nextGroup.form.php:88
 #, php-format
 msgid "The form has been sent to the group %s, you can close the window"
-msgstr ""
-"Le formulaire a été envoyé au groupe %s, vous pouvez fermer la fenêtre"
+msgstr "Le formulaire a été envoyé au groupe %s, vous pouvez fermer la fenêtre"
 
 #: front/nextGroup.form.php:82
 #, php-format
@@ -2658,8 +2655,8 @@ msgid ""
 msgstr ""
 "Les requêtes ci-dessous ne sont que des suggestions basées sur les "
 "différences constatées. Veuillez les examiner, sauvegarder votre base de "
-"données, puis les exécuter manuellement : elles ne sont jamais exécutées par"
-" l’extension."
+"données, puis les exécuter manuellement : elles ne sont jamais exécutées par "
+"l’extension."
 
 #: templates/field_customvalue_values.html.twig:49
 msgid ""
@@ -2681,8 +2678,8 @@ msgid ""
 "The ticket cannot be resolved or closed until all child tickets are not "
 "resolved"
 msgstr ""
-"Le ticket ne peut pas être résolu ou fermé tant que tous les tickets enfants"
-" ne sont pas résolus."
+"Le ticket ne peut pas être résolu ou fermé tant que tous les tickets enfants "
+"ne sont pas résolus."
 
 #: templates/configstep.html.twig:48
 msgid "The user must select a defined user of the selected groups"
@@ -2735,8 +2732,7 @@ msgstr "Il y a eu un problème au chargement de votre signature"
 #: src/Wizard.php:1745
 msgid "There was a problem. The step-by-step mode configuration was reset"
 msgstr ""
-"Il y a eu un problème. La configuration du mode Pas à Pas a été "
-"réinitialisée"
+"Il y a eu un problème. La configuration du mode Pas à Pas a été réinitialisée"
 
 #: src/Wizard.php:1494
 msgid "These fields don\\'t respect regex"
@@ -2985,8 +2981,7 @@ msgstr "Utiliser les brouillons"
 #: src/Fields/Dropdownobject.php:603
 #: templates/fields/field_parameter_dropdownmultiple.html.twig:58
 msgid "Use id of requester by default"
-msgstr ""
-"Utiliser le demandeur en utilisateur par défaut de la liste déroulante"
+msgstr "Utiliser le demandeur en utilisateur par défaut de la liste déroulante"
 
 #: src/Fields/Dropdownobject.php:604
 #: templates/fields/field_parameter_dropdownmultiple.html.twig:61
@@ -3175,8 +3170,7 @@ msgstr "Vous ne pouvez pas ajouter un champ sans type"
 
 #: src/Fields/Freetable.php:175
 msgid "You can't create a new line when there is an existing one"
-msgstr ""
-"Vous ne pouvez pas créer une nouvelle ligne sans valider la précédente"
+msgstr "Vous ne pouvez pas créer une nouvelle ligne sans valider la précédente"
 
 #: templates/task_form.html.twig:43
 msgid "You cannot add new tasks if linked tickets are not solved"
@@ -3190,8 +3184,7 @@ msgstr "Vous ne pouvez pas faire cela pour ce champ"
 
 #: templates/metademand.html.twig:185
 msgid "You cannot use this parameter if there is more than one category"
-msgstr ""
-"Vous ne pouvez pas utiliser ce paramètre s'il y a plus d'une catégorie"
+msgstr "Vous ne pouvez pas utiliser ce paramètre s'il y a plus d'une catégorie"
 
 #: src/Wizard.php:1685
 msgid "You do not have access to the form"
