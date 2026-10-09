@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-07 15:04+0000\n"
+"POT-Creation-Date: 2026-10-09 07:10+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -40,7 +40,7 @@ msgstr[2] ""
 msgid "(6 fields maximum)"
 msgstr ""
 
-#: src/MetademandPdf.php:656 src/Fields/Freetable.php:275
+#: src/MetademandPdf.php:658 src/Fields/Freetable.php:275
 #: src/Fields/Freetable.php:554
 msgid "(if VAT 20%)"
 msgstr ""
@@ -69,7 +69,7 @@ msgstr ""
 msgid "A problem occurred, the form was not sent"
 msgstr "Se ha producido un problema, el formulario no se ha enviado"
 
-#: src/Condition.php:398
+#: src/Condition.php:398 src/Condition.php:921
 msgid "AND"
 msgstr "Y"
 
@@ -395,6 +395,10 @@ msgstr ""
 msgid "Category of the metademand"
 msgstr "Categoría de la metademanda"
 
+#: templates/condition_list.html.twig:61
+msgid "Check all"
+msgstr ""
+
 #: src/Fields/Checkbox.php:60
 msgid "Checkbox"
 msgstr "Casilla de verificación"
@@ -514,6 +518,12 @@ msgstr[0] "Visualización condicional"
 msgstr[1] "Visualizaciones condicionales"
 msgstr[2] "Visualizaciones condicionales"
 
+#: templates/condition_list.html.twig:165
+msgid ""
+"Conditions of a same pool are grouped between parentheses. Two pools are "
+"joined by the logical operator of the first condition of the second pool."
+msgstr ""
+
 #: templates/config.html.twig:97
 msgid "Configuration of the Service Catalog plugin"
 msgstr "Configuración del plugin Catálogo de servicios"
@@ -584,7 +594,7 @@ msgstr "Crear tareas (no tickets secundarios)"
 msgid "Created by"
 msgstr ""
 
-#: src/MetademandPdf.php:333
+#: src/MetademandPdf.php:335
 msgid "Created on"
 msgstr "Creado el"
 
@@ -984,7 +994,7 @@ msgstr ""
 msgid "Entity"
 msgstr ""
 
-#: templates/condition_list.html.twig:72 templates/condition_form.html.twig:44
+#: templates/condition_list.html.twig:98 templates/condition_form.html.twig:44
 #: templates/condition_for_metademand.html.twig:72
 msgid "Equality operator"
 msgstr "Operador de igualdad"
@@ -1000,6 +1010,10 @@ msgstr ""
 #: src/Fields/Basket.php:164 src/Fields/Basket.php:974
 #: src/Fields/Basket.php:1209
 msgid "Estimated unit price"
+msgstr ""
+
+#: templates/condition_list.html.twig:161
+msgid "Evaluated expression"
 msgstr ""
 
 #: templates/forms/field_informations.html.twig:47
@@ -1047,7 +1061,7 @@ msgid "Father's field"
 msgstr "Campo del padre"
 
 #: templates/field_existing_form.html.twig:47
-#: templates/condition_list.html.twig:70
+#: templates/condition_list.html.twig:96
 #: templates/forms/field_option_parent_field_row.html.twig:36
 #: templates/tools_diagnostic.html.twig:72
 #: templates/tools_diagnostic.html.twig:108
@@ -1147,13 +1161,13 @@ msgstr "Objeto Glpi"
 msgid "Grand total"
 msgstr ""
 
-#: src/MetademandPdf.php:523 src/MetademandPdf.php:656
+#: src/MetademandPdf.php:525 src/MetademandPdf.php:658
 #: src/Fields/Freetable.php:275 src/Fields/Freetable.php:554
 #: src/Fields/Basket.php:1031 src/Fields/Basket.php:1299
 msgid "Grand total (HT)"
 msgstr ""
 
-#: src/MetademandPdf.php:648 src/Fields/Freetable.php:274
+#: src/MetademandPdf.php:650 src/Fields/Freetable.php:274
 #: src/Fields/Freetable.php:550
 msgid "Grand total (TTC)"
 msgstr ""
@@ -1211,7 +1225,7 @@ msgstr "Ocultar los valores \"No\" y vacíos de los campos en los tickets"
 msgid "Hide title"
 msgstr "Ocultar título"
 
-#: templates/condition_list.html.twig:68
+#: templates/condition_list.html.twig:94
 #: templates/forms/stepform_list_from_metademand.html.twig:43
 #: templates/field_option_options.html.twig:96 templates/task_list.html.twig:90
 #: templates/field_list.html.twig:160
@@ -1378,6 +1392,10 @@ msgstr ""
 msgid "Invalid regular expression"
 msgstr ""
 
+#: templates/condition_list.html.twig:122
+msgid "Joins this pool to the previous one"
+msgstr ""
+
 #: templates/fields/field_parameter_ldapdropdown.html.twig:49
 msgid "LDAP directory"
 msgstr ""
@@ -1458,7 +1476,7 @@ msgstr "Tickets abiertos vinculados"
 msgid "Linked ticket"
 msgstr "Ticket vinculado"
 
-#: templates/condition_list.html.twig:59
+#: templates/condition_list.html.twig:56
 msgid "List of conditions"
 msgstr "Lista de condiciones"
 
@@ -1492,7 +1510,7 @@ msgctxt "button"
 msgid "Load form"
 msgstr "Formulario de carga"
 
-#: src/Condition.php:590 templates/condition_list.html.twig:69
+#: src/Condition.php:594 templates/condition_list.html.twig:95
 #: templates/condition_form.html.twig:37
 #: templates/condition_for_metademand.html.twig:65
 msgid "Logical operator"
@@ -1823,7 +1841,8 @@ msgctxt "quantity"
 msgid "Number of inter ticket followups"
 msgstr "Número de seguimientos entre tickets"
 
-#: src/Condition.php:399
+#: src/Condition.php:399 src/Condition.php:921
+#: templates/condition_list.html.twig:72
 msgid "OR"
 msgstr "O"
 
@@ -1987,7 +2006,7 @@ msgstr ""
 msgid "Plugin setup"
 msgstr "Configuración del plugin"
 
-#: src/Condition.php:581 templates/condition_list.html.twig:74
+#: src/Condition.php:585 templates/condition_list.html.twig:82
 #: templates/condition_form.html.twig:49
 #: templates/condition_for_metademand.html.twig:77
 msgid "Pool"
@@ -2578,6 +2597,11 @@ msgstr "Se ha eliminado la línea"
 msgid "The line has been updated"
 msgstr "Se ha actualizado la línea"
 
+#: templates/condition_list.html.twig:126
+#: templates/condition_list.html.twig:169
+msgid "The logical operator of the first condition is not used."
+msgstr ""
+
 #: src/MetademandValidation.php:528
 msgid "The metademand is validated and affected"
 msgstr "La metademanda se valida y afecta"
@@ -2821,7 +2845,7 @@ msgstr ""
 msgid "Translations: %s"
 msgstr ""
 
-#: templates/condition_list.html.twig:71
+#: templates/condition_list.html.twig:97
 #: templates/forms/ticket_validation.html.twig:53
 #: templates/forms/freetablefield_add_value.html.twig:56
 #: templates/forms/field_informations.html.twig:43
@@ -2996,12 +3020,12 @@ msgstr "Validado por %sel%s"
 msgid "Value"
 msgstr ""
 
-#: src/Condition.php:573 src/Fields/Radio.php:224
+#: src/Condition.php:577 src/Fields/Radio.php:224
 #: src/Fields/Dropdownmeta.php:1144 src/Fields/Yesno.php:208
 #: src/Fields/Ldapdropdown.php:297 src/Fields/Checkbox.php:213
 #: src/Fields/Dropdownobject.php:682 src/Fields/Dropdownmultiple.php:514
 #: src/Fields/Dropdown.php:585 src/Fields/Basket.php:470
-#: templates/condition_list.html.twig:73
+#: templates/condition_list.html.twig:99
 #: templates/field_option_options.html.twig:102
 #: templates/condition_form.html.twig:47
 #: templates/condition_for_metademand.html.twig:75
