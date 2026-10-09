@@ -853,3 +853,8 @@ select.chained-select {
     .mobile-only { display: inline; }
     .desktop-only { display: none; }
 }
+
+/* Text fields carry a size attribute (35 / 70 characters) wider than a phone screen. */
+.md-wizard input.form-control {
+    max-width: 100%;
+}
