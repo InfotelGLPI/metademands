@@ -534,6 +534,8 @@ class Condition extends CommonDBChild
                     'id' => $condition['id'],
                 ],
                 'logic' => self::showLogic($condition['show_logic']),
+                'show_logic' => $condition['show_logic'],
+                'field_name' => \Dropdown::getDropdownName(Field::getTable(), $condition['plugin_metademands_fields_id']),
                 'field_label' => \Dropdown::getDropdownName(
                     Field::getTable(),
                     $condition['plugin_metademands_fields_id'],
@@ -553,6 +555,8 @@ class Condition extends CommonDBChild
             'view_container_id' => $view_container_id,
             'edit_url' => $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
             'rows' => $rows,
+            'groups' => self::getPredicateGroups($rows),
+            'preview' => self::getPredicatePreview($rows),
         ]);
     }
 
@@ -799,6 +803,125 @@ class Condition extends CommonDBChild
             $return = '&&';
         }
         return $return;
+    }
+
+    /**
+     * Build the boolean expression of a list of conditions, as ajax/condition.php evaluates it.
+     *
+     * Conditions sharing an "order" (pool) are grouped between parentheses. Inside a group they
+     * are joined by their own logical operator; two groups are joined by the operator of the
+     * FIRST condition of the second group, and the operator of the very first condition is never
+     * used. Kept in one place so that the evaluation and the preview of the conditions list
+     * cannot drift apart.
+     *
+     * @param array    $conditions ordered rows with 'show_logic' and 'order' keys
+     * @param callable $term       returns the operand of a condition (its result, or its label)
+     * @param string[] $operators  text of the AND and OR operators
+     *
+     * @return string the expression, '' without conditions
+     */
+    public static function buildPredicate(array $conditions, callable $term, array $operators = ['&&', '||']): string
+    {
+        $predicate    = '';
+        $actual_group = 0;
+        [$and, $or]   = $operators;
+
+        foreach ($conditions as $condition) {
+            $logic = ($condition['show_logic'] == self::SHOW_LOGIC_OR) ? $or : $and;
+            if (!empty($predicate) && $actual_group == $condition['order']) {
+                $predicate .= ' ' . $logic;
+            } elseif (empty($predicate)) {
+                $predicate = '(';
+            } elseif ($actual_group != $condition['order']) {
+                $predicate .= ') ' . $logic . ' (';
+            }
+            $actual_group = $condition['order'];
+            $predicate .= ' ' . $term($condition) . ' ';
+        }
+
+        return $predicate === '' ? '' : $predicate . ')';
+    }
+
+    /**
+     * Human readable expression of the conditions of a metademand, built by buildPredicate() like
+     * the evaluation, for the conditions list: it shows how the pools and the logical operators
+     * are actually combined.
+     *
+     * @param array $rows rows of listConditions(), ordered like the evaluation
+     *
+     * @return array{expression: string, ignored_first_logic: bool}
+     */
+    public static function getPredicatePreview(array $rows): array
+    {
+        return [
+            'expression'          => self::getReadableExpression($rows),
+            // The operator of the first condition joins nothing: flag an OR, which is never
+            // what it seems to mean there.
+            'ignored_first_logic' => isset($rows[0]) && $rows[0]['show_logic'] == self::SHOW_LOGIC_OR,
+        ];
+    }
+
+    /**
+     * Split the rows of listConditions() into the pools buildPredicate() puts between
+     * parentheses: a new pool starts each time the "order" of two consecutive rows differs.
+     *
+     * Each pool carries the operator joining it to the previous one (the logical operator of its
+     * first row, null for the first pool) and its own expression. Each row gets the role its
+     * logical operator plays: 'inner' (joins it to the previous row of the pool), 'join' (joins
+     * the whole pool to the previous one) or 'ignored' (first row of the first pool).
+     *
+     * @param array $rows rows of listConditions(), ordered like the evaluation
+     *
+     * @return array<int, array{order: int, join: ?string, expression: string, rows: array}>
+     */
+    public static function getPredicateGroups(array $rows): array
+    {
+        $groups = [];
+        $current = null;
+
+        foreach ($rows as $row) {
+            // Same boundary as buildPredicate(): the order of the previous row, not the pool
+            // number itself, so that the display follows the evaluation exactly.
+            if ($current === null || $current['order'] != $row['order']) {
+                if ($current !== null) {
+                    $groups[] = $current;
+                }
+                $current = [
+                    'order' => (int) $row['order'],
+                    'join'  => $groups === [] ? null : (self::getEnumShowLogic()[$row['show_logic']] ?? ''),
+                    'rows'  => [],
+                ];
+                $row['logic_role'] = $groups === [] ? 'ignored' : 'join';
+            } else {
+                $row['logic_role'] = 'inner';
+            }
+            $current['rows'][] = $row;
+        }
+        if ($current !== null) {
+            $groups[] = $current;
+        }
+
+        foreach ($groups as &$group) {
+            $group['expression'] = self::getReadableExpression($group['rows']);
+        }
+
+        return $groups;
+    }
+
+    /**
+     * Readable form of buildPredicate() for rows of listConditions(): field, operator and
+     * value of each condition, translated AND / OR.
+     */
+    private static function getReadableExpression(array $rows): string
+    {
+        $expression = self::buildPredicate(
+            $rows,
+            static fn(array $row) => '[' . trim((string) $row['field_name']) . ' ' . $row['condition_label']
+                . ((string) $row['check_value']['label'] !== '' ? ' ' . $row['check_value']['label'] : '') . ']',
+            [__('AND', 'metademands'), __('OR', 'metademands')],
+        );
+
+        return (string) preg_replace('/\s+/', ' ', trim($expression));
     }
 
     public static function verifyCondition($condition): bool

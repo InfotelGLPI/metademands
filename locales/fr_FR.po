@@ -3313,3 +3313,19 @@ msgstr[2] "formulaires"
 #: templates/forms/stepform_waiting_warning.html.twig:42
 msgid "to complete"
 msgstr "à compléter"
+
+#: templates/condition_list.html.twig
+msgid "Evaluated expression"
+msgstr "Expression évaluée"
+
+#: templates/condition_list.html.twig
+msgid "Conditions of a same pool are grouped between parentheses. Two pools are joined by the logical operator of the first condition of the second pool."
+msgstr "Les conditions d'un même groupement sont regroupées entre parenthèses. Deux groupements sont reliés par l'opérateur logique de la première condition du second groupement."
+
+#: templates/condition_list.html.twig
+msgid "The logical operator of the first condition is not used."
+msgstr "L'opérateur logique de la première condition n'est pas utilisé."
+
+#: templates/condition_list.html.twig
+msgid "Joins this pool to the previous one"
+msgstr "Relie ce groupement au précédent"

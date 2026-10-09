@@ -3197,3 +3197,19 @@ msgstr[1] ""
 #: templates/forms/stepform_waiting_warning.html.twig:42
 msgid "to complete"
 msgstr ""
+
+#: templates/condition_list.html.twig
+msgid "Evaluated expression"
+msgstr ""
+
+#: templates/condition_list.html.twig
+msgid "Conditions of a same pool are grouped between parentheses. Two pools are joined by the logical operator of the first condition of the second pool."
+msgstr ""
+
+#: templates/condition_list.html.twig
+msgid "The logical operator of the first condition is not used."
+msgstr ""
+
+#: templates/condition_list.html.twig
+msgid "Joins this pool to the previous one"
+msgstr ""

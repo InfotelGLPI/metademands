@@ -26,6 +26,33 @@
  */
 
 /**
+ * Content of a rich text field, or null when its TinyMCE editor is not usable.
+ *
+ * tinymce.get() returns null for a textarea without editor (not undefined, as the callers
+ * tested), and getContent() throws "Cannot read properties of undefined (reading 'serialize')"
+ * while the editor is still initialising: either way the conditions and the validation of the
+ * wizard stopped on an exception.
+ *
+ * @param {string} id textarea id
+ * @returns {string|null}
+ */
+function plugin_metademands_getRichtextContent(id)
+{
+    if (typeof tinymce === 'undefined') {
+        return null;
+    }
+    const editor = tinymce.get(id);
+    if (!editor || !editor.initialized) {
+        return null;
+    }
+    try {
+        return editor.getContent();
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
  * metademandWizard
  *
  * @param  options
@@ -376,9 +403,10 @@ function plugin_metademands_wizard_validateForm(metademandparams)
             }
             if (res != 'none'
                 && fieldmandatory == true) {
-                if (typeof tinymce !== 'undefined'
-                    && tinymce.get(textarea.id)) {
-                    var contenu = tinymce.get(textarea.id).getContent();
+                // Editor not ready: fall back to the textarea value (else branch below)
+                var richtext = plugin_metademands_getRichtextContent(textarea.id);
+                if (richtext !== null) {
+                    var contenu = richtext;
                     // Vérifier si le contenu est vide
                     if (contenu.trim().length) {
                         $('[name=\"' + fieldname + '\"]').removeClass('invalid');
@@ -812,15 +840,14 @@ function plugin_metademands_wizard_checkConditions(metademandconditionsparams)
             for (let i = 0; i < metademandconditionsparams.richtext_ids.length; i++) {
                 let field = 'field' + metademandconditionsparams.richtext_ids[i];
 
-                if (typeof tinyMCE.get(field) !== 'undefined') {
-                    if (tinyMCE.get(field).getContent() !== 'undefined') {
-                        let content = tinyMCE.get(field).getContent();
-                        let name = 'field[' + metademandconditionsparams.richtext_ids[i] + ']';
-                        formDatas.push({
-                            name: name,
-                            value: content
-                        });
-                    }
+                // Editor not ready: the serialized textarea value stays in formDatas
+                let content = plugin_metademands_getRichtextContent(field);
+                if (content !== null) {
+                    let name = 'field[' + metademandconditionsparams.richtext_ids[i] + ']';
+                    formDatas.push({
+                        name: name,
+                        value: content
+                    });
                 }
             }
         }

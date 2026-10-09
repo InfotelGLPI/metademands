@@ -52,67 +52,126 @@
         }])|raw }}
     {% endif %}
 
-    <div class="left">
-        <table class="tab_cadre_fixehov">
-            <thead>
-                <tr class="tab_bg_2">
-                    <th colspan="{{ canedit ? 8 : 7 }}">{{ __('List of conditions', 'metademands') }}</th>
-                </tr>
-                <tr>
-                    {% if canedit %}
-                        <th width="10">
-                            {# raw: massive actions, no core macro (§3.2) #}
-                            {{ call('Html::getCheckAllAsCheckbox', [container])|raw }}
-                        </th>
-                    {% endif %}
-                    <th>{{ __('ID') }}</th>
-                    <th>{{ __('Logical operator', 'metademands') }}</th>
-                    <th>{{ __('Field', 'metademands') }}</th>
-                    <th>{{ __('Type') }}</th>
-                    <th>{{ __('Equality operator', 'metademands') }}</th>
-                    <th>{{ __('Value to check', 'metademands') }}</th>
-                    <th>{{ __('Pool', 'metademands') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in rows %}
-                    <tr class="tab_bg_1"
-                        {%- if canedit %}
-                            style="cursor:pointer"
-                            data-md-subitem-target="{{ view_container_id }}"
-                            data-md-subitem-url="{{ edit_url }}"
-                            data-md-subitem-params="{{ row.edit_params|json_encode }}"
-                        {%- endif %}>
-                        {% if canedit %}
-                            <td class="center" data-md-subitem-noopen>
-                                {# raw: massive actions, no core macro (§3.2) #}
-                                {{ call('Html::getMassiveActionCheckBox', [itemtype, row.id])|raw }}
-                            </td>
-                        {% endif %}
-                        <td>{{ row.id }}</td>
-                        <td>{{ row.logic }}</td>
-                        <td>
-                            {% if row.field_url %}
-                                <a href="{{ row.field_url }}" style="color:royalblue;" data-md-subitem-noopen>{{ row.field_label }}</a>
-                            {% else %}
-                                {{ row.field_label }}
-                            {% endif %}
-                        </td>
-                        <td>{{ row.type_label }}</td>
-                        <td>{{ row.condition_label }}</td>
-                        <td>
-                            {% if row.check_value.url %}
-                                <a href="{{ row.check_value.url }}" style="color:royalblue;" data-md-subitem-noopen>{{ row.check_value.label }}</a>
-                            {% else %}
-                                {{ row.check_value.label }}
-                            {% endif %}
-                        </td>
-                        <td>{{ row.order }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <h3 class="mb-0 me-auto">{{ __('List of conditions', 'metademands') }}</h3>
+        {% if canedit %}
+            <label class="form-check mb-0">
+                {# raw: massive actions, no core macro (§3.2) #}
+                {{ call('Html::getCheckAllAsCheckbox', [container])|raw }}
+                <span class="form-check-label">{{ __('Check all') }}</span>
+            </label>
+        {% endif %}
     </div>
+
+    {# One card per pool, in evaluation order (Condition::getPredicateGroups()). Between two cards,
+     # the operator joining the pools: the logical operator of the first row of the second pool. #}
+    {% for group in groups %}
+        {% if group.join is not null %}
+            <div class="d-flex align-items-center my-2">
+                <hr class="flex-grow-1 my-0">
+                <span class="badge {{ group.join == __('OR', 'metademands') ? 'bg-orange' : 'bg-blue' }} text-white fs-4 px-3 py-2 mx-2">
+                    {{ group.join }}
+                </span>
+                <hr class="flex-grow-1 my-0">
+            </div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-header py-2 flex-column align-items-start">
+                <h4 class="card-title mb-1 text-nowrap">
+                    <i class="ti ti-brackets me-1"></i>{{ __('Pool', 'metademands') }} {{ group.order }}
+                    <span class="badge bg-secondary-lt ms-1">{{ group.rows|length }}</span>
+                </h4>
+                <code class="text-wrap small">{{ group.expression }}</code>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-vcenter card-table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            {% if canedit %}
+                                <th class="w-1"></th>
+                            {% endif %}
+                            <th>{{ __('ID') }}</th>
+                            <th>{{ __('Logical operator', 'metademands') }}</th>
+                            <th>{{ __('Field', 'metademands') }}</th>
+                            <th>{{ __('Type') }}</th>
+                            <th>{{ __('Equality operator', 'metademands') }}</th>
+                            <th>{{ __('Value to check', 'metademands') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in group.rows %}
+                            <tr
+                                {%- if canedit %}
+                                    style="cursor:pointer"
+                                    data-md-subitem-target="{{ view_container_id }}"
+                                    data-md-subitem-url="{{ edit_url }}"
+                                    data-md-subitem-params="{{ row.edit_params|json_encode }}"
+                                {%- endif %}>
+                                {% if canedit %}
+                                    <td data-md-subitem-noopen>
+                                        {# raw: massive actions, no core macro (§3.2) #}
+                                        {{ call('Html::getMassiveActionCheckBox', [itemtype, row.id])|raw }}
+                                    </td>
+                                {% endif %}
+                                <td>{{ row.id }}</td>
+                                <td>
+                                    {% if row.logic_role == 'inner' %}
+                                        {{ row.logic }}
+                                    {% elseif row.logic_role == 'join' %}
+                                        <span class="text-muted" title="{{ __('Joins this pool to the previous one', 'metademands') }}">
+                                            {{ row.logic }} <i class="ti ti-arrow-up"></i>
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted text-decoration-line-through" title="{{ __('The logical operator of the first condition is not used.', 'metademands') }}">
+                                            {{ row.logic }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if row.field_url %}
+                                        <a href="{{ row.field_url }}" data-md-subitem-noopen>{{ row.field_label }}</a>
+                                    {% else %}
+                                        {{ row.field_label }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ row.type_label }}</td>
+                                <td>{{ row.condition_label }}</td>
+                                <td>
+                                    {% if row.check_value.url %}
+                                        <a href="{{ row.check_value.url }}" data-md-subitem-noopen>{{ row.check_value.label }}</a>
+                                    {% else %}
+                                        {{ row.check_value.label }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+
+    {# Expression actually evaluated (Condition::getPredicatePreview()): makes the grouping by
+     # pool and the operator joining two pools visible. #}
+    {% if preview.expression is not empty %}
+        <div class="card mt-2 border-info">
+            <div class="card-body py-2">
+                <div class="fw-bold mb-1">
+                    <i class="ti ti-math-function me-1"></i>{{ __('Evaluated expression', 'metademands') }}
+                </div>
+                <code class="d-block text-wrap">{{ preview.expression }}</code>
+                <div class="small text-muted mt-1">
+                    {{ __('Conditions of a same pool are grouped between parentheses. Two pools are joined by the logical operator of the first condition of the second pool.', 'metademands') }}
+                </div>
+                {% if preview.ignored_first_logic %}
+                    <div class="small text-warning mt-1">
+                        <i class="ti ti-alert-triangle me-1"></i>{{ __('The logical operator of the first condition is not used.', 'metademands') }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
 
     {% if canedit %}
         {# Rendered after the rows on purpose: when it is not the top one, showMassiveActions()

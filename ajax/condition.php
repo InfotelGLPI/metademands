@@ -81,26 +81,11 @@ if (isset($_POST['metademands_id'])
         }
     }
 
-    $checked_tab = [];
-    $result = '';
-
-    $actual_group = 0;
-
-    if (count($tab) > 0) {
-        foreach ($tab as $key => $condition) {
-            $result = (int) Condition::verifyCondition($condition);
-            if (!empty($predicate) && $actual_group == $condition['order']) {
-                $predicate .= ' ' . Condition::showPhpLogic($condition['show_logic']);
-            } elseif (empty($predicate)) {
-                $predicate = '(';
-            } elseif ($actual_group != $condition['order']) {
-                $predicate .= ") " . Condition::showPhpLogic($condition['show_logic']) . "( ";
-            }
-            $actual_group = $condition['order'];
-            $predicate .= " $result ";
-        }
-        $predicate .= ")";
-    }
+    // Same grouping as the preview of the conditions list (Condition::getPredicatePreview()).
+    $predicate = Condition::buildPredicate(
+        $tab,
+        static fn(array $condition) => (string) (int) Condition::verifyCondition($condition),
+    );
 }
 // Safe boolean evaluation (replaces eval()): the predicate only ever contains
 // booleans (0/1), && , || and parentheses. Parse with a shunting-yard to RPN and
