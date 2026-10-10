@@ -104,7 +104,7 @@ $rand = mt_rand();
 // user's hardware inventory by iterating users_id.
 $requested_users_id = (int) ($_POST['users_id'] ?? 0);
 if ($requested_users_id <= 0
-    || !Config::canCurrentUserViewRequester($requested_users_id)) {
+    || !Config::canCurrentUserViewRequester($requested_users_id, (int) ($_POST['id_fielduser'] ?? 0), true)) {
     $requested_users_id = (int) Session::getLoginUserID();
 }
 $_POST['users_id'] = $requested_users_id;

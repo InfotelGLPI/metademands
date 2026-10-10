@@ -50,7 +50,11 @@ class Signature extends CommonDBTM
     /** Uploaded by this session through ajax/addsignature.php: usable and deletable. */
     private const ORIGIN_UPLOAD = 'upload';
 
-    /** Reloaded from a draft / form / step form this session opened: usable only. */
+    /**
+     * Reloaded from a draft / form / step form this session opened: usable only, and only
+     * by the field it was loaded from (stored as [ORIGIN_LOADED, fields_id]). A signature of
+     * an earlier signer cannot be re-posted under another field or meta-demand.
+     */
     private const ORIGIN_LOADED = 'loaded';
 
     /**
@@ -169,20 +173,27 @@ class Signature extends CommonDBTM
      * the paths addsignature.php produced for the current session are accepted --
      * the very same allow-list ajax/removesignature.php already consults.
      *
-     * @param mixed $value Raw value posted for a signature field
+     * @param mixed    $value     Raw value posted for a signature field
+     * @param int|null $fields_id Field the value is posted for; null to only check the path
+     *                            (display of a value already stored)
      *
      * @return string Accepted path, or an empty string
      */
-    public static function sanitizeSubmittedValue($value): string
+    public static function sanitizeSubmittedValue($value, ?int $fields_id = null): string
     {
         if (!is_string($value) || $value === '') {
             return '';
         }
 
         // Only paths this session uploaded, or reloaded from a draft / form it was allowed
-        // to open (see registerLoadedValues()), are accepted: a well-formed path to a
-        // picture somebody else signed is refused, whatever its shape.
-        if (!isset($_SESSION[self::SESSION_KEY][$value])) {
+        // to open (see registerLoadedValues()), are accepted. A reloaded one is accepted on a
+        // submission ($fields_id given) only for the field it was loaded from: the signature of
+        // an earlier signer cannot be re-posted as the signature of another field or form.
+        $origin = $_SESSION[self::SESSION_KEY][$value] ?? null;
+        if ($origin === null) {
+            return '';
+        }
+        if ($fields_id !== null && is_array($origin) && (int) ($origin[1] ?? 0) !== $fields_id) {
             return '';
         }
 
@@ -261,8 +272,9 @@ class Signature extends CommonDBTM
         ]);
         foreach ($signature_fields as $signature_field) {
             $path = $values[$signature_field['id']] ?? '';
-            if ($path !== '' && !isset($_SESSION[self::SESSION_KEY][$path])) {
-                $_SESSION[self::SESSION_KEY][$path] = self::ORIGIN_LOADED;
+            // An upload of this session keeps its own origin (deletable)
+            if ($path !== '' && ($_SESSION[self::SESSION_KEY][$path] ?? null) !== self::ORIGIN_UPLOAD) {
+                $_SESSION[self::SESSION_KEY][$path] = [self::ORIGIN_LOADED, (int) $signature_field['id']];
             }
         }
     }

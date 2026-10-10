@@ -102,7 +102,7 @@ if (isset($_POST['users_id'])
     // allows it (self, User READ, or same entity scope) — prevents PII enumeration by id
     // while keeping "fill a form for another user" working (see Config helper).
     if (
-        Config::canCurrentUserViewRequester($users_id)
+        Config::canCurrentUserViewRequester($users_id, (int) ($_POST['id_fielduser'] ?? 0), true)
         && $user->getFromDB($users_id)
     ) {
         $val = $user->fields['users_id_supervisor'];

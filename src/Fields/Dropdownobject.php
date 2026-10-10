@@ -213,6 +213,8 @@ class Dropdownobject extends CommonDBTM
 
         return [
             'url'     => PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php",
+            // The user field the lookup is made for (Config::isOfferedByUserField())
+            'fields_id' => (int) $data['id'],
             'targets' => $targets,
         ];
     }
@@ -347,7 +349,7 @@ class Dropdownobject extends CommonDBTM
 
                     if (
                         (int) $opt['value'] !== $my_supervisor
-                        && !Config::canCurrentUserViewRequester((int) $opt['value'])
+                        && !Config::canCurrentUserViewRequester((int) $opt['value'], (int) $data['id'])
                     ) {
                         $opt['value'] = 0;
                     }

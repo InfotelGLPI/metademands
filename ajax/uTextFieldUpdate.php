@@ -50,6 +50,7 @@ Session::checkSeveralRightsOr([
 $user = new User();
 $data = [];
 $id = (int) ($_GET['id'] ?? 0);
+$fields_id = (int) ($_GET['fields_id'] ?? 0);
 // Only expose a user's personal data (email/phone/mobile/registration number)
 // when the caller may actually read that user. Prevents PII harvesting by id
 // enumeration. Single rule for the whole u*Update.php family, so a future change of
@@ -57,7 +58,7 @@ $id = (int) ($_GET['id'] ?? 0);
 if (
     $id > 0
     && $user->getFromDB($id)
-    && Config::canCurrentUserViewRequester($id)
+    && Config::canCurrentUserViewRequester($id, $fields_id, true)
 ) {
     // see field.class.php used_by_ticket dropdown definition
     $data = [

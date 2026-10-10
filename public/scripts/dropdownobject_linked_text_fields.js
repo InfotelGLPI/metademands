@@ -46,7 +46,7 @@ $(function () {
 
         $.ajax({
             url: config.url,
-            data: {id: $(this).val()},
+            data: {id: $(this).val(), fields_id: config.fields_id},
             success: function (response) {
                 const values = typeof response === 'string' ? JSON.parse(response) : response;
 

@@ -66,7 +66,7 @@ $md_can_read_target_user = static function (): bool {
     if ($uid === (int) Session::getLoginUserID()) {
         return true;
     }
-    return Config::canCurrentUserViewRequester($uid);
+    return Config::canCurrentUserViewRequester($uid, (int) ($_POST['id_fielduser'] ?? 0), true);
 };
 
 if (!isset($_POST['fieldname'])) {

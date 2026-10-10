@@ -89,9 +89,13 @@ class Config extends CommonDBTM
      * blocked. Self and full-interface callers (User READ) are always allowed.
      *
      * @param int $requested_users_id
+     * @param int $fields_id          user field of a meta-demand the value comes from: when
+     *                               given, the rule is the one of that field's picker
+     *                               (isOfferedByUserField())
+     * @param bool $require_field     refuse when no field is given (Ajax lookups by id)
      * @return bool
      */
-    public static function canCurrentUserViewRequester(int $requested_users_id): bool
+    public static function canCurrentUserViewRequester(int $requested_users_id, int $fields_id = 0, bool $require_field = false): bool
     {
         // Non-positive id means "no requester selected" (defaults to self).
         if ($requested_users_id <= 0 || $requested_users_id === (int) Session::getLoginUserID()) {
@@ -106,12 +110,100 @@ class Config extends CommonDBTM
             return true;
         }
 
+        // Called for a user field of a form: the user must be one its picker offers, in a
+        // meta-demand the caller may fill in. The bare entity overlap below would let any
+        // plugin user read the details of anyone in their entities, by id.
+        if ($fields_id > 0) {
+            return self::isOfferedByUserField($requested_users_id, $fields_id);
+        }
+        // The Ajax lookups of the wizard always name their user field: without it, no
+        // fallback on the entity overlap, which allowed the enumeration
+        if ($require_field) {
+            return false;
+        }
+
         // Otherwise the target must share at least one entity the caller can currently see,
         // exactly as the requester dropdown is entity-restricted.
         $my_entities     = $_SESSION['glpiactiveentities'] ?? [];
         $target_entities = \Profile_User::getUserEntities($requested_users_id, true);
 
         return count(array_intersect((array) $my_entities, $target_entities)) > 0;
+    }
+
+    /**
+     * Whether the user field $fields_id, of a meta-demand the caller may fill in, offers the
+     * user $users_id: the rule of its picker (User::dropdown() of Fields\Dropdownobject),
+     * replayed server side. Ties the lookup of a user's details to a form the caller was shown,
+     * instead of any user sharing an entity with them.
+     */
+    public static function isOfferedByUserField(int $users_id, int $fields_id): bool
+    {
+        if ($users_id <= 0) {
+            return false;
+        }
+
+        $field = new Field();
+        if (
+            !$field->getFromDB($fields_id)
+            || $field->fields['type'] !== 'dropdown_object'
+            || $field->fields['item'] !== \User::class
+        ) {
+            return false;
+        }
+
+        // A meta-demand the caller may fill in, as ajax/condition.php checks it
+        $metademands_id = (int) $field->fields['plugin_metademands_metademands_id'];
+        $metademand     = new Metademand();
+        if (
+            !$metademand->getFromDB($metademands_id)
+            || !($metademand->canView() || Group::isUserHaveRight($metademands_id))
+            || !Session::haveAccessToEntity($metademand->fields['entities_id'], $metademand->fields['is_recursive'])
+        ) {
+            return false;
+        }
+
+        // The picker offers the caller themself, and the supervisor it may preselect
+        if ($users_id === (int) Session::getLoginUserID()) {
+            return true;
+        }
+        $me = new \User();
+        if ($me->getFromDB(Session::getLoginUserID()) && (int) ($me->fields['users_id_supervisor'] ?? 0) === $users_id) {
+            return true;
+        }
+
+        // Active accounts within their dates, in the active entities
+        $user = new \User();
+        $now  = $_SESSION['glpi_currenttime'] ?? date('Y-m-d H:i:s');
+        if (
+            !$user->getFromDB($users_id)
+            || $user->isDeleted()
+            || !$user->isActive()
+            || (!empty($user->fields['begin_date']) && $user->fields['begin_date'] > $now)
+            || (!empty($user->fields['end_date']) && $user->fields['end_date'] < $now)
+        ) {
+            return false;
+        }
+        $target_entities = \Profile_User::getUserEntities($users_id, true);
+        if (array_intersect((array) ($_SESSION['glpiactiveentities'] ?? []), $target_entities) === []) {
+            return false;
+        }
+
+        // "Only users of my groups"
+        $parameter = new FieldParameter();
+        $custom    = [];
+        if ($parameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fields_id])) {
+            $custom = FieldParameter::_unserialize($parameter->fields['custom'] ?? '');
+        }
+        if ((int) (is_array($custom) ? ($custom['user_group'] ?? 0) : 0) === 1) {
+            $my_groups = $_SESSION['glpigroups'] ?? [];
+
+            return $my_groups !== [] && countElementsInTable(\Group_User::getTable(), [
+                'users_id'  => $users_id,
+                'groups_id' => $my_groups,
+            ]) > 0;
+        }
+
+        return true;
     }
 
     /**

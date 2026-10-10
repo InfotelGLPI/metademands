@@ -1288,7 +1288,7 @@ class Step extends CommonDBChild
                                     // kept in session or persisted: it ends up concatenated to
                                     // GLPI_PICTURE_DIR and read from disk by MetademandPdf.
                                     if ($value['type'] == 'signature') {
-                                        $clean_signature = Signature::sanitizeSubmittedValue($post[$id] ?? '');
+                                        $clean_signature = Signature::sanitizeSubmittedValue($post[$id] ?? '', (int) $id);
                                         if (isset($post[$id])) {
                                             $post[$id] = $clean_signature;
                                         }

@@ -919,9 +919,14 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      *
      * @return array<int> the accepted identifiers, empty when none survives
      */
-    private static function filterActorValues($value, string $itemtype): array
+    private static function filterActorValues($value, string $itemtype, array $field = []): array
     {
         $accepted = [];
+
+        // "Only users of my groups": the picker offered the members of the groups of the
+        // submitter (User::dropdown() right 'groups') and the submitter themself
+        $my_groups_only = $itemtype === User::class
+            && (int) ($field['custom_values']['user_group'] ?? 0) === 1;
 
         foreach (is_array($value) ? $value : [$value] as $actor_id) {
             $actor_id = (int) $actor_id;
@@ -942,7 +947,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 }
             } else {
                 $user = new User();
-                if (!$user->getFromDB($actor_id)) {
+                // The picker only offers active accounts, within their validity dates
+                if (!$user->getFromDB($actor_id) || !self::isSelectableUser($user)) {
+                    continue;
+                }
+                if ($my_groups_only && !self::sharesAGroupWithMe($actor_id)) {
                     continue;
                 }
                 // A user carries no entities_id of its own: reachability is the
@@ -966,6 +975,36 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     }
 
     /**
+     * Whether User::dropdown() would offer this account: not deleted, active, within its dates
+     */
+    private static function isSelectableUser(User $user): bool
+    {
+        $now = $_SESSION['glpi_currenttime'] ?? date('Y-m-d H:i:s');
+
+        return !$user->isDeleted()
+            && $user->isActive()
+            && (empty($user->fields['begin_date']) || $user->fields['begin_date'] <= $now)
+            && (empty($user->fields['end_date']) || $user->fields['end_date'] >= $now);
+    }
+
+    /**
+     * Whether the user is the submitter or a member of one of the submitter's groups, as the
+     * "Only users of my groups" picker offers them
+     */
+    private static function sharesAGroupWithMe(int $users_id): bool
+    {
+        if ($users_id === (int) Session::getLoginUserID()) {
+            return true;
+        }
+        $my_groups = $_SESSION['glpigroups'] ?? [];
+
+        return $my_groups !== [] && countElementsInTable(\Group_User::getTable(), [
+            'users_id'  => $users_id,
+            'groups_id' => $my_groups,
+        ]) > 0;
+    }
+
+    /**
      * Filter the identifiers posted through a form field mapped to the ticket requester.
      *
      * Unlike the hidden _users_id_requester input of the wizard -- which is never user
@@ -985,9 +1024,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      *
      * @return array<int>
      */
-    private static function filterRequesterValues($value): array
+    private static function filterRequesterValues($value, array $field = []): array
     {
-        return self::filterActorValues($value, User::class);
+        return self::filterActorValues($value, User::class, $field);
     }
 
     /**
@@ -1000,9 +1039,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      *
      * @return void
      */
-    private static function appendActorValues(array &$fields, string $name, $value, string $itemtype): void
+    private static function appendActorValues(array &$fields, string $name, $value, string $itemtype, array $field = []): void
     {
-        $accepted = self::filterActorValues($value, $itemtype);
+        $accepted = self::filterActorValues($value, $itemtype, $field);
         if ($accepted === []) {
             return;
         }
@@ -1178,7 +1217,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         $link_to_user = (int) ($fields_values['link_to_user'] ?? 0);
         if ($link_to_user > 0 && isset($posted_values[$link_to_user]) && is_scalar($posted_values[$link_to_user])) {
             $linked_users_id = (int) $posted_values[$link_to_user];
-            if ($linked_users_id > 0 && Config::canCurrentUserViewRequester($linked_users_id)) {
+            if ($linked_users_id > 0 && Config::canCurrentUserViewRequester($linked_users_id, $link_to_user)) {
                 return $linked_users_id;
             }
         }
@@ -2923,12 +2962,19 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         // would otherwise undo the anti-spoofing control applied above:
                                         // replay it, and leave the computed requester in place when
                                         // nothing survives rather than clearing the field.
-                                        $requesters = self::filterRequesterValues($v[$id]);
+                                        $requesters = self::filterRequesterValues($v[$id], $fields_values);
                                         if ($requesters !== []) {
                                             unset($parent_fields[$name]);
                                             foreach ($requesters as $usr) {
                                                 $parent_fields[$name][] = $usr;
                                             }
+                                        } else {
+                                            // Not silent: the demand is not made for the one chosen
+                                            Session::addMessageAfterRedirect(
+                                                __('The requester chosen cannot be selected: the demand is made for the default requester.', 'metademands'),
+                                                false,
+                                                WARNING,
+                                            );
                                         }
                                     }
                                     if ($fields_values['used_by_ticket'] == 71) {
@@ -2937,7 +2983,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     }
                                     if ($fields_values['used_by_ticket'] == 66) {
                                         $name = "_users_id_observer";
-                                        self::appendActorValues($parent_fields, $name, $v[$id], User::class);
+                                        self::appendActorValues($parent_fields, $name, $v[$id], User::class, $fields_values);
                                     }
                                     if ($fields_values['used_by_ticket'] == 65) {
                                         $name = "_groups_id_observer";
@@ -2962,7 +3008,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         // A validation target grants the designated user a say on the
                                         // ticket, so the posted identifier gets the same treatment as
                                         // the other actors.
-                                        foreach (self::filterActorValues($v[$id], User::class) as $validator_id) {
+                                        foreach (self::filterActorValues($v[$id], User::class, $fields_values) as $validator_id) {
                                             $parent_fields["_validation_targets"][] = ['itemtype_target' => User::class, 'items_id_target' => $validator_id];
                                             $parent_ticketfields["_validation_targets"][] = ['itemtype_target' => User::class, 'items_id_target' => $validator_id];
                                         }
@@ -4775,7 +4821,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                     self::appendActorValues(
                                                         $son_ticket_data,
                                                         $name,
-                                                        self::filterRequesterValues($values[$id]),
+                                                        self::filterRequesterValues($values[$id], $params),
                                                         User::class,
                                                     );
                                                 }
@@ -4785,7 +4831,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 }
                                                 if ($params['used_by_ticket'] == 66) {
                                                     $name = "_users_id_observer";
-                                                    self::appendActorValues($son_ticket_data, $name, $values[$id], User::class);
+                                                    self::appendActorValues($son_ticket_data, $name, $values[$id], User::class, $params);
                                                 }
                                                 if ($params['used_by_ticket'] == 65) {
                                                     $name = "_groups_id_observer";

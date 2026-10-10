@@ -82,7 +82,7 @@ if (isset($_POST['users_id']) && (int) $_POST["users_id"] > 0) {
     $user_tooltip = new User();
     if (
         ($user_id === $my_supervisor
-            || Config::canCurrentUserViewRequester($user_id))
+            || Config::canCurrentUserViewRequester($user_id, (int) $field_id, true))
         && $user_tooltip->getFromDB($user_id)
     ) {
         TemplateRenderer::getInstance()->display('@metademands/ajax/user_tooltip.html.twig', [

@@ -90,7 +90,7 @@ if (isset($_POST['users_id']) && $_POST["users_id"] > 0) {
     // — prevents PII enumeration by id. Single rule for the whole u*Update.php family.
     if (
         $user->getFromDB($users_id)
-        && Config::canCurrentUserViewRequester($users_id)
+        && Config::canCurrentUserViewRequester($users_id, (int) ($_POST['id_fielduser'] ?? 0), true)
     ) {
         $val = Profile_User::getUserEntitiesForRight(
             $user->getID(),

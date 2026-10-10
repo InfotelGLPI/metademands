@@ -429,7 +429,11 @@ class Dropdown extends CommonDBTM
             default:
                 if ($data["display_type"] == self::BLOCK_DISPLAY) {
                     $classfield = getItemForItemtype($data["item"]);
-                    if ($classfield instanceof CommonDBTM) {
+                    // The itemtype is chosen by the designer of the form, not by the one filling
+                    // it in: list its rows only to a reader allowed to see them, as the core
+                    // dropdown of the standard rendering below does. Otherwise a form could expose
+                    // the names and comments of contracts, suppliers... to self-service users.
+                    if ($classfield instanceof CommonDBTM && $classfield::canView()) {
                         // Keep the boundary of the standard rendering below ('entity' =>
                         // active entities): a bare find() would list every row of the
                         // table, whatever its entity, to anyone filling the form.
