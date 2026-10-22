@@ -2254,7 +2254,7 @@ class FieldOption extends CommonDBChild
             $reset++;
         }
         if ($reset > 0) {
-            $migration->displayWarning(sprintf(
+            $migration->displayMessage(sprintf(
                 'metademands: child blocks of %d option(s) lost by version 3.6.15 have been reset, they must be selected again',
                 $reset,
             ));
