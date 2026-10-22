@@ -122,7 +122,8 @@ if ($_POST['display_type'] == Dropdown::CLASSIC_DISPLAY) {
 } else {
     $opt['fields_id'] = $_POST['fields_id'];
     $opt['required'] = (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1 ? "required" : "");
-    Dropdown::locationDropdown($opt);
+    // Returns its markup (Twig migration): printed here, the endpoint outputs the field
+    echo Dropdown::locationDropdown($opt);
 }
 
 $_POST['name'] = "location_user" . $_POST["id_fielduser"] . $_POST['fields_id'];
