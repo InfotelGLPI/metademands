@@ -813,7 +813,7 @@ msgstr "Souhaitez vous les voir ?"
 msgid "Do you want to validate her?"
 msgstr "Souhaitez-vous la valider ?"
 
-#: src/Metademand.php:6763
+#: src/Metademand.php:6765
 msgid "Done on"
 msgstr "Fait le"
 
@@ -1008,7 +1008,7 @@ msgstr "Remplir un formulaire"
 msgid "Filter"
 msgstr "Filtre"
 
-#: src/Metademand.php:6789 ⁨standard input⁩:45
+#: src/Metademand.php:6791 ⁨standard input⁩:45
 msgid "Find a form"
 msgstr "Trouver un formulaire"
 
@@ -1243,7 +1243,7 @@ msgstr "Importer une métademande"
 msgid "Impossible to read the CSV file"
 msgstr "Impossible de lire le fichier CSV"
 
-#: src/Metademand.php:6764
+#: src/Metademand.php:6766
 msgid "In progress"
 msgstr "En cours"
 
@@ -1449,7 +1449,7 @@ msgstr[2] "Meta-Demandes"
 msgid "Meta-demands linked"
 msgstr "Meta-Demandes associées"
 
-#: src/Metademand.php:7315
+#: src/Metademand.php:7317
 msgid "Metademand"
 msgstr "Métademande"
 
@@ -1483,7 +1483,7 @@ msgstr "Statut global des métademandes"
 msgid "Metademands list"
 msgstr "Liste des métademandes"
 
-#: front/tools.form.php:70 src/Metademand.php:7302
+#: front/tools.form.php:70 src/Metademand.php:7304
 msgid "Metademands statuses updated"
 msgstr "Statuts des métademandes mis à jour"
 
@@ -1671,7 +1671,7 @@ msgstr "Valeur non nulle"
 msgid "Not subject to validation"
 msgstr "Non soumis à validation"
 
-#: src/Metademand.php:6774
+#: src/Metademand.php:6776
 msgid "Not yet completed"
 msgstr "Pas encore terminé"
 
@@ -2824,7 +2824,7 @@ msgstr "Valeur"
 msgid "Value to check"
 msgstr "Valeur à vérifier"
 
-#: src/Metademand.php:7270 ⁨standard input⁩:56
+#: src/Metademand.php:7272 ⁨standard input⁩:56
 msgctxt "button"
 msgid "Verify metademands global status"
 msgstr "Vérifier le statut global des métademandes"

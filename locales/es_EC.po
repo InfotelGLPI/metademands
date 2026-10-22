@@ -805,7 +805,7 @@ msgstr "¿Quieres verlos?"
 msgid "Do you want to validate her?"
 msgstr "¿Quieres validarla?"
 
-#: src/Metademand.php:6763
+#: src/Metademand.php:6765
 msgid "Done on"
 msgstr "Hecho en"
 
@@ -999,7 +999,7 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
-#: src/Metademand.php:6789 ⁨standard input⁩:45
+#: src/Metademand.php:6791 ⁨standard input⁩:45
 msgid "Find a form"
 msgstr "Buscar un formulario"
 
@@ -1229,7 +1229,7 @@ msgstr "Importar metademandas"
 msgid "Impossible to read the CSV file"
 msgstr ""
 
-#: src/Metademand.php:6764
+#: src/Metademand.php:6766
 msgid "In progress"
 msgstr "En curso"
 
@@ -1434,7 +1434,7 @@ msgstr[2] "Meta-Demandas"
 msgid "Meta-demands linked"
 msgstr "Meta-exigencias vinculadas"
 
-#: src/Metademand.php:7315
+#: src/Metademand.php:7317
 msgid "Metademand"
 msgstr ""
 
@@ -1468,7 +1468,7 @@ msgstr ""
 msgid "Metademands list"
 msgstr ""
 
-#: front/tools.form.php:70 src/Metademand.php:7302
+#: front/tools.form.php:70 src/Metademand.php:7304
 msgid "Metademands statuses updated"
 msgstr ""
 
@@ -1656,7 +1656,7 @@ msgstr "Valor no nulo"
 msgid "Not subject to validation"
 msgstr "No sujeto a validación"
 
-#: src/Metademand.php:6774
+#: src/Metademand.php:6776
 msgid "Not yet completed"
 msgstr "Aún no se ha completado"
 
@@ -2776,7 +2776,7 @@ msgstr ""
 msgid "Value to check"
 msgstr "Valor a comprobar"
 
-#: src/Metademand.php:7270 ⁨standard input⁩:56
+#: src/Metademand.php:7272 ⁨standard input⁩:56
 msgctxt "button"
 msgid "Verify metademands global status"
 msgstr ""
