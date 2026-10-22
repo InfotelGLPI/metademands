@@ -6623,16 +6623,18 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      * for tokenizing and applies the textarea "\n" transform.
      *
      * @param int|int[] $requester_users_id requester id(s) for the #requester.*# fallback
+     * @param ?string   $text               null for a task title or content left empty (NULL in database)
      * @param ?int      $formatastable      task flag, content mode only (0 => textarea transform)
      */
     private static function resolvePlaceholders(
-        string $text,
+        ?string $text,
         array $values,
         $requester_users_id,
         int $entities_id,
         bool $is_content = false,
         ?int $formatastable = null
     ): string {
+        $text ??= '';
         do {
             $match = self::getBetween($text, '[', ']');
             if (empty($match)) {
