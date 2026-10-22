@@ -2183,9 +2183,15 @@ class FieldOption extends CommonDBChild
      * reach the database. It arrives either as the array posted by the option form or,
      * on an import, as the JSON string carried by the archive.
      *
+     * The list is nested: the dropdown is named childs_blocks[] and showFromArray() adds
+     * its own [] in multiple mode, so the form posts [["4","5"]], the format every reader
+     * walks (a list of groups of block numbers). Each group is kept, its numbers cast:
+     * an intval() on the group itself turned it into 1 (issue #367). A flat list, as
+     * written by older code, is wrapped into one group.
+     *
      * @param mixed $value
      *
-     * @return string a JSON array of integers
+     * @return string a JSON array of arrays of integers
      */
     public static function normalizeChildsBlocks($value): string
     {
@@ -2196,7 +2202,63 @@ class FieldOption extends CommonDBChild
             return '[]';
         }
 
-        return json_encode(array_values(array_map('intval', $value)));
+        $groups = [];
+        $flat   = [];
+        foreach ($value as $group) {
+            if (is_array($group)) {
+                $blocks = array_values(array_filter(
+                    array_map('intval', array_filter($group, 'is_scalar')),
+                    static fn(int $block): bool => $block > 0,
+                ));
+                if ($blocks !== []) {
+                    $groups[] = $blocks;
+                }
+            } elseif (is_scalar($group) && (int) $group > 0) {
+                $flat[] = (int) $group;
+            }
+        }
+        if ($flat !== []) {
+            $groups[] = $flat;
+        }
+
+        return json_encode($groups);
+    }
+
+    /**
+     * Reset the child blocks destroyed by the normalization of 3.6.15 (issue #367): it
+     * stored a flat list of integers ([1] for any selection, since intval() of the posted
+     * group is 1) where every reader expects a list of groups. Such a value has never
+     * hidden any block, so resetting it to [] keeps the behaviour of the forms; the
+     * child blocks of these options must be selected again.
+     *
+     * @param Migration $migration
+     *
+     * @return void
+     */
+    public static function resetFlatChildsBlocks(Migration $migration): void
+    {
+        global $DB;
+
+        $table = self::getTable();
+        if (!$DB->tableExists($table) || !$DB->fieldExists($table, 'childs_blocks')) {
+            return;
+        }
+
+        $reset = 0;
+        foreach ($DB->request([
+            'SELECT' => ['id', 'childs_blocks'],
+            'FROM'   => $table,
+            'WHERE'  => ['childs_blocks' => ['REGEXP', '^\\[[0-9]+(,[0-9]+)*\\]$']],
+        ]) as $data) {
+            $DB->update($table, ['childs_blocks' => '[]'], ['id' => (int) $data['id']]);
+            $reset++;
+        }
+        if ($reset > 0) {
+            $migration->displayWarning(sprintf(
+                'metademands: child blocks of %d option(s) lost by version 3.6.15 have been reset, they must be selected again',
+                $reset,
+            ));
+        }
     }
 
     public function prepareInputForAdd($input)
@@ -2603,6 +2665,8 @@ class FieldOption extends CommonDBChild
         Ticket_Metademand::migrateAllRunningAndToBeClosedMetademands();
         Ticket_Metademand::migrateAllClosedMetademands();
 
+        // Child blocks lost by version 3.6.15 (issue #367)
+        self::resetFlatChildsBlocks($migration);
     }
     public static function migrateFieldsOptions($migration)
     {
