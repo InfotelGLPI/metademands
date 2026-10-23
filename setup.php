@@ -103,6 +103,21 @@ function plugin_init_metademands()
     $PLUGIN_HOOKS[Hooks::USE_MASSIVE_ACTION]['metademands'] = 1;
     $_SESSION["glpi_plugin_metademands_loaded"] = 0;
 
+    // Blocking of the parent ticket resolution by its child tickets: for every context, the
+    // automatic actions (auto-resolution of a pending ticket, closing of the solved tickets)
+    // run without a logged-in user.
+    // In GLPI 11 a solution is a separate ITILSolution created BEFORE the parent ticket flips
+    // to SOLVED, so blocking the ticket status update alone no longer prevents the solution from
+    // being persisted: the solution creation itself is aborted when child tickets are still open.
+    $PLUGIN_HOOKS[Hooks::PRE_ITEM_UPDATE]['metademands'] = [
+        'Ticket'
+            => [Ticket::class, 'pre_update_ticket'],
+    ];
+    $PLUGIN_HOOKS[Hooks::PRE_ITEM_ADD]['metademands'] = [
+        'ITILSolution'
+            => [Ticket::class, 'pre_add_solution'],
+    ];
+
     if (Session::getLoginUserID()) {
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = 'lib/fuse.js';
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = 'lib/diacritics.js';
@@ -169,11 +184,6 @@ function plugin_init_metademands()
                 => [TicketField::class, 'update_category_fields'],
         ];
 
-        $PLUGIN_HOOKS[Hooks::PRE_ITEM_UPDATE]['metademands'] = [
-            'Ticket'
-                => [Ticket::class, 'pre_update_ticket'],
-        ];
-
         $PLUGIN_HOOKS[Hooks::ITEM_ADD]['metademands'] = [
             'TicketTemplateMandatoryField'
                 => [TicketField::class, 'post_add_mandatoryField'],
@@ -185,17 +195,12 @@ function plugin_init_metademands()
                 => [Ticket::class, 'post_add_ticket'],
         ];
 
-        $PLUGIN_HOOKS[Hooks::PRE_ITEM_ADD]['metademands'] = [
+        // Added to the ITILSolution hook registered for every context (above)
+        $PLUGIN_HOOKS[Hooks::PRE_ITEM_ADD]['metademands'] += [
             'Ticket'
                 => [Ticket::class, 'pre_add_ticket'],
             Ticket_Metademand::class
             => [Ticket_Metademand::class, 'post_add_ticket'],
-            // In GLPI 11 a solution is a separate ITILSolution created BEFORE the
-            // parent ticket flips to SOLVED, so blocking the ticket status update
-            // alone no longer prevents the solution from being persisted. Abort
-            // the solution creation itself when child tickets are still open.
-            'ITILSolution'
-                => [Ticket::class, 'pre_add_solution'],
         ];
 
         $PLUGIN_HOOKS[Hooks::ITEM_TRANSFER]['metademands'] = 'plugin_item_transfer_metademands';
