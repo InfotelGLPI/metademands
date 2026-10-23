@@ -38,6 +38,7 @@
         <file>tests/FieldWizardDisplayTest.php</file>
         <file>tests/FieldParameterSpecificTest.php</file>
         <file>tests/FieldFormsWithoutRawTest.php</file>
+        <file>tests/PendingAutoSolveBlockedTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>
