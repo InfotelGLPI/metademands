@@ -108,11 +108,11 @@ final class PendingAutoSolveBlockedTest extends DbTestCase
 
         $this->assertSame(
             [\GlpiPlugin\Metademands\Ticket::class, 'pre_add_solution'],
-            $PLUGIN_HOOKS[Hooks::PRE_ITEM_ADD]['metademands']['ITILSolution'] ?? null
+            $PLUGIN_HOOKS[Hooks::PRE_ITEM_ADD]['metademands']['ITILSolution'] ?? null,
         );
         $this->assertSame(
             [\GlpiPlugin\Metademands\Ticket::class, 'pre_update_ticket'],
-            $PLUGIN_HOOKS[Hooks::PRE_ITEM_UPDATE]['metademands']['Ticket'] ?? null
+            $PLUGIN_HOOKS[Hooks::PRE_ITEM_UPDATE]['metademands']['Ticket'] ?? null,
         );
     }
 

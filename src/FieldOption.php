@@ -639,11 +639,10 @@ class FieldOption extends CommonDBChild
             $params['childs_blocks'] = [];
         }
 
-        if ($this->fields['assign_tech_group'] != null) {
-            $params['assign_tech_group'] = json_decode($this->fields['assign_tech_group'], true);
-        } else {
-            $params['assign_tech_group'] = [];
-        }
+        // Only keep an actual array of group ids: a scalar json_decode result
+        // would break Dropdown::showFromArray() 'values'.
+        $assign_tech_group = json_decode($this->fields['assign_tech_group'] ?? '[]', true);
+        $params['assign_tech_group'] = is_array($assign_tech_group) ? $assign_tech_group : [];
 
         //Hook to get values saves from plugin
         if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -697,7 +696,8 @@ class FieldOption extends CommonDBChild
                     $params['check_value_regex'] = $_POST['check_value_regex'];
                 }
                 if (isset($_POST['assign_tech_group']) && empty($params['assign_tech_group'])) {
-                    $params['assign_tech_group'] = json_decode($_POST['assign_tech_group']);
+                    $assign_tech_group = json_decode($_POST['assign_tech_group'], true);
+                    $params['assign_tech_group'] = is_array($assign_tech_group) ? $assign_tech_group : [];
                 }
             }
             if ($params['check_type_value'] == 2) {
@@ -1124,11 +1124,13 @@ class FieldOption extends CommonDBChild
         // Show task link
         if ($task) {
             $tasksusedarray = [];
-            foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $field_id,
-                $check_value_field => $params['check_value'],
-            ]) as $tasksused) {
-                if ($tasksused['plugin_metademands_tasks_id'] > 0) {
-                    $tasksusedarray[] = $tasksused['plugin_metademands_tasks_id'];
+            if ($params['check_value'] != "") {
+                foreach ($fieldoptions->find(['plugin_metademands_fields_id' => $field_id,
+                    $check_value_field => $params['check_value'],
+                ]) as $tasksused) {
+                    if ($tasksused['plugin_metademands_tasks_id'] > 0) {
+                        $tasksusedarray[] = $tasksused['plugin_metademands_tasks_id'];
+                    }
                 }
             }
 
