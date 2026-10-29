@@ -1729,11 +1729,12 @@ class Wizard extends CommonDBTM
                     }
                 }
             }
-            if (count($subblocks) > 0) {
-                foreach ($blockfields as $value) {
-                    if (in_array($value['rank'], $subblocks)) {
-                        $subblocks_data[$value['rank']][] = $value;
-                    }
+        }
+        // Once every sub-block is known: a sub-block may come before the block opening it
+        foreach ($allfields as $blockid => $blockfields) {
+            foreach ($blockfields as $value) {
+                if (in_array($value['rank'], $subblocks)) {
+                    $subblocks_data[$value['rank']][] = $value;
                 }
             }
         }
@@ -1875,13 +1876,14 @@ class Wizard extends CommonDBTM
                     // A tab is hidden as soon as one field option of this meta-demand hides its
                     // block. The legacy loop asked the very same question with two queries per
                     // block, so the answer is resolved once here.
+                    // The preview of the "Wizard creation" tab shows every tab.
                     $hidden_tabs = [];
                     $field = new Field();
                     $meta_fields_ids = array_column(
                         $field->find(['plugin_metademands_metademands_id' => $metademands->getID()]),
                         'id',
                     );
-                    if (count($meta_fields_ids) > 0) {
+                    if (!$preview && count($meta_fields_ids) > 0) {
                         $fieldopt = new FieldOption();
                         foreach ($fieldopt->find([
                             'plugin_metademands_fields_id' => $meta_fields_ids,
@@ -2112,8 +2114,17 @@ class Wizard extends CommonDBTM
         }
         $fields_html = (string) ob_get_clean();
 
+        // A sub-block may open its own sub-blocks: they are rendered right after it, each
+        // once even when several fields open it.
         $subblocks_html = [];
-        foreach (self::getSameBlockSubblocks($line, $block) as $subfield) {
+        $rendered = [(int) $block => true];
+        $pending = self::getSameBlockSubblocks($line, $block);
+        while (($subfield = array_shift($pending)) !== null) {
+            if (isset($rendered[(int) $subfield])) {
+                continue;
+            }
+            $rendered[(int) $subfield] = true;
+
             $subs = $subblocks_data[$subfield] ?? [];
             if (count($subs) === 0) {
                 // The legacy code closed a wrapper it had not opened when the sub-block held
@@ -2136,6 +2147,8 @@ class Wizard extends CommonDBTM
                 );
             }
             $subblocks_html[] = ['id' => $subfield, 'html' => (string) ob_get_clean()];
+
+            $pending = array_merge(self::getSameBlockSubblocks($subs, $subfield), $pending);
         }
 
         TemplateRenderer::getInstance()->display('@metademands/wizard/block_content.html.twig', [
@@ -2330,7 +2343,10 @@ class Wizard extends CommonDBTM
         FieldOption::fieldsHiddenScript($data, $itilcategories_id);
 
         //cache ou affiche les hidden_block & child_blocks
-        FieldOption::blocksHiddenScript($data, $itilcategories_id);
+        //not in the preview of the "Wizard creation" tab: every block stays visible there
+        if (!$preview) {
+            FieldOption::blocksHiddenScript($data, $itilcategories_id);
+        }
 
         FieldOption::checkboxScript($data);
 

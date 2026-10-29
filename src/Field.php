@@ -2671,6 +2671,13 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         if (isset($input["type"]) && $input["type"] == "radio") {
             $input["item"] = "radio";
         }
+        // A specific dropdown posts no item, which the controller replaces by the type:
+        // store "other" right away, as the update does, so that its custom values can be added
+        if (isset($input["type"], $input["item"])
+            && $input["type"] == $input["item"]
+            && in_array($input["item"], ["dropdown_meta", "dropdown_multiple"])) {
+            $input["item"] = "other";
+        }
 
         return $input;
     }

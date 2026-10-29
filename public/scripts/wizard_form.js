@@ -1563,7 +1563,13 @@
                 }
                 case 'checkbox':
                 case 'radio':
-                    this.checked = false;
+                    // Like the selects: the change cascades to the blocks it shows
+                    if (selects && this.checked) {
+                        this.checked = false;
+                        $(this).trigger('change');
+                    } else {
+                        this.checked = false;
+                    }
                     break;
             }
             $(this).removeClass('invalid');
