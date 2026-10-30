@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.7.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-29 16:37+0000\n"
+"POT-Creation-Date: 2026-10-29 19:05+0000\n"
 "PO-Revision-Date: 2020-10-12 18:05+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -169,7 +169,7 @@ msgstr "Add to basket"
 msgid "Add your signature"
 msgstr ""
 
-#: src/Field.php:2772 src/Field.php:2857 src/Field.php:4267 ⁨standard input⁩:76
+#: src/Field.php:2779 src/Field.php:2864 src/Field.php:4274 ⁨standard input⁩:76
 msgid "Additional label"
 msgstr "Additional label"
 
@@ -283,8 +283,8 @@ msgstr ""
 msgid "Blank Template"
 msgstr ""
 
-#: src/Wizard.php:1867 src/Step.php:416 src/Step.php:470 src/Field.php:883
-#: src/Field.php:2839 ⁨standard input⁩:112 ⁨standard input⁩:62 ⁨standard input⁩:39
+#: src/Wizard.php:1868 src/Step.php:416 src/Step.php:470 src/Field.php:883
+#: src/Field.php:2846 ⁨standard input⁩:112 ⁨standard input⁩:62 ⁨standard input⁩:39
 #: ⁨standard input⁩:44
 msgid "Block"
 msgstr "Block"
@@ -569,12 +569,12 @@ msgid_plural "Dates"
 msgstr[0] "Date"
 msgstr[1] "Date"
 
-#: src/Wizard.php:3050
+#: src/Wizard.php:3066
 #, php-format
 msgid "Date %s cannot be less than initial date"
 msgstr ""
 
-#: src/Wizard.php:3040
+#: src/Wizard.php:3056
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "Date %s cannot be less than today's date"
@@ -720,7 +720,7 @@ msgstr ""
 msgid "Destructive queries"
 msgstr ""
 
-#: src/Fields/Dropdownmeta.php:701 src/Field.php:3495
+#: src/Fields/Dropdownmeta.php:701 src/Field.php:3502
 msgid "Devices own by my groups"
 msgstr ""
 
@@ -959,7 +959,7 @@ msgstr "Father's field"
 msgid "Field"
 msgstr ""
 
-#: src/Wizard.php:3101
+#: src/Wizard.php:3117
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr "Field do not correspond to the expected format. Please correct: %s"
@@ -1456,11 +1456,11 @@ msgstr ""
 msgid "Missing table"
 msgstr ""
 
-#: src/Field.php:2943
+#: src/Field.php:2950
 msgid "Modify color"
 msgstr ""
 
-#: src/Field.php:2942
+#: src/Field.php:2949
 msgid "Modify icon"
 msgstr ""
 
@@ -1649,7 +1649,7 @@ msgstr ""
 msgid "OR"
 msgstr ""
 
-#: src/Field.php:2774 tests/AjaxTemplatesTest.php:130 ⁨standard input⁩:37
+#: src/Field.php:2781 tests/AjaxTemplatesTest.php:130 ⁨standard input⁩:37
 #: ⁨standard input⁩:129 ⁨standard input⁩:162 ⁨standard input⁩:52
 msgid "Object"
 msgstr "Object"
@@ -1727,7 +1727,7 @@ msgid ""
 "Options aren't available for a field whose value is linked to a user field"
 msgstr ""
 
-#: src/Field.php:2848
+#: src/Field.php:2855
 msgid "Order"
 msgstr "Order"
 
@@ -1806,11 +1806,11 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
-#: src/Wizard.php:1999
+#: src/Wizard.php:2001
 msgid "Previous data edited"
 msgstr ""
 
-#: src/Wizard.php:1992
+#: src/Wizard.php:1994
 msgid "Previous user"
 msgstr ""
 
@@ -2420,7 +2420,7 @@ msgstr ""
 msgid "There was a problem on upload your signature"
 msgstr ""
 
-#: src/Wizard.php:1745
+#: src/Wizard.php:1746
 msgid "There was a problem. The step-by-step mode configuration was reset"
 msgstr ""
 
@@ -2528,7 +2528,7 @@ msgstr ""
 msgid "Too many items to export at once"
 msgstr ""
 
-#: src/Wizard.php:3089
+#: src/Wizard.php:3105
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr "Too much documents are upload, max %s. Please correct: %s"
@@ -2817,7 +2817,7 @@ msgstr ""
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 
-#: src/Field.php:2967 src/Field.php:2994 src/Field.php:3010 src/Field.php:3033
+#: src/Field.php:2974 src/Field.php:3001 src/Field.php:3017 src/Field.php:3040
 msgid "You cannot do this for this field"
 msgstr ""
 
@@ -2833,7 +2833,7 @@ msgstr ""
 msgid "You don't have the right to create meta-demand"
 msgstr "You don't have the right to create meta-demand"
 
-#: src/Wizard.php:1946
+#: src/Wizard.php:1948
 msgid ""
 "You don't have the right to modify this form or the metademand don't accept "
 "form modifications"
