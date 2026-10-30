@@ -1585,7 +1585,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     {
         global $CFG_GLPI;
         if (!empty($metademands_id)) {
-            return urldecode($CFG_GLPI["url_base"] . "/index.php?redirect=GlpiPlugin\Metademands\Wizard_" . $metademands_id);
+            // Direct link to the wizard (handled by its "id" parameter): GLPI only resolves
+            // index.php?redirect=<itemtype>_<id> in the central interface, the simplified one
+            // answered "Redirection failed". A user not logged in is sent back here after login.
+            return $CFG_GLPI["url_base"] . Wizard::getFormURLWithID((int) $metademands_id, false);
         }
         return "";
     }
