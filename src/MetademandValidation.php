@@ -455,7 +455,7 @@ class MetademandValidation extends CommonDBTM
             if (is_array($meta_tasks)) {
                 foreach ($meta_tasks as $meta_task) {
                     if (Ticket_Field::checkTicketCreation($meta_task['tasks_id'], $ticket_id)) {
-                        $ticket_task = new TicketTask();
+                        $ticket_task = new \TicketTask();
                         $input = [];
                         $input['content'] = $meta_task['tickettasks_name'] . " " . $meta_task['content'];
                         $input['tickets_id'] = $ticket_id;
