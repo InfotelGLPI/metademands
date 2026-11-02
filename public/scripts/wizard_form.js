@@ -1363,7 +1363,11 @@
 
         const inputs = $(sourceSelector(config.source));
 
-        const update = function () {
+        /**
+         * @param {boolean} initial only make mandatory (when displayed): the markup
+         *                          already makes optional the fields which must be
+         */
+        const update = function (initial) {
             // A field is mandatory as soon as one of the values linked to it matches
             const mandatory = new Map();
             config.rules.forEach(function (rule) {
@@ -1375,17 +1379,17 @@
             mandatory.forEach(function (is_mandatory, key) {
                 if (is_mandatory) {
                     setFieldMandatory(key, config);
-                } else {
+                } else if (initial !== true) {
                     unsetFieldMandatory(key, config);
                 }
             });
         };
 
-        inputs.on('change', update);
+        inputs.on('change', () => update(false));
         if (config.mode === 'listed') {
             // The multiselect plugin moves options without any change event
             inputs.each(function () {
-                new MutationObserver(update).observe(this, {childList: true, subtree: true});
+                new MutationObserver(() => update(false)).observe(this, {childList: true, subtree: true});
             });
         }
 
@@ -1395,7 +1399,24 @@
             $('#fileupload_info_ticketfield' + key).nextAll('input').first().attr('required', 'required');
         });
 
-        restoreValue(inputs, config.restore, update);
+        restoreValue(inputs, config.restore, () => update(false));
+        // Value already chosen when displayed without any change event (default
+        // value, form restored by the browser on reload or back)
+        update(true);
+    }
+
+    /**
+     * Empty the date and time pickers of a field or block: flatpickr submits the
+     * value of a hidden input, the displayed one is only a copy.
+     *
+     * @param {jQuery} scope the field or block
+     */
+    function clearDatePickers(scope) {
+        scope.find('.flatpickr, .flatpickr-input, [data-md-timepicker]').each(function () {
+            if (this._flatpickr) {
+                this._flatpickr.clear(false);
+            }
+        });
     }
 
     /**
@@ -1405,6 +1426,7 @@
      * @param {number} key id of the field
      */
     function resetHiddenField(key) {
+        clearDatePickers($('div[id-field="field' + key + '"]'));
         $('div[id-field="field' + key + '"]').find(':input').each(function () {
             switch (this.type) {
                 case 'password':
@@ -1528,6 +1550,7 @@
      * @param {boolean} selects also put the selects back to the empty choice
      */
     function emptyBlock(block, selects) {
+        clearDatePickers($('div[bloc-id="bloc' + block + '"], div[bloc-id="subbloc' + block + '"]'));
         $('div[bloc-id="bloc' + block + '"], div[bloc-id="subbloc' + block + '"]').find(':input').each(function () {
             switch (this.type) {
                 case 'password':

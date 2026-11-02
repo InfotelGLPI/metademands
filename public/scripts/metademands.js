@@ -760,6 +760,8 @@ function plugin_metademands_wizard_displayStepButton(metademandparams)
             document.getElementById('nextBtn').style.display = 'inline';
             if (nextTab >= x.length) {
                 plugin_metademands_wizard_setNextBtnTitle('submit');
+                // Last step: no next step to go to, even when a previous one showed the button
+                document.getElementById('nextBtn2').style.display = 'none';
             } else {
                 if (create) {
                     plugin_metademands_wizard_setNextBtnTitle('submitstep');
@@ -774,6 +776,7 @@ function plugin_metademands_wizard_displayStepButton(metademandparams)
             }
         } else {
             document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('nextBtn2').style.display = 'none';
         }
     }
 }
