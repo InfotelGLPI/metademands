@@ -2706,7 +2706,7 @@ class Wizard extends CommonDBTM
                     global $CFG_GLPI;
                     Html::redirect($CFG_GLPI['root_doc'] . "front/ticket.form.php?id=" . $result['id']);
                 } else {
-                    Html::redirect($self->getFormURL() . "?step=" . Metademand::STEP_INIT);
+                    Html::redirect($self->getFormURL() . "?metademands_id=" . (int) $metademands_id . "&step=" . Metademand::STEP_SHOW);
                 }
             } else {
                 Html::back();
