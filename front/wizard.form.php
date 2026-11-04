@@ -272,6 +272,14 @@ if (isset($_POST['update_basket_line'])) {
     unset($_SESSION['plugin_metademands']);
     Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
 } else {
+    // A step with a single choice skips to the next page: redirect before the header, which
+    // displays and clears the messages of the session (the success message of a creation
+    // was lost on the way to the only type or the only meta-demand).
+    $auto_redirect = Wizard::getAutoRedirectUrl($_GET['step'], $_GET['meta_type']);
+    if ($auto_redirect !== null) {
+        Html::redirect($auto_redirect);
+    }
+
     $name = __('Create a metademand', 'metademands');
     if ($metademands->getFromDB($_GET['metademands_id'])) {
         $name = Wizard::getMetademandTypeName(

@@ -953,6 +953,50 @@ class Wizard extends CommonDBTM
         return $data;
     }
     /**
+     * Page the wizard skips to when a step has a single choice: the list of the only type, or
+     * the form of the only meta-demand of a type.
+     *
+     * front/wizard.form.php redirects there before sending the page header: the header displays
+     * and clears the messages of the session, so a redirection made afterwards lost the message
+     * of the previous action (the success message of a creation, for instance).
+     *
+     * @param int|string $step      Metademand::STEP_INIT or Metademand::STEP_LIST
+     * @param int|string $meta_type type listed by Metademand::STEP_LIST
+     *
+     * @return string|null null when the step has to be displayed
+     */
+    public static function getAutoRedirectUrl($step, $meta_type = 0): ?string
+    {
+        if ($step == Metademand::STEP_INIT) {
+            $types = self::countMetademandTypes();
+            if (count($types) != 1) {
+                return null;
+            }
+            $type = array_key_first($types);
+            // The list of this type may skip to its only meta-demand: go there directly
+            return self::getAutoRedirectUrl(Metademand::STEP_LIST, $type)
+                ?? PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=" . Metademand::STEP_LIST . "&meta_type=" . urlencode((string) $type);
+        }
+
+        if ($step == Metademand::STEP_LIST) {
+            // Only the display by cards skips to a single meta-demand, see listMetademands()
+            if (Config::getInstance()['display_type'] != 1) {
+                return null;
+            }
+            $metademands = self::selectMetademands(false, "", $meta_type);
+            if (count($metademands) != 1) {
+                return null;
+            }
+            $meta = new Metademand();
+            if ($meta->getFromDB(array_key_first($metademands))) {
+                return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $meta->getID() . "&step=" . Metademand::STEP_SHOW;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @throws \GlpitestSQLError
      */
     public static function listMetademandTypes()
@@ -962,10 +1006,10 @@ class Wizard extends CommonDBTM
         $data   = self::countMetademandTypes();
         $config = Config::getInstance();
 
-        if (count($data) == 1) {
-            foreach ($data as $type => $typename) {
-                Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=1&meta_type=$type");
-            }
+        // Normally done by front/wizard.form.php before the header, kept for the other callers
+        $url = self::getAutoRedirectUrl(Metademand::STEP_INIT);
+        if ($url !== null) {
+            Html::redirect($url);
         }
 
         $entries = [];
@@ -1136,12 +1180,10 @@ class Wizard extends CommonDBTM
         $metademands = self::selectMetademands(false, "", $type);
 
         if (count($metademands) == 1) {
-            foreach ($metademands as $id => $name) {
-                if ($meta->getFromDB($id)) {
-                    Html::redirect(
-                        PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=" . Metademand::STEP_SHOW,
-                    );
-                }
+            // Normally done by front/wizard.form.php before the header, kept for the other callers
+            $url = self::getAutoRedirectUrl(Metademand::STEP_LIST, $type);
+            if ($url !== null) {
+                Html::redirect($url);
             }
             return;
         }
