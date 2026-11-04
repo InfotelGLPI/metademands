@@ -40,6 +40,7 @@
         <file>tests/FieldFormsWithoutRawTest.php</file>
         <file>tests/SecurityReviewTest.php</file>
         <file>tests/PendingAutoSolveBlockedTest.php</file>
+        <file>tests/WizardAutoRedirectTest.php</file>
         <file>tests/ValidationSubticketTest.php</file>
       </testsuite>
    </testsuites>
