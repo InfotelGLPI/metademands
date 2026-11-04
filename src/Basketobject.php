@@ -244,6 +244,9 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
             'type_name'          => Basketobjecttype::getTypeName(),
             'type_itemtype'      => Basketobjecttype::class,
             'types_id'           => $this->fields['plugin_metademands_basketobjecttypes_id'],
+            // For the POST_ITEM_FORM hook of the other plugins (see the template)
+            'item'               => $this,
+            'params'             => $options,
         ]);
 
         return true;
