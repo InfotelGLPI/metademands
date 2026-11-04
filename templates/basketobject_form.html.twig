@@ -74,6 +74,10 @@
                 </div>
             </div>
 
+            {# The generic form buttons this template replaced ran this hook: other plugins add
+               their fields here, inside the form (orderfollowup: unit and unit price). #}
+            {{ call_plugin_hook(constant('Glpi\\Plugin\\Hooks::POST_ITEM_FORM'), {'item': item, 'options': params}) }}
+
         </div>
         <div class="card-footer d-flex justify-content-end gap-2">
             {% if is_new %}
