@@ -1582,6 +1582,14 @@
      *
      * @param {HTMLElement} marker the element emitted by wizard/block_trigger.html.twig
      */
+    /**
+     * Triggers showing each block: block rank => Set of triggers. Several fields may open the
+     * same block ("Service" in two radios); each trigger evaluated its rules alone, so the
+     * last one initialised or changed hid a block another one had just shown, a reloaded form
+     * among others.
+     */
+    const blockShownBy = new Map();
+
     function initBlockTrigger(marker) {
         if (marker.dataset.mdBlockInit) {
             return;
@@ -1617,8 +1625,22 @@
                 }
             });
 
+            shown.forEach(function (block) {
+                if (!blockShownBy.has(block)) {
+                    blockShownBy.set(block, new Set());
+                }
+                blockShownBy.get(block).add(marker);
+            });
             hidden.forEach(function (block) {
                 if (shown.has(block)) {
+                    return;
+                }
+                const triggers = blockShownBy.get(block);
+                if (triggers) {
+                    triggers.delete(marker);
+                }
+                // Still shown by another field of the page
+                if (triggers && [...triggers].some((trigger) => trigger.isConnected)) {
                     return;
                 }
                 toggle(block, false);

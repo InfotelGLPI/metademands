@@ -31,6 +31,7 @@
  # Expected context:
  #  - link_to_user, user_fields: linked user field (id => label of the user fields of the meta-demand)
  #  - show_user_info, used_by_ticket, user_info_options: user information copied into the field
+ #  - title_options: title of the object to create filled with the answer, when a plugin grants it
  #  - regex: regular expression the answer must match
 -#}
 {% import 'components/form/fields_macros.html.twig' as fields %}
@@ -51,6 +52,12 @@
                 <div class="col-sm-3">{{ fields.dropdownArrayField('used_by_ticket', used_by_ticket, user_info_options, '', bare) }}</div>
             {% endif %}
         </div>
+        {% if title_options is not empty %}
+            <div class="row g-2 align-items-center mb-2">
+                <label class="col-sm-3 col-form-label">{{ __('Use this field as object field', 'metademands') }}</label>
+                <div class="col-sm-3">{{ fields.dropdownArrayField('used_by_ticket', used_by_ticket, title_options, '', bare) }}</div>
+            </div>
+        {% endif %}
         <div class="row g-2 align-items-center mb-2">
             <label class="col-sm-3 col-form-label">{{ __('Regex to respect', 'metademands') }}</label>
             <div class="col-sm-9">{{ fields.textField('regex', regex, '', bare|merge({'additional_attributes': {'size': 50}})) }}</div>

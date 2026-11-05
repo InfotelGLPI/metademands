@@ -1962,6 +1962,11 @@ class Export extends CommonDBTM
             $checkbox_value = $old["checkbox_value"] ?? 0;
             $checkbox_id = $old["checkbox_id"] ?? 0;
             $hidden_block_same_block = $old["hidden_block_same_block"] ?? 0;
+            // Exported but not read back: an option compared with a regular expression became
+            // a comparison with a value, and opened its child blocks for other answers
+            $check_type_value = (int) ($old["check_type_value"] ?? 0);
+            $check_value_regex = $old["check_value_regex"] ?? null;
+            $assign_tech_group = $old["assign_tech_group"] ?? null;
             //            $parent_field_id = $old["parent_field_id"]??0;
             //
             $toUpdate = [];
@@ -1995,6 +2000,15 @@ class Export extends CommonDBTM
             if ($users_id_validate != 0) {
                 $toUpdate["users_id_validate"] = $users_id_validate;
             }
+            // A flat list ([1]) is the value left by 3.6.15 (issue #367) on instances not updated
+            // since: it hid no block there, while normalizeChildsBlocks() would make it a group
+            // and open block 1. Same rule as FieldOption::resetFlatChildsBlocks().
+            $decoded_blocks = is_string($childs_blocks) ? json_decode($childs_blocks, true) : $childs_blocks;
+            if (is_array($decoded_blocks)
+                && $decoded_blocks !== []
+                && count(array_filter($decoded_blocks, 'is_array')) === 0) {
+                $childs_blocks = [];
+            }
             if ($childs_blocks) {
                 $toUpdate["childs_blocks"] = $childs_blocks;
             }
@@ -2006,6 +2020,15 @@ class Export extends CommonDBTM
             }
             if ($hidden_block_same_block != 0) {
                 $toUpdate["hidden_block_same_block"] = $hidden_block_same_block;
+            }
+            if ($check_type_value > 0) {
+                $toUpdate["check_type_value"] = $check_type_value;
+            }
+            if (is_string($check_value_regex) && $check_value_regex !== '') {
+                $toUpdate["check_value_regex"] = $check_value_regex;
+            }
+            if (is_string($assign_tech_group) && is_array(json_decode($assign_tech_group, true))) {
+                $toUpdate["assign_tech_group"] = $assign_tech_group;
             }
             //            if ($parent_field_id != 0 && isset($mapTableField[$parent_field_id])) {
             //                $toUpdate["parent_field_id"] = $mapTableField[$parent_field_id];
