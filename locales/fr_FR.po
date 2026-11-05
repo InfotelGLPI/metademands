@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 10:43+0000\n"
+"POT-Creation-Date: 2026-11-04 11:01+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/"
@@ -168,7 +168,7 @@ msgstr "Ajouter une pièce jointe"
 msgid "Add language"
 msgstr "Ajouter une langue"
 
-#: src/Wizard.php:1554 src/Wizard.php:1563 tests/WizardTemplatesTest.php:252
+#: src/Wizard.php:1596 src/Wizard.php:1605 tests/WizardTemplatesTest.php:252
 msgctxt "button"
 msgid "Add to basket"
 msgstr "Ajouter au panier"
@@ -294,7 +294,7 @@ msgstr "Lier à la valeur de cette case à cocher"
 msgid "Blank Template"
 msgstr "Gabarit vide"
 
-#: src/Wizard.php:1868 src/Step.php:416 src/Step.php:470 src/Field.php:883
+#: src/Wizard.php:1910 src/Step.php:416 src/Step.php:470 src/Field.php:883
 #: src/Field.php:2846 ⁨standard input⁩:112 ⁨standard input⁩:62 ⁨standard input⁩:39
 #: ⁨standard input⁩:44
 msgid "Block"
@@ -529,7 +529,7 @@ msgstr "Créer une"
 msgid "Create a meta-demand"
 msgstr "Créer une métademande"
 
-#: src/Menu.php:61 src/Menu.php:66 front/wizard.form.php:276
+#: src/Menu.php:61 src/Menu.php:66 front/wizard.form.php:284
 msgid "Create a metademand"
 msgstr "Créer une métademande"
 
@@ -588,12 +588,12 @@ msgstr[0] "Date"
 msgstr[1] "Dates"
 msgstr[2] "Dates"
 
-#: src/Wizard.php:3066
+#: src/Wizard.php:3108
 #, php-format
 msgid "Date %s cannot be less than initial date"
 msgstr "La date %s ne peut être inférieure à la date initiale"
 
-#: src/Wizard.php:3056
+#: src/Wizard.php:3098
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "La date %s ne peut être inférieure à la date d'aujourd'hui"
@@ -983,7 +983,7 @@ msgstr "Champ père"
 msgid "Field"
 msgstr "Champ"
 
-#: src/Wizard.php:3117
+#: src/Wizard.php:3159
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr "Le champ ne correspond pas au format attendu. Merci de corriger: %s"
@@ -1549,7 +1549,7 @@ msgstr "Nouveau suivi inter tickets"
 msgid "New model"
 msgstr "Nouveau modèle"
 
-#: src/Wizard.php:1544 tests/WizardTemplatesTest.php:247 ⁨standard input⁩:70
+#: src/Wizard.php:1586 tests/WizardTemplatesTest.php:247 ⁨standard input⁩:70
 #: ⁨standard input⁩:73 ⁨standard input⁩:103 ⁨standard input⁩:104
 msgid "Next"
 msgstr "Suivant"
@@ -1862,11 +1862,11 @@ msgstr "Groupement"
 msgid "Previous"
 msgstr "Précédent"
 
-#: src/Wizard.php:2001
+#: src/Wizard.php:2043
 msgid "Previous data edited"
 msgstr "Données précédentes complétées"
 
-#: src/Wizard.php:1994
+#: src/Wizard.php:2036
 msgid "Previous user"
 msgstr "Utilisateur précédent"
 
@@ -2063,13 +2063,13 @@ msgctxt "button"
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: src/Wizard.php:1545 tests/WizardTemplatesTest.php:242 ⁨standard input⁩:69
+#: src/Wizard.php:1587 tests/WizardTemplatesTest.php:242 ⁨standard input⁩:69
 #: ⁨standard input⁩:97 ⁨standard input⁩:98
 msgctxt "button"
 msgid "Save & Post"
 msgstr "Sauvegarder et envoyer"
 
-#: src/Wizard.php:1573
+#: src/Wizard.php:1615
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr "Sauvegarder et envoyer à un autre utilisateur/groupe"
@@ -2129,7 +2129,7 @@ msgstr "Chercher.."
 msgid "Secondaries services"
 msgstr "Service secondaire"
 
-#: src/Wizard.php:1557 tests/WizardTemplatesTest.php:256
+#: src/Wizard.php:1599 tests/WizardTemplatesTest.php:256
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr "Voir le récapitulatif du panier et Envoyer"
@@ -2334,7 +2334,7 @@ msgstr "Texte"
 msgid "Textarea"
 msgstr "Zone de commentaire"
 
-#: src/Wizard.php:1493
+#: src/Wizard.php:1535
 msgid "Thanks to fill mandatory fields"
 msgstr "Merci de remplir les champs requis"
 
@@ -2508,12 +2508,12 @@ msgstr "Il y a eu un problème à la suppression de votre signature"
 msgid "There was a problem on upload your signature"
 msgstr "Il y a eu un problème au chargement de votre signature"
 
-#: src/Wizard.php:1746
+#: src/Wizard.php:1788
 msgid "There was a problem. The step-by-step mode configuration was reset"
 msgstr ""
 "Il y a eu un problème. La configuration du mode Pas à Pas a été réinitialisée"
 
-#: src/Wizard.php:1494
+#: src/Wizard.php:1536
 msgid "These fields don\\'t respect regex"
 msgstr "Ces champs ne respectent pas le format attendu"
 
@@ -2622,7 +2622,7 @@ msgstr "A valider sans tickets enfants"
 msgid "Too many items to export at once"
 msgstr "Trop d'objets à exporter simultanément"
 
-#: src/Wizard.php:3105
+#: src/Wizard.php:3147
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr "Trop de documents ont été envoyées, maximum %s. Merci de corriger: %s"
@@ -2931,7 +2931,7 @@ msgstr "Vous ne pouvez pas faire cela pour ce champ"
 msgid "You cannot use this parameter if there is more than one category"
 msgstr "Vous ne pouvez pas utiliser ce paramètre s'il y a plus d'une catégorie"
 
-#: src/Wizard.php:1685
+#: src/Wizard.php:1727
 msgid "You do not have access to the form"
 msgstr "Vous n'avez pas accès au formulaire"
 
@@ -2939,7 +2939,7 @@ msgstr "Vous n'avez pas accès au formulaire"
 msgid "You don't have the right to create meta-demand"
 msgstr "Vous n'êtes pas habilité à créer ce type de demande"
 
-#: src/Wizard.php:1948
+#: src/Wizard.php:1990
 msgid ""
 "You don't have the right to modify this form or the metademand don't accept "
 "form modifications"
@@ -2955,7 +2955,7 @@ msgstr "Vous n'avez pas le droit de mettre à jour les tickets"
 msgid "You don't have the ticket creation right"
 msgstr "Vous n'avez pas le droit de créer des tickets"
 
-#: src/Wizard.php:1204
+#: src/Wizard.php:1246
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
@@ -2976,7 +2976,7 @@ msgstr "Vous avez des rangs en doublon !"
 msgid "You have items on your basket"
 msgstr "Vous avez des objets dans votre panier"
 
-#: src/Wizard.php:1481 ⁨standard input⁩:42
+#: src/Wizard.php:1523 ⁨standard input⁩:42
 msgid "You have not entered any values. Is this normal?"
 msgstr "Vous n'avez saisi aucunes valeurs. Est-ce normal ?"
 
