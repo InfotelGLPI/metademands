@@ -927,6 +927,27 @@ class FieldParameter extends CommonDBChild
         }
     }
 
+    /**
+     * Fields of the object to create that the plugins grant to a field (hook getGrantedFields())
+     *
+     * @param array $params parameters of the field, with its type and object_to_create
+     *
+     * @return array names or search option ids of the object fields
+     */
+    public static function getGrantedFieldsFromPlugins(array $params): array
+    {
+        global $PLUGIN_HOOKS;
+
+        $granted_fields = [];
+        foreach (array_keys($PLUGIN_HOOKS['metademands'] ?? []) as $plug) {
+            $g_fields = self::getPluginGrantedFields($plug, $params);
+            if (Plugin::isPluginActive($plug) && is_array($g_fields)) {
+                $granted_fields = array_merge($granted_fields, $g_fields);
+            }
+        }
+        return $granted_fields;
+    }
+
     private static function getPluginGrantedFields($plug, $params)
     {
         global $PLUGIN_HOOKS;

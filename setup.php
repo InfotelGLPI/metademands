@@ -70,7 +70,6 @@ if (!defined("PLUGIN_METADEMANDS_DIR")) {
     define("PLUGIN_METADEMANDS_WEBDIR", $root);
 }
 
-include_once PLUGIN_METADEMANDS_DIR . "/vendor/autoload.php";
 
 // Init the hooks of the plugins -Needed
 function plugin_init_metademands()
@@ -317,11 +316,6 @@ function plugin_version_metademands()
  */
 function plugin_metademands_check_prerequisites()
 {
-    if (!is_readable(__DIR__ . '/vendor/autoload.php')
-        || !is_file(__DIR__ . '/vendor/autoload.php')) {
-        echo "Run composer install --no-dev in the plugin directory<br>";
-        return false;
-    }
-
+    // No runtime dependency: GLPI autoloads the classes of src/, the release ships no vendor/
     return true;
 }

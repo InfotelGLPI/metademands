@@ -2997,6 +2997,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         && $fields_values['used_by_ticket'] != 66
                                         && $fields_values['used_by_ticket'] != 65) {
                                         $projected = self::filterProjectedValue($name, $v[$id]);
+                                        // Text field used as title (Fields\Text::showFieldParameters()):
+                                        // same prefix as the title it replaces, kept when unanswered
+                                        if ($name === 'name' && $projected !== null) {
+                                            $projected = is_scalar($projected) && trim((string) $projected) !== ''
+                                                ? self::$PARENT_PREFIX . trim((string) $projected)
+                                                : null;
+                                        }
                                         if ($projected !== null) {
                                             $parent_fields[$name] = $projected;
                                             $parent_ticketfields[$name] = $projected;

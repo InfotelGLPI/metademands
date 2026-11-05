@@ -36,7 +36,9 @@ use GlpiPlugin\Metademands\Condition;
 use Html;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldOption;
+use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\MetademandTask;
+use Search;
 use User;
 
 /**
@@ -120,6 +122,20 @@ class Text extends CommonDBTM
             ];
         }
 
+        // Answer used as title of the object to create, when a plugin grants its title to the
+        // text fields (hook getGrantedFields()): createObjects() projects it as the other object
+        // fields. Not with a linked user, where used_by_ticket is the user information to get.
+        $title_options = [];
+        $title_option  = self::getTitleSearchOption($params['object_to_create'] ?? '');
+        if (!$show_user_info
+            && $title_option > 0
+            && in_array('name', FieldParameter::getGrantedFieldsFromPlugins($params), true)) {
+            $title_options = [
+                0             => \Dropdown::EMPTY_VALUE,
+                $title_option => __('Title'),
+            ];
+        }
+
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_text.html.twig',
             [
@@ -128,9 +144,29 @@ class Text extends CommonDBTM
                 'show_user_info'    => $show_user_info,
                 'used_by_ticket'    => $params['used_by_ticket'],
                 'user_info_options' => $options,
+                'title_options'     => $title_options,
                 'regex'             => $params['regex'],
             ],
         );
+    }
+
+    /**
+     * Search option of the title of an object, 0 when it has none
+     */
+    private static function getTitleSearchOption(string $itemtype): int
+    {
+        $item = getItemForItemtype($itemtype);
+        if (!$item) {
+            return 0;
+        }
+        foreach (Search::getOptions($itemtype) as $id => $option) {
+            if (is_array($option)
+                && ($option['table'] ?? '') === $item::getTable()
+                && ($option['field'] ?? '') === 'name') {
+                return (int) $id;
+            }
+        }
+        return 0;
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)
