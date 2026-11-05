@@ -57,6 +57,28 @@ function plugin_metademands_parseParams(element, attribute) {
     }
 }
 
+/**
+ * Replay on the rows the renumbering the reorder() handlers apply (Field, FieldCustomvalue,
+ * Freetablefield): the rows between both positions shift by one, the moved row takes
+ * new_order. The attributes used to keep their pre-move values, so from the second drag
+ * on the same page the orders sent no longer matched the database and the wrong row (or
+ * none) moved.
+ */
+function plugin_metademands_applyOrder(container, item, old_order, new_order) {
+    container.querySelectorAll(":scope > tr[data-md-order]").forEach((row) => {
+        if (row === item) {
+            return;
+        }
+        const order = Number(row.getAttribute("data-md-order"));
+        if (old_order < new_order && order > old_order && order <= new_order) {
+            row.setAttribute("data-md-order", String(order - 1));
+        } else if (old_order > new_order && order < old_order && order >= new_order) {
+            row.setAttribute("data-md-order", String(order + 1));
+        }
+    });
+    item.setAttribute("data-md-order", String(new_order));
+}
+
 function plugin_metademands_sendOrder(container, detail) {
     const url = container.getAttribute("data-md-url");
     if (!url || !detail || !detail.origin || !detail.destination) {
@@ -86,6 +108,10 @@ function plugin_metademands_sendOrder(container, detail) {
         return;
     }
     const new_order = neighbour.getAttribute("data-md-order");
+    if (new_order === old_order) {
+        return;
+    }
+    plugin_metademands_applyOrder(container, item, Number(old_order), Number(new_order));
 
     const body = new URLSearchParams();
     body.set("old_order", old_order);
