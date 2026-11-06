@@ -157,35 +157,10 @@ class NotificationTargetInterticketfollowup extends NotificationTarget
         $inter     = new Interticketfollowup();
         $inter->getFromDB($data['interticketfollowup_id']);
 
-        if ($inter->fields['targets_id'] == 0) {
-            $first_tickets_id = Interticketfollowup::getFirstTicket($item->fields['id']);
-            if ($first_tickets_id) {
-                $ticket_metademand      = new Ticket_Metademand();
-                $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
-                $tickets_found          = [];
-                // If ticket is Parent : Check if all sons ticket are closed
-                $list_tickets = "";
-                if (count($ticket_metademand_data)) {
-                    $ticket_metademand_data = reset($ticket_metademand_data);
-                    $tickets_found          = Ticket::getSonTickets(
-                        $first_tickets_id,
-                        $ticket_metademand_data['plugin_metademands_metademands_id'],
-                    );
-                    $list_tickets           = [];
-                    foreach ($tickets_found as $ticket_found) {
-                        if ($ticket_found['tickets_id'] != $item->fields['id']) {
-                            $list_tickets[] = $ticket_found['tickets_id'];
-                        }
-                    }
-                    if ($item->fields['id'] != $first_tickets_id) {
-                        $list_tickets[] = $first_tickets_id;
-                    }
-                }
-                $tickets_id = $list_tickets;
-            }
-        } else {
-            $tickets_id = [$inter->fields['targets_id'], $inter->fields['tickets_id']];
-        }
+        // "All tickets": the whole metademand but the ticket the followup was written from.
+        $tickets_id = $inter->fields['targets_id'] == 0
+            ? Interticketfollowup::getRelatedTickets($inter->fields['tickets_id'])
+            : [$inter->fields['targets_id'], $inter->fields['tickets_id']];
 
         if ($tickets_id) {
             $ticket = new \Ticket();
@@ -219,32 +194,10 @@ class NotificationTargetInterticketfollowup extends NotificationTarget
         $type = CommonITILActor::ASSIGN;
         $inter = new Interticketfollowup();
         $inter->getFromDB($data['interticketfollowup_id']);
-        if ($inter->fields['targets_id'] == 0) {
-            $first_tickets_id = Interticketfollowup::getFirstTicket($inter->fields['tickets_id']);
-            $ticket_metademand = new Ticket_Metademand();
-            $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
-            $tickets_found = [];
-            // If ticket is Parent : Check if all sons ticket are closed
-            if (count($ticket_metademand_data)) {
-                $ticket_metademand_data = reset($ticket_metademand_data);
-                $tickets_found = Ticket::getSonTickets(
-                    $first_tickets_id,
-                    $ticket_metademand_data['plugin_metademands_metademands_id'],
-                );
-                $list_tickets = [];
-                foreach ($tickets_found as $ticket_found) {
-                    if ($ticket_found['tickets_id'] != $inter->fields['tickets_id']) {
-                        $list_tickets[] = $ticket_found['tickets_id'];
-                    }
-                }
-                if ($inter->fields['tickets_id'] != $first_tickets_id) {
-                    $list_tickets[] = $first_tickets_id;
-                }
-            }
-            $tickets_id = $list_tickets;
-        } else {
-            $tickets_id = [$inter->fields['targets_id'], $inter->fields['tickets_id']];
-        }
+        // "All tickets": the whole metademand but the ticket the followup was written from.
+        $tickets_id = $inter->fields['targets_id'] == 0
+            ? Interticketfollowup::getRelatedTickets($inter->fields['tickets_id'])
+            : [$inter->fields['targets_id'], $inter->fields['tickets_id']];
 
 
         $userlinktable = "glpi_tickets_users";
@@ -685,23 +638,10 @@ class NotificationTargetInterticketfollowup extends NotificationTarget
             $first_tickets_id       = Interticketfollowup::getFirstTicket($items_id);
             $ticket_metademand      = new Ticket_Metademand();
             $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
-            $tickets_found          = [];
-            // If ticket is Parent : Check if all sons ticket are closed
             if (count($ticket_metademand_data)) {
-                $ticket_metademand_data = reset($ticket_metademand_data);
-                $tickets_found          = Ticket::getSonTickets(
-                    $first_tickets_id,
-                    $ticket_metademand_data['plugin_metademands_metademands_id'],
-                );
-                $list_tickets           = [];
-                foreach ($tickets_found as $ticket_found) {
-                    if ($ticket_found['tickets_id'] != $items_id) {
-                        $list_tickets[] = $ticket_found['tickets_id'];
-                    }
-                }
-                if ($items_id != $first_tickets_id) {
-                    $list_tickets[] = $first_tickets_id;
-                }
+                // Same family as the timeline (Interticketfollowup::getlistItems()), so that the
+                // followups listed in the notification are the ones the ticket shows.
+                $list_tickets = Interticketfollowup::getRelatedTickets($items_id);
                 if (empty($list_tickets)) {
                     $list_tickets = 0;
                 }

@@ -31,8 +31,6 @@ use Glpi\Event;
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Metademands\Interticketfollowup;
-use GlpiPlugin\Metademands\Ticket_Metademand;
-use GlpiPlugin\Metademands\Ticket;
 
 // This controller had no page guard at all: the only control was carried by check(-1, CREATE),
 // which boils down to the global right bit anyway.
@@ -57,69 +55,31 @@ if (!$track->can((int) ($_POST["tickets_id"] ?? 0), READ)) {
 
 if (isset($_POST["add"])) {
     if (isset($_POST["targets_id"])) {
-        if ($_POST["targets_id"] == 0) {
-
-            $tickets_found = [];
-            $ticket_metademand = new Ticket_Metademand();
-            $ticket_metademand_datas = $ticket_metademand->find(['tickets_id' => $_POST["tickets_id"]]);
-
-            // If ticket is Parent : Check if all sons ticket are closed
-            if (count($ticket_metademand_datas)) {
-                $ticket_metademand_datas = reset($ticket_metademand_datas);
-                $tickets_found = Ticket::getSonTickets(
-                    $_POST["tickets_id"],
-                    $ticket_metademand_datas['plugin_metademands_metademands_id'],
-                    [],
-                    true,
-                    true,
-                );
-            }
-
-            foreach ($tickets_found as $ticket) {
-                // getSonTickets() is scoped by the metademand, not by the perimeter of the session:
-                // a linked ticket may well sit in an entity the author cannot reach, so the control
-                // is replayed here rather than only on the root identifier. A dedicated instance is
-                // used so that $track keeps pointing at the object of the redirection below.
-                $son = new $_POST['itemtype']();
-                if (!$son->can((int) $ticket["tickets_id"], READ)) {
-                    continue;
-                }
-
-                $_POST["targets_id"] = $ticket["tickets_id"];
-                $fup->check(-1, CREATE, $_POST);
-                $fup->add($_POST);
-
-                Event::log(
-                    $fup->getField('tickets_id'),
-                    strtolower($_POST['itemtype']),
-                    4,
-                    "tracking",
-                    //TRANS: %s is the user login
-                    sprintf(__('%s adds a followup'), $_SESSION["glpiname"]),
-                );
-            }
-        } else {
-            // Replay the criteria of the dropdown builder at the sink: only the tickets getTargets()
-            // offers - the sons of the same metademand, still open - are legitimate targets.
-            if (!array_key_exists(
-                (int) $_POST["targets_id"],
-                Interticketfollowup::getTargets((int) $_POST["tickets_id"]),
-            )) {
-                throw new AccessDeniedHttpException();
-            }
-
-            $fup->check(-1, CREATE, $_POST);
-            $fup->add($_POST);
-
-            Event::log(
-                $fup->getField('tickets_id'),
-                strtolower($_POST['itemtype']),
-                4,
-                "tracking",
-                //TRANS: %s is the user login
-                sprintf(__('%s adds a followup'), $_SESSION["glpiname"]),
-            );
+        // Replay the criteria of the dropdown builder at the sink: only what getTargets() offers is
+        // a legitimate target -- the other tickets of the same metademand still open, or 0 ("all
+        // tickets"), which it only offers when the ticket belongs to a metademand.
+        if (!array_key_exists(
+            (int) $_POST["targets_id"],
+            Interticketfollowup::getTargets((int) $_POST["tickets_id"]),
+        )) {
+            throw new AccessDeniedHttpException();
         }
+
+        // "All tickets" is a single followup with targets_id = 0, not one copy per ticket: the
+        // timelines and the notifications spread it over the whole metademand
+        // (Interticketfollowup::getRelatedTickets()), so the ticket it is written from no longer
+        // shows it once per son.
+        $fup->check(-1, CREATE, $_POST);
+        $fup->add($_POST);
+
+        Event::log(
+            $fup->getField('tickets_id'),
+            strtolower($_POST['itemtype']),
+            4,
+            "tracking",
+            //TRANS: %s is the user login
+            sprintf(__('%s adds a followup'), $_SESSION["glpiname"]),
+        );
     }
     Html::redirect($track->getFormURLWithID($_POST["tickets_id"]));
 }
