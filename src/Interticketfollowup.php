@@ -381,6 +381,46 @@ class Interticketfollowup extends CommonITILObject
 
 
     /**
+     * Other tickets of the meta-demand a ticket belongs to.
+     *
+     * The family is the first ticket and all its son tickets, whatever their depth or status: a
+     * followup sent to "all tickets" (targets_id = 0) is stored once and reaches every one of them,
+     * in the timelines (getlistItems()) as in the notifications.
+     *
+     * @param int $tickets_id ticket the family is seen from, left out of the result
+     *
+     * @return int[]
+     */
+    public static function getRelatedTickets($tickets_id): array
+    {
+        $tickets_id       = (int) $tickets_id;
+        $first_tickets_id = self::getFirstTicket($tickets_id);
+        if (!$first_tickets_id) {
+            return [];
+        }
+
+        $ticket_metademand = new Ticket_Metademand();
+        if (!$ticket_metademand->getFromDBByCrit(['tickets_id' => $first_tickets_id])) {
+            return [];
+        }
+
+        $related = [(int) $first_tickets_id];
+        foreach (
+            Ticket::getSonTickets(
+                $first_tickets_id,
+                $ticket_metademand->fields['plugin_metademands_metademands_id'],
+                [],
+                true,
+                true,
+            ) as $son
+        ) {
+            $related[] = (int) $son['tickets_id'];
+        }
+
+        return array_values(array_diff(array_unique($related), [$tickets_id]));
+    }
+
+    /**
      * @param $items_id
      *
      * @return array
@@ -442,76 +482,30 @@ class Interticketfollowup extends CommonITILObject
         $origin_time_line = $item['timeline'];
         $first_tickets_id = self::getFirstTicket($items_id);
         if ($first_tickets_id) {
-            $ticket_metademand      = new Ticket_Metademand();
-            $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
-            $tickets_found          = [];
-            // If ticket is Parent : Check if all sons ticket are closed
-            if (count($ticket_metademand_data)) {
-                $ticket_metademand_data = reset($ticket_metademand_data);
-                $tickets_found          = Ticket::getSonTickets(
-                    $first_tickets_id,
-                    $ticket_metademand_data['plugin_metademands_metademands_id'],
-                );
-                $list_tickets           = [];
-                foreach ($tickets_found as $ticket_found) {
-                    if ($ticket_found['tickets_id'] != $items_id) {
-                        $list_tickets[] = $ticket_found['tickets_id'];
-                    }
-                }
-                if ($items_id != $first_tickets_id) {
-                    $list_tickets[] = $first_tickets_id;
-                }
-                // This timeline hook runs on every ticket, helpdesk interface included, and
-                // pushes the followups and the documents of the sibling tickets of the same
-                // meta-demand into the current timeline. Neither is readable by definition:
-                // keep only the tickets the current user may actually read, with the same
-                // per-ticket check as front/interticketfollowup.form.php, and drop them all
-                // when the plugin followup READ right is missing. The criteria matching the
-                // current ticket are left untouched: the core already validated its access.
-                if (!Session::isCron()) {
-                    if (!self::canView()) {
-                        $list_tickets = [];
-                    } else {
-                        $readable = [];
-                        $sibling  = new \Ticket();
-                        foreach ($list_tickets as $sibling_id) {
-                            if ($sibling->can((int) $sibling_id, READ)) {
-                                $readable[] = $sibling_id;
-                            }
-                        }
-                        $list_tickets = $readable;
-                    }
-                }
-                if (empty($list_tickets)) {
-                    $list_tickets = 0;
-                }
-                $follow  = new self();
-                $crits = [
-                    //                    'OR'  => [
-                    //
-                    //                        'AND' => [
-                    //                            'tickets_id' => $list_tickets,
-                    //                            'targets_id' => 0,
-                    //                        ],
-                    //                        ['targets_id' => $items_id],
-                    //                        ['tickets_id' => $items_id],
-                    //
-                    //                    ],
-                    'AND' => [
-                        'OR' => [
-
-                            'AND' => [
-                                'tickets_id' => $list_tickets,
-                                'targets_id' => 0,
-                            ],
-                            ['targets_id' => $items_id],
-                            ['tickets_id' => $items_id],
-
-                        ],
-                    ],
-                ];
-                $follows = $follow->find($crits);
+            // A followup sent to "all tickets" is stored once, on the ticket it was written from,
+            // with targets_id = 0: it belongs to every ticket of the meta-demand, this one
+            // included, just like a followup whose targets_id is this ticket. Both are therefore
+            // shown here without asking whether the ticket they were written from is readable --
+            // what matters is that they are addressed to this one, which the core already let
+            // the user read. The plugin followup READ right still gates the family-wide ones.
+            $list_tickets = (Session::isCron() || self::canView())
+                ? self::getRelatedTickets($items_id)
+                : [];
+            if (empty($list_tickets)) {
+                $list_tickets = 0;
             }
+
+            $follow  = new self();
+            $follows = $follow->find([
+                'OR' => [
+                    [
+                        'tickets_id' => $list_tickets,
+                        'targets_id' => 0,
+                    ],
+                    ['targets_id' => $items_id],
+                    ['tickets_id' => $items_id],
+                ],
+            ]);
 
             foreach ($follows as $follow) {
                 $follow['can_edit']                                      = ($follow['tickets_id'] == $items_id && $follow['users_id'] == Session::getLoginUserID()) ? true : false;
