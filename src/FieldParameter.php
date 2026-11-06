@@ -528,6 +528,11 @@ class FieldParameter extends CommonDBChild
                     && !in_array($params["item"], ["User", "Group"]))) {
                 $granted_fields = [13];
             }
+            // Ticket chosen in the form linked to the created ticket (Metademand::linkTickets())
+            if ($objectclass == 'Ticket' && $type == "dropdown_object" && $params["item"] == 'Ticket') {
+                $allowed_fields[Metademand::LINKED_TICKETS_OPTION] = '_link';
+                $granted_fields = [Metademand::LINKED_TICKETS_OPTION];
+            }
 
             if (isset($PLUGIN_HOOKS['metademands'])) {
                 foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -546,6 +551,9 @@ class FieldParameter extends CommonDBChild
                         $ticket_fields[$id] = $searchOption[$id]['name'];
                     }
                 }
+            }
+            if (isset($ticket_fields[Metademand::LINKED_TICKETS_OPTION])) {
+                $ticket_fields[Metademand::LINKED_TICKETS_OPTION] = __('Linked tickets');
             }
 
         }

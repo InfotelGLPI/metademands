@@ -27,7 +27,6 @@
  * --------------------------------------------------------------------------
  */
 
-use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Metademand;
 
@@ -59,9 +58,10 @@ switch ($_POST['step']) {
         break;
     case 'object':
         global $CFG_GLPI;
-        if ($_POST['type'] === 'text') {
-            TemplateRenderer::getInstance()->display('@metademands/ajax/link_to_user_field.html.twig');
-        } else {
+        // Text: no object. Its link to a user field is set once created, in its specific
+        // parameters (link_to_user): the checkbox once shown here stored item = User, which
+        // nothing reads any more.
+        if ($_POST['type'] !== 'text') {
             // The second label only makes sense for the two interval types. The legacy
             // script interpolated the posted type into the JS source to decide that.
             $show_label2 = in_array($_POST['type'], ['datetime_interval', 'date_interval'], true)

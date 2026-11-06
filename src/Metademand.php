@@ -78,6 +78,12 @@ use UserEmail;
  */
 class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, ProvideTranslationsInterface
 {
+    /**
+     * used_by_ticket of a "Ticket" field linking the chosen ticket to the created one: the
+     * "All linked tickets" search option of Ticket
+     */
+    public const LINKED_TICKETS_OPTION = 40;
+
     public const LOG_ADD = 1;
     public const LOG_UPDATE = 2;
     public const LOG_DELETE = 3;
@@ -2898,6 +2904,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     FieldCustomvalue::preloadForFields($list_field_ids);
 
                     $searchOption = Search::getOptions($object_class);
+                    $linked_tickets = [];
                     foreach ($list_fields as $id => $fields_values) {
                         $metafield = Field::getCachedField((int) $id);
                         $params = [];
@@ -2942,10 +2949,16 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $name = "_groups_id_observer";
                                         self::appendActorValues($parent_fields, $name, $v[$id], \Group::class);
                                     }
+                                    if ($fields_values['used_by_ticket'] == self::LINKED_TICKETS_OPTION) {
+                                        foreach ((array) $v[$id] as $linked_ticket) {
+                                            $linked_tickets[] = (int) $linked_ticket;
+                                        }
+                                    }
                                     if ($fields_values['used_by_ticket'] != 4
                                         && $fields_values['used_by_ticket'] != 71
                                         && $fields_values['used_by_ticket'] != 66
-                                        && $fields_values['used_by_ticket'] != 65) {
+                                        && $fields_values['used_by_ticket'] != 65
+                                        && $fields_values['used_by_ticket'] != self::LINKED_TICKETS_OPTION) {
                                         $projected = self::filterProjectedValue($name, $v[$id]);
                                         // Text field used as title (Fields\Text::showFieldParameters()):
                                         // same prefix as the title it replaces, kept when unanswered
@@ -3220,6 +3233,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
                             $parent_tickets_id = $object->add($input);
                             self::incrementFormUsageCount($metademand);
+                        }
+                        if ($parent_tickets_id && $object_class == 'Ticket' && $linked_tickets !== []) {
+                            self::linkTickets((int) $parent_tickets_id, $linked_tickets);
                         }
 
                         //delete drafts
@@ -3902,6 +3918,29 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      *
      * @return mixed
      */
+    /**
+     * Link to the created ticket the tickets chosen in its "Ticket" fields used as linked
+     * tickets (LINKED_TICKETS_OPTION)
+     *
+     * @param int[] $linked_tickets
+     */
+    private static function linkTickets(int $tickets_id, array $linked_tickets): void
+    {
+        $ticket = new \Ticket();
+        $link   = new \Ticket_Ticket();
+        foreach (array_unique($linked_tickets) as $linked_id) {
+            // Posted identifier: only a ticket the user may read, never the created one
+            if ($linked_id <= 0 || $linked_id === $tickets_id || !$ticket->can($linked_id, READ)) {
+                continue;
+            }
+            $link->add([
+                'tickets_id_1' => $tickets_id,
+                'tickets_id_2' => $linked_id,
+                'link'         => \CommonITILObject_CommonITILObject::LINK_TO,
+            ]);
+        }
+    }
+
     public static function mergeFields($parent_fields, $parent_ticketfields)
     {
         foreach ($parent_ticketfields as $key => $val) {
@@ -4800,7 +4839,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                                 if ($params['used_by_ticket'] != 4
                                                     && $params['used_by_ticket'] != 71
                                                     && $params['used_by_ticket'] != 66
-                                                    && $params['used_by_ticket'] != 65) {
+                                                    && $params['used_by_ticket'] != 65
+                                                    // Linked tickets: links of the parent ticket only
+                                                    && $params['used_by_ticket'] != self::LINKED_TICKETS_OPTION) {
                                                     $projected = self::filterProjectedValue($name, $values[$id]);
                                                     if ($projected !== null) {
                                                         $son_ticket_data[$name] = $projected;
