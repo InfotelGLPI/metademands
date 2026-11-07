@@ -70,7 +70,9 @@ class Form_Value extends CommonDBTM
             $migration->addKey($table, "plugin_metademands_forms_id");
         }
         if (!isIndex($table, "plugin_metademands_fields_id")) {
-            $migration->addKey($table, "plugin_metademands_metademands_id");
+            // The table has no plugin_metademands_metademands_id column: indexing it broke the
+            // update of the tables created before 3.3.0 (MySQL error 1072, issue #371)
+            $migration->addKey($table, "plugin_metademands_fields_id");
         }
 
         ///version 3.3.14
