@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.7.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 06:49+0000\n"
+"POT-Creation-Date: 2026-11-06 12:59+0000\n"
 "PO-Revision-Date: 2020-10-12 18:05+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -189,7 +189,7 @@ msgstr ""
 msgid "All groups and not these groups"
 msgstr ""
 
-#: src/Interticketfollowup.php:408
+#: src/Interticketfollowup.php:448
 msgid "All tickets"
 msgstr ""
 
@@ -1640,7 +1640,7 @@ msgstr "Number of documents allowed"
 msgid "Number of duplicates"
 msgstr ""
 
-#: src/NotificationTargetInterticketfollowup.php:1040
+#: src/NotificationTargetInterticketfollowup.php:980
 msgctxt "quantity"
 msgid "Number of inter ticket followups"
 msgstr ""
@@ -1932,7 +1932,7 @@ msgstr ""
 msgid "Requester firstname"
 msgstr ""
 
-#: src/NotificationTargetInterticketfollowup.php:1017
+#: src/NotificationTargetInterticketfollowup.php:957
 msgid "Requester group"
 msgid_plural "Requester groups"
 msgstr[0] ""
@@ -2211,11 +2211,11 @@ msgstr ""
 msgid "Takes the whole row"
 msgstr "Takes the whole row"
 
-#: src/Interticketfollowup.php:578
+#: src/Interticketfollowup.php:572
 msgid "Target followup"
 msgstr ""
 
-#: src/NotificationTargetInterticketfollowup.php:1037
+#: src/NotificationTargetInterticketfollowup.php:977
 msgid "Target ticket(s)"
 msgstr ""
 

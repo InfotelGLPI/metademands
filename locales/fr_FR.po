@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 06:49+0000\n"
+"POT-Creation-Date: 2026-11-06 12:59+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/"
@@ -197,7 +197,7 @@ msgstr "Toutes les catégories disponibles"
 msgid "All groups and not these groups"
 msgstr "Tous les groupes sauf ceux-ci"
 
-#: src/Interticketfollowup.php:408
+#: src/Interticketfollowup.php:448
 msgid "All tickets"
 msgstr "Tous les tickets"
 
@@ -1687,7 +1687,7 @@ msgstr "Nombre de documents autorisés"
 msgid "Number of duplicates"
 msgstr "Nombre de doublons"
 
-#: src/NotificationTargetInterticketfollowup.php:1040
+#: src/NotificationTargetInterticketfollowup.php:980
 msgctxt "quantity"
 msgid "Number of inter ticket followups"
 msgstr "Nombre de suivis inter tickets"
@@ -1991,7 +1991,7 @@ msgstr "Email du demandeur"
 msgid "Requester firstname"
 msgstr "Prénom du demandeur"
 
-#: src/NotificationTargetInterticketfollowup.php:1017
+#: src/NotificationTargetInterticketfollowup.php:957
 msgid "Requester group"
 msgid_plural "Requester groups"
 msgstr[0] "Groupe demandeur"
@@ -2276,11 +2276,11 @@ msgstr "Etiquette"
 msgid "Takes the whole row"
 msgstr "Prend toute la ligne"
 
-#: src/Interticketfollowup.php:578
+#: src/Interticketfollowup.php:572
 msgid "Target followup"
 msgstr "Cible du suivi"
 
-#: src/NotificationTargetInterticketfollowup.php:1037
+#: src/NotificationTargetInterticketfollowup.php:977
 msgid "Target ticket(s)"
 msgstr "Ticket(s) cible(s)"
 
