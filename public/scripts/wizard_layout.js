@@ -524,6 +524,11 @@ function refreshSummary(wizard) {
     if (bar.style.width !== width) {
         bar.style.width = width;
     }
+    // Every mandatory field filled: the meter turns green
+    const complete = filled >= total;
+    if (bar.classList.contains('bg-success') !== complete) {
+        bar.classList.toggle('bg-success', complete);
+    }
     refreshActiveBlock(wizard);
 }
 
@@ -607,12 +612,21 @@ function refreshSteps(wizard) {
     refreshFooterState(wizard, '');
     // Only the block of the current step is shown: its fields are the ones counted
     const current_block = current?.firstElementChild;
+    let current_left = 0;
     if (current_block instanceof HTMLElement) {
-        refreshBlockMeta(wizard, current_block, countMandatory(current_block));
+        const counts = countMandatory(current_block);
+        current_left = counts.missing.length;
+        refreshBlockMeta(wizard, current_block, counts);
     }
     const width = `${Math.round(position / Math.max(reachable.length, 1) * 100)}%`;
     if (bar.style.width !== width) {
         bar.style.width = width;
+    }
+    // Last step with its mandatory fields filled (the previous ones were checked to reach
+    // it): the bar turns green, as the meter of a one page form
+    const complete = position >= reachable.length && current_left === 0;
+    if (bar.classList.contains('bg-success') !== complete) {
+        bar.classList.toggle('bg-success', complete);
     }
 
     // Tab bar: the visible tabs before the active one are done

@@ -1324,6 +1324,38 @@ select.chained-select {
     width: auto;
 }
 
+/* Second label of a field (templates/fields/field_wrapper.html.twig): a help under the field,
+   small and grey, the rich text of the designer kept */
+.md-field-help {
+    display: flex;
+    align-items: flex-start;
+    gap: .4rem;
+    margin-top: .35rem;
+    color: var(--tblr-secondary);
+    font-size: .8rem;
+    line-height: 1.45;
+}
+
+.md-field-help > .ti {
+    flex: none;
+    margin-top: .1rem;
+    font-size: .95rem;
+}
+
+.md-field-help > div {
+    min-width: 0;
+}
+
+.md-field-help p {
+    margin: 0 0 .25rem;
+}
+
+.md-field-help ul,
+.md-field-help ol {
+    margin: 0 0 .25rem;
+    padding-left: 1.1rem;
+}
+
 /* Title field (templates/fields/field_display_title.html.twig): a section heading inside its
    block, small capitals over a thin line, in the colour chosen by the designer if any */
 .md-section-title {

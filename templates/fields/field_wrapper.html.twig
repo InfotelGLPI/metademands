@@ -61,11 +61,14 @@
             {%- endif %}
         {%- if is_basket %}</h4>{% endif %}
     {%- endif %}
-    {%- if show_label2_alert %}
-        <div class='alert alert-secondary' style='padding: 10px;'>
-        <div class='remove-last-tinymce-margin'>{{ label2|safe_html }}</div></div>{% endif %}
     {# raw: wizard widget of any field type, printed by Field::getFieldInput(), whose renderers are not all in Twig yet #}
     {{- field_html|raw -}}
+    {#- Second label: a help under the field, as in a GLPI form, rather than a grey box between
+     #  the label and the field -#}
+    {%- if show_label2_alert %}
+        <div class='md-field-help'>
+            <i class='ti ti-info-circle' aria-hidden='true'></i>
+            <div class='remove-last-tinymce-margin'>{{ label2|safe_html }}</div></div>{% endif %}
     {%- if close_hidetitle_div %}</div>{% endif %}
 {%- if is_interval %}</div>
 <div id-field='field{{ id }}-2' class="form-group col-md-6 md-bottom">
