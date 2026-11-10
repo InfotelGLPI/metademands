@@ -45,10 +45,10 @@
               style="margin-right: 15px;">{{ rank }}</span>
         <input type="text" id="custom_values{{ rank }}"
                name="custom_values[{{ rank }}]"
-               class="form-control" style="width:200px"
+               class="form-control md-customvalue-name"
                placeholder="{{ __('Value', 'metademands') }}">
         {% if display_comment %}
-            <div class="input-group flex-nowrap" style="width:270px">
+            <div class="input-group flex-nowrap md-customvalue-comment">
                 <span class="input-group-text text-nowrap">{{ __('Comment') }}</span>
                 <input type="text" id="comment_values{{ rank }}"
                        name="comment_values[{{ rank }}]"

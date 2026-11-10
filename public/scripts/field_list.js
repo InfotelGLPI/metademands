@@ -26,165 +26,590 @@
  */
 
 /**
- * Field list of a metademand (templates/field_list.html.twig), previously driven by
- * the inline <script> blocks Field::listFields() generated.
+ * "Wizard creation" tab of a metademand (templates/field_list.html.twig).
  *
- * The list wrapper carries data-md-field-list (metademand id),
- * data-md-field-list-block (block filtered by the search form, 0 for none) and
- * data-md-field-list-preview-url. The horizontal scroll of the tab bar is handled by
- * wizard_form.js, which is loaded on every page.
+ * The list wrapper carries data-md-field-list (metademand id) and the URLs of the block
+ * preview and of the field move. Handled here: search and type filter, preview of the
+ * selected block kept in sync with the selected field, multiple selection, drag and drop
+ * of the fields inside a block and between blocks, add modals (optionally prefilled with
+ * a block), purge confirmation.
+ *
+ * Loaded as a module (setup.php, ADD_JAVASCRIPT_MODULE): the list is a tab of the
+ * metademand form, injected after load, hence the MutationObserver at the end.
  */
 
-/* global updateActiveTab, glpi_confirm */
+/* global glpi_confirm, glpi_toast_error, bootstrap */
 
-(function () {
-    'use strict';
+const PREVIEW_STORAGE = 'plugin_metademands_fieldlist_preview';
 
-    /**
-     * Load the preview of a block below the list.
-     *
-     * @param {HTMLElement} list
-     * @param {number} rank
-     */
-    function loadPreview(list, rank) {
-        $.ajax({
-            url: list.dataset.mdFieldListPreviewUrl,
-            type: 'POST',
-            datatype: 'HTML',
-            data: {block: rank, metademands_id: list.dataset.mdFieldList},
-            success: function (response) {
-                $('#see_block_preview').html(response);
-            },
-            error: function (xhr, status, error) {
-                console.log(xhr, status, error);
-            },
+/**
+ * Insert HTML returned by GLPI into a container, running the scripts it carries (select2
+ * setups, dynamic dropdowns...): innerHTML never runs them on its own.
+ *
+ * @param {HTMLElement} container
+ * @param {string} html
+ */
+function injectHtml(container, html) {
+    container.innerHTML = html;
+    container.querySelectorAll('script').forEach((original) => {
+        const script = document.createElement('script');
+        Array.from(original.attributes).forEach((attribute) => {
+            script.setAttribute(attribute.name, attribute.value);
+        });
+        script.textContent = original.textContent;
+        original.replaceWith(script);
+    });
+}
+
+/**
+ * POST form-encoded data to a GLPI endpoint. The core CSRF check validates same-origin
+ * requests from the browser headers; X-Requested-With routes them through its AJAX branch.
+ *
+ * @param {string} url
+ * @param {Record<string, unknown>} data nested objects are encoded as name[key] pairs
+ * @returns {Promise<Response>}
+ */
+function post(url, data) {
+    const body = new URLSearchParams();
+    const append = (name, value) => {
+        if (value !== null && typeof value === 'object') {
+            Object.entries(value).forEach(([key, item]) => append(`${name}[${key}]`, item));
+        } else {
+            body.append(name, value === undefined || value === null ? '' : String(value));
+        }
+    };
+    Object.entries(data).forEach(([name, value]) => append(name, value));
+
+    return fetch(url, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: body.toString(),
+    });
+}
+
+/**
+ * @param {HTMLElement} list
+ * @returns {boolean} whether the preview column is shown
+ */
+function isPreviewShown(list) {
+    const side = list.querySelector('[data-md-field-side]');
+    return side !== null && !side.classList.contains('d-none');
+}
+
+/**
+ * Highlight a field in the preview and bring it into view.
+ *
+ * @param {HTMLElement} list
+ * @param {string|null} id
+ */
+function highlightPreview(list, id) {
+    const body = list.querySelector('[data-md-preview-body]');
+    if (body === null) {
+        return;
+    }
+    body.querySelectorAll('.md-preview-selected').forEach((element) => {
+        element.classList.remove('md-preview-selected');
+    });
+    if (!id) {
+        return;
+    }
+    const target = body.querySelector(`[id-field="field${CSS.escape(id)}"]`);
+    if (target !== null) {
+        target.classList.add('md-preview-selected');
+        target.scrollIntoView({block: 'nearest', behavior: 'smooth'});
+    }
+}
+
+/**
+ * Load the preview of a block into the preview column.
+ *
+ * @param {HTMLElement} list
+ * @param {string} rank
+ * @returns {Promise<void>}
+ */
+async function loadPreview(list, rank) {
+    const body = list.querySelector('[data-md-preview-body]');
+    const title = list.querySelector('[data-md-preview-title]');
+    const block = list.querySelector(`[data-md-block="${CSS.escape(rank)}"]`);
+    if (body === null || block === null) {
+        return;
+    }
+    list.dataset.mdPreviewRank = rank;
+    if (title !== null) {
+        title.textContent = block.dataset.mdBlockName ?? '';
+    }
+    try {
+        const response = await post(list.dataset.mdFieldListPreviewUrl, {
+            block: rank,
+            metademands_id: list.dataset.mdFieldList,
+        });
+        if (list.dataset.mdPreviewRank !== rank) {
+            // Another block was asked for meanwhile
+            return;
+        }
+        injectHtml(body, response.ok ? await response.text() : '');
+    } catch {
+        body.textContent = '';
+    }
+    const selected = list.querySelector('.md-field.is-selected');
+    highlightPreview(list, selected !== null ? selected.dataset.mdFieldId : null);
+}
+
+/**
+ * Unfold a block and scroll to it.
+ *
+ * @param {HTMLElement} list
+ * @param {string} rank
+ * @returns {HTMLElement|null} the block
+ */
+function revealBlock(list, rank) {
+    const block = list.querySelector(`[data-md-block="${CSS.escape(rank)}"]`);
+    if (block === null) {
+        return null;
+    }
+    const body = block.querySelector('.collapse');
+    if (body !== null && !body.classList.contains('show')) {
+        bootstrap.Collapse.getOrCreateInstance(body, {toggle: false}).show();
+    }
+    return block;
+}
+
+/**
+ * Select a field: highlighted in the list and in the preview of its block.
+ *
+ * @param {HTMLElement} list
+ * @param {string} id
+ * @param {boolean} scroll bring the row into view
+ */
+function selectField(list, id, scroll) {
+    const row = list.querySelector(`#md-field-${CSS.escape(id)}`);
+    if (row === null) {
+        return;
+    }
+    list.querySelectorAll('.md-field.is-selected').forEach((element) => {
+        element.classList.remove('is-selected');
+    });
+    row.classList.add('is-selected');
+
+    const rank = row.closest('[data-md-fields]').dataset.mdRank;
+    if (scroll) {
+        revealBlock(list, rank);
+        row.scrollIntoView({block: 'center', behavior: 'smooth'});
+    }
+    if (isPreviewShown(list)) {
+        if (list.dataset.mdPreviewRank !== rank) {
+            loadPreview(list, rank);
+        } else {
+            highlightPreview(list, id);
+        }
+    }
+}
+
+/**
+ * Apply the search and the type filter of the toolbar. Drag and drop is suspended while
+ * filtering: hidden fields would make the drop position ambiguous.
+ *
+ * @param {HTMLElement} list
+ */
+function applyFilter(list) {
+    const search = list.querySelector('[data-md-field-search]');
+    const type = list.querySelector('[data-md-field-type-filter]');
+    const query = search !== null ? search.value.trim().toLowerCase() : '';
+    const wanted = type !== null ? type.value : '';
+    const filtering = query !== '' || wanted !== '';
+
+    list.querySelectorAll('.md-field').forEach((row) => {
+        const visible = (query === '' || (row.dataset.mdSearch ?? '').includes(query))
+            && (wanted === '' || row.dataset.mdType === wanted);
+        row.classList.toggle('d-none', !visible);
+    });
+    list.querySelectorAll('[data-md-block]').forEach((block) => {
+        const any = block.querySelector('.md-field:not(.d-none)') !== null;
+        block.classList.toggle('d-none', filtering && !any);
+    });
+
+    list.classList.toggle('md-filtering', filtering);
+    if (typeof window.sortable === 'function') {
+        list.querySelectorAll('[data-md-fields][data-md-sortable-ready]').forEach((container) => {
+            window.sortable(container, filtering ? 'disable' : 'enable');
         });
     }
+}
 
-    /**
-     * Show a block tab, remember it and preview it.
-     *
-     * @param {HTMLElement} list
-     * @param {number} rank
-     */
-    function showBlock(list, rank) {
-        updateActiveTab(rank);
-        sessionStorage.setItem('loadedblock', 'block' + rank);
-        window.location.hash = 'block' + rank;
+/**
+ * Show or hide the preview column, the structure taking the room left.
+ *
+ * @param {HTMLElement} list
+ * @param {boolean} shown
+ */
+function togglePreview(list, shown) {
+    const side = list.querySelector('[data-md-field-side]');
+    const structure = list.querySelector('[data-md-field-structure]');
+    if (side === null || structure === null) {
+        return;
+    }
+    side.classList.toggle('d-none', !shown);
+    structure.classList.toggle('col-xl-6', shown);
+    structure.classList.toggle('col-xl-10', !shown);
+    localStorage.setItem(PREVIEW_STORAGE, shown ? '1' : '0');
+    if (shown) {
+        const selected = list.querySelector('.md-field.is-selected');
+        const rank = selected !== null
+            ? selected.closest('[data-md-fields]').dataset.mdRank
+            : (list.dataset.mdPreviewRank ?? list.querySelector('[data-md-block]')?.dataset.mdBlock);
+        if (rank) {
+            loadPreview(list, rank);
+        }
+    }
+}
+
+/**
+ * Show or hide the checkboxes and the bar of the massive actions.
+ *
+ * @param {HTMLElement} list
+ * @param {boolean} enabled
+ */
+function toggleSelection(list, enabled) {
+    list.querySelectorAll('.md-check').forEach((element) => element.classList.toggle('d-none', !enabled));
+    list.querySelectorAll('.md-grip').forEach((element) => element.classList.toggle('d-none', enabled));
+    list.querySelector('[data-md-field-massive]')?.classList.toggle('d-none', !enabled);
+    if (!enabled) {
+        list.querySelectorAll('.md-check input[type="checkbox"]').forEach((checkbox) => {
+            checkbox.checked = false;
+        });
+    }
+}
+
+/**
+ * Refresh the field counters of the blocks after a move.
+ *
+ * @param {HTMLElement} list
+ */
+function updateCounts(list) {
+    list.querySelectorAll('[data-md-fields]').forEach((container) => {
+        const count = String(container.querySelectorAll('.md-field').length);
+        list.querySelectorAll(`[data-md-block-count="${CSS.escape(container.dataset.mdRank)}"]`).forEach((badge) => {
+            badge.textContent = count;
+        });
+    });
+}
+
+/**
+ * Store a drag and drop: the field is placed after the field preceding it in its new
+ * block, or at the top of it. The server renumbers both blocks; on failure the list is
+ * reloaded so that it shows what is stored.
+ *
+ * @param {HTMLElement} list
+ * @param {HTMLElement} item moved row
+ * @param {HTMLElement} origin container it came from
+ * @param {HTMLElement} destination container it was dropped into
+ */
+async function moveField(list, item, origin, destination) {
+    let previous = item.previousElementSibling;
+    while (previous !== null && !previous.matches('.md-field')) {
+        previous = previous.previousElementSibling;
+    }
+    const rank = destination.dataset.mdRank;
+
+    let moved = false;
+    try {
+        const response = await post(list.dataset.mdFieldListMoveUrl, {
+            id: item.dataset.mdFieldId,
+            rank: rank,
+            previous_fields_id: previous !== null ? previous.dataset.mdFieldId : 0,
+        });
+        moved = response.ok && (await response.json()).success === true;
+    } catch {
+        moved = false;
+    }
+
+    if (!moved) {
+        if (typeof glpi_toast_error === 'function') {
+            glpi_toast_error(list.dataset.mdFieldListMoveError);
+        }
+        window.location.reload();
+        return;
+    }
+
+    updateCounts(list);
+    const shown = list.dataset.mdPreviewRank;
+    if (isPreviewShown(list) && (shown === rank || shown === origin.dataset.mdRank)) {
+        loadPreview(list, shown);
+    }
+}
+
+/**
+ * Make a field mandatory or optional from its badge.
+ *
+ * @param {HTMLElement} list
+ * @param {HTMLButtonElement} button a [data-md-field-mandatory] badge
+ */
+async function toggleMandatory(list, button) {
+    const wanted = button.getAttribute('aria-pressed') !== 'true';
+    button.disabled = true;
+
+    let saved = null;
+    try {
+        const response = await post(list.dataset.mdFieldListMandatoryUrl, {
+            id: button.dataset.mdFieldMandatory,
+            is_mandatory: wanted ? 1 : 0,
+        });
+        const result = response.ok ? await response.json() : null;
+        saved = result !== null && result.success === true ? result.is_mandatory === 1 : null;
+    } catch {
+        saved = null;
+    }
+    button.disabled = false;
+
+    if (saved === null) {
+        if (typeof glpi_toast_error === 'function') {
+            glpi_toast_error(list.dataset.mdFieldListMandatoryError);
+        }
+        return;
+    }
+
+    button.setAttribute('aria-pressed', saved ? 'true' : 'false');
+    button.classList.toggle('bg-red-lt', saved);
+    button.classList.toggle('bg-secondary-lt', !saved);
+    button.classList.toggle('text-secondary', !saved);
+    const icon = button.querySelector('i');
+    if (icon !== null) {
+        icon.className = `ti ${saved ? 'ti-asterisk' : 'ti-circle-dashed'} me-1`;
+    }
+    const label = button.querySelector('span');
+    if (label !== null) {
+        label.textContent = (saved ? button.dataset.mdLabelOn : button.dataset.mdLabelOff) ?? '';
+    }
+
+    // The preview shows the mandatory star: refresh it when it shows this block
+    const rank = button.closest('[data-md-fields]')?.dataset.mdRank;
+    if (rank !== undefined && isPreviewShown(list) && list.dataset.mdPreviewRank === rank) {
         loadPreview(list, rank);
     }
+}
 
-    /**
-     * Load a field form into its modal body, then show the modal.
-     * jQuery load() posts the parameters and runs the scripts of the returned form.
-     *
-     * @param {HTMLElement} button a [data-md-field-add] button
-     */
-    function openAddModal(button) {
-        const modal = document.getElementById(button.dataset.mdFieldAdd);
-
-        if (modal === null) {
-            return;
-        }
-
-        $(modal.querySelector('.modal-body')).load(
-            button.dataset.mdFieldAddUrl,
-            JSON.parse(button.dataset.mdFieldAddParams),
-            function () {
-                bootstrap.Modal.getOrCreateInstance(modal).show();
-            },
-        );
+/**
+ * Drag and drop with the html5sortable library of the core (window.sortable): every
+ * block accepts the fields of the others.
+ *
+ * @param {HTMLElement} list
+ */
+function bindSortable(list) {
+    if (typeof window.sortable !== 'function' || list.querySelector('.md-grip') === null) {
+        return;
     }
-
-    /**
-     * Restore the active block: the filtered block first, then the session storage,
-     * then the location hash, block 1 otherwise. Reopen the "new field" modal when
-     * front/field.form.php redirected here after "add another".
-     *
-     * @param {HTMLElement} list
-     */
-    function initList(list) {
-        if (list.dataset.mdFieldListInit) {
-            return;
-        }
-        list.dataset.mdFieldListInit = '1';
-
-        const searched = parseInt(list.dataset.mdFieldListBlock, 10) || 0;
-        const stored = sessionStorage.getItem('loadedblock');
-        const hash = window.location.hash;
-        let rank = 1;
-
-        if (searched > 0) {
-            rank = searched;
-        } else if (stored && stored.startsWith('block') && document.getElementById(stored)) {
-            rank = parseInt(stored.substring(5), 10);
-        } else if (hash.startsWith('#block') && document.getElementById(hash.substring(1))) {
-            rank = parseInt(hash.substring(6), 10);
-        }
-        showBlock(list, rank);
-
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('open_add_field') === list.dataset.mdFieldList) {
-            params.delete('open_add_field');
-            const query = params.toString();
-            history.replaceState(
-                null,
-                '',
-                window.location.pathname + (query ? '?' + query : '') + window.location.hash,
-            );
-
-            const button = list.querySelector('[data-md-field-add-new]');
-            if (button !== null) {
-                openAddModal(button);
+    const containers = list.querySelectorAll('[data-md-fields]');
+    window.sortable(containers, {
+        items: '.md-field',
+        handle: '.md-grip',
+        acceptFrom: '.md-fields',
+        forcePlaceholderSize: true,
+        placeholderClass: 'md-field-placeholder',
+    });
+    containers.forEach((container) => {
+        container.dataset.mdSortableReady = '1';
+        container.addEventListener('sortupdate', (event) => {
+            const detail = event.detail;
+            // Reported to both lists on a move between blocks: stored once, by the one it landed in
+            if (detail.destination.container !== container) {
+                return;
             }
-        }
-    }
-
-    // Add buttons: new field, existing field.
-    $(document).on('click', '[data-md-field-add]', function (event) {
-        event.preventDefault();
-        openAddModal(this);
-    });
-
-    // Block tabs of the list itself: the preview loaded below it carries its own tabs.
-    $(document).on('click', '[data-md-field-list] > .tabs-container a.tablinks', function (event) {
-        event.preventDefault();
-
-        const rank = parseInt(this.id.replace('ablock', ''), 10);
-        if (rank > 0) {
-            showBlock(this.closest('[data-md-field-list]'), rank);
-        }
-    });
-
-    // Purge of a field, confirmed first. The button submits the purge form of its block.
-    $(document).on('click', 'button[data-md-field-purge]', function (event) {
-        event.preventDefault();
-
-        const button = this;
-        glpi_confirm({
-            message: $('<div>').text(button.dataset.mdFieldPurgeConfirm).html(),
-            confirm_callback: function () {
-                button.form.requestSubmit(button);
-            },
+            moveField(list, detail.item, detail.origin.container, container);
         });
     });
+}
 
-    $(function () {
-        document.querySelectorAll('[data-md-field-list]').forEach(initList);
+/**
+ * Load a field form into its modal, then show the modal. A block button prefills the
+ * block of the new field.
+ *
+ * @param {HTMLElement} button a [data-md-field-add] button
+ */
+async function openAddModal(button) {
+    const modal = document.getElementById(button.dataset.mdFieldAdd);
+    if (modal === null) {
+        return;
+    }
+    const body = modal.querySelector('.modal-body');
+    try {
+        const response = await post(button.dataset.mdFieldAddUrl, JSON.parse(button.dataset.mdFieldAddParams));
+        injectHtml(body, response.ok ? await response.text() : '');
+    } catch {
+        return;
+    }
 
-        // The list is a tab of the metademand form, loaded through Ajax.
-        new MutationObserver(function (mutations) {
-            mutations.forEach(function (mutation) {
-                mutation.addedNodes.forEach(function (node) {
-                    if (node.nodeType !== Node.ELEMENT_NODE) {
-                        return;
-                    }
-                    if (node.matches('[data-md-field-list]')) {
-                        initList(node);
-                    }
-                    node.querySelectorAll('[data-md-field-list]').forEach(initList);
-                });
-            });
-        }).observe(document.body, {childList: true, subtree: true});
+    const rank = button.dataset.mdFieldAddRank;
+    const select = rank ? body.querySelector('select[name="rank"]') : null;
+    if (select !== null) {
+        // Selected once the modal is shown: the select2 of the block and the reload of the
+        // "display field after" list are only set up by the scripts of the form by then.
+        modal.addEventListener('shown.bs.modal', () => {
+            // Dropdown::showNumber() loads its choices through Ajax: only the current value
+            // exists as an option, the block has to be added before it can be selected
+            if (!Array.from(select.options).some((option) => option.value === rank)) {
+                select.add(new Option(rank, rank));
+            }
+            select.value = rank;
+            select.dispatchEvent(new Event('change', {bubbles: true}));
+
+            // The block was chosen by the button: read only. Not disabled, a disabled select
+            // would not be posted and the field would be created without its block; the
+            // select2 that stands for it on screen is made inert instead.
+            const widget = select.nextElementSibling;
+            if (widget !== null && widget.classList.contains('select2')) {
+                widget.classList.add('pe-none', 'opacity-75');
+                widget.querySelectorAll('[tabindex]').forEach((element) => element.setAttribute('tabindex', '-1'));
+                widget.setAttribute('aria-readonly', 'true');
+            }
+        }, {once: true});
+    }
+    bootstrap.Modal.getOrCreateInstance(modal).show();
+}
+
+/**
+ * @param {HTMLElement} list
+ */
+function initList(list) {
+    if (list.dataset.mdFieldListInit) {
+        return;
+    }
+    list.dataset.mdFieldListInit = '1';
+
+    bindSortable(list);
+
+    list.querySelector('[data-md-field-search]')?.addEventListener('input', () => applyFilter(list));
+    list.querySelector('[data-md-field-type-filter]')?.addEventListener('change', () => applyFilter(list));
+    list.querySelector('[data-md-field-toggle-select]')?.addEventListener('change', (event) => {
+        toggleSelection(list, event.target.checked);
     });
-})();
+
+    const previewToggle = list.querySelector('[data-md-field-toggle-preview]');
+    if (previewToggle !== null) {
+        previewToggle.checked = localStorage.getItem(PREVIEW_STORAGE) !== '0';
+        previewToggle.addEventListener('change', () => togglePreview(list, previewToggle.checked));
+        togglePreview(list, previewToggle.checked);
+    }
+
+    // Reopen the "new field" modal when front/field.form.php redirected here after "add another"
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('open_add_field') === list.dataset.mdFieldList) {
+        params.delete('open_add_field');
+        const query = params.toString();
+        history.replaceState(null, '', window.location.pathname + (query ? '?' + query : '') + window.location.hash);
+        const button = list.querySelector('[data-md-field-add-new]');
+        if (button !== null) {
+            openAddModal(button);
+        }
+    }
+}
+
+document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) {
+        return;
+    }
+    const list = target.closest('[data-md-field-list]');
+    if (list === null) {
+        return;
+    }
+
+    const mandatory = target.closest('[data-md-field-mandatory]');
+    if (mandatory !== null) {
+        event.preventDefault();
+        if (!mandatory.disabled) {
+            toggleMandatory(list, mandatory);
+        }
+        return;
+    }
+
+    const add = target.closest('[data-md-field-add]');
+    if (add !== null) {
+        event.preventDefault();
+        openAddModal(add);
+        return;
+    }
+
+    const purge = target.closest('button[data-md-field-purge]');
+    if (purge !== null) {
+        event.preventDefault();
+        const message = document.createElement('div');
+        message.textContent = purge.dataset.mdFieldPurgeConfirm ?? '';
+        glpi_confirm({
+            message: message.innerHTML,
+            confirm_callback: () => purge.form.requestSubmit(purge),
+        });
+        return;
+    }
+
+    const goto = target.closest('[data-md-field-goto]');
+    if (goto !== null) {
+        event.preventDefault();
+        selectField(list, goto.dataset.mdFieldGoto, true);
+        return;
+    }
+
+    const blockGoto = target.closest('[data-md-block-goto]');
+    if (blockGoto !== null) {
+        event.preventDefault();
+        revealBlock(list, blockGoto.dataset.mdBlockGoto)?.scrollIntoView({block: 'start', behavior: 'smooth'});
+        if (isPreviewShown(list)) {
+            loadPreview(list, blockGoto.dataset.mdBlockGoto);
+        }
+        return;
+    }
+
+    const blockPreview = target.closest('[data-md-block-preview]');
+    if (blockPreview !== null) {
+        event.preventDefault();
+        if (!isPreviewShown(list)) {
+            const toggle = list.querySelector('[data-md-field-toggle-preview]');
+            if (toggle !== null) {
+                toggle.checked = true;
+            }
+            togglePreview(list, true);
+        }
+        loadPreview(list, blockPreview.dataset.mdBlockPreview);
+        return;
+    }
+
+    // A field of the preview selects its row
+    const previewed = target.closest('[data-md-preview-body] [id-field]');
+    if (previewed !== null) {
+        const id = (previewed.getAttribute('id-field') ?? '').replace(/^field/, '').replace(/-2$/, '');
+        if (id !== '') {
+            selectField(list, id, true);
+        }
+        return;
+    }
+
+    // A click on a row selects it, unless it hits one of its controls
+    const row = target.closest('.md-field');
+    if (row !== null && target.closest('a, button, input, label, .md-grip, .md-check') === null) {
+        selectField(list, row.dataset.mdFieldId, false);
+    }
+});
+
+/**
+ * @param {ParentNode} root
+ */
+function scan(root) {
+    if (root instanceof Element && root.matches('[data-md-field-list]')) {
+        initList(root);
+    }
+    root.querySelectorAll('[data-md-field-list]').forEach(initList);
+}
+
+scan(document);
+new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+            if (node instanceof Element) {
+                scan(node);
+            }
+        });
+    });
+}).observe(document.body, {childList: true, subtree: true});

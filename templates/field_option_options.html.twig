@@ -35,8 +35,6 @@
     </div>
 {% else %}
 
-    {% set colspan = is_parent_field ? 3 : 13 %}
-
     {#
      # The add / edit links, and the reload of the option form when its value to check
      # changes, load the option form into this modal: see fieldoption_valuetocheck.js.
@@ -58,15 +56,14 @@
             </div>
         </div>
 
-        <div class="center">
-            <button type="button" class="submit btn btn-primary"
+        <div class="d-flex justify-content-end mb-3">
+            <button type="button" class="btn btn-primary"
                     data-md-option-open="{{ modal_id }}"
                     data-md-option-id="-1"
                     data-md-option-title="{{ __('Add a new option', 'metademands') }}">
-                {{ __('Add a new option', 'metademands') }}
+                <i class="ti ti-plus me-1"></i>{{ __('Add a new option', 'metademands') }}
             </button>
         </div>
-        <br>
     {% endif %}
 
     {% if entries|length > 0 %}
@@ -82,84 +79,96 @@
                 }])|raw }}
             {% endif %}
 
-            <table class="tab_cadre_fixehov">
-                <tr class="tab_bg_2">
-                    <th colspan="{{ colspan }}">{{ __("List of options", 'metademands') }}</th>
-                </tr>
-                <tr>
+            {#
+             # One rule per option: "if <type of value> = <value>", then only the actions it
+             # carries, each one named by its full label in a tooltip. A click anywhere on the
+             # rule but its checkbox opens the option in the modal.
+             #}
+            <div class="card">
+                <div class="card-header py-2 d-flex align-items-center gap-2">
                     {% if canedit %}
-                        <th width="{{ colspan }}">
-                            {# raw: massive actions, no core macro (§3.2) #}
-                            {{ call('Html::getCheckAllAsCheckbox', [mass_container])|raw }}
-                        </th>
+                        {# raw: massive actions, no core macro #}
+                        {{ call('Html::getCheckAllAsCheckbox', [mass_container])|raw }}
                     {% endif %}
-                    <th>{{ __('ID') }}</th>
-                    {% if is_parent_field %}
-                        <th>{{ __('Type', 'metademands') }}</th>
-                        <th>{{ __('Field name', 'metademands') }}</th>
-                    {% else %}
-                        <th>{{ __('Type of value to check', 'metademands') }}</th>
-                        <th>{{ __('Value to check', 'metademands') }}</th>
-                        <th>{{ __('Launch a task with the field', 'metademands') }}</th>
-                        <th>{{ __('Assign the ticket to these technicians groups', 'metademands') }}</th>
-                        <th>{{ __('Make this field mandatory', 'metademands') }}</th>
-                        <th>{{ __('Display this hidden field', 'metademands') }}</th>
-                        <th>{{ __('Display this hidden block', 'metademands') }}</th>
-                        <th>{{ __('Display this hidden block in the same block', 'metademands') }}</th>
-                        <th>{{ __('Childs blocks', 'metademands') }}</th>
-                        <th>{{ __('Launch a validation', 'metademands') }}</th>
-                        <th>{{ __('Bind to the value of this checkbox', 'metademands') }}</th>
-                    {% endif %}
-                </tr>
+                    <h3 class="card-title m-0">{{ __("List of options", 'metademands') }}</h3>
+                    <span class="badge bg-secondary-lt">{{ entries|length }}</span>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for entry in entries %}
+                        <div class="list-group-item d-flex align-items-start gap-3 md-option{{ canedit ? ' list-group-item-action pointer' : '' }}"
+                             {% if canedit %}
+                                 data-md-option-open="{{ modal_id }}"
+                                 data-md-option-id="{{ entry.id }}"
+                                 data-md-option-title="{{ __('Edit option', 'metademands') }}"
+                             {% endif %}>
+                            {% if canedit %}
+                                <div class="pt-1" data-md-option-noopen>
+                                    {# raw: massive actions, no core macro #}
+                                    {{ call('Html::getMassiveActionCheckBox', [itemtype, entry.id])|raw }}
+                                </div>
+                            {% endif %}
+                            <div class="flex-fill">
+                                <div class="d-flex flex-wrap align-items-center gap-2">
+                                    <i class="ti ti-arrow-fork text-purple"></i>
+                                    <span class="text-muted">
+                                        {{ is_parent_field ? __('Type', 'metademands') : __('Type of value to check', 'metademands') }} :
+                                    </span>
+                                    <span class="fw-semibold">{{ entry.type_of_value }}</span>
+                                    {% if entry.value_to_check is not empty %}
+                                        <span class="text-muted">=</span>
+                                        <span class="badge bg-purple-lt fs-5" title="{{ is_parent_field ? __('Field name', 'metademands') : __('Value to check', 'metademands') }}">{{ entry.value_to_check }}</span>
+                                    {% endif %}
+                                    <span class="text-muted small ms-auto">#{{ entry.id }}</span>
+                                </div>
 
-                {% for entry in entries %}
-                    {# A click anywhere on the row but the checkbox cell opens the option in the modal #}
-                    <tr class="tab_bg_1{{ canedit ? ' pointer' : '' }}"
-                        {% if canedit %}
-                            data-md-option-open="{{ modal_id }}"
-                            data-md-option-id="{{ entry.id }}"
-                            data-md-option-title="{{ __('Edit option', 'metademands') }}"
-                        {% endif %}>
-                        {% if canedit %}
-                            <td class="center" data-md-option-noopen>
-                                {# raw: massive actions, no core macro (§3.2) #}
-                                {{ call('Html::getMassiveActionCheckBox', [itemtype, entry.id])|raw }}
-                            </td>
-                        {% endif %}
-
-                        <td>{{ entry.id }}</td>
-
-                        <td>{{ entry.type_of_value }}</td>
-
-                        <td>{{ entry.value_to_check }}</td>
-
-                        {% if not is_parent_field %}
-                            <td>{{ entry.task_name }}</td>
-
-                            <td>{{ entry.assign_tech_groups|join(', ') }}</td>
-
-                            <td>{{ entry.fields_link }}</td>
-
-                            <td>{{ entry.hidden_link }}</td>
-
-                            <td>{{ entry.hidden_block }}</td>
-
-                            <td>{{ entry.hidden_block_same_block }}</td>
-
-                            <td>{{ entry.childs_blocks|join(', ') }}</td>
-
-                            <td>{{ entry.users_id_validate }}</td>
-
-                            <td>
-                                {{ entry.checkbox_name }}
-                                {% if entry.checkbox_value is not empty %}
-                                    <br>{{ entry.checkbox_value }}
+                                {% if not is_parent_field %}
+                                    {% set actions %}
+                                        {% if entry.task_name is not empty %}
+                                            <span class="badge bg-green-lt" title="{{ __('Launch a task with the field', 'metademands') }}"><i class="ti ti-subtask me-1"></i>{{ entry.task_name }}</span>
+                                        {% endif %}
+                                        {% if entry.assign_tech_groups is not empty %}
+                                            <span class="badge bg-blue-lt" title="{{ __('Assign the ticket to these technicians groups', 'metademands') }}"><i class="ti ti-users-group me-1"></i>{{ entry.assign_tech_groups|join(', ') }}</span>
+                                        {% endif %}
+                                        {% if entry.fields_link is not empty %}
+                                            <span class="badge bg-red-lt" title="{{ __('Make this field mandatory', 'metademands') }}"><i class="ti ti-asterisk me-1"></i>{{ entry.fields_link }}</span>
+                                        {% endif %}
+                                        {% if entry.hidden_link is not empty %}
+                                            <span class="badge bg-azure-lt" title="{{ __('Display this hidden field', 'metademands') }}"><i class="ti ti-eye me-1"></i>{{ entry.hidden_link }}</span>
+                                        {% endif %}
+                                        {% if entry.hidden_block is not empty %}
+                                            <span class="badge bg-purple-lt" title="{{ __('Display this hidden block', 'metademands') }}{{ entry.same_block ? ' — ' ~ __('Display this hidden block in the same block', 'metademands') }}">
+                                                <i class="ti ti-layout-rows me-1"></i>{{ __('Block', 'metademands') }} {{ entry.hidden_block }}
+                                                {%- if entry.same_block %} <i class="ti ti-arrows-minimize ms-1"></i>{% endif %}
+                                            </span>
+                                        {% endif %}
+                                        {% if entry.childs_blocks is not empty %}
+                                            <span class="badge bg-indigo-lt" title="{{ __('Childs blocks', 'metademands') }}"><i class="ti ti-hierarchy me-1"></i>{{ entry.childs_blocks|join(', ') }}</span>
+                                        {% endif %}
+                                        {% if entry.users_id_validate is not empty %}
+                                            <span class="badge bg-orange-lt" title="{{ __('Launch a validation', 'metademands') }}"><i class="ti ti-user-check me-1"></i>{{ entry.users_id_validate }}</span>
+                                        {% endif %}
+                                        {% if entry.checkbox_name is not empty %}
+                                            <span class="badge bg-teal-lt" title="{{ __('Bind to the value of this checkbox', 'metademands') }}">
+                                                <i class="ti ti-checkbox me-1"></i>{{ entry.checkbox_name }}{% if entry.checkbox_value is not empty %} : {{ entry.checkbox_value }}{% endif %}
+                                            </span>
+                                        {% endif %}
+                                    {% endset %}
+                                    <div class="d-flex flex-wrap gap-1 mt-2">
+                                        {% if actions|trim is not empty %}
+                                            {{ actions }}
+                                        {% else %}
+                                            <span class="text-muted small">{{ __('No action', 'metademands') }}</span>
+                                        {% endif %}
+                                    </div>
                                 {% endif %}
-                            </td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-            </table>
+                            </div>
+                            {% if canedit %}
+                                <i class="ti ti-chevron-right text-muted pt-1"></i>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
 
             {% if canedit %}
                 {# raw: massive actions, no core macro (§3.2) #}

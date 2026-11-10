@@ -55,6 +55,9 @@ class FieldParameter extends CommonDBChild
 
     public static string $rightname = 'plugin_metademands';
 
+    /** Field types that cannot be mandatory: nothing is typed into them */
+    public const NOT_MANDATORY_TYPES = ['title', 'title-block', 'informations', 'link'];
+
     public static $allowed_parameters_types = [
         'title',
         'title-block',
@@ -442,7 +445,7 @@ class FieldParameter extends CommonDBChild
 
         $type = $params['type'] ?? '';
 
-        $show_mandatory  = !in_array($type, ['title', 'title-block', 'informations', 'link']);
+        $show_mandatory  = !in_array($type, self::NOT_MANDATORY_TYPES, true);
         $show_hide_title = $type !== 'title-block';
         $show_row_display = !in_array($type, ['title', 'title-block']);
         $show_is_basket  = $show_row_display && ($params['is_order'] ?? 0) == 1;

@@ -534,6 +534,8 @@ class FieldOption extends CommonDBChild
                     'hidden_link'             => $hidden_link,
                     'hidden_block'            => ($data['hidden_block'] > 0) ? $data['hidden_block'] : "",
                     'hidden_block_same_block' => Dropdown::getYesNo($data['hidden_block_same_block']),
+                    // Only meaningful with a block to show
+                    'same_block'              => $data['hidden_block'] > 0 && $data['hidden_block_same_block'] == 1,
                     'childs_blocks'           => $childs_blocks,
                     'users_id_validate'       => getUserName((int) $data["users_id_validate"]),
                     'checkbox_name'           => $checkbox_name,

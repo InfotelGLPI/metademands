@@ -858,3 +858,171 @@ select.chained-select {
 .md-wizard input.form-control {
     max-width: 100%;
 }
+
+/* "Wizard creation" tab (templates/field_list.html.twig): blocks stacked as cards, one compact
+   row per field, preview of the selected block next to them. */
+.md-builder .md-search {
+    min-width: 260px;
+}
+
+.md-builder .md-sticky {
+    position: sticky;
+    top: 1rem;
+}
+
+.md-builder .md-block .card-header [aria-expanded="false"] .md-chevron {
+    transform: rotate(-90deg);
+}
+
+.md-builder .md-fields {
+    min-height: 2.5rem; /* an empty block still accepts a dropped field */
+}
+
+.md-builder .md-field {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .5rem .75rem;
+    border-bottom: 1px solid var(--tblr-border-color);
+    background: var(--tblr-bg-surface);
+    cursor: pointer;
+}
+
+.md-builder .md-field:hover {
+    background: var(--tblr-bg-surface-secondary);
+}
+
+.md-builder .md-field.is-selected {
+    background: var(--tblr-primary-lt);
+    box-shadow: inset 3px 0 0 var(--tblr-primary);
+}
+
+.md-builder .md-field-placeholder {
+    border: 1px dashed var(--tblr-primary);
+    background: var(--tblr-primary-lt);
+}
+
+.md-builder .md-grip {
+    cursor: grab;
+    color: var(--tblr-secondary);
+}
+
+.md-builder.md-filtering .md-grip {
+    visibility: hidden; /* no drag and drop while the list is filtered */
+}
+
+.md-builder .md-type {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    background: var(--tblr-bg-surface-secondary);
+    color: var(--tblr-secondary);
+}
+
+.md-builder .md-label {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Same weight as the labels of the form (.col-form-label), shown in the preview next to it */
+.md-builder .md-label .md-title {
+    display: block;
+    font-weight: var(--tblr-font-weight-medium, 500);
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.md-builder .md-label .md-meta {
+    font-size: .78rem;
+    color: var(--tblr-secondary);
+}
+
+.md-builder .md-badges {
+    max-width: 50%;
+}
+
+.md-builder .md-actions {
+    opacity: .4;
+    transition: opacity .15s;
+}
+
+.md-builder .md-field:hover .md-actions,
+.md-builder .md-field.is-selected .md-actions {
+    opacity: 1;
+}
+
+.md-builder .md-add-here {
+    width: 100%;
+    padding: .5rem;
+    border: 1px dashed var(--tblr-border-color);
+    border-radius: 0 0 var(--tblr-border-radius) var(--tblr-border-radius);
+    background: transparent;
+    color: var(--tblr-secondary);
+}
+
+.md-builder .md-add-here:hover {
+    border-color: var(--tblr-primary);
+    color: var(--tblr-primary);
+}
+
+.md-builder .md-preview {
+    max-height: calc(100vh - 8rem);
+    overflow: auto;
+}
+
+.md-builder .md-preview [id-field] {
+    cursor: pointer;
+    border-radius: 6px;
+    padding: .25rem .5rem;
+}
+
+.md-builder .md-preview [id-field]:hover {
+    background: var(--tblr-bg-surface-secondary);
+}
+
+/* The 32px line height of the wizard labels spreads the narrow preview column: the label sits
+   right above its input, as in a regular GLPI form */
+.md-builder .md-preview .metademand-label {
+    line-height: 1.4 !important;
+    padding-bottom: .25rem;
+}
+
+.md-builder .md-preview .md-preview-selected {
+    outline: 2px solid var(--tblr-primary);
+    outline-offset: 2px;
+}
+
+/* Custom values of a field (templates/fields/field_customvalue_list.html.twig and
+   field_customvalue_add.html.twig): the value takes the room left on its line instead of a
+   fixed width that cut the long ones. */
+.md-customvalue-name {
+    flex: 2 1 280px;
+    min-width: 200px;
+}
+
+.md-customvalue-comment {
+    flex: 1 1 260px;
+    min-width: 220px;
+}
+
+/* "Child creation" tab (templates/task_list.html.twig): one card per child, indented under
+   its parent ticket by --md-depth. */
+.md-children .md-child {
+    padding-left: calc(1rem + var(--md-depth, 0) * 1.75rem);
+}
+
+.md-children .md-type {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    background: var(--tblr-bg-surface-secondary);
+    color: var(--tblr-secondary);
+}
