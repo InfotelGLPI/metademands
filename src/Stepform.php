@@ -808,10 +808,8 @@ class Stepform extends CommonDBTM
             if ($meta->getFromDB($stepform['plugin_metademands_metademands_id'])) {
                 $metaID   = $stepform['plugin_metademands_metademands_id'];
                 $block_id = $stepform['block_id'];
-                $card_icon = "ti-share";
-                if (!empty($meta->fields['icon'])) {
-                    $card_icon = $meta->fields['icon'];
-                }
+                // Its own icon, unless a Font Awesome one: then the one configured for its type
+                $card_icon = Metademand::getDisplayIcon($meta->fields);
                 if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
                     $name = $meta->getName();
                 } else {
@@ -900,10 +898,8 @@ class Stepform extends CommonDBTM
             $meta = new Metademand();
             if ($meta->getFromDB($stepform['plugin_metademands_metademands_id'])) {
                 $block_id  = $stepform['block_id'];
-                $card_icon = "fa-share-alt";
-                if (!empty($meta->fields['icon'])) {
-                    $card_icon = $meta->fields['icon'];
-                }
+                // Its own icon, unless a Font Awesome one: then the one configured for its type
+                $card_icon = Metademand::getDisplayIcon($meta->fields);
                 if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
                     $name = $meta->getName();
                 } else {

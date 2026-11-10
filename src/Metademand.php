@@ -620,7 +620,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
         $this->addDefaultFormTab($ong);
         $this->addStandardTab(Field::class, $ong, $options);
-        $this->addStandardTab(Wizard::class, $ong, $options);
+        // No "Form preview" tab: the "Preview" button of the "Wizard creation" tab opens the
+        // form as the requesters fill it, in a new browser tab
         if ($this->getField('step_by_step_mode') == 1) {
             $this->addStandardTab(Configstep::class, $ong, $options);
             $this->addStandardTab(Step::class, $ong, $options);
@@ -785,6 +786,58 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      *
      * @return string
      */
+    /**
+     * Icon the plugin configuration gives to a type of metademand (incident, request,
+     * problem, change), empty when none.
+     *
+     * @param int|string|null $type
+     */
+    public static function getConfigTypeIcon($type): string
+    {
+        $config = Config::getInstance();
+        $key = match (true) {
+            $type == \Ticket::INCIDENT_TYPE => 'icon_incident',
+            $type == \Ticket::DEMAND_TYPE   => 'icon_request',
+            $type === 'Problem'             => 'icon_problem',
+            $type === 'Change'              => 'icon_change',
+            default                         => '',
+        };
+
+        return $key !== '' ? (string) ($config[$key] ?? '') : '';
+    }
+
+    /**
+     * Icon of a metademand in the wizard: its own one, except a Font Awesome one (fa-...)
+     * from the former versions, replaced by the icon the plugin configuration gives to its
+     * type; then the configured one, then $default.
+     *
+     * @param array<string, mixed> $fields fields of the metademand (icon, type)
+     */
+    public static function getDisplayIcon(array $fields, string $default = 'ti-share'): string
+    {
+        $icon = trim((string) ($fields['icon'] ?? ''));
+        if ($icon !== '' && !str_contains($icon, 'fa-')) {
+            return $icon;
+        }
+        $type_icon = self::getConfigTypeIcon($fields['type'] ?? null);
+        if ($type_icon !== '') {
+            return $type_icon;
+        }
+
+        return $icon !== '' ? $icon : $default;
+    }
+
+    /**
+     * Whether a text colour of a field is the default of its parameter (black, or none): the
+     * wizard then keeps the colours of the theme instead of painting the field in black.
+     *
+     * @param mixed $color
+     */
+    public static function isDefaultTextColor($color): bool
+    {
+        return in_array(strtolower(trim((string) $color)), ['', '#000', '#000000'], true);
+    }
+
     public static function toThemedForeground($color)
     {
         $color = trim((string) $color);
@@ -1480,6 +1533,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             [
                 'plugin_metademands_metademands_id' => $this->fields['id'],
                 'step_by_step_interface' => Configstep::BOTH_INTERFACE,
+                // Created in step by step mode: its blocks shown as tabs by default
+                'see_blocks_as_tab' => ($this->fields['step_by_step_mode'] ?? 0) == 1 ? 1 : 0,
             ],
         );
 
@@ -1612,11 +1667,19 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         }
         $confStep = new Configstep();
 
+        // Step by step mode switched on: its blocks shown as tabs by default ("Use as tabs"
+        // checked in its configuration), left as set afterwards while the mode stays on
+        $step_by_step_on = in_array('step_by_step_mode', $this->updates, true)
+            && $this->fields['step_by_step_mode'] == 1;
+
         if (!$confStep->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->fields['id']])) {
             $confStep->add([
                 'plugin_metademands_metademands_id' => $this->fields['id'],
                 'step_by_step_interface' => Configstep::BOTH_INTERFACE,
+                'see_blocks_as_tab' => $step_by_step_on ? 1 : 0,
             ]);
+        } elseif ($step_by_step_on && $confStep->fields['see_blocks_as_tab'] != 1) {
+            $confStep->update(['id' => $confStep->getID(), 'see_blocks_as_tab' => 1]);
         }
         TicketField::updateMandatoryTicketFields($this->input);
     }
@@ -6875,10 +6938,8 @@ HTML;
                         if (!$meta->canCreate() && !Group::isUserHaveRight($id)) {
                             continue;
                         }
-                        $icon = "ti-share";
-                        if (!empty($meta->fields['icon'])) {
-                            $icon = $meta->fields['icon'];
-                        }
+                        // Its own icon, unless a Font Awesome one: then the one configured for its type
+                        $icon = self::getDisplayIcon($meta->fields);
                         // The icon ends up in a class attribute on the client side and the
                         // column is stored raw since GLPI 10: anything outside the charset a
                         // class token may contain falls back to the default, so a crafted

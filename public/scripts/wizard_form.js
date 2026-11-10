@@ -1441,6 +1441,43 @@
     }
 
     /**
+     * Give back its default value to a field shown again: resetHiddenField() emptied it when
+     * it was hidden, so that a field prefilled with the requester (for instance) came back
+     * empty, and mandatory. Only the controls left empty are restored, to the value the page
+     * was rendered with (selected option, initial text).
+     *
+     * @param {number} key id of the field
+     */
+    function restoreDefaultValues(key) {
+        document.querySelectorAll(`[id-field="field${key}"], [id-field="field${key}-2"]`).forEach((wrapper) => {
+            wrapper.querySelectorAll('select, textarea, input').forEach((control) => {
+                let restored = false;
+                if (control instanceof HTMLSelectElement) {
+                    if (control.multiple || (control.value !== '' && control.value !== '0')) {
+                        return;
+                    }
+                    const option = [...control.options]
+                        .find((candidate) => candidate.defaultSelected && candidate.value !== '' && candidate.value !== '0');
+                    if (option !== undefined) {
+                        control.value = option.value;
+                        restored = true;
+                    }
+                } else if (control instanceof HTMLTextAreaElement
+                    || ['text', 'email', 'tel', 'url', 'number', 'date'].includes(control.type)) {
+                    if (control.value === '' && control.defaultValue !== '') {
+                        control.value = control.defaultValue;
+                        restored = true;
+                    }
+                }
+                if (restored) {
+                    // Native event: the select2 box and the jQuery handlers follow it
+                    control.dispatchEvent(new Event('change', {bubbles: true}));
+                }
+            });
+        });
+    }
+
+    /**
      * Show or hide the fields linked to the values of a field when the field
      * changes, as the script each Fields class generated did.
      *
@@ -1481,7 +1518,12 @@
             });
             visible.forEach(function (is_visible, key) {
                 if (is_visible) {
+                    const was_hidden = [...document.querySelectorAll(`[id-field="field${key}"], [id-field="field${key}-2"]`)]
+                        .some((element) => element.style.display === 'none');
                     field(key).show();
+                    if (reset && was_hidden) {
+                        restoreDefaultValues(key);
+                    }
                 } else {
                     field(key).hide();
                     if (reset) {

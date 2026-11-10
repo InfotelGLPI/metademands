@@ -124,6 +124,16 @@ class MandatoryTriggerTest extends DbTestCase
         // No: mandatory when the switch is off
         $this->assertTrue($config['rules'][0]['negate']);
         $this->assertFalse($config['rules'][1]['negate']);
+
+        // The buttons drive the select of the classic display: same trigger
+        $config = $this->config($this->render(Yesno::class, [
+            'display_type' => Yesno::BUTTONS_DISPLAY,
+            'options'      => [
+                1 => ['fields_link' => [7]],
+                2 => ['fields_link' => [8]],
+            ],
+        ]));
+        $this->assertSame('select', $config['mode']);
     }
 
     public function testLinkedCheckboxFieldsFlagTheirFirstInput(): void

@@ -97,6 +97,12 @@
     /*position: relative;line-height: 1.4em;*/
 }
 
+/* Form laid out by public/scripts/wizard_layout.js: the width of the mockup, for the title
+   and the blocks alike */
+.metademands_wizard_rank:has(.md-wizard-layout) {
+    max-width: 1180px;
+}
+
 
 .metademands_wizard_title {
     font-size: 18px;
@@ -970,6 +976,61 @@ select.chained-select {
     color: var(--tblr-primary);
 }
 
+/* Label renamed in place: the button shows on the line hovered */
+.md-builder .md-title-line {
+    min-width: 0;
+}
+
+.md-builder .md-title-line .md-title {
+    min-width: 0;
+}
+
+.md-builder .md-rename {
+    flex: none;
+    opacity: 0;
+    transition: opacity .15s;
+}
+
+.md-builder .md-field:hover .md-rename,
+.md-builder .md-rename:focus-visible {
+    opacity: 1;
+}
+
+.md-builder .md-rename-input {
+    max-width: 28rem;
+}
+
+/* Parameters of a field, edited in a panel under its line */
+.md-builder .md-field.is-editing {
+    background: var(--tblr-primary-lt);
+}
+
+.md-builder .md-field-panel {
+    padding: .75rem 1rem 1rem;
+    border-bottom: 1px solid var(--tblr-border-color);
+    background: var(--tblr-bg-surface-secondary);
+    box-shadow: inset 3px 0 0 var(--tblr-primary);
+}
+
+.md-builder .md-field-panel-header {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-bottom: .5rem;
+}
+
+.md-builder .md-field-panel-title {
+    min-width: 0;
+    overflow: hidden;
+    font-weight: var(--tblr-font-weight-bold, 600);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.md-builder .md-field-panel-body > form > .card:first-of-type {
+    margin-top: 0 !important;
+}
+
 .md-builder .md-preview {
     max-height: calc(100vh - 8rem);
     overflow: auto;
@@ -1025,4 +1086,648 @@ select.chained-select {
     border-radius: 6px;
     background: var(--tblr-bg-surface-secondary);
     color: var(--tblr-secondary);
+}
+
+/* Wizard (templates/wizard_metademands.html.twig), laid out by public/scripts/wizard_layout.js:
+   blocks as numbered cards, labels right above their input, sticky actions, summary of the
+   blocks for a one page form, stepper for a step by step form, yes / no buttons. */
+.md-wizard-layout [bloc-id^="bloc"].card {
+    margin-bottom: 1rem;
+    box-shadow: var(--tblr-box-shadow-card, 0 1px 2px rgba(0, 0, 0, .05));
+}
+
+/* Header of a block: the title-block field sits in its own field wrapper (a padded column),
+   both marked by wizard_layout.js. The header spans the whole card. */
+.md-wizard-layout .md-block-header-wrap {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.md-wizard-layout .md-block-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 0 !important;
+    padding: .85rem 1.25rem;
+}
+
+/* Fold chevron: on the far right of the header, after the count of the mandatory fields */
+.md-wizard-layout .md-block-header [data-metademands-collapse] {
+    top: 50%;
+    right: 1rem !important;
+    transform: translateY(-50%);
+}
+
+.md-wizard-layout .md-block-header .card-title {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+
+
+.md-wizard-layout .metademand-label {
+    line-height: 1.4 !important;
+    padding-top: 0;
+    padding-bottom: .35rem;
+    font-weight: var(--tblr-font-weight-medium, 500);
+}
+
+/* Next to the title of a block: its mandatory fields (templates/wizard_layout.js) */
+.md-wizard-layout .md-block-meta {
+    margin-left: auto;
+    margin-right: 1.5rem; /* clear of the fold chevron, on the far right */
+    color: var(--tblr-secondary);
+    font-size: .8rem;
+    white-space: nowrap;
+    cursor: default;
+}
+
+.md-wizard-layout .md-block-meta[title]:not([title=""]) {
+    cursor: pointer;
+}
+
+.md-wizard-layout .md-block-meta.is-complete {
+    color: var(--tblr-success);
+}
+
+/* Title of the form (templates/wizard/metademand_title.html.twig) */
+.md-title-card .card-body {
+    padding: 1rem 1.25rem;
+}
+
+.md-title-visual {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--tblr-primary-lt);
+    color: var(--tblr-primary);
+    font-size: 26px;
+}
+
+.md-title-visual.md-title-illustration {
+    width: 70px;
+    height: 70px;
+    background: transparent;
+}
+
+.md-title-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.md-title-name {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: var(--tblr-font-weight-bold, 600);
+}
+
+.md-title-comment {
+    margin-top: .2rem;
+    font-size: .875rem;
+}
+
+.md-title-requester {
+    flex: none;
+    text-align: right;
+    line-height: 1.5;
+}
+
+@media (max-width: 767.98px) {
+    .md-title-requester {
+        text-align: left;
+    }
+}
+
+/* "Your forms" (templates/wizard/models_and_drafts.html.twig): a button on the right of the
+   title, its panel opening right under it instead of the middle of the card */
+.md-title-forms {
+    position: relative;
+    flex: none;
+    align-self: center;
+}
+
+.md-title-forms .mydraft-withtitle {
+    float: none;
+    display: block;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+}
+
+.md-forms-toggle {
+    white-space: nowrap;
+}
+
+/* The panel: tabs on a grey band, a scrolling body, the lists as plain rows. Its lists are
+   legacy tables whose rows are reloaded through Ajax (ajax/deleteform.php...), hence the
+   styling instead of a new markup. */
+.md-title-forms #divnavforms {
+    top: calc(100% + .5rem);
+    right: 0;
+    width: min(560px, 92vw);
+    margin-top: 0 !important;
+    padding: 0;
+    overflow: hidden;
+    background: var(--tblr-bg-surface);
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius);
+    box-shadow: var(--tblr-box-shadow-dropdown, 0 .5rem 1rem rgba(0, 0, 0, .15));
+}
+
+#divnavforms .nav-tabs {
+    padding: .25rem .75rem 0;
+    background: var(--tblr-bg-surface-secondary);
+    border-bottom: 1px solid var(--tblr-border-color);
+}
+
+#divnavforms .md-forms-close {
+    margin: 0 .25rem .25rem 0;
+}
+
+#divnavforms .tab-content {
+    max-height: 60vh;
+    overflow: auto;
+    padding: .75rem 1rem 1rem;
+}
+
+/* Section headings: "New model", "Your private models"... */
+#divnavforms .card-header,
+#divnavforms .tab_cadre_fixe th {
+    padding: .5rem 0 .35rem;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--tblr-border-color);
+    color: var(--tblr-secondary);
+    font-size: .75rem;
+    font-weight: var(--tblr-font-weight-bold, 600);
+    letter-spacing: .05em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+#divnavforms .card-header .red {
+    color: var(--tblr-danger);
+}
+
+#divnavforms .tab_cadre_fixe {
+    width: 100%;
+    margin: 0 0 1rem;
+    border: 0;
+    border-collapse: collapse;
+    background: none;
+    box-shadow: none;
+}
+
+#divnavforms .tab_cadre_fixe td {
+    padding: .45rem .25rem;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--tblr-border-color-translucent, var(--tblr-border-color));
+    vertical-align: middle;
+}
+
+#divnavforms .tab_cadre_fixe tr:last-child td {
+    border-bottom: 0;
+}
+
+/* Actions of a row: narrow cells on the right */
+#divnavforms .tab_cadre_fixe td:not(:first-child):not([colspan]) {
+    width: 1%;
+    white-space: nowrap;
+}
+
+/* The "new model / draft" cell: the name and its buttons on one line */
+#divnavforms .tab_cadre_fixe td[colspan].center {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    padding: .75rem 0;
+    text-align: left;
+    border-bottom: 0;
+}
+
+#divnavforms .tab_cadre_fixe td[colspan].center > br {
+    display: none;
+}
+
+/* The name on its own line, the buttons together under it */
+#divnavforms .tab_cadre_fixe td[colspan].center > .form-control {
+    flex: 1 1 100%;
+    width: auto;
+}
+
+/* Title field (templates/fields/field_display_title.html.twig): a section heading inside its
+   block, small capitals over a thin line, in the colour chosen by the designer if any */
+.md-section-title {
+    margin: .5rem 0 1rem;
+    padding-bottom: .35rem;
+    border-bottom: 1px solid var(--tblr-border-color);
+}
+
+.md-section-title-text {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    margin: 0;
+    color: var(--md-section-color, var(--tblr-secondary));
+    font-size: .75rem;
+    font-weight: var(--tblr-font-weight-bold, 600);
+    letter-spacing: .05em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.md-section-title-text > i {
+    font-size: 1rem;
+}
+
+.md-section-title-comment {
+    margin-top: .25rem;
+    color: var(--tblr-secondary);
+    font-size: .8rem;
+}
+
+/* Information, warning and alert boxes (templates/fields/field_display_information.html.twig):
+   the icon on the left of the first line, the name as the title of the box */
+.alert.md-info {
+    --md-info-accent: var(--tblr-azure, #4299e1);
+    --md-info-text-mix: 55%;
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    padding: .75rem 1rem;
+    /* Tinted box, as in the mockup: light background, soft border, dark text of the kind.
+       Mixed with the theme colours, so it also reads in dark mode */
+    background: color-mix(in srgb, var(--md-info-accent) 9%, var(--tblr-bg-surface));
+    border: 1px solid color-mix(in srgb, var(--md-info-accent) 28%, var(--tblr-bg-surface));
+    border-radius: var(--tblr-border-radius);
+    color: color-mix(in srgb, var(--md-info-accent) var(--md-info-text-mix), var(--tblr-body-color));
+    box-shadow: none;
+}
+
+.alert.md-info.alert-warning {
+    --md-info-accent: var(--tblr-yellow, #f59f00);
+    --md-info-text-mix: 50%;
+}
+
+.alert.md-info.alert-danger {
+    --md-info-accent: var(--tblr-red, #d63939);
+    --md-info-text-mix: 60%;
+}
+
+.alert.md-info .md-info-icon {
+    color: var(--md-info-accent);
+}
+
+.alert.md-info .md-info-icon {
+    flex: none;
+    font-size: 1.35rem;
+    line-height: 1.2;
+}
+
+.alert.md-info .md-info-icon:empty {
+    display: none;
+}
+
+.alert.md-info .md-info-body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.alert.md-info .md-info-title {
+    font-weight: var(--tblr-font-weight-bold, 600);
+    margin-bottom: .15rem;
+}
+
+.alert.md-info .md-info-text > :last-child {
+    margin-bottom: 0;
+}
+
+/* One page form: the blocks are numbered (hidden ones are not counted) */
+.md-wizard-layout .tab-nostep {
+    counter-reset: md-block;
+}
+
+.md-wizard-layout .tab-nostep > [bloc-id^="bloc"] {
+    counter-increment: md-block;
+}
+
+/* md-numbered: set by wizard_layout.js when several blocks are shown */
+.md-wizard-layout .tab-nostep.md-numbered > [bloc-id^="bloc"] .md-block-header .card-title::before {
+    content: counter(md-block);
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: var(--tblr-primary-lt);
+    color: var(--tblr-primary);
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+/* One page form: summary on the right. The legacy step flow sets an inline display on
+   .tab-nostep, hence the !important, skipped when it hides it. */
+.md-wizard-layout .md-summary {
+    display: none;
+}
+
+@media (min-width: 992px) {
+    .md-wizard-layout .tab-nostep.md-has-summary:not([style*="none"]) {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 260px;
+        column-gap: 1rem;
+        align-items: start;
+    }
+
+    .md-wizard-layout .tab-nostep.md-has-summary > * {
+        grid-column: 1;
+    }
+
+    .md-wizard-layout .tab-nostep.md-has-summary > .md-summary {
+        display: block;
+        grid-column: 2;
+        grid-row: 1 / span 200;
+        position: sticky;
+        top: 1rem;
+        align-self: start;
+    }
+}
+
+.md-wizard-layout .md-summary-list .list-group-item {
+    border-left: 3px solid transparent;
+    padding: .5rem .75rem;
+    font-size: .875rem;
+}
+
+.md-wizard-layout .md-summary-list .list-group-item.active {
+    border-left-color: var(--tblr-primary);
+    background: var(--tblr-primary-lt);
+    color: var(--tblr-primary);
+    font-weight: 500;
+}
+
+.md-wizard-layout .md-summary-list .list-group-item {
+    align-items: flex-start !important;
+}
+
+.md-wizard-layout .md-summary > .card-header .card-title {
+    color: var(--tblr-secondary);
+    font-size: .75rem;
+    font-weight: var(--tblr-font-weight-bold, 600);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.md-wizard-layout .md-summary-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.md-wizard-layout .md-summary-missing {
+    font-size: .75rem;
+}
+
+.md-wizard-layout .md-summary-missing:empty {
+    display: none !important;
+}
+
+.md-wizard-layout .md-summary-number {
+    flex: none;
+    min-width: 1.25rem;
+    color: var(--tblr-secondary);
+    font-weight: 600;
+}
+
+.md-wizard-layout .md-summary-count {
+    flex: none;
+    font-size: .75rem;
+    white-space: nowrap;
+}
+
+/* Step by step form: the tab bar becomes a numbered stepper, the circles a progress bar */
+.md-wizard-layout .tabs-container {
+    background: var(--tblr-bg-surface);
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius);
+    padding: .5rem 0;
+    margin-bottom: .5rem;
+}
+
+.md-wizard-layout #fieldslist {
+    counter-reset: md-step;
+    gap: .25rem;
+    border: 0;
+}
+
+.md-wizard-layout #fieldslist .nav-link.tablinks {
+    counter-increment: md-step;
+    border: 0 !important;
+    border-radius: var(--tblr-border-radius);
+    padding: .4rem .75rem;
+    color: var(--tblr-secondary);
+    font-weight: 500;
+    background: transparent;
+    white-space: nowrap;
+}
+
+.md-wizard-layout #fieldslist .nav-link.tablinks::before {
+    content: counter(md-step);
+    display: inline-grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-right: .5rem;
+    border: 2px solid var(--tblr-border-color);
+    border-radius: 50%;
+    background: var(--tblr-bg-surface);
+    font-size: .8rem;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.md-wizard-layout #fieldslist .nav-link.tablinks.md-step-done {
+    color: var(--tblr-body-color);
+}
+
+.md-wizard-layout #fieldslist .nav-link.tablinks.md-step-done::before {
+    content: "\2713";
+    border-color: var(--tblr-green);
+    background: var(--tblr-green);
+    color: #fff;
+}
+
+.md-wizard-layout #fieldslist .nav-link.tablinks.active {
+    background: var(--tblr-primary-lt);
+    color: var(--tblr-primary);
+    font-weight: 600;
+}
+
+.md-wizard-layout #fieldslist .nav-link.tablinks.active::before {
+    content: counter(md-step);
+    border-color: var(--tblr-primary);
+    background: var(--tblr-primary);
+    color: #fff;
+}
+
+.md-wizard-layout .md-steps-progress {
+    margin-bottom: 1rem;
+}
+
+.md-wizard-layout .md-steps-progress .md-steps-text {
+    margin-bottom: .25rem;
+}
+
+.md-wizard-layout .step_wizard_div {
+    display: none;
+}
+
+/* Actions always reachable at the bottom of the screen */
+.md-wizard-layout .form-sc-group {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    margin-top: 1rem;
+    padding: .5rem 1rem;
+    background: var(--tblr-bg-surface);
+    border-top: 1px solid var(--tblr-border-color);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, .06);
+}
+
+/* "Save as draft" on the left, then the sections / step, the navigation on the right */
+.md-wizard-layout .form-sc-group > .center > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: .5rem;
+    margin-top: 0 !important;
+}
+
+.md-wizard-layout .form-sc-group #nextMsg {
+    order: -3;
+    flex: 1 0 100%;
+    margin-bottom: .25rem;
+}
+
+.md-wizard-layout .form-sc-group #div_save_draft {
+    order: -2;
+    float: none !important;
+    margin: 0 !important;
+}
+
+.md-wizard-layout .form-sc-group #button_save_draft {
+    background: transparent;
+    border-color: transparent;
+    color: var(--tblr-secondary);
+    box-shadow: none;
+}
+
+.md-wizard-layout .form-sc-group #button_save_draft:hover {
+    background: var(--tblr-bg-surface-secondary);
+    color: var(--tblr-body-color);
+}
+
+.md-wizard-layout .form-sc-group .md-footer-state {
+    order: -1;
+    margin-right: auto;
+    color: var(--tblr-secondary);
+    font-size: .875rem;
+}
+
+.md-wizard-layout .form-sc-group #prevBtn {
+    margin-right: 0 !important;
+    background: var(--tblr-bg-surface);
+    border-color: var(--tblr-border-color-dark, #dadfe5);
+    color: var(--tblr-body-color);
+}
+
+.md-wizard-layout .form-sc-group #nextBtn,
+.md-wizard-layout .form-sc-group #nextBtn2 {
+    margin-right: 0 !important;
+}
+
+/* Step by step form whose steps filled already break the conditions: no "Next" */
+.md-wizard-layout.md-conditions-blocked .form-sc-group #nextBtn,
+.md-wizard-layout.md-conditions-blocked .form-sc-group #nextBtn2 {
+    display: none !important;
+}
+
+/* In place of the send button, while the request does not meet the conditions */
+.md-wizard-layout .form-sc-group .md-conditions-message {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .45rem .9rem;
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius);
+    background: var(--tblr-bg-surface-secondary);
+    color: var(--tblr-secondary);
+    font-size: .875rem;
+    cursor: default;
+}
+
+/* With mandatory fields left, the message leads to the first of them */
+.md-wizard-layout .form-sc-group .md-conditions-message.is-actionable {
+    cursor: pointer;
+}
+
+.md-wizard-layout .form-sc-group .md-conditions-message.is-actionable:hover {
+    color: var(--tblr-body-color);
+}
+
+/* The last step sends the request */
+.md-wizard-layout .form-sc-group #nextBtn[data-md-title-kind="submit"] {
+    background: var(--tblr-success);
+    border-color: var(--tblr-success);
+    color: var(--tblr-success-fg, #fff);
+}
+
+/* Yes / no field of the "buttons" display (Fields\Yesno::BUTTONS_DISPLAY), in the wizard and
+   in the preview: the original select stays in the form, out of sight. select2 may insert its
+   box before or after the buttons, hence the general sibling. */
+select.md-yesno-buttons[data-md-yesno] ~ .select2-container {
+    display: none !important;
+}
+
+select.md-yesno-buttons[data-md-yesno]:not(.select2-hidden-accessible) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Neutral buttons, the chosen answer filled with the primary colour */
+.md-yesno .btn {
+    min-width: 4.5rem;
+    background: var(--tblr-bg-surface);
+    border-color: var(--tblr-border-color-dark, #dadfe5);
+    color: var(--tblr-body-color);
+    font-weight: var(--tblr-font-weight-medium, 500);
+    box-shadow: none;
+}
+
+.md-yesno .btn:hover {
+    background: var(--tblr-bg-surface-secondary);
+}
+
+.md-yesno .btn.active,
+.md-yesno .btn.active:hover {
+    background: var(--tblr-primary);
+    border-color: var(--tblr-primary);
+    color: var(--tblr-primary-fg, #fff);
+}
+
+.md-yesno.is-invalid .btn:not(.active) {
+    border-color: var(--tblr-danger);
 }

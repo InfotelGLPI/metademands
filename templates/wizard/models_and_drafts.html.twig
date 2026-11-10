@@ -31,9 +31,14 @@
  #  (forms/*_list.html.twig). The legacy markup announced aria-selected="true" on every tab and
  #  closed a </span> it never opened.
  -#}
-<div class="{{ toggle_class }}" style="margin-top: 5px;margin-left: 10px;width: 70px;height: 70px;">
-    &nbsp;<i class="fas fa-2x mydraft-fa fa-align-justify pointer" title="{{ toggle_title }}"
-             data-hasqtip="0" aria-hidden="true" data-metademands-toggle="divnavforms"></i>
+{#- The toggle: a button (form="" so that it never submits the wizard), handled by the
+ #  delegated [data-metademands-toggle] listener of public/scripts/wizard_form.js -#}
+<div class="{{ toggle_class }}">
+    <button type="button" form="" class="btn btn-outline-secondary md-forms-toggle"
+            data-metademands-toggle="divnavforms" aria-controls="divnavforms" title="{{ toggle_title }}">
+        <i class="ti ti-folders" aria-hidden="true"></i>
+        <span class="d-none d-md-inline ms-1">{{ toggle_title }}</span>
+    </button>
 </div>
 
 <div id="divnavforms" class="input-draft card mb-3"
@@ -48,6 +53,11 @@
                 </button>
             </li>
         {% endfor %}
+        {# Closes the panel: the same toggle as the button opening it #}
+        <li class="nav-item ms-auto d-flex align-items-center" role="presentation">
+            <button type="button" form="" class="btn-close md-forms-close" data-metademands-toggle="divnavforms"
+                    aria-controls="divnavforms" aria-label="{{ __('Close') }}" title="{{ __('Close') }}"></button>
+        </li>
     </ul>
 
     <div class="tab-content" id="myTabContent">

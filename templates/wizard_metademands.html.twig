@@ -32,7 +32,32 @@
  #  - ancestor_tickets_id: parent ticket of a sub-request, or null -#}
 <div class="md-basket-wizard"></div>
 
-<div class="md-wizard">
+{#- data-md-wizard-layout: read by public/scripts/wizard_layout.js, which adds the summary of
+ #  the blocks (one page form), the stepper (step by step form) and the yes / no buttons.
+ #  Its labels travel here, translated, so the script has no string of its own. -#}
+<div class="md-wizard"
+     {%- if enhanced_layout ?? false %}
+         data-md-wizard-layout
+         data-md-label-summary="{{ __('Summary', 'metademands') }}"
+         data-md-label-block="{{ __('Block %s', 'metademands') }}"
+         data-md-label-filled="{{ __('%1$s / %2$s mandatory fields filled', 'metademands') }}"
+         data-md-label-left-one="{{ _n('%s left', '%s left', 1, 'metademands') }}"
+         data-md-label-left-other="{{ _n('%s left', '%s left', 2, 'metademands') }}"
+         data-md-label-complete="{{ __('Complete', 'metademands') }}"
+         data-md-label-step="{{ __('Step %1$s of %2$s', 'metademands') }}"
+         data-md-label-mandatory-one="{{ _n('%s mandatory', '%s mandatory', 1, 'metademands') }}"
+         data-md-label-mandatory-other="{{ _n('%s mandatory', '%s mandatory', 2, 'metademands') }}"
+         data-md-label-optional="{{ __('Optional', 'metademands') }}"
+         data-md-label-sections-one="{{ _n('%s section', '%s sections', 1, 'metademands') }}"
+         data-md-label-sections-other="{{ _n('%s section', '%s sections', 2, 'metademands') }}"
+         data-md-label-conditions="{{ __('Your request does not meet the conditions to be sent', 'metademands') }}"
+         {%- if can_send ?? false %} data-md-can-send{% endif %}
+         {%- if use_conditions ?? false %}
+             data-md-conditions
+             data-md-conditions-url="{{ conditions_url }}"
+             data-md-conditions-show-button="{{ conditions_show_button }}"
+         {%- endif %}
+     {%- endif %}>
     {% if has_data %}
         {# raw: wizard form printed by the Field::getFieldInput() widgets (constructForm(), §3.2) #}
         {{ forms|raw }}

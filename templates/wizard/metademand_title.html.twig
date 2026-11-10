@@ -34,65 +34,67 @@
  #  - category_details_url: page loaded in that modal
  #  - comment:              designer-defined rich HTML, sanitized by |safe_html
  #  - models_and_drafts:    context of models_and_drafts.html.twig, null when not displayed
+ #  - requester:           {name, entity} of the connected requester, null when not displayed
  #}
 
-<div class="row">
-    <div class="col-md-12 md-title">
-        <div class="card mx-1 my-2 flex-grow-1" style="background-color: {{ background_color }}!important;">
-            <section class="card-body" style="width: 100%;padding: 12px!important;">
-                <div class="d-flex">
-                    <div class="aspect-ratio-1"
-                         style="{{ margin_top }};margin-left: 10px;width: 70px;height: 70px;">
-                        {% if illustration is not empty %}
-                            {{ render_illustration(illustration) }}
-                        {% elseif icon is not empty %}
-                            <span class="md-cat-icon-stack" style="font-size:1.5em">
-                                <i class="ti ti-circle" style="{{ icon_color }};"></i>
-                                {% if is_fa_icon %}
-                                    <i class="fa-1x fas {{ icon }}"
-                                       style="{{ icon_color }};font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size: 1em;"></i>&nbsp;
-                                {% else %}
-                                    <i class="ti {{ icon }}" style="{{ icon_color }};font-size: 1em;"></i>&nbsp;
-                                {% endif %}
-                            </span>
-                        {% endif %}
-                    </div>
-                    <div class="ms-4" style="width: 90%;">
-                        <h2 class="card-title mb-2 text-break"
-                            {% if style_title_color is not empty %}style="color: {{ style_title_color }};"{% endif %}>
-                            {{- title }}{{ cat_name -}}
-                            {%- if category_completename is not empty %} - {{ category_completename }}{% endif -%}
-                            {%- if category_details_id %}
-                                &nbsp;<i class="ti ti-question-mark pointer"
-                                         data-bs-toggle="modal"
-                                         data-bs-target="#categorydetails{{ category_details_id }}"
-                                         title="{{ __('More informations', 'servicecatalog') }}"></i>
-                                {# Iframe modal, no core macro: printed directly, as core templates do (§3.2). #}
-                                {% do call('Ajax::createIframeModalWindow', ['categorydetails' ~ category_details_id, category_details_url, {
-                                    'title': __('More informations', 'servicecatalog'),
-                                    'width': 1050,
-                                    'height': 500,
-                                }]) %}
-                            {% endif %}
-                            {% if settings_url is not empty %}
-                                &nbsp;<a href="{{ settings_url }}"><i class="ti ti-settings"></i></a>
-                            {% endif %}
-                        </h2>
-                        <div class="text-secondary remove-last-tinymce-margin"
-                             style="color:#7B7B7B;font-size:0.8rem;">
-                            {% if comment is not empty %}
-                                {{ comment|safe_html }}
-                            {% else %}
-                                {{ title }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% if models_and_drafts is not null %}
-                        {% include '@metademands/wizard/models_and_drafts.html.twig' with models_and_drafts only %}
+{#- Title card: the visual of the metademand in a tile, its name and description, the
+ #  requester on the right, then the drop-down of the models and drafts. -#}
+<div class="md-title mb-3">
+    <div class="card md-title-card" style="background-color: {{ background_color }}!important;">
+        <div class="card-body d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
+            {% if illustration is not empty %}
+                <div class="md-title-visual md-title-illustration" style="{{ margin_top }}">
+                    {{ render_illustration(illustration) }}
+                </div>
+            {% elseif icon is not empty %}
+                <div class="md-title-visual">
+                    {% if is_fa_icon %}
+                        <i class="fas {{ icon }}"
+                           style="{{ icon_color }};font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;"></i>
+                    {% else %}
+                        <i class="ti {{ icon }}" style="{{ icon_color }};"></i>
                     {% endif %}
                 </div>
-            </section>
+            {% endif %}
+            <div class="md-title-text">
+                <h2 class="md-title-name text-break"
+                    {% if style_title_color is not empty %}style="color: {{ style_title_color }};"{% endif %}>
+                    {{- title }}{{ cat_name -}}
+                    {%- if category_completename is not empty %} - {{ category_completename }}{% endif -%}
+                    {%- if category_details_id %}
+                        &nbsp;<i class="ti ti-question-mark pointer"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#categorydetails{{ category_details_id }}"
+                                 title="{{ __('More informations', 'servicecatalog') }}"></i>
+                        {# Iframe modal, no core macro: printed directly, as core templates do (§3.2). #}
+                        {% do call('Ajax::createIframeModalWindow', ['categorydetails' ~ category_details_id, category_details_url, {
+                            'title': __('More informations', 'servicecatalog'),
+                            'width': 1050,
+                            'height': 500,
+                        }]) %}
+                    {% endif %}
+                    {% if settings_url is not empty %}
+                        &nbsp;<a href="{{ settings_url }}" title="{{ __('Setup') }}"><i class="ti ti-settings"></i></a>
+                    {% endif %}
+                </h2>
+                {% if comment is not empty %}
+                    <div class="md-title-comment text-secondary remove-last-tinymce-margin">
+                        {{ comment|safe_html }}
+                    </div>
+                {% endif %}
+            </div>
+            {% if (requester ?? null) is not null %}
+                <div class="md-title-requester small text-secondary">
+                    <div>{{ __('Requester') }} : <span class="fw-medium text-body">{{ requester.name }}</span></div>
+                    <div>{{ __('Entity') }} : <span class="fw-medium text-body">{{ requester.entity }}</span></div>
+                </div>
+            {% endif %}
+            {% if models_and_drafts is not null %}
+                {# Reference of the absolutely placed panel: it opens right under its toggle #}
+                <div class="md-title-forms">
+                    {% include '@metademands/wizard/models_and_drafts.html.twig' with models_and_drafts only %}
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
-<br>

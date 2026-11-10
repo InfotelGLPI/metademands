@@ -12,6 +12,7 @@
          <file>tests/FieldOptionListTest.php</file>
         <file>tests/TaskListTest.php</file>
         <file>tests/FieldListTest.php</file>
+        <file>tests/FieldInlineEditTest.php</file>
         <file>tests/TicketFieldListTest.php</file>
         <file>tests/FreetableFieldsTest.php</file>
         <file>tests/BasketlineSummaryTest.php</file>
@@ -29,6 +30,7 @@
         <file>tests/FieldCheckboxTest.php</file>
         <file>tests/FieldRadioTest.php</file>
         <file>tests/WizardMetademandsTest.php</file>
+        <file>tests/ConditionPartialTest.php</file>
         <file>tests/WizardTemplatesTest.php</file>
         <file>tests/WizardTitleTest.php</file>
         <file>tests/AjaxTemplatesTest.php</file>

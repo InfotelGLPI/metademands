@@ -41,7 +41,15 @@
      data-md-field-list-move-url="{{ move_url }}"
      data-md-field-list-mandatory-url="{{ mandatory_url }}"
      data-md-field-list-mandatory-error="{{ __('The field could not be updated.', 'metademands') }}"
-     data-md-field-list-move-error="{{ __('The field could not be moved: the list is reloaded.', 'metademands') }}">
+     data-md-field-list-move-error="{{ __('The field could not be moved: the list is reloaded.', 'metademands') }}"
+     data-md-field-list-parameters-url="{{ parameters_url }}"
+     data-md-field-list-rename-url="{{ rename_url }}"
+     data-md-field-list-rename-error="{{ __('The label could not be saved.', 'metademands') }}"
+     data-md-field-list-parameters-error="{{ __('The parameters could not be saved.', 'metademands') }}"
+     data-md-label-parameters="{{ _n('Parameter', 'Parameters', 2, 'metademands') }}"
+     data-md-label-full-form="{{ __('Open the whole form', 'metademands') }}"
+     data-md-label-close="{{ __('Close') }}"
+     data-md-label-loading="{{ __('Loading...') }}">
     {% if add is not null %}
         <div class="modal fade" id="{{ add.modal_new_id }}" tabindex="-1">
             <div class="modal-dialog modal-xl">
@@ -109,6 +117,17 @@
                                 data-md-field-add-params="{{ add.params|json_encode }}">
                             <i class="ti ti-plus me-1"></i>{{ __('Add a new field', 'metademands') }}
                         </button>
+                        <a href="{{ render_url }}" class="btn btn-outline-secondary" target="_blank" rel="noopener"
+                           title="{{ __('Open the form as the requesters fill it, in a new tab', 'metademands') }}">
+                            <i class="ti ti-eye me-1"></i>{{ __('Preview') }}
+                        </a>
+                    </div>
+                {% else %}
+                    {# Read only: the preview still opens the form #}
+                    <div class="ms-auto">
+                        <a href="{{ render_url }}" class="btn btn-outline-secondary" target="_blank" rel="noopener">
+                            <i class="ti ti-eye me-1"></i>{{ __('Preview') }}
+                        </a>
                     </div>
                 {% endif %}
             </div>
@@ -231,7 +250,20 @@
                                         {% endif %}
                                         <span class="md-type" title="{{ row.base_type_label }}"><i class="ti {{ row.icon }}"></i></span>
                                         <div class="md-label">
-                                            <a href="{{ row.url }}" class="md-title">{{ row.label }}</a>
+                                            {% if canedit %}
+                                                {# Renamed in place by the button (field_list.js -> ajax/fieldname.php); the
+                                                 # label itself stays the link to the field form #}
+                                                <div class="md-title-line d-flex align-items-center gap-1">
+                                                    <a href="{{ row.url }}" class="md-title" data-md-field-label>{{ row.label }}</a>
+                                                    <button type="button" class="btn btn-sm btn-ghost-secondary md-rename p-0"
+                                                            data-md-field-rename="{{ row.id }}" title="{{ __('Rename', 'metademands') }}"
+                                                            aria-label="{{ __('Rename', 'metademands') }}">
+                                                        <i class="ti ti-cursor-text"></i>
+                                                    </button>
+                                                </div>
+                                            {% else %}
+                                                <a href="{{ row.url }}" class="md-title">{{ row.label }}</a>
+                                            {% endif %}
                                             <div class="md-meta">
                                                 #{{ row.id }} · {{ row.type_label }}
                                                 {%- if row.debug_order is not null %} · {{ __('Order', 'metademands') }} {{ row.debug_order }}{% endif %}
@@ -278,6 +310,14 @@
                                             {% endfor %}
                                         </div>
                                         <div class="md-actions d-flex">
+                                            {% if canedit %}
+                                                {# Parameters edited in a panel under the line (field_list.js) #}
+                                                <button type="button" class="btn btn-sm btn-ghost-secondary"
+                                                        data-md-field-parameters="{{ row.id }}" aria-expanded="false"
+                                                        title="{{ _n('Parameter', 'Parameters', 2, 'metademands') }}">
+                                                    <i class="ti ti-adjustments-horizontal"></i>
+                                                </button>
+                                            {% endif %}
                                             <a href="{{ row.url }}" class="btn btn-sm btn-ghost-primary" title="{{ __('Edit') }}"><i class="ti ti-pencil"></i></a>
                                             {% if canedit %}
                                                 {# Owned by the purge form below: forms cannot nest in the massive actions one #}

@@ -30,6 +30,7 @@
 namespace GlpiPlugin\Metademands\Tests;
 
 use Glpi\Tests\DbTestCase;
+use GlpiPlugin\Metademands\Config;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
 
@@ -85,6 +86,72 @@ class WizardMetademandsTest extends DbTestCase
         ]);
 
         $this->assertStringNotContainsString('ancestor_tickets_id', $this->render($metademand->getID()));
+    }
+
+    public function testLayoutIsOnlyForTheRequestersForm(): void
+    {
+        $this->login();
+
+        $form = $this->createItem(Metademand::class, [
+            'name'             => 'Wizard layout',
+            'entities_id'      => $this->getTestRootEntity(true),
+            'object_to_create' => 'Ticket',
+            'type'             => 0,
+        ]);
+        $basket = $this->createItem(Metademand::class, [
+            'name'             => 'Wizard basket',
+            'entities_id'      => $this->getTestRootEntity(true),
+            'object_to_create' => 'Ticket',
+            'type'             => 0,
+            'is_basket'        => 1,
+        ]);
+
+        // The form a requester fills: laid out by public/scripts/wizard_layout.js, which
+        // reads its translated labels from the wrapper
+        $html = $this->render($form->getID());
+        $this->assertMatchesRegularExpression('/<div class="md-wizard"\s+data-md-wizard-layout\s/', $html);
+        $this->assertStringContainsString('data-md-label-step="Step %1$s of %2$s"', $html);
+        $this->assertStringContainsString('data-md-label-left-one="%s left"', $html);
+        // No condition on this metademand: nothing explains a hidden send button
+        $this->assertStringNotContainsString('data-md-conditions', $html);
+
+        // Neither in the preview of the "Wizard creation" tab nor for a basket
+        ob_start();
+        Wizard::showMetademands($form->getID(), 2, 0, false, true);
+        $preview = (string) ob_get_clean();
+        $this->assertStringContainsString('<div class="md-wizard">', $preview);
+        $this->assertStringNotContainsString('data-md-wizard-layout', $preview);
+        $this->assertStringNotContainsString('data-md-wizard-layout', $this->render($basket->getID()));
+    }
+
+    /**
+     * Update the plugin configuration, and forget the one Config::getInstance() keeps.
+     *
+     * @param array<string, mixed> $values
+     */
+    private function updateConfig(array $values): void
+    {
+        global $DB;
+        $DB->update(Config::getTable(), $values, ['id' => 1]);
+        (new \ReflectionProperty(Config::class, 'instance'))->setValue(null, null);
+    }
+
+    public function testFontAwesomeIconGivesWayToTheConfiguredOne(): void
+    {
+        $this->updateConfig(['icon_request' => 'ti-clipboard-text']);
+
+        // Font Awesome icon of a former version: the one configured for the type
+        $this->assertSame('ti-clipboard-text', Metademand::getDisplayIcon(['icon' => 'fas fa-file-code', 'type' => \Ticket::DEMAND_TYPE]));
+        // Its own Tabler icon wins
+        $this->assertSame('ti-device-mobile', Metademand::getDisplayIcon(['icon' => 'ti-device-mobile', 'type' => \Ticket::DEMAND_TYPE]));
+        // No icon: the configured one, then the default
+        $this->assertSame('ti-clipboard-text', Metademand::getDisplayIcon(['icon' => '', 'type' => \Ticket::DEMAND_TYPE]));
+        // Nothing configured for the type: the Font Awesome icon is kept rather than lost
+        $this->updateConfig(['icon_problem' => '']);
+        $this->assertSame('fas fa-file-code', Metademand::getDisplayIcon(['icon' => 'fas fa-file-code', 'type' => 'Problem']));
+
+        // The next tests read the configuration from the database again
+        (new \ReflectionProperty(Config::class, 'instance'))->setValue(null, null);
     }
 
     public function testEmptyMetademandOffersToGoBack(): void

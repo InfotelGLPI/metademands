@@ -121,6 +121,8 @@ function plugin_init_metademands()
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = 'lib/fuse.js';
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = 'lib/diacritics.js';
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = 'lib/md_fuzzysearch.js';
+        // ES module: layout of the wizard (summary, stepper, yes / no buttons), in both interfaces
+        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = 'scripts/wizard_layout.js';
         //        $PLUGIN_HOOKS["javascript"]['metademands'] = [PLUGIN_METADEMANDS_WEBDIR . "/lib/fuse.js"];
         //        $PLUGIN_HOOKS["javascript"]['metademands'] = [PLUGIN_METADEMANDS_WEBDIR . "/lib/fuzzysearch.js.php"];
 

@@ -51,6 +51,31 @@ const PREVIEW_STORAGE = 'plugin_metademands_fieldlist_preview';
  */
 function injectHtml(container, html) {
     container.innerHTML = html;
+    runScripts(container);
+}
+
+/**
+ * Insert HTML holding its own <form> into a container that sits inside another form (the
+ * lines of the fields are in the massive actions one). Parsed through innerHTML, the nested
+ * <form> would be dropped and its inputs would join the outer form: parsed in a <template>,
+ * it is kept, and its inputs belong to it.
+ *
+ * @param {HTMLElement} container
+ * @param {string} html
+ */
+function injectForm(container, html) {
+    const template = document.createElement('template');
+    template.innerHTML = html;
+    container.replaceChildren(template.content);
+    runScripts(container);
+}
+
+/**
+ * Run the scripts of inserted HTML: those parsed from a string never run on their own.
+ *
+ * @param {HTMLElement} container
+ */
+function runScripts(container) {
     container.querySelectorAll('script').forEach((original) => {
         const script = document.createElement('script');
         Array.from(original.attributes).forEach((attribute) => {
@@ -221,6 +246,8 @@ function applyFilter(list) {
     const query = search !== null ? search.value.trim().toLowerCase() : '';
     const wanted = type !== null ? type.value : '';
     const filtering = query !== '' || wanted !== '';
+    // The line of an open panel may be filtered out
+    closeParameters(list);
 
     list.querySelectorAll('.md-field').forEach((row) => {
         const visible = (query === '' || (row.dataset.mdSearch ?? '').includes(query))
@@ -366,30 +393,307 @@ async function toggleMandatory(list, button) {
     button.disabled = false;
 
     if (saved === null) {
-        if (typeof glpi_toast_error === 'function') {
-            glpi_toast_error(list.dataset.mdFieldListMandatoryError);
-        }
+        toastError(list.dataset.mdFieldListMandatoryError);
         return;
     }
 
-    button.setAttribute('aria-pressed', saved ? 'true' : 'false');
-    button.classList.toggle('bg-red-lt', saved);
-    button.classList.toggle('bg-secondary-lt', !saved);
-    button.classList.toggle('text-secondary', !saved);
+    setMandatoryBadge(button, saved);
+
+    // The preview shows the mandatory star: refresh it when it shows this block
+    const row = button.closest('.md-field');
+    if (row !== null) {
+        refreshPreviewOf(list, row);
+    }
+}
+
+/**
+ * Show a mandatory badge in its state.
+ *
+ * @param {HTMLElement} button a [data-md-field-mandatory] badge
+ * @param {boolean} mandatory
+ */
+function setMandatoryBadge(button, mandatory) {
+    button.setAttribute('aria-pressed', mandatory ? 'true' : 'false');
+    button.classList.toggle('bg-red-lt', mandatory);
+    button.classList.toggle('bg-secondary-lt', !mandatory);
+    button.classList.toggle('text-secondary', !mandatory);
     const icon = button.querySelector('i');
     if (icon !== null) {
-        icon.className = `ti ${saved ? 'ti-asterisk' : 'ti-circle-dashed'} me-1`;
+        icon.className = `ti ${mandatory ? 'ti-asterisk' : 'ti-circle-dashed'} me-1`;
     }
     const label = button.querySelector('span');
     if (label !== null) {
-        label.textContent = (saved ? button.dataset.mdLabelOn : button.dataset.mdLabelOff) ?? '';
+        label.textContent = (mandatory ? button.dataset.mdLabelOn : button.dataset.mdLabelOff) ?? '';
     }
+}
 
-    // The preview shows the mandatory star: refresh it when it shows this block
-    const rank = button.closest('[data-md-fields]')?.dataset.mdRank;
+/**
+ * Show a toast for an error, through the core helper when it is there.
+ *
+ * @param {string|undefined} message
+ */
+function toastError(message) {
+    if (typeof glpi_toast_error === 'function' && message) {
+        glpi_toast_error(message);
+    }
+}
+
+/**
+ * Refresh the preview when it shows the block of a line.
+ *
+ * @param {HTMLElement} list
+ * @param {HTMLElement} row a .md-field line
+ */
+function refreshPreviewOf(list, row) {
+    const rank = row.closest('[data-md-fields]')?.dataset.mdRank;
     if (rank !== undefined && isPreviewShown(list) && list.dataset.mdPreviewRank === rank) {
         loadPreview(list, rank);
     }
+}
+
+/**
+ * Close the parameter panels of the list (one is open at a time).
+ *
+ * @param {HTMLElement} list
+ */
+function closeParameters(list) {
+    list.querySelectorAll('[data-md-field-panel]').forEach((panel) => {
+        const row = list.querySelector(`.md-field[data-md-field-id="${CSS.escape(panel.dataset.mdFieldPanel)}"]`);
+        row?.classList.remove('is-editing');
+        row?.querySelector('[data-md-field-parameters]')?.setAttribute('aria-expanded', 'false');
+        panel.remove();
+    });
+}
+
+/**
+ * Load the parameter form of a field into its panel.
+ *
+ * @param {HTMLElement} list
+ * @param {HTMLElement} panel
+ */
+async function loadParameters(list, panel) {
+    const body = panel.querySelector('.md-field-panel-body');
+    if (body === null) {
+        return;
+    }
+    try {
+        const response = await post(list.dataset.mdFieldListParametersUrl, {id: panel.dataset.mdFieldPanel});
+        injectForm(body, response.ok ? await response.text() : '');
+    } catch {
+        body.replaceChildren();
+    }
+}
+
+/**
+ * Open (or close) the panel of the parameters of a field, right under its line. The panel is
+ * a sibling of the line, not a child: the lines are the items of the drag and drop.
+ *
+ * @param {HTMLElement} list
+ * @param {HTMLElement} button a [data-md-field-parameters] button
+ */
+async function toggleParameters(list, button) {
+    const row = button.closest('.md-field');
+    if (row === null) {
+        return;
+    }
+    const was_open = row.nextElementSibling?.matches('[data-md-field-panel]') === true;
+    closeParameters(list);
+    if (was_open) {
+        return;
+    }
+
+    const panel = document.createElement('div');
+    panel.className = 'md-field-panel';
+    panel.dataset.mdFieldPanel = row.dataset.mdFieldId;
+
+    const header = document.createElement('div');
+    header.className = 'md-field-panel-header';
+    const title = document.createElement('span');
+    title.className = 'md-field-panel-title';
+    const icon = document.createElement('i');
+    icon.className = 'ti ti-adjustments-horizontal';
+    const label = row.querySelector('[data-md-field-label], .md-title');
+    title.append(icon, ` ${list.dataset.mdLabelParameters ?? ''} — ${label?.textContent.trim() ?? ''}`);
+    const full = document.createElement('a');
+    full.className = 'btn btn-sm btn-ghost-secondary ms-auto';
+    full.href = label?.getAttribute('href') ?? '#';
+    full.textContent = list.dataset.mdLabelFullForm ?? '';
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'btn-close';
+    close.dataset.mdFieldPanelClose = '';
+    close.setAttribute('aria-label', list.dataset.mdLabelClose ?? '');
+    close.title = list.dataset.mdLabelClose ?? '';
+    header.append(title, full, close);
+
+    const body = document.createElement('div');
+    body.className = 'md-field-panel-body';
+    const loading = document.createElement('div');
+    loading.className = 'text-secondary small';
+    loading.textContent = list.dataset.mdLabelLoading ?? '';
+    body.append(loading);
+
+    panel.append(header, body);
+    // Its form is saved through Ajax, the panel stays open
+    panel.addEventListener('submit', (event) => saveParameters(list, panel, event));
+    row.after(panel);
+    row.classList.add('is-editing');
+    button.setAttribute('aria-expanded', 'true');
+
+    await loadParameters(list, panel);
+}
+
+/**
+ * Save the parameter form of a panel through Ajax, as its "Parameters" tab posts it to
+ * front/fieldparameter.form.php, then reload the panel, the mandatory badge and the preview.
+ *
+ * @param {HTMLElement} list
+ * @param {HTMLElement} panel
+ * @param {SubmitEvent} event
+ */
+async function saveParameters(list, panel, event) {
+    const form = event.target;
+    if (!(form instanceof HTMLFormElement)) {
+        return;
+    }
+    event.preventDefault();
+    window.tinymce?.triggerSave();
+
+    let data;
+    try {
+        data = new FormData(form, event.submitter ?? undefined);
+    } catch {
+        data = new FormData(form);
+    }
+    // Enter in a text input submits without a button: the action is the one of the form
+    if (!data.has('update') && !data.has('add')) {
+        data.append(form.querySelector('[name="add"]') !== null ? 'add' : 'update', '1');
+    }
+
+    const buttons = form.querySelectorAll('button[type="submit"]');
+    buttons.forEach((button) => { button.disabled = true; });
+    let saved = false;
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+            body: data,
+            // The front controller answers with a redirection back to the page: not followed
+            redirect: 'manual',
+        });
+        saved = response.type === 'opaqueredirect' || response.ok;
+    } catch {
+        saved = false;
+    }
+    buttons.forEach((button) => { button.disabled = false; });
+
+    if (!saved) {
+        toastError(list.dataset.mdFieldListParametersError);
+        return;
+    }
+    // The "Item successfully updated" of the core, kept in session by the save
+    if (typeof window.displayAjaxMessageAfterRedirect === 'function') {
+        window.displayAjaxMessageAfterRedirect();
+    }
+
+    const row = list.querySelector(`.md-field[data-md-field-id="${CSS.escape(panel.dataset.mdFieldPanel)}"]`);
+    const badge = row?.querySelector('[data-md-field-mandatory]');
+    if (badge instanceof HTMLElement && data.has('is_mandatory')) {
+        setMandatoryBadge(badge, data.get('is_mandatory') === '1');
+    }
+    if (row !== null) {
+        refreshPreviewOf(list, row);
+    }
+    // The form shown again from the database: new parameters, values normalized
+    await loadParameters(list, panel);
+}
+
+/**
+ * Turn the label of a field into an input, saved on Enter or when leaving it, cancelled on
+ * Escape.
+ *
+ * @param {HTMLElement} list
+ * @param {HTMLElement} row a .md-field line
+ */
+function startRename(list, row) {
+    const label = row.querySelector('[data-md-field-label]');
+    if (!(label instanceof HTMLElement) || row.querySelector('.md-rename-input') !== null) {
+        return;
+    }
+    const original = label.textContent.trim();
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'form-control form-control-sm md-rename-input';
+    input.value = original;
+    input.setAttribute('aria-label', row.querySelector('[data-md-field-rename]')?.getAttribute('aria-label') ?? '');
+    label.hidden = true;
+    label.after(input);
+    // A draggable line keeps the mouse from placing the caret in the input (Firefox)
+    const draggable = row.getAttribute('draggable');
+    row.setAttribute('draggable', 'false');
+    input.focus();
+    input.select();
+
+    let done = false;
+    const finish = (name) => {
+        if (done) {
+            return;
+        }
+        done = true;
+        input.remove();
+        label.hidden = false;
+        if (draggable === null) {
+            row.removeAttribute('draggable');
+        } else {
+            row.setAttribute('draggable', draggable);
+        }
+        if (name !== null) {
+            label.textContent = name;
+            row.dataset.mdSearch = row.dataset.mdSearch.replace(original.toLowerCase(), name.toLowerCase());
+            const title = list.querySelector(`[data-md-field-panel="${CSS.escape(row.dataset.mdFieldId)}"] .md-field-panel-title`);
+            if (title !== null) {
+                title.lastChild.textContent = title.lastChild.textContent.replace(original, name);
+            }
+        }
+    };
+    const commit = async () => {
+        const name = input.value.trim();
+        if (done) {
+            return;
+        }
+        if (name === '' || name === original) {
+            finish(null);
+            return;
+        }
+        input.disabled = true;
+        let result = null;
+        try {
+            const response = await post(list.dataset.mdFieldListRenameUrl, {id: row.dataset.mdFieldId, name});
+            result = response.ok ? await response.json() : null;
+        } catch {
+            result = null;
+        }
+        if (result === null || result.success !== true) {
+            toastError(list.dataset.mdFieldListRenameError);
+            finish(null);
+            return;
+        }
+        finish(result.name);
+        refreshPreviewOf(list, row);
+    };
+
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            // Not the massive actions form the line sits in
+            event.preventDefault();
+            commit();
+        } else if (event.key === 'Escape') {
+            event.preventDefault();
+            finish(null);
+        }
+    });
+    input.addEventListener('blur', () => commit());
 }
 
 /**
@@ -412,6 +716,8 @@ function bindSortable(list) {
     });
     containers.forEach((container) => {
         container.dataset.mdSortableReady = '1';
+        // A panel stays a sibling of its line: closed before the line moves away from it
+        container.addEventListener('sortstart', () => closeParameters(list));
         container.addEventListener('sortupdate', (event) => {
             const detail = event.detail;
             // Reported to both lists on a move between blocks: stored once, by the one it landed in
@@ -514,6 +820,29 @@ document.addEventListener('click', (event) => {
     }
     const list = target.closest('[data-md-field-list]');
     if (list === null) {
+        return;
+    }
+
+    const parameters = target.closest('[data-md-field-parameters]');
+    if (parameters !== null) {
+        event.preventDefault();
+        toggleParameters(list, parameters);
+        return;
+    }
+
+    if (target.closest('[data-md-field-panel-close]') !== null) {
+        event.preventDefault();
+        closeParameters(list);
+        return;
+    }
+
+    const rename = target.closest('[data-md-field-rename]');
+    if (rename !== null) {
+        event.preventDefault();
+        const row = rename.closest('.md-field');
+        if (row !== null) {
+            startRename(list, row);
+        }
         return;
     }
 

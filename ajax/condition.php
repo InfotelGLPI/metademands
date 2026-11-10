@@ -82,10 +82,24 @@ if (isset($_POST['metademands_id'])
     }
 
     // Same grouping as the preview of the conditions list (Condition::getPredicatePreview()).
-    $predicate = Condition::buildPredicate(
-        $tab,
-        static fn(array $condition) => (string) (int) Condition::verifyCondition($condition),
-    );
+    $term = static fn(array $condition) => (string) (int) Condition::verifyCondition($condition);
+    $predicate = Condition::buildPredicate($tab, $term);
+
+    // Partial evaluation, for a step by step form (public/scripts/wizard_layout.js): only the
+    // fields of the steps reached are known, the conditions on the others are unknown. The
+    // predicate only holds && and ||, so it is evaluated with the unknown ones true
+    // (optimistic: false means the conditions can no longer be met) and false (pessimistic:
+    // true means they are met whatever comes next).
+    if (isset($_POST['known_fields']) && is_array($_POST['known_fields'])) {
+        $known = array_map('intval', $_POST['known_fields']);
+        $partial = static fn(string $unknown) => Condition::buildPredicate(
+            $tab,
+            static fn(array $condition) => in_array((int) $condition['fields_id'], $known, true)
+                ? $term($condition)
+                : $unknown,
+        );
+        $partial_predicates = ['optimistic' => $partial('1'), 'pessimistic' => $partial('0')];
+    }
 }
 // Safe boolean evaluation (replaces eval()): the predicate only ever contains
 // booleans (0/1), && , || and parentheses. Parse with a shunting-yard to RPN and
@@ -129,6 +143,14 @@ $evaluate = static function (string $expr): bool {
 
     return (bool) array_pop($stack);
 };
+
+if (isset($partial_predicates)) {
+    echo json_encode(array_map(
+        static fn(string $partial_predicate) => $partial_predicate !== '' && $evaluate($partial_predicate),
+        $partial_predicates,
+    ));
+    return;
+}
 
 $result_bool = false;
 if (!empty($predicate)) {

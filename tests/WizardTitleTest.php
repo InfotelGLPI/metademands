@@ -187,4 +187,23 @@ class WizardTitleTest extends DbTestCase
         $this->assertStringContainsString('id="iframecategorydetails12"', $html);
         $this->assertStringContainsString('/categorydetail.form.php', $html);
     }
+
+    public function testDesignerRenderPassesTheMaintenance(): void
+    {
+        $this->login();
+        $_SESSION['glpiactiveprofile'][Metademand::$rightname] = ALLSTANDARDRIGHT;
+
+        $metademand = $this->createMetademand(['maintenance_mode' => 1]);
+        $options = ['step' => Metademand::STEP_SHOW, 'metademands_id' => $metademand->getID()];
+        $message = __('This form is in maintenance mode', 'metademands');
+
+        // The requesters meet the maintenance
+        $this->assertStringContainsString($message, $this->renderWizard($options));
+        // The "Preview" button of the "Wizard creation" tab renders the form for its designer
+        $this->assertStringNotContainsString($message, $this->renderWizard($options + ['render' => true]));
+
+        // Not without the right to update it
+        $_SESSION['glpiactiveprofile'][Metademand::$rightname] = READ;
+        $this->assertStringContainsString($message, $this->renderWizard($options + ['render' => true]));
+    }
 }

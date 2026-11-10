@@ -32,13 +32,15 @@
  #  - config_url: link to the field settings in the preview
 -#}
 {% import '@metademands/fields/field_wrapper.html.twig' as wrapper %}
+{#- The line under the title: the colour chosen by the designer, otherwise the theme one -#}
+{%- set border_style = (border_color ?? color) is not empty ? "border-color: " ~ (border_color ?? color) ~ "!important;" : "" -%}
 {% if is_preview_or_debug %}
 <div class="card-header preview-md md-preview-tag preview-md-{{ rank }}"
-     style='background-color: {{ bg_color }}!important;border-color: {{ color }}!important;border-radius: 0;border-top:none;margin-bottom: 10px;'
+     style='background-color: {{ bg_color }}!important;{{ border_style }}border-radius: 0;border-top:none;margin-bottom: 10px;'
      data-title='{{ rank }}'>
     {% else %}
     <div class='card-header'
-         style='background-color: {{ bg_color }}!important;border-color: {{ color }}!important;border-radius: 0;border-top:none;margin-bottom: 10px;'>
+         style='background-color: {{ bg_color }}!important;{{ border_style }}border-radius: 0;border-top:none;margin-bottom: 10px;'>
         {% endif %}
         <h2 class="card-title"><span style='color:{{ color }};font-weight: normal;'>
         {%- if has_icon -%}

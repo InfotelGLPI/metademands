@@ -46,6 +46,23 @@ class Yesno extends CommonDBTM
     public const CLASSIC_DISPLAY = 0;
     public const SWITCH_DISPLAY = 1;
     /**
+     * Two buttons "Yes" / "No". The field stays the select of the classic display, turned
+     * into buttons by public/scripts/wizard_layout.js: its value, its checks and the
+     * scripts of its options are those of the classic display.
+     */
+    public const BUTTONS_DISPLAY = 2;
+
+    /**
+     * @param int|string|null $display_type
+     *
+     * @return bool whether the field is a select (classic and buttons displays), not a switch
+     */
+    public static function usesSelect($display_type): bool
+    {
+        return (int) $display_type !== self::SWITCH_DISPLAY;
+    }
+
+    /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
      *
@@ -80,7 +97,7 @@ class Yesno extends CommonDBTM
             $value = "";
         }
 
-        if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+        if (self::usesSelect($data["display_type"])) {
             $field = "";
             $field .= \Dropdown::showFromArray(
                 $namefield . "[" . $data['id'] . "]",
@@ -88,7 +105,8 @@ class Yesno extends CommonDBTM
                 [
                     'value' => $value,
                     'display_emptychoice' => true,
-                    'class' => 'yesno',
+                    // md-yesno-buttons: shown as two buttons by public/scripts/wizard_layout.js
+                    'class' => (int) $data["display_type"] === self::BUTTONS_DISPLAY ? 'yesno md-yesno-buttons' : 'yesno',
                     //                    'noselect2' => true,
                     'width' => '70px',
                     'required' => ($data['is_mandatory'] ? "required" : ""),
@@ -154,7 +172,7 @@ class Yesno extends CommonDBTM
                         'name'                => 'custom',
                         'value'               => $value,
                         'elements'            => [1 => __('No'), 2 => __('Yes')],
-                        'display_emptychoice' => $params["display_type"] == self::CLASSIC_DISPLAY,
+                        'display_emptychoice' => self::usesSelect($params["display_type"]),
                     ],
                 ]]],
             ],
@@ -166,6 +184,7 @@ class Yesno extends CommonDBTM
         $disp = [];
         $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
         $disp[self::SWITCH_DISPLAY] = __("Switch display", "metademands");
+        $disp[self::BUTTONS_DISPLAY] = __("Buttons display", "metademands");
         return TemplateRenderer::getInstance()->render(
             '@metademands/fields/field_parameter_yesno.html.twig',
             [
@@ -269,7 +288,7 @@ class Yesno extends CommonDBTM
         if (isset($data['value']) && !is_array($data['value'])) {
             $options['current'] = [$data['value']];
         }
-        if ($data['display_type'] == self::CLASSIC_DISPLAY) {
+        if (self::usesSelect($data['display_type'])) {
             // The value kept in session, otherwise the default one
             $value = isset($data['value']) && $data['value'] > 0
                 ? $data['value']
@@ -292,7 +311,7 @@ class Yesno extends CommonDBTM
         $options = [];
         if (isset($data['value']) && is_array($data['value']) && count($data['value']) > 0) {
             // The switch is rendered in its state: only flag its tasks
-            $options['restore'] = $data['display_type'] == self::CLASSIC_DISPLAY
+            $options['restore'] = self::usesSelect($data['display_type'])
                 ? ['val' => (string) end($data['value'])]
                 : ['refresh' => true];
         }
@@ -302,7 +321,7 @@ class Yesno extends CommonDBTM
         MetademandTask::displayTaskTrigger(
             $data,
             ['name' => 'field[' . $data['id'] . ']', 'match' => 'prefix'],
-            $data['display_type'] == self::CLASSIC_DISPLAY ? 'select' : 'switch',
+            self::usesSelect($data['display_type']) ? 'select' : 'switch',
             $options,
         );
     }
@@ -314,7 +333,7 @@ class Yesno extends CommonDBTM
         if (isset($data['value']) && !is_array($data['value'])) {
             $options['current'] = [$data['value']];
         }
-        if ($data['display_type'] == self::CLASSIC_DISPLAY) {
+        if (self::usesSelect($data['display_type'])) {
             // The value kept in session, otherwise the default one
             $value = isset($data['value']) && $data['value'] > 0
                 ? $data['value']
@@ -334,7 +353,7 @@ class Yesno extends CommonDBTM
     public static function blocksHiddenScript($data)
     {
         $options = [];
-        if ($data['display_type'] == self::CLASSIC_DISPLAY) {
+        if (self::usesSelect($data['display_type'])) {
             // The value kept in session, otherwise the default one
             $value = isset($data['value']) && $data['value'] > 0
                 ? $data['value']

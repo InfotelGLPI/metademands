@@ -32,6 +32,7 @@
  #    use_as_step        : whether the step-by-step mode is active (adds #nextMsg)
  #    use_draft          : show the "Save as draft" button and its modal (Draft::showDraftInput())
  #    draft_mode         : Draft::DEFAULT_MODE
+ #    has_freetable      : the form holds a free table, whose first line shows the draft button
  #    cancel_form        : {url, stepforms_id} of the "Cancel form" action, null when not applicable
  #    show_step_circles  : whether the step circles must be rendered
  #    step_count         : number of steps, drives how many circles are drawn
@@ -45,7 +46,7 @@
                 <div id="nextMsg" class="alert alert-info center"></div>
             {% endif %}
             {% if use_draft %}
-                {% do call('GlpiPlugin\\Metademands\\Draft::showDraftInput', [draft_mode]) %}
+                {% do call('GlpiPlugin\\Metademands\\Draft::showDraftInput', [draft_mode, has_freetable ?? false]) %}
             {% endif %}
             {% if cancel_form is not null %}
                 {# Inside #wizard_form, where a nested <form> is dropped by the parser: the action is

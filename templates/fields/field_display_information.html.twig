@@ -30,19 +30,34 @@
  #  - name, icon, color, display_class: content and look
  #  - comment, label2: rich texts of the designer, sanitized here
  #  - preview, config_url: link to the field settings in the preview
+ #
+ #  The icon sits on the left, aligned on the first line; without an icon chosen by the
+ #  designer, the one of the kind (information, warning, alert). The name is the title of
+ #  the box, the rich texts follow it.
 -#}
 {% import '@metademands/fields/field_wrapper.html.twig' as wrapper %}
-<div class='alert {{ display_class }} alert-dismissible fade show informations'
-     style='display:flex;align-items: center;'>
+{%- set default_icon = {
+    'alert-warning': 'ti-alert-triangle',
+    'alert-danger': 'ti-alert-octagon',
+}[display_class] ?? 'ti-info-circle' -%}
+{%- set text_color = color is not empty ? 'color:' ~ color ~ ';' : '' -%}
+<div class='alert {{ display_class }} alert-dismissible fade show informations md-info' role='alert'>
     {%- if show_content -%}
-        {%- if has_icon -%}
-            {%- if icon_is_fa -%}
-                <i class='fas fa-2x {{ icon }}' style='color:{{ color }};'></i>&nbsp;
+        <div class='md-info-icon'>
+            {%- if has_icon -%}
+                {%- if icon_is_fa -%}
+                    <i class='fas {{ icon }}' style='{{ text_color }}'></i>
+                {%- else -%}
+                    <i class='ti {{ icon }}' style='{{ text_color }}'></i>
+                {%- endif -%}
             {%- else -%}
-                <i class='ti {{ icon }}' style='font-size:2em;color:{{ color }};'></i>&nbsp;
+                <i class='ti {{ default_icon }}'></i>
             {%- endif -%}
-        {%- endif -%}
-        <div style='color:{{ color }};'>{{ name }}{{ comment|safe_html }}{{ label2|safe_html }}</div>
+        </div>
+        <div class='md-info-body' style='{{ text_color }}'>
+            {%- if name is not empty %}<div class='md-info-title'>{{ name }}</div>{% endif -%}
+            <div class='md-info-text remove-last-tinymce-margin'>{{ comment|safe_html }}{{ label2|safe_html }}</div>
+        </div>
     {%- endif -%}
     {%- if preview %}{{ wrapper.config_link(config_url) }}{% endif -%}
 </div>

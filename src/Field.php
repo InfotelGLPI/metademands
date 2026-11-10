@@ -1089,6 +1089,12 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'preview_url' => $webdir . '/ajax/previewMetademand.php',
             'move_url' => $webdir . '/ajax/movefield.php',
             'mandatory_url' => $webdir . '/ajax/fieldmandatory.php',
+            // Edited in place under the line of a field: its parameters, then its label
+            'parameters_url' => $webdir . '/ajax/fieldparameters.php',
+            // "Preview" button: the form as the requesters fill it, in a new browser tab
+            'render_url' => $webdir . '/front/wizard.form.php?metademands_id=' . (int) $meta_id
+                . '&step=' . Metademand::STEP_SHOW . '&render=1',
+            'rename_url' => $webdir . '/ajax/fieldname.php',
             'form_url' => $form_url,
             'itemtype' => __CLASS__,
             'canedit' => $canedit,

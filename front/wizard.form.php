@@ -326,6 +326,8 @@ if (isset($_POST['update_basket_line'])) {
         'resources_step' => $_GET['resources_step'],
         'itilcategories_id' => $itilcategories_id,
         'defaultvalues' =>  $_GET['field'] ?? [],
+        // "Preview" button of the "Wizard creation" tab (Wizard::showWizard() checks the right)
+        'render' => !empty($_GET['render']),
     ];
 
     if (isset($_GET['see_form']) && $_GET['see_form'] > 0) {

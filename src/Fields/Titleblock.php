@@ -88,6 +88,11 @@ class Titleblock extends CommonDBTM
             'is_preview_or_debug' => (bool) ($preview || $debug),
             'bg_color'            => 'var(--tblr-bg-surface, #FFF)',
             'color'               => Metademand::toThemedForeground($data['color']),
+            // The line under the title takes the colour chosen by the designer; black, the
+            // default of the parameter, leaves the one of the theme
+            'border_color'        => Metademand::isDefaultTextColor($data['color'] ?? '')
+                ? ''
+                : Metademand::toThemedForeground($data['color']),
             'rank'                => $rank,
             'has_icon'            => (bool) $icon,
             'icon'                => $icon,
