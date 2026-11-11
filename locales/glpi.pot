@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-10 16:22+0000\n"
+"POT-Creation-Date: 2026-11-11 11:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,11 @@ msgstr ""
 #: ⁨standard input⁩:43
 #, php-format
 msgid "%1$s / %2$s mandatory fields filled"
+msgstr ""
+
+#: src/Field.php:3178
+#, php-format
+msgid "%1$s: %2$s"
 msgstr ""
 
 #: ⁨standard input⁩:142
@@ -81,8 +86,8 @@ msgstr[1] ""
 msgid "(6 fields maximum)"
 msgstr ""
 
-#: src/MetademandPdf.php:658 src/Fields/Freetable.php:275
-#: src/Fields/Freetable.php:554
+#: src/MetademandPdf.php:660 src/Fields/Freetable.php:295
+#: src/Fields/Freetable.php:576
 msgid "(if VAT 20%)"
 msgstr ""
 
@@ -207,7 +212,7 @@ msgstr ""
 msgid "Add language"
 msgstr ""
 
-#: src/Wizard.php:1591 src/Wizard.php:1600 tests/WizardTemplatesTest.php:252
+#: src/Wizard.php:1590 src/Wizard.php:1599 tests/WizardTemplatesTest.php:252
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
@@ -216,7 +221,7 @@ msgstr ""
 msgid "Add your signature"
 msgstr ""
 
-#: src/Field.php:2817 src/Field.php:2902 src/Field.php:4385 ⁨standard input⁩:76
+#: src/Field.php:2817 src/Field.php:2902 src/Field.php:4491 ⁨standard input⁩:76
 msgid "Additional label"
 msgstr ""
 
@@ -338,7 +343,7 @@ msgstr ""
 msgid "Blank Template"
 msgstr ""
 
-#: src/Wizard.php:1905 src/Field.php:870 src/Field.php:1056 src/Field.php:2884
+#: src/Wizard.php:1904 src/Field.php:870 src/Field.php:1056 src/Field.php:2884
 #: src/Step.php:416 src/Step.php:470 ⁨standard input⁩:140 ⁨standard input⁩:112
 #: ⁨standard input⁩:62 ⁨standard input⁩:163 ⁨standard input⁩:303 ⁨standard input⁩:39
 #: ⁨standard input⁩:44
@@ -383,7 +388,7 @@ msgstr ""
 msgid "Button Type"
 msgstr ""
 
-#: src/Fields/Yesno.php:187
+#: src/Field.php:2987 src/Fields/Yesno.php:187
 msgid "Buttons display"
 msgstr ""
 
@@ -457,7 +462,7 @@ msgstr ""
 msgid "Choose a template"
 msgstr ""
 
-#: src/Fields/Radio.php:192 src/Fields/Checkbox.php:181
+#: src/Field.php:2985 src/Fields/Radio.php:192 src/Fields/Checkbox.php:181
 #: src/Fields/Dropdown.php:525 src/Fields/Dropdownmeta.php:1070
 #: src/Fields/Yesno.php:185 src/Fields/Dropdownmultiple.php:440
 msgid "Classic display"
@@ -618,7 +623,7 @@ msgstr ""
 msgid "Created by"
 msgstr ""
 
-#: src/MetademandPdf.php:335
+#: src/MetademandPdf.php:337
 msgid "Created on"
 msgstr ""
 
@@ -651,12 +656,12 @@ msgid_plural "Dates"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Wizard.php:3108
+#: src/Wizard.php:3107
 #, php-format
 msgid "Date %s cannot be less than initial date"
 msgstr ""
 
-#: src/Wizard.php:3098
+#: src/Wizard.php:3097
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
@@ -805,7 +810,7 @@ msgstr ""
 msgid "Destructive queries"
 msgstr ""
 
-#: src/Field.php:3540 src/Fields/Dropdownmeta.php:701
+#: src/Field.php:3646 src/Fields/Dropdownmeta.php:701
 msgid "Devices own by my groups"
 msgstr ""
 
@@ -972,7 +977,7 @@ msgstr ""
 msgid "Enter translation"
 msgstr ""
 
-#: ⁨standard input⁩:62 ⁨standard input⁩:89 ⁨standard input⁩:161 ⁨standard input⁩:58
+#: ⁨standard input⁩:62 ⁨standard input⁩:90 ⁨standard input⁩:161 ⁨standard input⁩:58
 #: ⁨standard input⁩:82 ⁨standard input⁩:64
 msgid "Entity"
 msgstr ""
@@ -1050,7 +1055,7 @@ msgid_plural "Fields"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Wizard.php:3159
+#: src/Wizard.php:3158
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
@@ -1143,14 +1148,14 @@ msgstr ""
 msgid "Grand total"
 msgstr ""
 
-#: src/MetademandPdf.php:525 src/MetademandPdf.php:658
-#: src/Fields/Freetable.php:275 src/Fields/Freetable.php:554
+#: src/MetademandPdf.php:527 src/MetademandPdf.php:660
+#: src/Fields/Freetable.php:295 src/Fields/Freetable.php:576
 #: src/Fields/Basket.php:1031 src/Fields/Basket.php:1299
 msgid "Grand total (HT)"
 msgstr ""
 
-#: src/MetademandPdf.php:650 src/Fields/Freetable.php:274
-#: src/Fields/Freetable.php:550
+#: src/MetademandPdf.php:652 src/Fields/Freetable.php:294
+#: src/Fields/Freetable.php:572
 msgid "Grand total (TTC)"
 msgstr ""
 
@@ -1466,20 +1471,24 @@ msgstr ""
 msgid "Maintenance mode"
 msgstr ""
 
-#: src/Wizard.php:894
+#: src/Wizard.php:893
 msgid "Make a change request"
 msgstr ""
 
-#: src/Wizard.php:888
+#: src/Wizard.php:887
 msgid "Make a request"
+msgstr ""
+
+#: src/Field.php:3038
+msgid "Make mandatory or optional"
 msgstr ""
 
 #: src/FieldOption.php:245 src/FieldOption.php:1168 ⁨standard input⁩:133
 msgid "Make this field mandatory"
 msgstr ""
 
-#: ⁨standard input⁩:122 ⁨standard input⁩:89 ⁨standard input⁩:281 ⁨standard input⁩:285
-#: ⁨standard input⁩:288
+#: src/Field.php:3017 ⁨standard input⁩:122 ⁨standard input⁩:89 ⁨standard input⁩:281
+#: ⁨standard input⁩:285 ⁨standard input⁩:288
 msgid "Mandatory"
 msgstr ""
 
@@ -1573,15 +1582,23 @@ msgstr ""
 msgid "Missing values"
 msgstr ""
 
-#: src/Field.php:2988
+#: src/Field.php:3035
 msgid "Modify color"
 msgstr ""
 
-#: src/Field.php:2987
+#: src/Field.php:3034
 msgid "Modify icon"
 msgstr ""
 
-#: ⁨standard input⁩:68 ⁨standard input⁩:71
+#: src/Field.php:3037
+msgid "Modify the default value of the yes / no"
+msgstr ""
+
+#: src/Field.php:3036
+msgid "Modify the display of the yes / no"
+msgstr ""
+
+#: ⁨standard input⁩:69 ⁨standard input⁩:72
 msgid "More informations"
 msgstr ""
 
@@ -1627,7 +1644,7 @@ msgstr ""
 msgid "New model"
 msgstr ""
 
-#: src/Wizard.php:1581 tests/WizardTemplatesTest.php:247 ⁨standard input⁩:103
+#: src/Wizard.php:1580 tests/WizardTemplatesTest.php:247 ⁨standard input⁩:103
 #: ⁨standard input⁩:104 ⁨standard input⁩:71 ⁨standard input⁩:74
 msgid "Next"
 msgstr ""
@@ -1681,7 +1698,7 @@ msgstr ""
 msgid "No equipment founded"
 msgstr ""
 
-#: src/Wizard.php:775 ⁨standard input⁩:50 ⁨standard input⁩:53
+#: src/Wizard.php:774 ⁨standard input⁩:50 ⁨standard input⁩:53
 msgid "No existing forms founded"
 msgstr ""
 
@@ -1859,7 +1876,7 @@ msgid_plural "Options"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ⁨standard input⁩:50 ⁨standard input⁩:282 ⁨standard input⁩:285
+#: src/Field.php:3018 ⁨standard input⁩:50 ⁨standard input⁩:282 ⁨standard input⁩:285
 msgid "Optional"
 msgstr ""
 
@@ -1950,11 +1967,11 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
-#: src/Wizard.php:2043
+#: src/Wizard.php:2042
 msgid "Previous data edited"
 msgstr ""
 
-#: src/Wizard.php:2036
+#: src/Wizard.php:2035
 msgid "Previous user"
 msgstr ""
 
@@ -2056,11 +2073,11 @@ msgstr ""
 msgid "Rename"
 msgstr ""
 
-#: src/Wizard.php:892
+#: src/Wizard.php:891
 msgid "Report a problem"
 msgstr ""
 
-#: src/Wizard.php:886
+#: src/Wizard.php:885
 msgid "Report an incident"
 msgstr ""
 
@@ -2068,7 +2085,7 @@ msgstr ""
 msgid "Request source"
 msgstr ""
 
-#: ⁨standard input⁩:88 ⁨standard input⁩:106 ⁨standard input⁩:121
+#: ⁨standard input⁩:89 ⁨standard input⁩:106 ⁨standard input⁩:121
 msgid "Requester"
 msgstr ""
 
@@ -2149,13 +2166,13 @@ msgctxt "button"
 msgid "Save"
 msgstr ""
 
-#: src/Wizard.php:1582 tests/WizardTemplatesTest.php:242 ⁨standard input⁩:97
+#: src/Wizard.php:1581 tests/WizardTemplatesTest.php:242 ⁨standard input⁩:97
 #: ⁨standard input⁩:98 ⁨standard input⁩:69
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: src/Wizard.php:1610
+#: src/Wizard.php:1609
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
@@ -2223,7 +2240,7 @@ msgstr ""
 msgid "Secondaries services"
 msgstr ""
 
-#: src/Wizard.php:1594 tests/WizardTemplatesTest.php:256
+#: src/Wizard.php:1593 tests/WizardTemplatesTest.php:256
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
@@ -2265,7 +2282,7 @@ msgstr ""
 msgid "Service"
 msgstr ""
 
-#: ⁨standard input⁩:77
+#: ⁨standard input⁩:78
 msgid "Setup"
 msgstr ""
 
@@ -2365,7 +2382,7 @@ msgstr ""
 msgid "Summary"
 msgstr ""
 
-#: src/Fields/Yesno.php:186
+#: src/Field.php:2986 src/Fields/Yesno.php:186
 msgid "Switch display"
 msgstr ""
 
@@ -2436,7 +2453,7 @@ msgstr ""
 msgid "Textarea"
 msgstr ""
 
-#: src/Wizard.php:1530
+#: src/Wizard.php:1529
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
@@ -2603,11 +2620,11 @@ msgstr ""
 msgid "There was a problem on upload your signature"
 msgstr ""
 
-#: src/Wizard.php:1783
+#: src/Wizard.php:1782
 msgid "There was a problem. The step-by-step mode configuration was reset"
 msgstr ""
 
-#: src/Wizard.php:1531
+#: src/Wizard.php:1530
 msgid "These fields don\\'t respect regex"
 msgstr ""
 
@@ -2649,7 +2666,7 @@ msgstr ""
 msgid "This form has no field yet."
 msgstr ""
 
-#: tests/WizardTitleTest.php:198 ⁨standard input⁩:56
+#: tests/WizardTitleTest.php:199 ⁨standard input⁩:56
 msgid "This form is in maintenance mode"
 msgstr ""
 
@@ -2721,7 +2738,7 @@ msgstr ""
 msgid "Too many items to export at once"
 msgstr ""
 
-#: src/Wizard.php:3147
+#: src/Wizard.php:3146
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
@@ -2741,7 +2758,7 @@ msgstr ""
 msgid "Total (HT)"
 msgstr ""
 
-#: src/Fields/Freetable.php:141 src/Fields/Freetable.php:525
+#: src/Fields/Freetable.php:161 src/Fields/Freetable.php:547
 msgid "Total (TTC)"
 msgstr ""
 
@@ -2898,7 +2915,7 @@ msgstr ""
 msgid "Validate metademands"
 msgstr ""
 
-#: src/Fields/Freetable.php:289
+#: src/Fields/Freetable.php:309
 msgid "Validate the basket"
 msgstr ""
 
@@ -2999,7 +3016,7 @@ msgstr ""
 msgid "You can't add a field without type"
 msgstr ""
 
-#: src/Fields/Freetable.php:175
+#: src/Fields/Freetable.php:195
 msgid "You can't create a new line when there is an existing one"
 msgstr ""
 
@@ -3007,7 +3024,8 @@ msgstr ""
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 
-#: src/Field.php:3012 src/Field.php:3039 src/Field.php:3055 src/Field.php:3078
+#: src/Field.php:3062 src/Field.php:3089 src/Field.php:3105 src/Field.php:3128
+#: src/Field.php:3180
 msgid "You cannot do this for this field"
 msgstr ""
 
@@ -3015,21 +3033,21 @@ msgstr ""
 msgid "You cannot use this parameter if there is more than one category"
 msgstr ""
 
-#: src/Wizard.php:1722
+#: src/Wizard.php:1721
 msgid "You do not have access to the form"
 msgstr ""
 
-#: src/Wizard.php:648
+#: src/Wizard.php:647
 msgid "You don't have the right to create meta-demand"
 msgstr ""
 
-#: src/Wizard.php:1985
+#: src/Wizard.php:1984
 msgid ""
 "You don't have the right to modify this form or the metademand don't accept "
 "form modifications"
 msgstr ""
 
-#: src/Wizard.php:646
+#: src/Wizard.php:645
 msgid "You don't have the right to update tickets"
 msgstr ""
 
@@ -3037,7 +3055,7 @@ msgstr ""
 msgid "You don't have the ticket creation right"
 msgstr ""
 
-#: src/Wizard.php:1223
+#: src/Wizard.php:1222
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
@@ -3057,7 +3075,7 @@ msgstr ""
 msgid "You have items on your basket"
 msgstr ""
 
-#: src/Wizard.php:1518 ⁨standard input⁩:42
+#: src/Wizard.php:1517 ⁨standard input⁩:42
 msgid "You have not entered any values. Is this normal?"
 msgstr ""
 
@@ -3082,12 +3100,12 @@ msgstr ""
 msgid "Your blocks are not all defined"
 msgstr ""
 
-#: src/Wizard.php:455
+#: src/Wizard.php:454
 msgid "Your created forms"
 msgstr ""
 
 #: front/draft.php:40 front/draftcreation.php:62 front/draft.form.php:69
-#: src/Wizard.php:463 ⁨standard input⁩:73
+#: src/Wizard.php:462 ⁨standard input⁩:73
 msgid "Your drafts"
 msgstr ""
 
@@ -3107,12 +3125,12 @@ msgstr ""
 msgid "Your form will be validated by your supervisor"
 msgstr ""
 
-#: src/Wizard.php:470
+#: src/Wizard.php:469
 msgctxt "button"
 msgid "Your forms"
 msgstr ""
 
-#: src/Wizard.php:447
+#: src/Wizard.php:446
 msgid "Your models"
 msgstr ""
 
