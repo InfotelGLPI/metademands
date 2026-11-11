@@ -1127,7 +1127,10 @@ select.chained-select {
     font-size: 1.05rem;
 }
 
-
+/* Fields of a block: more room between the rows than the legacy 10px of .md-bottom */
+.md-wizard-layout [id-field].md-bottom {
+    margin-bottom: 1.25rem;
+}
 
 .md-wizard-layout .metademand-label {
     line-height: 1.4 !important;
