@@ -81,6 +81,8 @@ class MetademandPdf extends \TCPDF
     public $fields;
     public $title;
     public $subtitle;
+    /** @var bool laid out as an order of the orderfollowup plugin (landscape, ID in the header) */
+    public $is_order_layout = false;
 
     /**
      * MetademandPdf constructor.
@@ -293,7 +295,7 @@ class MetademandPdf extends \TCPDF
         list($width, $height, $type, $attr) = getimagesize($image);
         list($width, $height) = $this->imageResize($width, $height, $target);
 
-        if (!Plugin::isPluginActive('orderfollowup')) {
+        if (!$this->is_order_layout) {
             $this->CellTitleValue($largeurCoteTitre, 20, "", 'TBL', 'L', 'grey', 0, $this->font_size, 'black');
             $this->Image(
                 $image,
@@ -305,7 +307,7 @@ class MetademandPdf extends \TCPDF
         } else {
             $this->CellTitleValue($largeurCoteTitre, 20, "ID : " . $this->id, 'TBL', 'C', 'grey', 0, $this->font_size, 'black');
         }
-        if (Plugin::isPluginActive('orderfollowup')) {
+        if ($this->is_order_layout) {
             $largeurCaseTitre += 85;
         }
 
@@ -1384,7 +1386,10 @@ class MetademandPdf extends \TCPDF
     public function drawPdf($form, $fields, $metademands_id, $parent_tickets_id, $with_basket = false)
     {
         // TCPDF manages the total-page-count alias ({nb}) automatically — no AliasNbPages() call needed.
-        if (Plugin::isPluginActive('orderfollowup')) {
+        // The order layout for a metademand of the orderfollowup plugin only, not for every
+        // metademand as soon as the plugin is active; read by Header() on each page
+        $this->is_order_layout = Freetable::usesOrderfollowup((int) $metademands_id);
+        if ($this->is_order_layout) {
             $this->AddPage("L");
         } else {
             $this->AddPage("P");

@@ -61,11 +61,31 @@ class Freetable extends CommonDBTM
         return __('Free table', 'metademands');
     }
 
+    /**
+     * Whether a metademand is ordered through the orderfollowup plugin: the plugin active is not
+     * enough, the metademand has to be one of its own (glpi_plugin_orderfollowup_metademands).
+     * Its free tables then compute prices: a "Total (TTC)" column and grand totals.
+     *
+     * @param int $metademands_id
+     */
+    public static function usesOrderfollowup(int $metademands_id): bool
+    {
+        global $DB;
+
+        $table = 'glpi_plugin_orderfollowup_metademands';
+        return $metademands_id > 0
+            && Plugin::isPluginActive('orderfollowup')
+            && $DB->tableExists($table)
+            && countElementsInTable($table, ['plugin_metademands_metademands_id' => $metademands_id]) > 0;
+    }
+
     public static function showWizardField($data, $namefield, $value, $on_order)
     {
         $field = "";
 
         $plugin_metademands_metademands_id = $data['plugin_metademands_metademands_id'];
+        // Prices and totals only for a metademand of the orderfollowup plugin
+        $orderfollowup = self::usesOrderfollowup((int) $plugin_metademands_metademands_id);
         $meta = new Metademand();
         $meta->getFromDB($plugin_metademands_metademands_id);
         $background_color = "";
@@ -137,7 +157,7 @@ class Freetable extends CommonDBTM
             }
         }
 
-        if (Plugin::isPluginActive('orderfollowup')) {
+        if ($orderfollowup) {
             $addfields['total'] = __('Total (TTC)', 'orderfollowup');
             $commentfields['total'] = '';
             $types['total'] = MetaFreetablefield::TYPE_READONLY;
@@ -157,7 +177,7 @@ class Freetable extends CommonDBTM
         }
 
         $orderfollowup_is_active = 0;
-        if (Plugin::isPluginActive('orderfollowup')) {
+        if ($orderfollowup) {
             $orderfollowup_is_active = 1;
         }
 
@@ -216,7 +236,7 @@ class Freetable extends CommonDBTM
 
                 $quantity   = 0;
                 $unit_price = 0;
-                if (Plugin::isPluginActive('orderfollowup')) {
+                if ($orderfollowup) {
                     $quantity   = floatval($l['quantity'] ?? 0);
                     $unit_price = floatval($l['unit_price'] ?? 0);
                 }
@@ -247,7 +267,7 @@ class Freetable extends CommonDBTM
 
                 $has_total = false;
                 $linetotal = '';
-                if (Plugin::isPluginActive('orderfollowup')) {
+                if ($orderfollowup) {
                     $has_total = true;
                     $linetotal = number_format($quantity * $unit_price, 2, '.', ' ');
                 }
@@ -261,7 +281,7 @@ class Freetable extends CommonDBTM
             }
         }
 
-        $has_orderfollowup = Plugin::isPluginActive('orderfollowup');
+        $has_orderfollowup = $orderfollowup;
         // Grand total computed by public/scripts/wizard_form.js when the basket is
         // validated, from the data-md-freetable-* attributes of the button.
         $grandtotal = [];
@@ -475,6 +495,8 @@ class Freetable extends CommonDBTM
         $dropdown_values = [];
         $types = [];
         $colspan_title = $is_order ? 12 : 2;
+        // Prices and totals only for a metademand of the orderfollowup plugin
+        $orderfollowup = self::usesOrderfollowup((int) ($field['plugin_metademands_metademands_id'] ?? 0));
         $field_custom = new MetaFreetablefield();
         if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field['id']], "rank")) {
             if (count($customs) > 0) {
@@ -521,7 +543,7 @@ class Freetable extends CommonDBTM
                 foreach ($addfields as $addfield) {
                     $header[] = ['text' => (string) $addfield, 'heading' => true, 'colspan' => $colspan, 'table_only' => true];
                 }
-                if (Plugin::isPluginActive('orderfollowup')) {
+                if ($orderfollowup) {
                     $header[] = ['text' => __('Total (TTC)', 'orderfollowup'), 'heading' => true, 'table_only' => true];
                 }
                 $rows[] = $header;
@@ -531,7 +553,7 @@ class Freetable extends CommonDBTM
                     foreach ($addfields as $k => $addfield) {
                         $row[] = ['text' => self::getCellText($fi[$k] ?? '', $types[$k] ?? null), 'colspan' => $colspan];
                     }
-                    if (Plugin::isPluginActive('orderfollowup')) {
+                    if ($orderfollowup) {
                         $totalrow = floatval($fi['quantity']) * floatval($fi['unit_price']);
                         $row[] = ['text' => Html::formatNumber($totalrow, false, 2) . " €"];
                         $total += $totalrow;
@@ -541,7 +563,7 @@ class Freetable extends CommonDBTM
             }
         }
 
-        if (Plugin::isPluginActive('orderfollowup')) {
+        if ($orderfollowup) {
             $conf = new Config();
             $conf->getFromDB(1);
             $tva = $conf->fields['use_tva'] ?? "20";

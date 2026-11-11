@@ -406,7 +406,6 @@ class Wizard extends CommonDBTM
             'background_color'      => $background_color,
             'style_title_color'     => $style_title_color,
             'icon_color'            => $icon_color,
-            'margin_top'            => empty($illustration) ? "margin-top: 5px" : "margin-top: -45px",
             'illustration'          => $illustration,
             'icon'                  => $icon,
             'is_fa_icon'            => str_contains($icon, 'fa-'),

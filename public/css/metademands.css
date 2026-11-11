@@ -1174,7 +1174,15 @@ select.chained-select {
 .md-title-visual.md-title-illustration {
     width: 70px;
     height: 70px;
+    overflow: hidden;
     background: transparent;
+}
+
+.md-title-visual.md-title-illustration > *,
+.md-title-visual.md-title-illustration svg,
+.md-title-visual.md-title-illustration img {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .md-title-text {
@@ -1322,6 +1330,31 @@ select.chained-select {
 #divnavforms .tab_cadre_fixe td[colspan].center > .form-control {
     flex: 1 1 100%;
     width: auto;
+}
+
+/* Free table (templates/fields/field_freetable.html.twig): kept in its card, scrolling when
+   its columns need more room; its inputs take the width of their column rather than the
+   fixed "size" of their attribute */
+.md-freetable-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.md-freetable-scroll > table {
+    margin-bottom: 0;
+}
+
+/* A table needs the whole width of its block, whatever the "row display" of its field */
+[id-field][class*="col-md-"]:has(.md-freetable-scroll) {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+}
+
+.md-freetable-scroll td input[type="text"],
+.md-freetable-scroll td select {
+    width: 100%;
+    min-width: 7rem;
 }
 
 /* Second label of a field (templates/fields/field_wrapper.html.twig): a help under the field,

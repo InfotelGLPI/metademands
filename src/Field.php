@@ -2974,6 +2974,53 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     ],
                 );
                 return true;
+            case 'change_yesno_display':
+                TemplateRenderer::getInstance()->display(
+                    '@metademands/forms/massiveaction_field.html.twig',
+                    [
+                        'widget'       => 'array',
+                        'name'         => 'display_type',
+                        'value'        => Yesno::BUTTONS_DISPLAY,
+                        'elements'     => [
+                            Yesno::CLASSIC_DISPLAY => __("Classic display", "metademands"),
+                            Yesno::SWITCH_DISPLAY  => __("Switch display", "metademands"),
+                            Yesno::BUTTONS_DISPLAY => __("Buttons display", "metademands"),
+                        ],
+                        'submit_label' => _x('button', 'Post'),
+                    ],
+                );
+                return true;
+            case 'change_yesno_default':
+                TemplateRenderer::getInstance()->display(
+                    '@metademands/forms/massiveaction_field.html.twig',
+                    [
+                        'widget'       => 'array',
+                        'name'         => 'custom',
+                        'value'        => 2,
+                        'elements'     => [
+                            0 => \Dropdown::EMPTY_VALUE,
+                            1 => __('No'),
+                            2 => __('Yes'),
+                        ],
+                        'submit_label' => _x('button', 'Post'),
+                    ],
+                );
+                return true;
+            case 'change_mandatory':
+                TemplateRenderer::getInstance()->display(
+                    '@metademands/forms/massiveaction_field.html.twig',
+                    [
+                        'widget'       => 'array',
+                        'name'         => 'is_mandatory',
+                        'value'        => 1,
+                        'elements'     => [
+                            1 => __('Mandatory', 'metademands'),
+                            0 => __('Optional', 'metademands'),
+                        ],
+                        'submit_label' => _x('button', 'Post'),
+                    ],
+                );
+                return true;
         }
         return false;
     }
@@ -2986,6 +3033,9 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         if ($isadmin) {
             $actions['GlpiPlugin\Metademands\Field:change_icon'] = __("Modify icon", "metademands");
             $actions['GlpiPlugin\Metademands\Field:change_color'] = __("Modify color", "metademands");
+            $actions['GlpiPlugin\Metademands\Field:change_yesno_display'] = __("Modify the display of the yes / no", "metademands");
+            $actions['GlpiPlugin\Metademands\Field:change_yesno_default'] = __("Modify the default value of the yes / no", "metademands");
+            $actions['GlpiPlugin\Metademands\Field:change_mandatory'] = __("Make mandatory or optional", "metademands");
         }
 
         return $actions;
@@ -3081,6 +3131,62 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     }
                     $item->getFromDB($id);
                     $ma->itemDone($item->getType(), $id, $msg);
+                }
+                return;
+            case "change_yesno_display":
+            case "change_yesno_default":
+            case "change_mandatory":
+                $input = $ma->getInput();
+                // Per action: the posted input, its allowed values and the parameter it sets
+                [$key, $allowed, $column] = match ($ma->getAction()) {
+                    'change_yesno_display' => [
+                        'display_type',
+                        [Yesno::CLASSIC_DISPLAY, Yesno::SWITCH_DISPLAY, Yesno::BUTTONS_DISPLAY],
+                        'display_type',
+                    ],
+                    // Default value of a yes / no, stored raw in "custom" as its form does
+                    // (0: none, 1: no, 2: yes)
+                    'change_yesno_default' => ['custom', [0, 1, 2], 'custom'],
+                    default                => ['is_mandatory', [0, 1], 'is_mandatory'],
+                };
+                $yesno = $ma->getAction() !== 'change_mandatory';
+                $value = (int) ($input[$key] ?? -1);
+                if (!in_array($value, $allowed, true)) {
+                    foreach ($ids as $id) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                    }
+                    return;
+                }
+
+                foreach ($ids as $id) {
+                    // The per-item check ties each field to its metademand and its entity
+                    if (!$item->can($id, UPDATE)) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_NORIGHT);
+                        $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
+                        continue;
+                    }
+                    $field = new Field();
+                    $param = new FieldParameter();
+                    $applies = $field->getFromDB($id)
+                        && $param->getFromDBByCrit(['plugin_metademands_fields_id' => $id])
+                        && ($yesno
+                            ? $field->fields['type'] === 'yesno'
+                            : !in_array($field->fields['type'], FieldParameter::NOT_MANDATORY_TYPES, true));
+                    if (!$applies) {
+                        // Not a yes / no, or a field that cannot be mandatory (title, information...)
+                        $ma->addMessage(sprintf(
+                            __('%1$s: %2$s', 'metademands'),
+                            $field->fields['name'] ?? $id,
+                            __('You cannot do this for this field', 'metademands'),
+                        ));
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                        continue;
+                    }
+                    $updated = $param->update([
+                        'id'    => $param->getID(),
+                        $column => $column === 'custom' ? (string) $value : $value,
+                    ]);
+                    $ma->itemDone($item->getType(), $id, $updated ? MassiveAction::ACTION_OK : MassiveAction::ACTION_KO);
                 }
                 return;
         }

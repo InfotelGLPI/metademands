@@ -43,7 +43,8 @@
     <div class="card md-title-card" style="background-color: {{ background_color }}!important;">
         <div class="card-body d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
             {% if illustration is not empty %}
-                <div class="md-title-visual md-title-illustration" style="{{ margin_top }}">
+                {# Held in its tile: no negative margin, which made it overflow the card #}
+                <div class="md-title-visual md-title-illustration">
                     {{ render_illustration(illustration) }}
                 </div>
             {% elseif icon is not empty %}

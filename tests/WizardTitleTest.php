@@ -134,7 +134,9 @@ class WizardTitleTest extends DbTestCase
         ]);
 
         $this->assertStringContainsString('<svg', $html);
-        $this->assertStringContainsString('margin-top: -45px', $html);
+        // Held in its tile of the title card: no negative margin making it overflow the card
+        $this->assertStringContainsString('md-title-illustration', $html);
+        $this->assertStringNotContainsString('margin-top: -45px', $html);
     }
 
     public function testAbortMessageIsEscapedAndLeavesTheFormOpen(): void
@@ -168,7 +170,6 @@ class WizardTitleTest extends DbTestCase
             'background_color'      => '',
             'style_title_color'     => '',
             'icon_color'            => '',
-            'margin_top'            => 'margin-top: 5px',
             'illustration'          => '',
             'icon'                  => '',
             'is_fa_icon'            => false,

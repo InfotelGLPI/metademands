@@ -377,6 +377,24 @@ function plugin_metademands_wizard_validateForm(metademandparams)
     }
 
 
+    // Mandatory free tables: at least one validated line, checked here before the step is left
+    // (the server only checked it once the whole form was posted)
+    for (const flag of Array.from(y).filter((input) => /^is_freetable_mandatory\[\d+\]$/.test(input.name))) {
+        if (flag.value !== '1') {
+            continue;
+        }
+        const tableId = flag.name.match(/\[(\d+)\]/)[1];
+        const wrapper = document.querySelector('[id-field="field' + tableId + '"]');
+        // A table hidden by an option of another field is not asked for
+        if (wrapper !== null && wrapper.style.display === 'none') {
+            continue;
+        }
+        if (document.querySelectorAll('tr[name="data"][id^="line_' + tableId + '_"]').length === 0) {
+            mandatory.push(tableId);
+            ko++;
+        }
+    }
+
     //for textarea
     if (w.length > 0) {
         for (var y = 0; y < w.length; y++) {

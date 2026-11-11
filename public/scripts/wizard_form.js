@@ -1405,6 +1405,7 @@
      * @param {number} key id of the field
      */
     function resetHiddenField(key) {
+        clearDatePickers(key);
         $('div[id-field="field' + key + '"]').find(':input').each(function () {
             switch (this.type) {
                 case 'password':
@@ -1441,6 +1442,32 @@
     }
 
     /**
+     * Empty the date pickers of a field. A date field keeps its value in a hidden input
+     * (flatpickr altInput): emptying the visible one only left a date nobody sees, still posted
+     * and passing the mandatory check. The picker instance sits on its wrapper (wrap mode).
+     *
+     * @param {number} key id of the field
+     */
+    /**
+     * Remember the date each picker of a field was rendered with, before any change: the
+     * hidden input of a picker loses it as soon as its value is set (a hidden input reflects
+     * its value into its attribute), and the picker does not keep it either.
+     *
+     * @param {number} key id of the field
+     */
+    function rememberDefaultDates(key) {
+        document.querySelectorAll(`[id-field="field${key}"] .flatpickr input[data-input], [id-field="field${key}-2"] .flatpickr input[data-input]`)
+            .forEach((input) => {
+                input.dataset.mdDefaultDate ??= input.getAttribute('value') ?? '';
+            });
+    }
+
+    function clearDatePickers(key) {
+        document.querySelectorAll(`[id-field="field${key}"] .flatpickr, [id-field="field${key}-2"] .flatpickr`)
+            .forEach((wrapper) => wrapper._flatpickr?.clear());
+    }
+
+    /**
      * Give back its default value to a field shown again: resetHiddenField() emptied it when
      * it was hidden, so that a field prefilled with the requester (for instance) came back
      * empty, and mandatory. Only the controls left empty are restored, to the value the page
@@ -1449,6 +1476,15 @@
      * @param {number} key id of the field
      */
     function restoreDefaultValues(key) {
+        // Date pickers: the date the page was rendered with (rememberDefaultDates())
+        document.querySelectorAll(`[id-field="field${key}"] .flatpickr, [id-field="field${key}-2"] .flatpickr`)
+            .forEach((wrapper) => {
+                const picker = wrapper._flatpickr;
+                const date = picker?.input.dataset.mdDefaultDate ?? '';
+                if (picker !== undefined && picker.input.value === '' && date !== '') {
+                    picker.setDate(date, true);
+                }
+            });
         document.querySelectorAll(`[id-field="field${key}"], [id-field="field${key}-2"]`).forEach((wrapper) => {
             wrapper.querySelectorAll('select, textarea, input').forEach((control) => {
                 let restored = false;
@@ -1544,6 +1580,9 @@
             });
         };
 
+        // The dates the linked fields are rendered with, given back when shown again
+        config.rules.forEach((rule) => rule.targets.forEach((key) => rememberDefaultDates(key)));
+
         // Restore the value kept in session before binding the handler, then show
         // the fields linked to the current state (default values included)
         restoreValue(inputs, config.restore, () => {});
@@ -1570,6 +1609,9 @@
      * @param {boolean} selects also put the selects back to the empty choice
      */
     function emptyBlock(block, selects) {
+        // Date pickers: their hidden input too (see clearDatePickers())
+        document.querySelectorAll(`div[bloc-id="bloc${block}"] .flatpickr, div[bloc-id="subbloc${block}"] .flatpickr`)
+            .forEach((wrapper) => wrapper._flatpickr?.clear());
         $('div[bloc-id="bloc' + block + '"], div[bloc-id="subbloc' + block + '"]').find(':input').each(function () {
             switch (this.type) {
                 case 'password':

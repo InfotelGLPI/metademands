@@ -98,6 +98,11 @@ function isShown(element) {
  * @returns {boolean} whether the field currently shows its mandatory mark
  */
 function isMandatory(field) {
+    // A switch (yes / no of the "switch" display) always holds an answer, "no" by default:
+    // never a mandatory field left
+    if (field.querySelector('input[isswitch]') !== null) {
+        return false;
+    }
     const mark = field.querySelector('.metademands_wizard_red');
     return mark !== null && mark.textContent.includes('*') && isShown(field);
 }
@@ -110,6 +115,11 @@ function isMandatory(field) {
  * @returns {boolean}
  */
 function isFilled(field) {
+    // Free table: answered by its validated lines only, not by the line being typed (the
+    // check of plugin_metademands_wizard_validateForm() and of the server)
+    if (field.querySelector('table[id^="freetable_table"]') !== null) {
+        return field.querySelector('tr[name="data"][id^="line_"]') !== null;
+    }
     for (const control of field.querySelectorAll('input, select, textarea')) {
         if (control.disabled) {
             continue;
@@ -172,6 +182,10 @@ function isFilled(field) {
  * @returns {boolean}
  */
 function isCheckedSurely(field) {
+    // A free table: its validated lines tell for sure
+    if (field.querySelector('table[id^="freetable_table"]') !== null) {
+        return true;
+    }
     if (field.querySelector('input[type="file"], canvas, table, .fileupload, [data-uploader-name]') !== null) {
         return false;
     }

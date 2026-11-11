@@ -1500,6 +1500,8 @@ class Export extends CommonDBTM
         $mapTableField = [];
         $mapTableFieldReverse = [];
         $mapTableCheckValue = [];
+        /** @var array<int|string, int> $customvalueFields old custom value id => old field id */
+        $customvalueFields = [];
 
         $fields = [];
         $stepconfig = [];
@@ -1890,6 +1892,9 @@ class Export extends CommonDBTM
 
                 $newcustomfield = $fieldMetacustom->add($toUpdate);
                 $mapTableCheckValue[$old["id"]] = $newcustomfield;
+                // The field each custom value belongs to: only the options of that field compare
+                // their value with it (see the options below)
+                $customvalueFields[$old["id"]] = (int) $plugin_metademands_fields_id;
             }
         }
 
@@ -1974,8 +1979,13 @@ class Export extends CommonDBTM
                 $toUpdate["check_value"] = $check_value;
             }
             if ($version >= "3.3.11") {
+                // A value to check is the id of a custom value of the same field only: a yes / no
+                // (1 / 2), a number or a dropdown item kept its value, which used to be mapped to
+                // the custom value of another field holding the same old id (a "yes" turned into
+                // the id of an unrelated custom value, and its option never matched again)
                 if ($check_value != 0
-                    && isset($mapTableCheckValue[$check_value])) {
+                    && isset($mapTableCheckValue[$check_value])
+                    && ($customvalueFields[$check_value] ?? null) === (int) $plugin_metademands_fields_id) {
                     $toUpdate['check_value'] = $mapTableCheckValue[$check_value];
                 }
             } else {
