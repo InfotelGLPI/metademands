@@ -283,6 +283,26 @@ class MetademandPdf extends \TCPDF
         return true;
     }
 
+    /**
+     * An image file handed to TCPDF as its content ("@" prefix) rather than as a path: TCPDF 7
+     * only reads files under an allowlist of directories (its own, the current one, the one of
+     * the script, K_ALLOWED_PATHS), which the directory of the plugin is not part of on every
+     * server ("Unable to read image file").
+     *
+     * @param string $path file of the image
+     *
+     * @return string|null null when the file cannot be read
+     */
+    private static function getImageData(string $path): ?string
+    {
+        if ($path === '' || !is_file($path) || !is_readable($path)) {
+            return null;
+        }
+        $content = file_get_contents($path);
+
+        return ($content === false || $content === '') ? null : '@' . $content;
+    }
+
     public function Header()
     {
 
@@ -292,17 +312,19 @@ class MetademandPdf extends \TCPDF
         $largeurCaseTitre = $this->big_width_cell - ($this->margin_left * 2) - ($largeurCoteTitre * 2);
 
         //Cellule contenant l'image
-        // Absolute path: GLPI 12 serves requests from public/, so a relative path depends on the cwd.
-        $image = Plugin::getPhpDir('metademands') . '/public/pics/login_logo_glpi.png';
+        // Absolute path from this file: the plugin directory of the GLPI configuration may be a
+        // relative one ("./marketplace", resolved against the current directory)
+        $image = dirname(__DIR__) . '/public/pics/login_logo_glpi.png';
         $target = 20;
 
         if (!$this->is_order_layout) {
             $this->CellTitleValue($largeurCoteTitre, 20, "", 'TBL', 'L', 'grey', 0, $this->font_size, 'black');
             $image_size = is_readable($image) ? getimagesize($image) : false;
-            if ($image_size !== false) {
+            $image_data = self::getImageData($image);
+            if ($image_size !== false && $image_data !== null) {
                 [$width, $height] = $this->imageResize($image_size[0], $image_size[1], $target);
                 $this->Image(
-                    $image,
+                    $image_data,
                     $this->margin_left + 5,
                     $this->margin_top + $height / 3,
                     $width,
@@ -445,7 +467,8 @@ class MetademandPdf extends \TCPDF
                 $this->MultiCell($w, $h, $values, $border, $align, true);
             } elseif ($type == 'signature') {
                 // An empty path means the value was rejected upstream; TCPDF raises on missing files.
-                $image = ($values === '' || !is_readable($values)) ? '' : $this->Image($values, $x, $y + 8, 33.78);
+                $data  = self::getImageData((string) $values);
+                $image = $data === null ? '' : $this->Image($data, $x, $y + 8, 33.78);
                 $this->MultiCell($w, $h + 10, $image, $border, $align, false);
             } else {
                 $width_values = $w;

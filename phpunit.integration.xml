@@ -50,6 +50,7 @@
         <file>tests/ConfigColorTest.php</file>
         <file>tests/StepformWaitingWarningTest.php</file>
         <file>tests/StepByBlockListTest.php</file>
+        <file>tests/MetademandPdfLogoTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>
