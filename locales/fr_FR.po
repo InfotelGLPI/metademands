@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-10 15:59+0000\n"
+"POT-Creation-Date: 2026-11-10 16:22+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -411,7 +411,7 @@ msgstr "Type de bouton"
 
 #: src/Fields/Yesno.php:187
 msgid "Buttons display"
-msgstr "Affichage mode boutons"
+msgstr "Affichage mode bouton"
 
 #: ⁨standard input⁩:49
 msgid "By"
