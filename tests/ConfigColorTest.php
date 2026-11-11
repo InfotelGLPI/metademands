@@ -29,6 +29,7 @@
 
 namespace GlpiPlugin\Metademands\Tests;
 
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\Tests\DbTestCase;
 use GlpiPlugin\Metademands\Config;
 
@@ -88,7 +89,7 @@ class ConfigColorTest extends DbTestCase
     public function testConfigFormIsRendered(): void
     {
         $this->login();
-        $html = GlpiApplicationViewTemplateRenderer::getInstance()->render('@metademands/config.html.twig', [
+        $html = TemplateRenderer::getInstance()->render('@metademands/config.html.twig', [
             'config' => Config::getInstance(),
             'action' => '/config.form.php',
         ]);
@@ -100,6 +101,6 @@ class ConfigColorTest extends DbTestCase
     public function testTypeCommentFallsBackOnTheConfiguration(): void
     {
         $this->assertSame('', Config::getTypeComment('Unknown'));
-        $this->assertCount(4, (new Config())->listTranslationsHandlers()['GlpiPlugin\Metademands\Config_1'] ?? []);
+        $this->assertCount(4, (new Config())->listTranslationsHandlers()[Config::class . '_1'] ?? []);
     }
 }

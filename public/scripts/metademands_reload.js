@@ -72,6 +72,10 @@
     }
 
     $(document).on('click', '[data-md-reload-event="click"]', function (event) {
+        // Elements of a clickable row keeping their own action (delete button of a visibility)
+        if (event.target.closest('[data-md-reload-noopen]') !== null) {
+            return;
+        }
         event.preventDefault();
         reload(this, null);
     });

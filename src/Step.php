@@ -954,7 +954,8 @@ class Step extends CommonDBChild
                     'create_metademands', 'step', 'action', 'update_stepform',
                 ] as $key
             ) {
-                $common_hidden[$key] = $post[$key];
+                // A key the posted form lacks (step, for instance) kept its empty value
+                $common_hidden[$key] = $post[$key] ?? '';
             }
         }
 

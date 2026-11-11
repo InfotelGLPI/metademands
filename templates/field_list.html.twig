@@ -93,7 +93,7 @@
                 </select>
                 {% if panels is not empty %}
                     <label class="form-check form-switch m-0 ms-1">
-                        <input class="form-check-input" type="checkbox" checked data-md-field-toggle-preview>
+                        <input class="form-check-input" type="checkbox" data-md-field-toggle-preview>
                         <span class="form-check-label">{{ __('Preview') }}</span>
                     </label>
                 {% endif %}
@@ -179,7 +179,8 @@
             </div>
 
             {# Blocks and fields #}
-            <div class="col-12 col-xl-6" data-md-field-structure>
+            {#- Preview hidden when the setup is opened (public/scripts/field_list.js) -#}
+            <div class="col-12 {{ panels is not empty ? 'col-xl-10' : 'col-xl-6' }}" data-md-field-structure>
                 {% if canedit %}
                     {# raw: massive actions, no core macro; the form stays in this column, the
                        preview next to it holding forms of its own #}
@@ -351,7 +352,7 @@
             </div>
 
             {# Preview of the selected block #}
-            <div class="col-12 col-xl-4" data-md-field-side>
+            <div class="col-12 col-xl-4{{ panels is not empty ? ' d-none' }}" data-md-field-side>
                 <div class="card md-sticky">
                     <div class="card-header py-2">
                         <h4 class="card-title m-0">

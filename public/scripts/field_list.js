@@ -40,8 +40,6 @@
 
 /* global glpi_confirm, glpi_toast_error, bootstrap */
 
-const PREVIEW_STORAGE = 'plugin_metademands_fieldlist_preview';
-
 /**
  * Insert HTML returned by GLPI into a container, running the scripts it carries (select2
  * setups, dynamic dropdowns...): innerHTML never runs them on its own.
@@ -282,7 +280,6 @@ function togglePreview(list, shown) {
     side.classList.toggle('d-none', !shown);
     structure.classList.toggle('col-xl-6', shown);
     structure.classList.toggle('col-xl-10', !shown);
-    localStorage.setItem(PREVIEW_STORAGE, shown ? '1' : '0');
     if (shown) {
         const selected = list.querySelector('.md-field.is-selected');
         const rank = selected !== null
@@ -795,7 +792,9 @@ function initList(list) {
 
     const previewToggle = list.querySelector('[data-md-field-toggle-preview]');
     if (previewToggle !== null) {
-        previewToggle.checked = localStorage.getItem(PREVIEW_STORAGE) !== '0';
+        // Off when the setup of the metademand is opened: the preview loads the whole form,
+        // shown on demand only
+        previewToggle.checked = false;
         previewToggle.addEventListener('change', () => togglePreview(list, previewToggle.checked));
         togglePreview(list, previewToggle.checked);
     }

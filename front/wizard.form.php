@@ -101,7 +101,8 @@ if (empty($_GET['resources_id']) || !is_scalar($_GET['resources_id'])) {
         $_GET['resources_id'] = $_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields']['resources_id'];
     } elseif (isset($_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields'])) {
         foreach ($_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields'] as $fieldKey => $field) {
-            if (!is_array($field) && is_int($field)) {
+            // Only the field ids: the other keys (_users_id_requester...) are no field
+            if (!is_array($field) && is_int($field) && (int) $fieldKey > 0) {
                 $metademandsField = new Field();
                 $metademandsField->getFromDB($fieldKey);
                 if ($metademandsField->getField('item') == Resource::class) {
@@ -356,7 +357,10 @@ if (isset($_POST['update_basket_line'])) {
         $options['step'] = Metademand::STEP_INIT;
     }
 
-    Stepform::showWaitingWarning();
+    // The step form being filled (ajax/loadstepform.php) is not announced as waiting
+    Stepform::showWaitingWarning(
+        (int) ($_SESSION['plugin_metademands'][(int) $_GET['metademands_id']]['plugin_metademands_stepforms_id'] ?? 0),
+    );
 
     $wizard->showWizard($options);
 

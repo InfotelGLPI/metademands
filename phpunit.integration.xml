@@ -47,6 +47,9 @@
         <file>tests/WizardAutoRedirectTest.php</file>
         <file>tests/ValidationSubticketTest.php</file>
         <file>tests/LocationCardTest.php</file>
+        <file>tests/ConfigColorTest.php</file>
+        <file>tests/StepformWaitingWarningTest.php</file>
+        <file>tests/StepByBlockListTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

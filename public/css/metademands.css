@@ -1079,6 +1079,58 @@ select.chained-select {
     padding-left: calc(1rem + var(--md-depth, 0) * 1.75rem);
 }
 
+/* Visibilities of the blocks in step-by-step mode (templates/forms/step_by_block.html.twig):
+   numbered steps linked by a line, a stripe of the colour of who fills the block in */
+.md-visibilities .md-visibility-step {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--tblr-primary-lt);
+    color: var(--tblr-primary);
+    font-weight: var(--tblr-font-weight-bold, 600);
+    font-size: .8125rem;
+}
+
+.md-visibilities .md-visibility-step-end {
+    background: var(--tblr-green-lt);
+    color: var(--tblr-green);
+}
+
+.md-visibilities .md-visibility-groups {
+    box-shadow: inset 4px 0 0 var(--tblr-blue);
+}
+
+.md-visibilities .md-visibility-supervisor {
+    box-shadow: inset 4px 0 0 var(--tblr-orange);
+}
+
+.md-visibilities .md-visibility-all {
+    box-shadow: inset 4px 0 0 var(--tblr-green);
+}
+
+.md-visibilities .md-visibility.list-group-item-action {
+    color: var(--tblr-body-color);
+    cursor: pointer;
+}
+
+.md-visibilities .md-visibility-delete .btn,
+.md-visibilities .md-visibility-delete button {
+    color: var(--tblr-red);
+}
+
+/* Visibility tab (templates/group.html.twig): a green stripe on the allowed groups, a red
+   one on the excluded groups */
+.md-visibility-groups .md-group-allowed {
+    box-shadow: inset 4px 0 0 var(--tblr-green);
+}
+
+.md-visibility-groups .md-group-excluded {
+    box-shadow: inset 4px 0 0 var(--tblr-red);
+}
+
 /* A row opening the form of its child: the hand cursor of the legacy .pointer class, without
    its opacity of .7 which greyed the whole row until hovered */
 .md-children .md-child.list-group-item-action {
