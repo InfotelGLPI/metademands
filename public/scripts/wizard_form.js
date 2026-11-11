@@ -441,10 +441,84 @@
                 const target = document.getElementById(config.target);
                 if (target) {
                     target.value = id;
+                    // The hidden input gets no change event: refresh its card here
+                    syncLocationCards(target);
                 }
             },
         });
     }
+
+    /**
+     * Reload the location card of a dropdown / Location field (Fields/Dropdown.php)
+     * for the location now chosen, from ajax/locationCard.php. The endpoint prints
+     * nothing for a location the field does not offer.
+     *
+     * @param {HTMLElement} card    element carrying data-md-location-card
+     * @param {string}      value   chosen location id
+     */
+    function refreshLocationCard(card, value) {
+        const config = JSON.parse(card.dataset.mdLocationCard);
+        const locationsId = String(parseInt(value, 10) > 0 ? parseInt(value, 10) : 0);
+
+        if (card.dataset.mdLocationCardCurrent === locationsId) {
+            return;
+        }
+        card.dataset.mdLocationCardCurrent = locationsId;
+
+        if (locationsId === '0') {
+            card.replaceChildren();
+            return;
+        }
+
+        const params = new URLSearchParams({fields_id: config.fields_id, locations_id: locationsId});
+        fetch(config.url + '?' + params.toString(), {
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+        })
+            .then((response) => (response.ok ? response.text() : ''))
+            .then((html) => {
+                // Drop a late answer once another location has been chosen
+                if (card.dataset.mdLocationCardCurrent === locationsId) {
+                    // Server side Twig rendering, escaped there
+                    card.innerHTML = html;
+                }
+            });
+    }
+
+    /**
+     * Refresh the location cards fed by an input, when it carries one.
+     *
+     * @param {Element} input
+     */
+    function syncLocationCards(input) {
+        if (!input.name) {
+            return;
+        }
+        document.querySelectorAll('[data-md-location-card]').forEach(function (card) {
+            if (JSON.parse(card.dataset.mdLocationCard).field_name === input.name) {
+                refreshLocationCard(card, input.value);
+            }
+        });
+    }
+
+    /**
+     * Align a location card with its input once both are in the DOM: a field linked to a
+     * user field may preselect another location than the one rendered with the card.
+     *
+     * @param {HTMLElement} card
+     */
+    function initLocationCard(card) {
+        const config = JSON.parse(card.dataset.mdLocationCard);
+        const input = document.querySelector('[name="' + CSS.escape(config.field_name) + '"]');
+        // The hidden input of the cascading selector is empty until the selector is built
+        if (input !== null && input.value !== '') {
+            refreshLocationCard(card, input.value);
+        }
+    }
+
+    // Core dropdowns (select2) notify through jQuery only
+    $(document).on('change', 'select[name]', function () {
+        syncLocationCards(this);
+    });
 
     /**
      * Bind the time picker of a time field (Fields/Time.php).
@@ -1282,6 +1356,35 @@
     }
 
     /**
+     * Event fired on the inputs of a field shown or hidden by the rules of another field: its
+     * own hidden and mandatory triggers follow (initHiddenTrigger(), initMandatoryTrigger()).
+     */
+    const VISIBILITY_EVENT = 'md-visibility';
+
+    /**
+     * Whether a field whose rules are evaluated is hidden by the rules of its parent field.
+     * Only its own wrapper counts: the fields of another step, or of a folded block, are not
+     * hidden in that sense.
+     *
+     * @param {jQuery} inputs the inputs of the field
+     *
+     * @return {boolean}
+     */
+    function isSourceHidden(inputs) {
+        const wrapper = inputs.first().closest('[id-field]').get(0);
+        return wrapper !== undefined && wrapper.style.display === 'none';
+    }
+
+    /**
+     * Tell the triggers of a field that it was shown or hidden.
+     *
+     * @param {number} key id of the field
+     */
+    function notifyVisibility(key) {
+        $('[id-field="field' + key + '"]').find(':input').first().trigger(VISIBILITY_EVENT);
+    }
+
+    /**
      * Put back the value of a field kept in session, then run its handler.
      *
      * @param {jQuery}    inputs  the inputs of the field
@@ -1364,10 +1467,13 @@
         const inputs = $(sourceSelector(config.source));
 
         const update = function () {
+            // A field hidden by its own parent makes nothing mandatory (see initHiddenTrigger())
+            const source_hidden = isSourceHidden(inputs);
             // A field is mandatory as soon as one of the values linked to it matches
             const mandatory = new Map();
             config.rules.forEach(function (rule) {
-                const matches = taskRuleMatches(config.mode, rule, inputs) !== Boolean(rule.negate);
+                const matches = !source_hidden
+                    && taskRuleMatches(config.mode, rule, inputs) !== Boolean(rule.negate);
                 rule.targets.forEach(function (key) {
                     mandatory.set(key, mandatory.get(key) || matches);
                 });
@@ -1382,6 +1488,7 @@
         };
 
         inputs.on('change', update);
+        inputs.on(VISIBILITY_EVENT, update);
         if (config.mode === 'listed') {
             // The multiselect plugin moves options without any change event
             inputs.each(function () {
@@ -1535,27 +1642,32 @@
 
         const inputs = $(sourceSelector(config.source));
         const field = (key) => $('[id-field="field' + key + '"], [id-field="field' + key + '-2"]');
+        const is_hidden = (key) => [...document.querySelectorAll(`[id-field="field${key}"], [id-field="field${key}-2"]`)]
+            .some((element) => element.style.display === 'none');
 
         /**
          * @param {boolean} reset empty the hidden fields and hide the blocks of the
          *                       values which no longer match (not when displayed)
          */
         const update = function (reset) {
+            // A field hidden by its own parent shows nothing: its default value (a yes / no
+            // set to "No", for instance) showed the fields of that value under a hidden field
+            const source_hidden = isSourceHidden(inputs);
             // A field is shown as soon as one of the values linked to it matches
             const visible = new Map();
             const opened = new Set();
             const closed = new Set();
             config.rules.forEach(function (rule) {
-                const matches = taskRuleMatches(config.mode, rule, inputs) !== Boolean(rule.negate);
+                const matches = !source_hidden
+                    && taskRuleMatches(config.mode, rule, inputs) !== Boolean(rule.negate);
                 rule.targets.forEach(function (key) {
                     visible.set(key, visible.get(key) || matches);
                 });
                 rule.blocks.forEach((block) => (matches ? opened : closed).add(block));
             });
             visible.forEach(function (is_visible, key) {
+                const was_hidden = is_hidden(key);
                 if (is_visible) {
-                    const was_hidden = [...document.querySelectorAll(`[id-field="field${key}"], [id-field="field${key}-2"]`)]
-                        .some((element) => element.style.display === 'none');
                     field(key).show();
                     if (reset && was_hidden) {
                         restoreDefaultValues(key);
@@ -1565,6 +1677,11 @@
                     if (reset) {
                         resetHiddenField(key);
                     }
+                }
+                if (reset && was_hidden !== !is_visible) {
+                    // The rules of the field shown or hidden follow: shown again with a value
+                    // kept, its own linked fields come back (no change event fires for it)
+                    notifyVisibility(key);
                 }
             });
             if (!reset) {
@@ -1589,6 +1706,7 @@
         update(false);
 
         inputs.on('change', () => update(true));
+        inputs.on(VISIBILITY_EVENT, () => update(true));
         if (config.mode === 'listed') {
             // The multiselect plugin moves options without any change event
             inputs.each(function () {
@@ -1785,6 +1903,9 @@
         {selector: 'canvas[data-md-signature]', init: initSignature},
         {selector: 'input[type="range"][data-md-range-value]', init: initRange},
         {selector: 'select[data-md-chained-locations]', init: initChainedLocations},
+        {selector: '[data-md-location-card]', init: initLocationCard},
+        // A location dropdown reloaded by a linked user field (ajax/ulocationUpdate.php)
+        {selector: 'select[name]', init: syncLocationCards},
         {selector: '[data-md-timepicker]', init: initTimepicker},
         {selector: 'textarea[data-md-richtext]', init: initRichText},
         {selector: 'select[data-md-multiselect]', init: initMultiselect},

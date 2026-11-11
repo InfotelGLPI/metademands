@@ -36,9 +36,11 @@ use Document_Item;
 use Dropdown;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Basket;
+use GlpiPlugin\Metademands\Fields\Dropdown as FieldDropdown;
 use GlpiPlugin\Metademands\Fields\Freetable;
 use GlpiPlugin\Metademands\Fields\Signature;
 use Html;
+use Location;
 use Plugin;
 use Session;
 use Toolbox;
@@ -993,6 +995,17 @@ class MetademandPdf extends \TCPDF
                                         $value = $dataItems;
                                     }
 
+                                    break;
+                                case Location::class:
+                                    $value = \Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields[$elt['id']]);
+                                    $value = ($value == '&nbsp;') ? ' ' : Toolbox::stripTags($value);
+                                    // Address lines of the location card option, one per line
+                                    $address_lines = FieldDropdown::getLocationContentLines(
+                                        array_merge($elt, ['value' => $fields[$elt['id']] ?? 0]),
+                                    );
+                                    if ($address_lines !== []) {
+                                        $value .= "\n" . implode("\n", $address_lines);
+                                    }
                                     break;
                                 case 'ITILCategory_Metademands':
                                     $value = \Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'), $fields[$elt['id']]);

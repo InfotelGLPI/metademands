@@ -1079,6 +1079,30 @@ select.chained-select {
     padding-left: calc(1rem + var(--md-depth, 0) * 1.75rem);
 }
 
+/* A row opening the form of its child: the hand cursor of the legacy .pointer class, without
+   its opacity of .7 which greyed the whole row until hovered */
+.md-children .md-child.list-group-item-action {
+    cursor: pointer;
+}
+
+/* A stripe on the left: green for the children always created, purple for the conditional
+   ones (templates/task_list.html.twig) */
+.md-children .md-child-always {
+    box-shadow: inset 4px 0 0 var(--tblr-green);
+}
+
+/* The children always created stand out with the look of a hovered row: a clickable row
+   (.list-group-item-action) keeps a grey text until hovered */
+.md-children .md-child-always,
+.md-children .md-child-always.list-group-item-action {
+    color: var(--tblr-body-color);
+    background-color: var(--tblr-list-group-action-hover-bg, var(--tblr-bg-surface-secondary));
+}
+
+.md-children .md-child-conditional {
+    box-shadow: inset 4px 0 0 var(--tblr-purple);
+}
+
 .md-children .md-type {
     flex: 0 0 auto;
     width: 32px;

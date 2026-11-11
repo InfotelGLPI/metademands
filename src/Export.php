@@ -1811,6 +1811,7 @@ class Export extends CommonDBTM
                 $toUpdate["icon"] = $old["icon"] ?? "";
                 $toUpdate["readonly"] = $old["readonly"] ?? 0;
                 $toUpdate["hidden"] = $old["hidden"] ?? 0;
+                $toUpdate["show_location_card"] = $old["show_location_card"] ?? 0;
 
                 if ($plugin_metademands_fields_id != 0
                     && isset($mapTableField[$plugin_metademands_fields_id])) {

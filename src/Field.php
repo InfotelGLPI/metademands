@@ -1952,6 +1952,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 'ldap_attribute' => $metademand_params->fields["ldap_attribute"] ?? 0,
                 'root_items_id' => (int) ($metademand_params->fields["root_items_id"] ?? 0),
                 'location_depth' => (int) ($metademand_params->fields["location_depth"] ?? 0),
+                'show_location_card' => (int) ($metademand_params->fields["show_location_card"] ?? 0),
                 'custom_values' => $custom_values,
                 'default_values' => $default_values,
             ];

@@ -2558,6 +2558,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $fieldparameter = new FieldParameter();
                     if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $field_data["id"]])) {
                         $fields_data[$id]['informations_to_display'] = $fieldparameter->fields['informations_to_display'];
+                        $fields_data[$id]['show_location_card'] = (int) ($fieldparameter->fields['show_location_card'] ?? 0);
                         if ($fieldparameter->fields['link_to_user']) {
                             continue;
                         }
@@ -5812,6 +5813,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $input['authldaps_id'] = $oldParam['authldaps_id'];
                         $input['ldap_attribute'] = $oldParam['ldap_attribute'];
                         $input['ldap_filter'] = $oldParam['ldap_filter'];
+                        $input['show_location_card'] = $oldParam['show_location_card'] ?? 0;
                         $input['plugin_metademands_fields_id'] = $newField['id'];
                         $fieldparameters->add($input);
                     }

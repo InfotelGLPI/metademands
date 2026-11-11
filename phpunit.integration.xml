@@ -46,6 +46,7 @@
         <file>tests/PendingAutoSolveBlockedTest.php</file>
         <file>tests/WizardAutoRedirectTest.php</file>
         <file>tests/ValidationSubticketTest.php</file>
+        <file>tests/LocationCardTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

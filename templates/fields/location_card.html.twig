@@ -1,0 +1,60 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#-
+ # Identity card of the location chosen in a dropdown / Location field of the wizard,
+ # laid out as the user card (ajax/user_tooltip.html.twig). Rendered under the field
+ # and by ajax/locationCard.php (Fields\Dropdown::getLocationCardContext()).
+ #
+ # Expected context, plain text:
+ #  - name:  complete name of the location
+ #  - icon:  icon class of the Location itemtype
+ #  - lines: non-empty address lines, list of {label, value, icon}
+-#}
+<br><br>
+<div class="alert alert-info alert-dismissible fade show informations d-flex align-items-center">
+    <div>
+        <div class="p-0 user-info-card md-location-card">
+            <div class="row">
+                <div class="col-auto pt-1">
+                    <span class="avatar avatar-md rounded"><i class="{{ icon }}" aria-hidden="true"></i></span>
+                </div>
+                <div class="col ms-2">
+                    <h4 class="card-title mb-1">{{ name }}</h4>
+                    {% if lines is not empty %}
+                        <div class="text-muted d-grid gap-y-1" style="grid-template-columns: auto 1fr; column-gap: 0.25rem; align-items: center;">
+                            {% for line in lines %}
+                                <i class="{{ line.icon }}" aria-hidden="true"></i>
+                                <span title="{{ line.label }}" data-bs-toggle="tooltip" data-bs-placement="top">{{ line.value }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

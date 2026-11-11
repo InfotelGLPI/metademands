@@ -182,6 +182,7 @@ class FieldParameter extends CommonDBChild
                         `ldap_filter`                         varchar(255) NOT NULL           DEFAULT '',
                         `root_items_id`                       int {$default_key_sign}         DEFAULT 0,
                         `location_depth`                      int                             DEFAULT 0,
+                        `show_location_card`                  tinyint      NOT NULL           DEFAULT 0,
                         PRIMARY KEY (`id`),
                         KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
@@ -213,6 +214,10 @@ class FieldParameter extends CommonDBChild
         }
         if (!$DB->fieldExists($table, "location_depth")) {
             $migration->addField($table, "location_depth", "int DEFAULT 0");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "show_location_card")) {
+            $migration->addField($table, "show_location_card", "tinyint NOT NULL DEFAULT 0");
             $migration->migrationOneTable($table);
         }
     }

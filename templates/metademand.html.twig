@@ -78,11 +78,8 @@
                         {# Nom + Actif #}
                         {{ fields.autoNameField('name', item, __('Name'), withtemplate) }}
                         {{ fields.sliderField('is_active', item.fields['is_active']|default(0), __('Active')) }}
-                        {{ fields.sliderField('maintenance_mode', item.fields['maintenance_mode'],
-                            __('Maintenance mode')) }}
-                        {{ fields.nullField() }}
 
-                        {# Objet à créer #}
+                        {# Objet à créer + mode maintenance #}
                         {% if item.isNewItem() %}
                             {% set obj_rand = random() %}
                             {% set obj_dropdown %}
@@ -99,7 +96,8 @@
                                 plugin_web_dir ~ '/ajax/type_object.php',
                                 {'object_to_create': '__VALUE__'}
                             ]) %}
-                            {{ fields.nullField() }}
+                            {{ fields.sliderField('maintenance_mode', item.fields['maintenance_mode'],
+                                __('Maintenance mode')) }}
                             {# Filled by ajax/type_object.php: a full-width column so the
                                fields it returns line up with the rest of the form. #}
                             <div id="define_object" class="col-12"></div>
@@ -107,7 +105,8 @@
                             {{ fields.htmlField('object_to_create',
                                 object_type_name ~ '<input type="hidden" name="object_to_create" value="' ~ item.fields['object_to_create']|e ~ '">',
                                 __('Object to create', 'metademands') ~ ' *') }}
-                            {{ fields.nullField() }}
+                            {{ fields.sliderField('maintenance_mode', item.fields['maintenance_mode'],
+                                __('Maintenance mode')) }}
                         {% endif %}
 
                         {# Type + Catégorie (seulement pour un item existant) #}

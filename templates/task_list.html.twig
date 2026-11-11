@@ -96,16 +96,25 @@
             {% endif %}
             <h3 class="card-title m-0">{{ __('Tasks', 'metademands') }}</h3>
             <span class="badge bg-secondary-lt">{{ entries|length }}</span>
-            <span class="ms-auto small text-muted d-none d-md-inline">
-                <span class="badge bg-purple-lt"><i class="ti ti-arrow-fork"></i></span>
-                {{ __('Created only for some answers (field option)', 'metademands') }}
+            {#- Legend with the counts: the children always created were the ones without any
+             #  mark, hard to tell apart from the conditional ones -#}
+            {% set conditional_count = entries|filter(e => e.linked_to_option)|length %}
+            <span class="ms-auto small text-muted d-none d-md-inline-flex align-items-center gap-3">
+                <span title="{{ __('Created whatever the answers', 'metademands') }}">
+                    <span class="badge bg-green-lt"><i class="ti ti-circle-check"></i></span>
+                    {{ __('Always created', 'metademands') }} ({{ entries|length - conditional_count }})
+                </span>
+                <span title="{{ __('Created only for some answers (field option)', 'metademands') }}">
+                    <span class="badge bg-purple-lt"><i class="ti ti-arrow-fork"></i></span>
+                    {{ __('Conditional', 'metademands') }} ({{ conditional_count }})
+                </span>
             </span>
         </div>
         <div class="list-group list-group-flush">
             {% for entry in entries %}
                 {% set opens = entry.edit_params is not empty %}
                 {% set depth = entry.type_key == 0 and entry.level > 1 ? entry.level - 1 : 0 %}
-                <div class="list-group-item d-flex align-items-start gap-3 md-child{{ opens ? ' list-group-item-action pointer' : '' }}"
+                <div class="list-group-item d-flex align-items-start gap-3 md-child {{ entry.linked_to_option ? 'md-child-conditional' : 'md-child-always' }}{{ opens ? ' list-group-item-action' : '' }}"
                      style="--md-depth: {{ depth }}"
                      data-id="{{ entry.id }}" data-parent="{{ entry.parent }}" data-level="{{ entry.level }}"
                      {% if opens %}
@@ -147,6 +156,10 @@
                                         {% endfor %}
                                     </span>
                                 {% endif %}
+                            {% else %}
+                                <span class="badge bg-green-lt" title="{{ __('Created whatever the answers', 'metademands') }}">
+                                    <i class="ti ti-circle-check me-1"></i>{{ __('Always created', 'metademands') }}
+                                </span>
                             {% endif %}
                             {% if entry.unknown_tags is not empty %}
                                 <span class="badge bg-yellow-lt"

@@ -27,7 +27,6 @@
  * --------------------------------------------------------------------------
  */
 
-
 namespace GlpiPlugin\Metademands;
 
 use CommonGLPI;

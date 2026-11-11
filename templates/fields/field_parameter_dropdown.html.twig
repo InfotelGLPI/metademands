@@ -32,7 +32,8 @@
  # Expected context:
  #  - show_used_by_child, used_by_child: yes / no
  #  - show_link_to_user, link_to_user, user_fields: linked user field (id => label)
- #  - show_location_options: location dropdown, with root_items_id and location_depth, depths
+ #  - show_location_options: location dropdown, with root_items_id and location_depth, depths,
+ #    show_location_card (yes / no)
  #  - show_display_type, display_type, display_types: current display, available ones
 -#}
 {% import 'components/form/fields_macros.html.twig' as fields %}
@@ -68,6 +69,8 @@
             <div class="row g-2 align-items-center mb-2">
                 <label class="col-sm-3 col-form-label">{{ __('Maximum depth', 'metademands') }}</label>
                 <div class="col-sm-3">{{ fields.dropdownArrayField('location_depth', location_depth, depths, '', bare) }}</div>
+                <label class="col-sm-3 col-form-label">{{ __('Show an identity card of the location', 'metademands') }}</label>
+                <div class="col-sm-3">{{ fields.dropdownYesNo('show_location_card', show_location_card, '', bare) }}</div>
             </div>
         {% elseif show_display_type %}
             <div class="row g-2 align-items-center mb-2">
