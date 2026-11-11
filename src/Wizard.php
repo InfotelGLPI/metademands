@@ -299,15 +299,17 @@ class Wizard extends CommonDBTM
         $title_color       = "#000";
         $background_color  = "#000";
         $style_title_color = "";
-        if (!empty($meta->fields['title_color'])) {
-            $title_color       = $meta->fields['title_color'];
+        if (!empty($own_title_color = Metademand::getTitleColor($meta->fields))) {
+            $title_color       = $own_title_color;
             $style_title_color = $title_color;
         }
         if (!empty($meta->fields['background_color'])) {
             $background_color = $meta->fields['background_color'];
         }
         $background_color = Metademand::toThemedBackground($background_color);
-        $icon_color = "color:color-mix(in srgb, transparent, $title_color var(--tblr-link-opacity, 100%))";
+        $icon_color = "color:color-mix(in srgb, transparent, "
+            . (Metademand::getIconColor($meta->fields) ?: $title_color)
+            . " var(--tblr-link-opacity, 100%))";
 
         // Its own icon, unless a Font Awesome one: then the one configured for its type
         $icon = Metademand::getDisplayIcon($meta->fields, '');
@@ -552,6 +554,7 @@ class Wizard extends CommonDBTM
             'abort'             => "",
             'abort_message'     => "",
             'steps'             => "",
+            'back_url'          => "",
         ];
 
         if ($template_vars['maintenance']) {
@@ -595,6 +598,11 @@ class Wizard extends CommonDBTM
 
             $template_vars['icon'] = $icon;
             $template_vars['is_fa_icon'] = str_contains($icon, 'fa-');
+            // Back to the choice of the type, which only shows with several types (a single
+            // one redirects here, see getAutoRedirectUrl())
+            if (count(self::countMetademandTypes()) > 1) {
+                $template_vars['back_url'] = PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=" . Metademand::STEP_INIT;
+            }
         } elseif ($parameters['step'] > Metademand::STEP_LIST) {
             $template_vars['header'] = 'form';
             if ($title == 1) {
@@ -1026,6 +1034,8 @@ class Wizard extends CommonDBTM
                 'icon'       => $icon,
                 'is_fa_icon' => str_contains($icon, 'fa-'),
                 'name'       => $typename,
+                // Plain text of the configuration, under the name of the type
+                'comment'    => Config::getTypeComment($type),
             ];
         }
 
@@ -1205,10 +1215,12 @@ class Wizard extends CommonDBTM
             // Its own icon, unless a Font Awesome one: then the one configured for the type
             $icon = Metademand::getDisplayIcon(['type' => $type] + $current->fields);
 
-            if (!empty($current->fields['title_color'])) {
-                $icon_color = "color:color-mix(in srgb, transparent, " . $current->fields['title_color'] . " var(--tblr-link-opacity, 100%))";
+            if (!empty($own_icon_color = Metademand::getIconColor($current->fields))) {
+                $icon_color = "color:color-mix(in srgb, transparent, " . $own_icon_color . " var(--tblr-link-opacity, 100%))";
             } else {
-                $icon_color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
+                // The primary colour of the palette: the one of the navbar is white on a dark
+                // menu, and the tile of the card is tinted from this colour
+                $icon_color = "color:var(--tblr-primary)";
             }
 
             $drafts_label = "";
@@ -2503,7 +2515,7 @@ class Wizard extends CommonDBTM
             }
 
             $title = [
-                'color' => Metademand::toThemedForeground($data['color'] ?? ''),
+                'color' => Metademand::toThemedForeground(Metademand::getTitleblockColor($data['color'] ?? '')),
                 'label' => $label,
                 'id' => $data['id'],
                 'label2' => (string) $label2,

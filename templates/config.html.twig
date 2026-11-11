@@ -80,10 +80,48 @@
                     __('Icon for requests', 'metademands')) }}
             </div>
             <div class="row">
+                {{ fields.textareaField('comment_incident', (config.comment_incident ?? ''),
+                    __('Comment for incidents', 'metademands')) }}
+                {{ fields.textareaField('comment_request', (config.comment_request ?? ''),
+                    __('Comment for requests', 'metademands')) }}
+            </div>
+            <div class="row">
                 {{ fields.dropdownWebIcons('icon_problem', config.icon_problem,
                     __('Icon for problems', 'metademands')) }}
                 {{ fields.dropdownWebIcons('icon_change', config.icon_change,
                     __('Icon for changes', 'metademands')) }}
+            </div>
+            <div class="row">
+                {{ fields.textareaField('comment_problem', (config.comment_problem ?? ''),
+                    __('Comment for problems', 'metademands')) }}
+                {{ fields.textareaField('comment_change', (config.comment_change ?? ''),
+                    __('Comment for changes', 'metademands')) }}
+            </div>
+
+            {#- Colours forced over the ones of each meta-demand: a colour input always posts a
+             #  colour, the checkbox empties the setting instead (Config::prepareColorInput()) -#}
+            <div class="row">
+                {% for color_field, color_label in {
+                    'title_color': __('Force the colour of the titles of the meta-demands', 'metademands'),
+                    'titleblock_color': __('Force the colour of the block titles', 'metademands'),
+                    'icon_color': __('Force the colour of the icons of the meta-demands', 'metademands'),
+                } %}
+                    {% set shown_color = (config[color_field] ?? '') is not empty ? config[color_field] : '#000000' %}
+                    {% set color_html %}
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <input type="color" class="form-control form-control-color" name="{{ color_field }}"
+                                   value="{{ shown_color }}">
+                            {#- A colour changed while the checkbox stays checked is kept (Config::isColorReset()) -#}
+                            <input type="hidden" name="_shown_{{ color_field }}" value="{{ shown_color }}">
+                            <label class="form-check mb-0">
+                                <input type="checkbox" class="form-check-input" name="_default_{{ color_field }}" value="1"
+                                       {{ (config[color_field] ?? '') is empty ? 'checked' : '' }}>
+                                <span class="form-check-label">{{ __('Use the colour of each meta-demand', 'metademands') }}</span>
+                            </label>
+                        </div>
+                    {% endset %}
+                    {{ fields.htmlField(color_field, color_html, color_label) }}
+                {% endfor %}
             </div>
 
             <div class="row">

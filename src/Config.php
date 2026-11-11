@@ -35,6 +35,8 @@ use DBConnection;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QueryExpression;
+use Glpi\ItemTranslation\Context\ProvideTranslationsInterface;
+use Glpi\ItemTranslation\Context\TranslationHandler;
 use Html;
 use Migration;
 use Session;
@@ -43,7 +45,7 @@ use Toolbox;
 /**
  * Class Config
  */
-class Config extends CommonDBTM
+class Config extends CommonDBTM implements ProvideTranslationsInterface
 {
     public static string $rightname = 'plugin_metademands';
 
@@ -289,7 +291,34 @@ class Config extends CommonDBTM
         'comment_servicecatalog',
         'fa_servicecatalog',
         'redirect_to_ticket_list_when_change_user_step_by_step',
+        'title_color',
+        'titleblock_color',
+        'icon_color',
+        'comment_incident',
+        'comment_request',
+        'comment_problem',
+        'comment_change',
     ];
+
+    /**
+     * Colours forcing the ones of every meta-demand: of their title (title_color of the
+     * meta-demand), of their title-block fields (color of the field) and of their icon
+     * (icon_color of the meta-demand). Empty: each meta-demand keeps its own.
+     */
+    public const COLOR_FIELDS = ['title_color', 'titleblock_color', 'icon_color'];
+
+    /**
+     * Comments of the types of meta-demands, under their card on the home of the wizard.
+     * Keys: the types of Wizard::countMetademandTypes().
+     */
+    public const TYPE_COMMENT_FIELDS = [
+        \Ticket::INCIDENT_TYPE => 'comment_incident',
+        \Ticket::DEMAND_TYPE   => 'comment_request',
+        'Problem'              => 'comment_problem',
+        'Change'               => 'comment_change',
+    ];
+
+    private const COLOR_PATTERN = '/^#[0-9A-Fa-f]{3,8}$/';
 
     /**
      * @param array $input
@@ -298,7 +327,7 @@ class Config extends CommonDBTM
      */
     public function prepareInputForAdd($input)
     {
-        return self::sanitizeIconInput(self::keepEditableFields($input));
+        return self::sanitizeIconInput(self::keepEditableFields(self::prepareColorInput($input)));
     }
 
     /**
@@ -308,7 +337,118 @@ class Config extends CommonDBTM
      */
     public function prepareInputForUpdate($input)
     {
-        return self::sanitizeIconInput(self::keepEditableFields($input));
+        return self::sanitizeIconInput(self::keepEditableFields(self::prepareColorInput($input)));
+    }
+
+    /**
+     * A colour input always posts a colour: the "colours of each meta-demand" checkbox
+     * (_default_<field>) empties the column instead. A value which is not a hexadecimal
+     * colour is dropped, the column keeping its previous value: it is printed into style
+     * attributes.
+     *
+     * @param array $input
+     *
+     * @return array
+     */
+    private static function prepareColorInput($input)
+    {
+        foreach (self::COLOR_FIELDS as $color_field) {
+            if (self::isColorReset($input, $color_field)) {
+                $input[$color_field] = '';
+            } elseif (
+                isset($input[$color_field])
+                && !preg_match(self::COLOR_PATTERN, (string) $input[$color_field])
+            ) {
+                unset($input[$color_field]);
+            }
+        }
+        return $input;
+    }
+
+    /**
+     * Whether a colour input paired with a "default colour" checkbox (_default_<field>) asks
+     * for the default: the checkbox is checked and the colour was left as displayed
+     * (_shown_<field>). A colour picked while the checkbox is still checked wins: the
+     * designer expects the colour he has just chosen.
+     *
+     * @param array  $input
+     * @param string $field
+     */
+    public static function isColorReset(array $input, string $field): bool
+    {
+        if (empty($input['_default_' . $field])) {
+            return false;
+        }
+        if (!isset($input[$field], $input['_shown_' . $field])) {
+            return true;
+        }
+
+        return strtolower((string) $input[$field]) === strtolower((string) $input['_shown_' . $field]);
+    }
+
+    /**
+     * Texts of the configuration shown to the requesters, translated in the
+     * "Translations" tab (ConfigTranslation): the comments of the types.
+     *
+     * @return array<string, array<TranslationHandler>>
+     */
+    public function listTranslationsHandlers(): array
+    {
+        $labels = [
+            'comment_incident' => __('Comment for incidents', 'metademands'),
+            'comment_request'  => __('Comment for requests', 'metademands'),
+            'comment_problem'  => __('Comment for problems', 'metademands'),
+            'comment_change'   => __('Comment for changes', 'metademands'),
+        ];
+
+        $handlers = [];
+        foreach (self::TYPE_COMMENT_FIELDS as $field) {
+            $handlers[] = new TranslationHandler(
+                item: $this,
+                key: $field,
+                name: $labels[$field],
+                value: (string) ($this->fields[$field] ?? ''),
+            );
+        }
+
+        return [sprintf('%s_%d', static::getType(), $this->getID()) => $handlers];
+    }
+
+    /**
+     * Comment of a type of meta-demands on the home of the wizard: its translation in the
+     * language of the session, otherwise the text of the configuration.
+     *
+     * @param int|string $type type of Wizard::countMetademandTypes()
+     */
+    public static function getTypeComment($type): string
+    {
+        $field = self::TYPE_COMMENT_FIELDS[$type] ?? null;
+        if ($field === null) {
+            return '';
+        }
+
+        $translated = ConfigTranslation::getTranslatedValue($field);
+        if ($translated !== '') {
+            return $translated;
+        }
+
+        $config = self::getInstance();
+        return (string) (is_array($config) ? ($config[$field] ?? '') : '');
+    }
+
+    /**
+     * Colour forced by the configuration over the one of each meta-demand.
+     *
+     * @param string $field one of COLOR_FIELDS
+     *
+     * @return string '' when each meta-demand keeps its own
+     */
+    public static function getForcedColor(string $field): string
+    {
+        $config = self::getInstance();
+        $color  = trim((string) (is_array($config) ? ($config[$field] ?? '') : ''));
+
+        return preg_match(self::COLOR_PATTERN, $color) ? $color : '';
     }
 
     /**
@@ -357,6 +497,13 @@ class Config extends CommonDBTM
                         `icon_change`                       varchar(255)          DEFAULT NULL,
                         `see_top`                           tinyint      NOT NULL DEFAULT '1',
                         `redirect_to_ticket_list_when_change_user_step_by_step` tinyint      NOT NULL DEFAULT '0',
+                        `title_color`                       varchar(255)          DEFAULT NULL,
+                        `titleblock_color`                  varchar(255)          DEFAULT NULL,
+                        `icon_color`                        varchar(255)          DEFAULT NULL,
+                        `comment_incident`                  text                  DEFAULT NULL,
+                        `comment_request`                   text                  DEFAULT NULL,
+                        `comment_problem`                   text                  DEFAULT NULL,
+                        `comment_change`                    text                  DEFAULT NULL,
                         PRIMARY KEY (`id`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
@@ -474,6 +621,20 @@ class Config extends CommonDBTM
             $migration->migrationOneTable($table);
         }
 
+        // Colours forced over the ones of each meta-demand (empty: the ones of the
+        // meta-demands), comments of the types on the home of the wizard
+        foreach (self::COLOR_FIELDS as $color_field) {
+            if (!$DB->fieldExists($table, $color_field)) {
+                $migration->addField($table, $color_field, "varchar(255) DEFAULT NULL");
+            }
+        }
+        foreach (self::TYPE_COMMENT_FIELDS as $comment_field) {
+            if (!$DB->fieldExists($table, $comment_field)) {
+                $migration->addField($table, $comment_field, "text DEFAULT NULL");
+            }
+        }
+        $migration->migrationOneTable($table);
+
     }
 
     public static function uninstall()
@@ -522,6 +683,7 @@ class Config extends CommonDBTM
         $ong = [];
         //      $this->addDefaultFormTab($ong);
         $this->addStandardTab(__CLASS__, $ong, $options);
+        $this->addStandardTab(ConfigTranslation::class, $ong, $options);
         $this->addStandardTab(Tools::class, $ong, $options);
         $this->addStandardTab(CheckSchema::class, $ong, $options);
 

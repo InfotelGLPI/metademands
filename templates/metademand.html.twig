@@ -27,6 +27,22 @@
 
 {% import "components/form/fields_macros.html.twig" as fields %}
 
+    {#- The settings grouped in cards (general, setup, personalization, comments) instead of
+     #  one long list of fields -#}
+    {% macro section_start(title, icon) %}
+        <div class="card md-form-section mb-3">
+            <div class="card-header py-2">
+                <h3 class="card-title"><i class="ti {{ icon }} me-2"></i>{{ title }}</h3>
+            </div>
+            <div class="card-body pb-1">
+                <div class="row">
+    {% endmacro %}
+    {% macro section_end() %}
+                </div>
+            </div>
+        </div>
+    {% endmacro %}
+
 {% set bg = "" %}
 {% if item.isDeleted() %}
     {% set bg = "asset-deleted" %}
@@ -39,24 +55,19 @@
     {% set params      = params ?? [] %}
     {% set withtemplate = params['withtemplate'] ?? "" %}
 
-    <div class="card-body d-flex">
-        <div class="col-12 flex-column">
-            <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
-                <div class="row flex-row align-items-start flex-grow-1">
-                    <div class="row flex-row">
-
+    <div class="card-body">
                         <input type="hidden" name="withtemplate" value="{{ withtemplate }}">
                         <input type="hidden" name="id_template" value="{{ item.getID() }}">
 
                         {# Alerte mode maintenance #}
                         {% if item.fields['maintenance_mode'] == 1 %}
-                            <div class="col-12">
-                                <div class="alert alert-warning d-flex align-items-center">
-                                    <i class="ti ti-alert-triangle me-2" style="font-size:2em;color:orange;"></i>
-                                    {{ __('This form is in maintenance mode', 'metademands') }}
-                                </div>
+                            <div class="alert alert-warning d-flex align-items-center">
+                                <i class="ti ti-alert-triangle me-2" style="font-size:2em;color:orange;"></i>
+                                {{ __('This form is in maintenance mode', 'metademands') }}
                             </div>
                         {% endif %}
+
+                        {{ _self.section_start(__('General'), 'ti-info-circle') }}
 
                         {# Nom du template (uniquement lors de l'édition d'un template) #}
                         {% if is_template and not item.isNewItem() %}
@@ -67,18 +78,9 @@
                         {# Nom + Actif #}
                         {{ fields.autoNameField('name', item, __('Name'), withtemplate) }}
                         {{ fields.sliderField('is_active', item.fields['is_active']|default(0), __('Active')) }}
-
-                        {# Modification avant / après validation #}
-                        {{ fields.sliderField('can_update', item.fields['can_update'],
-                            __('Allow form modification before validation', 'metademands')) }}
-                        {{ fields.sliderField('can_clone', item.fields['can_clone'],
-                            __('Allow form modification after validation', 'metademands')) }}
-
-                        {# Mode pas à pas + mode maintenance #}
-                        {{ fields.sliderField('step_by_step_mode', item.fields['step_by_step_mode'],
-                            __('Step-by-step mode', 'metademands')) }}
                         {{ fields.sliderField('maintenance_mode', item.fields['maintenance_mode'],
                             __('Maintenance mode')) }}
+                        {{ fields.nullField() }}
 
                         {# Objet à créer #}
                         {% if item.isNewItem() %}
@@ -167,12 +169,20 @@
                         {# URL (affichage seul) #}
                         {{ fields.htmlField('', metademand_url, __('URL')) }}
                         {{ fields.nullField() }}
+                        {{ _self.section_end() }}
 
-                        {# Icône #}
-                        {{ fields.dropdownWebIcons('icon', item.fields['icon'], __('Icon'), {
-                            'add_field_html': '&nbsp;<input type="checkbox" name="_blank_picture">&nbsp;' ~ __('Clear')
-                        }) }}
-                        {{ fields.nullField() }}
+                        {{ _self.section_start(__('Setup'), 'ti-adjustments') }}
+                        {# Modification avant / après validation #}
+                        {{ fields.sliderField('can_update', item.fields['can_update'],
+                            __('Allow form modification before validation', 'metademands')) }}
+                        {{ fields.sliderField('can_clone', item.fields['can_clone'],
+                            __('Allow form modification after validation', 'metademands')) }}
+
+                        {# Mode pas à pas + confirmation des valeurs vides #}
+                        {{ fields.sliderField('step_by_step_mode', item.fields['step_by_step_mode'],
+                            __('Step-by-step mode', 'metademands')) }}
+                        {{ fields.sliderField('use_confirm', item.fields['use_confirm'],
+                            __('Use a confirm popup check for empty values', 'metademands')) }}
 
                         {# Formulaire multiple + panier unique #}
                         {{ fields.sliderField('is_order', item.fields['is_order'],
@@ -191,11 +201,10 @@
                             {{ fields.nullField() }}
                         {% endif %}
 
-                        {# Panier + Masquer le titre #}
+                        {# Panier #}
                         {{ fields.sliderField('is_basket', item.fields['is_basket'],
                             __('Use as basket', 'metademands')) }}
-                        {{ fields.sliderField('hide_title', item.fields['hide_title'],
-                            __('Hide title', 'metademands')) }}
+                        {{ fields.nullField() }}
 
                         {# Champs spécifiques aux tickets #}
                         {% if item.fields['object_to_create'] == 'Ticket' %}
@@ -204,16 +213,6 @@
                             {{ fields.sliderField('hide_no_field', item.fields['hide_no_field'],
                                 __('Hide the "No" and empty values of fields in the tickets', 'metademands')) }}
                         {% endif %}
-
-                        {# Couleur fond + couleur titre #}
-                        {% set bg_color %}
-                            {% do call('Html::showColorField', ['background_color', {'value': item.fields['background_color']}]) %}
-                        {% endset %}
-                        {{ fields.htmlField('background_color', bg_color, __('Background color', 'metademands')) }}
-                        {% set title_color %}
-                            {% do call('Html::showColorField', ['title_color', {'value': item.fields['title_color']}]) %}
-                        {% endset %}
-                        {{ fields.htmlField('title_color', title_color, __('Title color', 'metademands')) }}
 
                         {# Tâches / tickets enfants (seulement pour un item existant) #}
                         {% if not item.isNewItem() %}
@@ -228,20 +227,51 @@
                                 item.fields['initial_requester_childs_tickets'],
                                 __('Define initial requester as requester for child tickets', 'metademands')) }}
                         {% endif %}
+                        {{ _self.section_end() }}
 
-                        {# Confirmation valeurs vides #}
-                        {{ fields.sliderField('use_confirm', item.fields['use_confirm'],
-                            __('Use a confirm popup check for empty values', 'metademands')) }}
+                        {{ _self.section_start(__('Personalization'), 'ti-palette') }}
+                        {# Icône + Masquer le titre #}
+                        {{ fields.dropdownWebIcons('icon', item.fields['icon'], __('Icon'), {
+                            'add_field_html': '&nbsp;<input type="checkbox" name="_blank_picture">&nbsp;' ~ __('Clear')
+                        }) }}
+                        {{ fields.sliderField('hide_title', item.fields['hide_title'],
+                            __('Hide title', 'metademands')) }}
+
+                        {# Couleur fond + couleur titre #}
+                        {% set bg_color %}
+                            <input type="color" class="form-control form-control-color" name="background_color"
+                                   value="{{ (item.fields['background_color'] ?? '') is not empty ? item.fields['background_color'] : '#ffffff' }}">
+                        {% endset %}
+                        {{ fields.htmlField('background_color', bg_color, __('Background color', 'metademands')) }}
+                        {% set title_color %}
+                            <input type="color" class="form-control form-control-color" name="title_color"
+                                   value="{{ (item.fields['title_color'] ?? '') is not empty ? item.fields['title_color'] : '#000000' }}">
+                        {% endset %}
+                        {{ fields.htmlField('title_color', title_color, __('Title color', 'metademands')) }}
+                        {#- Colour of the icon: a colour input always posts a colour, the checkbox
+                         #  empties it instead (Metademand::sanitizeColorInput()) -#}
+                        {% set shown_icon_color = (item.fields['icon_color'] ?? '') is not empty ? item.fields['icon_color'] : ((item.fields['title_color'] ?? '') is not empty ? item.fields['title_color'] : '#000000') %}
+                        {% set icon_color_html %}
+                            <div class="d-flex flex-wrap align-items-center gap-3">
+                                <input type="color" class="form-control form-control-color" name="icon_color"
+                                       value="{{ shown_icon_color }}">
+                                {#- A colour changed while the checkbox stays checked is kept (Config::isColorReset()) -#}
+                                <input type="hidden" name="_shown_icon_color" value="{{ shown_icon_color }}">
+                                <label class="form-check mb-0">
+                                    <input type="checkbox" class="form-check-input" name="_default_icon_color" value="1"
+                                           {{ (item.fields['icon_color'] ?? '') is empty ? 'checked' : '' }}>
+                                    <span class="form-check-label">{{ __('Same as the title', 'metademands') }}</span>
+                                </label>
+                            </div>
+                        {% endset %}
+                        {{ fields.htmlField('icon_color', icon_color_html, __('Icon color', 'metademands')) }}
                         {{ fields.nullField() }}
+                        {{ _self.section_end() }}
 
-                        {# Commentaire #}
+                        {{ _self.section_start(__('Comments'), 'ti-message') }}
                         {{ fields.textareaField('comment', item.fields['comment'], __('Comments'),
-                            {'full_width': true, 'rows': 10}) }}
-
-                    </div>{# .row #}
-                </div>{# .row #}
-            </div>{# .flex-row #}
-        </div>
+                            {'full_width': true, 'rows': 8, 'no_label': true}) }}
+                        {{ _self.section_end() }}
     </div>{# .card-body #}
 
     {% include("components/form/buttons.html.twig") %}

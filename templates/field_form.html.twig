@@ -85,7 +85,7 @@
                     <label class="form-label fw-bold">{{ __('Comments') }}</label>
                     {% do call('Html::textarea', [{'name': 'comment', 'value': comment,
                         'enable_richtext': true, 'enable_fileupload': false,
-                        'enable_images': false, 'cols': 50, 'rows': 3}]) %}
+                        'enable_images': true, 'cols': 50, 'rows': 3}]) %}
                 </div>
             </div>
 

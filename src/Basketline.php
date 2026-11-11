@@ -112,8 +112,8 @@ class Basketline extends CommonDBTM
                 $title_color = "#000";
                 $meta = new Metademand();
                 if ($meta->getFromDB($metademands_id)) {
-                    if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
-                        $title_color = $meta->fields['title_color'];
+                    if (!empty($own_title_color = Metademand::getTitleColor($meta->fields))) {
+                        $title_color = $own_title_color;
                     }
                 }
 

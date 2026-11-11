@@ -290,20 +290,23 @@ class MetademandPdf extends \TCPDF
         $largeurCaseTitre = $this->big_width_cell - ($this->margin_left * 2) - ($largeurCoteTitre * 2);
 
         //Cellule contenant l'image
-        $image = '../public/pics/login_logo_glpi.png';
+        // Absolute path: GLPI 12 serves requests from public/, so a relative path depends on the cwd.
+        $image = Plugin::getPhpDir('metademands') . '/public/pics/login_logo_glpi.png';
         $target = 20;
-        list($width, $height, $type, $attr) = getimagesize($image);
-        list($width, $height) = $this->imageResize($width, $height, $target);
 
         if (!$this->is_order_layout) {
             $this->CellTitleValue($largeurCoteTitre, 20, "", 'TBL', 'L', 'grey', 0, $this->font_size, 'black');
-            $this->Image(
-                $image,
-                $this->margin_left + 5,
-                $this->margin_top + $height / 3,
-                $width,
-                $height,
-            ); // x, y, w, h
+            $image_size = is_readable($image) ? getimagesize($image) : false;
+            if ($image_size !== false) {
+                [$width, $height] = $this->imageResize($image_size[0], $image_size[1], $target);
+                $this->Image(
+                    $image,
+                    $this->margin_left + 5,
+                    $this->margin_top + $height / 3,
+                    $width,
+                    $height,
+                ); // x, y, w, h
+            }
         } else {
             $this->CellTitleValue($largeurCoteTitre, 20, "ID : " . $this->id, 'TBL', 'C', 'grey', 0, $this->font_size, 'black');
         }
@@ -439,8 +442,8 @@ class MetademandPdf extends \TCPDF
             } elseif ($type == 'textarea') {
                 $this->MultiCell($w, $h, $values, $border, $align, true);
             } elseif ($type == 'signature') {
-                // An empty path means the value was rejected upstream; TCPDF would raise on it.
-                $image = $values === '' ? '' : $this->Image($values, $x, $y + 8, 33.78);
+                // An empty path means the value was rejected upstream; TCPDF raises on missing files.
+                $image = ($values === '' || !is_readable($values)) ? '' : $this->Image($values, $x, $y + 8, 33.78);
                 $this->MultiCell($w, $h + 10, $image, $border, $align, false);
             } else {
                 $width_values = $w;

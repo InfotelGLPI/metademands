@@ -25,26 +25,19 @@
  # --------------------------------------------------------------------------
  #}
 
+{#- The meta-demands the requester used the most: shortcuts above the list of the forms -#}
 {% if entries|length > 0 %}
-    <div style="display:flex;">
+    <div class="md-most-used d-flex flex-wrap align-items-center gap-2 mb-3">
+        <i class="ti ti-history text-secondary" aria-hidden="true"></i>
         {% for entry in entries %}
-            <a href="{{ entry.url }}">
-                <div style="margin-right: 5px;">
-                    <h6>
-                        <div class="alert alert-secondary"
-                             style="border-radius: 0;margin-right: 5px;background-color: var(--tblr-bg-surface, white);">
-                            <span class="md-fav-icon-stack fa-1x">
-                                <i class="ti ti-circle"></i>
-                                {% if entry.is_fa_icon %}
-                                    <i class="fas {{ entry.icon }} fa-1x"
-                                       style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size:0.5em;"></i>
-                                {% else %}
-                                    <i class="ti {{ entry.icon }}" style="font-size:0.5em;"></i>
-                                {% endif %}
-                            </span>&nbsp;{{ entry.name }}
-                        </div>
-                    </h6>
-                </div>
+            <a class="btn btn-sm md-most-used-item" href="{{ entry.url }}">
+                {% if entry.is_fa_icon %}
+                    <i class="fas {{ entry.icon }} me-1"
+                       style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;"></i>
+                {% else %}
+                    <i class="ti {{ entry.icon }} me-1"></i>
+                {% endif %}
+                {{- entry.name -}}
             </a>
         {% endfor %}
     </div>

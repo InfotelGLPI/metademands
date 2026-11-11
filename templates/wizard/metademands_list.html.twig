@@ -36,72 +36,65 @@
  #}
 
 {% if display_cards %}
-    <div id="listmeta">
-        {% include '@metademands/wizard/most_used_metademands.html.twig' with {'entries': most_used} only %}
-        <div tabindex="-1" id="mt-fuzzysearch">
-            <div class="modal-content">
-                <div class="modal-body" style="padding: 10px;">
-                    <input type="text" class="mt-home-trigger-fuzzy form-control"
-                           placeholder="{{ __('Find a form', 'metademands') }}">
-                    <input type="hidden" name="meta_type" id="meta_type" value="{{ meta_type }}">
-                    <ul class="results list-group mt-2" style="background: var(--tblr-bg-surface, #FFF);"></ul>
-                </div>
+    <div id="listmeta" class="md-form-list">
+        {#- Search: public/lib/md_fuzzysearch.js fills .results, a drop-down over the cards -#}
+        <div tabindex="-1" id="mt-fuzzysearch" class="md-form-search mb-3">
+            <div class="input-icon">
+                <span class="input-icon-addon"><i class="ti ti-search"></i></span>
+                <input type="text" class="mt-home-trigger-fuzzy form-control"
+                       placeholder="{{ __('Find a form', 'metademands') }}">
             </div>
+            <input type="hidden" name="meta_type" id="meta_type" value="{{ meta_type }}">
+            <ul class="results list-group"></ul>
         </div>
 
-        <div class="row">
+        {% include '@metademands/wizard/most_used_metademands.html.twig' with {'entries': most_used} only %}
+
+        <div class="row row-cards">
             {% for entry in entries %}
-                <div class="col-12 col-sm-6 col-md-4 d-flex">
-                    <a class="card mx-1 my-2 flex-grow-1" title="{{ entry.tooltip }}" href="{{ entry.url }}">
-                        <section class="card-body">
-                            <div class="d-flex">
-                                <div class="aspect-ratio-1"
-                                     style="margin-left: 10px;width: 70px;height: 70px;">
-                                    <span class="md-cat-icon-stack fa-2x">
-                                        <i class="ti ti-circle" style="{{ entry.icon_color }};"></i>
-                                        {% if entry.is_fa_icon %}
-                                            <i class="fas {{ entry.icon }} fa-1x"
-                                               style="{{ entry.icon_color }};font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;font-size: 1em;"></i>
-                                        {% else %}
-                                            <i class="ti {{ entry.icon }}"
-                                               style="{{ entry.icon_color }};font-size: 1em;"></i>
-                                        {% endif %}
-                                    </span>
-                                </div>
-                                <div class="ms-4">
-                                    <h2 class="card-title mb-2 text-break">{{ entry.name }}</h2>
-                                    <div class="text-secondary remove-last-tinymce-margin"
-                                         style="font-size:0.8rem;">
-                                        {% if entry.comment is not empty %}
-                                            {{ entry.comment|safe_html }}
-                                        {% else %}
-                                            {{ entry.name }}
-                                        {% endif %}
-                                        {% if entry.drafts_label is not empty %}
-                                            <br><br><span style="{{ entry.icon_color }};">{{ entry.drafts_label }}</span>
-                                        {% endif %}
-                                    </div>
-                                </div>
+                <div class="col-12 col-md-6 col-xl-4 d-flex">
+                    <a class="card md-choice-card md-form-card flex-grow-1" title="{{ entry.tooltip }}" href="{{ entry.url }}">
+                        <div class="card-body d-flex align-items-start gap-3">
+                            {#- The colour of the title of the metademand, the tile tinted from it (currentColor) -#}
+                            <div class="md-choice-icon" style="{{ entry.icon_color }};">
+                                {% if entry.is_fa_icon %}
+                                    <i class="fas {{ entry.icon }}"
+                                       style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;"></i>
+                                {% else %}
+                                    <i class="ti {{ entry.icon }}"></i>
+                                {% endif %}
                             </div>
-                        </section>
+                            <div class="md-choice-text">
+                                <h3 class="md-choice-name text-break">{{ entry.name }}</h3>
+                                {% if entry.comment is not empty %}
+                                    <div class="md-choice-comment text-secondary remove-last-tinymce-margin">
+                                        {{ entry.comment|safe_html }}
+                                    </div>
+                                {% endif %}
+                                {% if entry.drafts_label is not empty %}
+                                    <span class="badge bg-azure-lt mt-2">
+                                        <i class="ti ti-file-pencil me-1"></i>{{ entry.drafts_label }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <i class="ti ti-chevron-right md-choice-chevron" aria-hidden="true"></i>
+                        </div>
                     </a>
                 </div>
             {% endfor %}
         </div>
     </div>
 {% else %}
-    <div id="listmeta" class="bt-row">
-        <div class="bt-feature bt-col-sm-12 bt-col-md-12">
-            {% do call('Dropdown::showFromArray', ['metademands_id', metademands, {'width': 250}]) %}
-        </div>
-    </div>
-    <br>
-    <div class="bt-row">
-        <div class="bt-feature bt-col-sm-12 bt-col-md-12 right">
+    <div id="listmeta" class="card md-form-select">
+        <div class="card-body d-flex flex-wrap align-items-center gap-3">
+            <div class="flex-grow-1">
+                {% do call('Dropdown::showFromArray', ['metademands_id', metademands, {'width': '100%'}]) %}
+            </div>
             <input type="hidden" name="step" value="{{ step_show }}">
             <input type="hidden" name="meta_type" id="meta_type" value="{{ meta_type }}">
             <button type="submit" name="next" value="{{ __('Next', 'metademands') }}" class="btn btn-primary">
                 <span>{{ __('Next', 'metademands') }}</span>
+                <i class="ti ti-arrow-right ms-1"></i>
             </button>
         </div>
     </div>

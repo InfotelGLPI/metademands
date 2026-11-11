@@ -833,8 +833,8 @@ class Basket extends CommonDBTM
         $has_meta = $metademands->getFromDB($meta_id);
 
         $title_color = '#000';
-        if ($has_meta && !empty($metademands->fields['title_color'])) {
-            $title_color = $metademands->fields['title_color'];
+        if ($has_meta && !empty($own_title_color = Metademand::getTitleColor($metademands->fields))) {
+            $title_color = $own_title_color;
         }
 
         $summary = $has_materials

@@ -436,11 +436,13 @@ input.invalid:not(:checked) {
     background-color: var(--md-invalid-bg, #ffdddd)!important;
 }
 
-.invalid + .select2-container,
+/* On the box of a select2, not on its container: the container takes the whole row, the
+   red outline went around the empty space next to the list */
+.invalid + .select2-container .select2-selection,
 textarea.invalid,
 .invalid + .form-select[multiple],
 .invalid + .form-select[size]:not([size="1"]) {
-    border-color: #dc3545;
+    border-color: #dc3545 !important;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
 
@@ -1214,6 +1216,114 @@ select.chained-select {
     .md-title-requester {
         text-align: left;
     }
+}
+
+/* Choice of the type (templates/wizard/metademand_types.html.twig) and of the form
+   (templates/wizard/metademands_list.html.twig): clickable cards, the icon in a tile tinted
+   from its own colour */
+.md-choice-card {
+    color: inherit;
+    text-decoration: none;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+.md-choice-card:hover,
+.md-choice-card:focus-visible {
+    color: inherit;
+    text-decoration: none;
+    border-color: var(--tblr-primary);
+    box-shadow: 0 .25rem .75rem rgba(var(--tblr-primary-rgb, 32, 107, 196), .12);
+    transform: translateY(-2px);
+}
+
+.md-choice-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    color: var(--tblr-primary);
+    background: color-mix(in srgb, currentColor 12%, transparent);
+    font-size: 24px;
+}
+
+.md-choice-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.md-choice-name {
+    margin: 0 0 .25rem;
+    font-size: 1rem;
+    font-weight: var(--tblr-font-weight-bold, 600);
+    line-height: 1.35;
+}
+
+/* The comment of the designer: three lines at most, the whole one in the tooltip of the card */
+.md-choice-comment {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    font-size: .8125rem;
+    line-height: 1.45;
+}
+
+.md-choice-comment p {
+    margin: 0;
+}
+
+.md-choice-chevron {
+    flex: none;
+    align-self: center;
+    color: var(--tblr-secondary);
+    font-size: 1.1rem;
+    transition: transform .15s ease, color .15s ease;
+}
+
+.md-choice-card:hover .md-choice-chevron {
+    color: var(--tblr-primary);
+    transform: translateX(2px);
+}
+
+/* Search of a form: the results drop over the cards instead of pushing them down */
+.md-form-search {
+    position: relative;
+    max-width: 640px;
+}
+
+.md-form-search .results {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + .25rem);
+    left: 0;
+    right: 0;
+    max-height: 60vh;
+    overflow: auto;
+    background: var(--tblr-bg-surface);
+    box-shadow: var(--tblr-box-shadow-dropdown, 0 .5rem 1rem rgba(0, 0, 0, .15));
+}
+
+.md-form-search .results:empty {
+    display: none;
+}
+
+/* Most used forms: shortcuts as chips */
+.md-most-used-item {
+    border: 1px solid var(--tblr-border-color);
+    background: var(--tblr-bg-surface);
+    color: var(--tblr-body-color);
+}
+
+.md-most-used-item:hover {
+    border-color: var(--tblr-primary);
+    color: var(--tblr-primary);
+}
+
+/* Choice of the form from a drop-down (display by list of the configuration) */
+.md-form-select {
+    max-width: 720px;
 }
 
 /* "Your forms" (templates/wizard/models_and_drafts.html.twig): a button on the right of the

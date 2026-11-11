@@ -190,7 +190,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         `hide_title`                       tinyint                                  DEFAULT '0',
                         `title_color`                      varchar(255)                             DEFAULT '#000000',
                         `background_color`                 varchar(255)                             DEFAULT '#FFFFFF',
-                        `step_by_step_mode`                tinyint                         NOT NULL DEFAULT '0',
+                        `icon_color`                       varchar(255)                             DEFAULT NULL,
+                        `step_by_step_mode`               tinyint                         NOT NULL DEFAULT '0',
                         `show_rule`                        tinyint                         NOT NULL DEFAULT '1',
                         `initial_requester_childs_tickets` tinyint                         NOT NULL DEFAULT '1',
                         `is_basket`                        tinyint                                  DEFAULT 0,
@@ -310,6 +311,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         }
         if (!$DB->fieldExists($table, "title_color")) {
             $migration->addField($table, "title_color", "varchar(255) COLLATE utf8mb4_unicode_ci default '#000000'");
+            $migration->migrationOneTable($table);
+        }
+        // Colour of the icon; empty: the one of the title
+        if (!$DB->fieldExists($table, "icon_color")) {
+            $migration->addField($table, "icon_color", "varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL");
             $migration->migrationOneTable($table);
         }
         //version 2.7.8
@@ -735,7 +741,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      */
     public static function sanitizeColorInput($input)
     {
-        foreach (['title_color', 'background_color'] as $color_field) {
+        // A colour input always posts a colour: the "same as the title" checkbox empties the
+        // colour of the icon instead
+        if (Config::isColorReset($input, 'icon_color')) {
+            $input['icon_color'] = '';
+        }
+        foreach (['title_color', 'background_color', 'icon_color'] as $color_field) {
             if (
                 isset($input[$color_field])
                 && $input[$color_field] !== ''
@@ -833,6 +844,41 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      *
      * @param mixed $color
      */
+    /**
+     * Colour of the title of a meta-demand: the one forced by the configuration, otherwise
+     * its own.
+     *
+     * @param array $fields fields of the meta-demand
+     */
+    public static function getTitleColor(array $fields): string
+    {
+        return Config::getForcedColor('title_color') ?: (string) ($fields['title_color'] ?? '');
+    }
+
+    /**
+     * Colour of the icon of a meta-demand: the one forced by the configuration, otherwise
+     * its own, otherwise the one of its title.
+     *
+     * @param array $fields fields of the meta-demand
+     */
+    public static function getIconColor(array $fields): string
+    {
+        return Config::getForcedColor('icon_color')
+            ?: (preg_match('/^#[0-9A-Fa-f]{3,8}$/', (string) ($fields['icon_color'] ?? '')) ? (string) $fields['icon_color'] : '')
+            ?: self::getTitleColor($fields);
+    }
+
+    /**
+     * Colour of a title-block field: the one forced by the configuration, otherwise the one
+     * of the field.
+     *
+     * @param mixed $color colour of the field
+     */
+    public static function getTitleblockColor($color): string
+    {
+        return Config::getForcedColor('titleblock_color') ?: (string) ($color ?? '');
+    }
+
     public static function isDefaultTextColor($color): bool
     {
         return in_array(strtolower(trim((string) $color)), ['', '#000', '#000000'], true);

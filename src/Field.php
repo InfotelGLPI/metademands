@@ -257,11 +257,11 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                         `id` int {$default_key_sign} NOT NULL auto_increment,
                         `entities_id`                       int {$default_key_sign}         NOT NULL DEFAULT '0',
                         `is_recursive`                      int                             NOT NULL DEFAULT '0',
-                        `comment`                           text COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
+                        `comment`                           mediumtext COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
                         `rank`                              int                             NOT NULL DEFAULT '0',
                         `order`                             int                             NOT NULL DEFAULT '0',
                         `name`                              varchar(255)                             DEFAULT NULL,
-                        `label2`                            text COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
+                        `label2`                            mediumtext COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
                         `type`                              varchar(255)                             DEFAULT NULL,
                         `item`                              varchar(255)                             DEFAULT NULL,
                         `plugin_metademands_fields_id`      int {$default_key_sign}        NOT NULL DEFAULT '0',
@@ -277,18 +277,18 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         }
 
         if (!$DB->fieldExists($table, "comment")) {
-            $migration->addField($table, "comment", "text COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
+            $migration->addField($table, "comment", "mediumtext COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
             $migration->migrationOneTable($table);
         }
 
         if (!$DB->fieldExists($table, "label2")) {
-            $migration->addField($table, "label2", "text COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
+            $migration->addField($table, "label2", "mediumtext COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
             $migration->migrationOneTable($table);
         }
 
-        $migration->changeField($table, 'comment', 'comment', "TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+        $migration->changeField($table, 'comment', 'comment', "MEDIUMTEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
         $migration->migrationOneTable($table);
-        $migration->changeField($table, 'label2', 'label2', "TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+        $migration->changeField($table, 'label2', 'label2', "MEDIUMTEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
         $migration->migrationOneTable($table);
 
         if (!$DB->fieldExists($table, "order")) {
