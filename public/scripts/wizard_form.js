@@ -1852,7 +1852,23 @@
                 }
             });
             shown.forEach(function (block) {
+                const containers = document.querySelectorAll(`[bloc-id="bloc${block}"], [bloc-id="subbloc${block}"]`);
+                const was_hidden = [...containers].some((container) => container.style.display === 'none');
                 toggle(block, true);
+                if (reset && was_hidden) {
+                    // Shown again: its fields get back the default value emptyBlock() removed
+                    // when it was hidden (a yes / no set to "No" came back without any answer),
+                    // as a field shown again does (initHiddenTrigger()). Fields hidden by their
+                    // own rules stay empty.
+                    containers.forEach(function (container) {
+                        container.querySelectorAll('[id-field^="field"]').forEach(function (wrapper) {
+                            const key = /^field(\d+)$/.exec(wrapper.getAttribute('id-field') ?? '');
+                            if (key !== null && wrapper.style.display !== 'none') {
+                                restoreDefaultValues(key[1]);
+                            }
+                        });
+                    });
+                }
             });
             // Mandatory fields of the blocks shown
             config.mandatory.forEach(function (field) {

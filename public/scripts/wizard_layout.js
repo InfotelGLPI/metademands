@@ -146,6 +146,12 @@ function isFilled(field) {
         }
         if (control instanceof HTMLTextAreaElement) {
             const editor = window.tinymce?.get(control.id);
+            // The comment of the field shown in the empty editor (#placeholder, see initRichText()
+            // of wizard_form.js) is no answer: it was read as one, a mandatory textarea with a
+            // comment counted as filled
+            if (editor?.dom?.get('placeholder')) {
+                continue;
+            }
             const text = editor ? editor.getContent({format: 'text'}) : control.value;
             if (text.trim() !== '') {
                 return true;
