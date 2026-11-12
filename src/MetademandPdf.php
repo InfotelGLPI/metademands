@@ -1275,7 +1275,7 @@ class MetademandPdf extends \TCPDF
                             }
                             break;
 
-                        case 'signature' :
+                        case 'signature':
                             // Defence in depth: the stored path is filtered on submission by
                             // Signature::sanitizeSubmittedValue(), but this concatenation feeds
                             // TCPDF::Image(), which reads the file from disk. A legacy row holding

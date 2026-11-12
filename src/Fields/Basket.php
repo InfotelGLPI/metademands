@@ -743,7 +743,7 @@ class Basket extends CommonDBTM
             case 'dropdown_object':
                 $value_html = Dropdownobject::getFieldValue($values);
                 break;
-            case 'dropdown_ldap' :
+            case 'dropdown_ldap':
                 $value_html = Ldapdropdown::getFieldValue($values);
                 break;
             case 'dropdown_meta':

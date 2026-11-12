@@ -224,7 +224,7 @@ class Dropdown extends CommonDBTM
         //        }
 
         switch ($data['item']) {
-            case "Location" :
+            case "Location":
                 if ($data['link_to_user'] > 0) {
                     // The included endpoint prints the field: capture it and let the template
                     // own the input-group wrapper, which two distant `echo` used to open and close.
@@ -325,7 +325,7 @@ class Dropdown extends CommonDBTM
                 }
                 break;
 
-            case "UserTitle" :
+            case "UserTitle":
                 if ($data['link_to_user'] > 0) {
                     // The included endpoint prints the field: capture it and let the template
                     // own the input-group wrapper, which two distant `echo` used to open and close.
@@ -376,7 +376,7 @@ class Dropdown extends CommonDBTM
                     $field            .= UserTitle::dropdown($options);
                 }
                 break;
-            case "UserCategory" :
+            case "UserCategory":
                 if ($data['link_to_user'] > 0) {
                     // The included endpoint prints the field: capture it and let the template
                     // own the input-group wrapper, which two distant `echo` used to open and close.
