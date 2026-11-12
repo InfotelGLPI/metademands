@@ -83,6 +83,19 @@ function setText(element, text) {
  * @returns {boolean} whether the element is rendered (not hidden by itself or an ancestor)
  */
 function isShown(element) {
+    // A block folded by the chevron of its title (data-md-folded, public/scripts/wizard_form.js)
+    // only hides its content from view: its fields are shown, unless hidden by themselves
+    // between the field and the folded content, or with the block itself. They read as
+    // "Optional" as soon as the block was folded.
+    const folded = element.closest('[data-md-folded]');
+    if (folded !== null && folded !== element) {
+        for (let node = element; node !== null && node !== folded; node = node.parentElement) {
+            if (getComputedStyle(node).display === 'none') {
+                return false;
+            }
+        }
+        return folded.parentElement === null || isShown(folded.parentElement);
+    }
     if (typeof element.checkVisibility === 'function') {
         return element.checkVisibility();
     }

@@ -1,4 +1,9 @@
 <phpunit bootstrap="tests/bootstrap.integration.php" colors="true" testdox="true">
+   <php>
+      <!-- The whole suite in one process: the default 128M ran out at the end (PDF tests), the
+           core suite allows 2G (phpunit.xml.dist) -->
+      <ini name="memory_limit" value="2G" />
+   </php>
    <testsuites>
       <testsuite name="Integration">
          <file>tests/MetademandTest.php</file>

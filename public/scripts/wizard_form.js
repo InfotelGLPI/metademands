@@ -2054,6 +2054,8 @@
 
         bodies.forEach(function (body) {
             body.style.display = shown ? 'none' : '';
+            // Folded, not hidden: its mandatory fields stay mandatory (wizard_layout.js)
+            body.toggleAttribute('data-md-folded', shown);
         });
         chevron.classList.toggle('ti-chevron-up', !shown);
         chevron.classList.toggle('ti-chevron-down', shown);
