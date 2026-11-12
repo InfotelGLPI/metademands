@@ -263,6 +263,24 @@ function goToField(field) {
 }
 
 /**
+ * Bring the top of a block into view, header (title-block) included: scrollIntoView() alone
+ * slides it under the sticky header of GLPI (header.navbar.sticky-lg-top).
+ *
+ * @param {HTMLElement} block
+ */
+function goToBlock(block) {
+    const header = document.querySelector('header.navbar');
+    let offset = 16;
+    if (header instanceof HTMLElement && ['sticky', 'fixed'].includes(getComputedStyle(header).position)) {
+        offset += header.getBoundingClientRect().height;
+    }
+    window.scrollTo({
+        top: window.scrollY + block.getBoundingClientRect().top - offset,
+        behavior: 'smooth',
+    });
+}
+
+/**
  * Tooltip of a count of mandatory fields: the labels of those left.
  *
  * @param {HTMLElement} element
@@ -428,7 +446,7 @@ function createSummary(wizard, container) {
         if (first !== undefined) {
             goToField(first);
         } else {
-            block.scrollIntoView({behavior: 'smooth', block: 'start'});
+            goToBlock(block);
         }
     });
 

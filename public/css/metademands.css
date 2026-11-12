@@ -1550,10 +1550,18 @@ select.chained-select {
     max-width: 100%;
 }
 
+/* Small minimums so that the columns and their buttons fit in the card: the scrolling is
+   only a last resort for a table with many columns */
 .md-freetable-scroll td input[type="text"],
 .md-freetable-scroll td select {
     width: 100%;
-    min-width: 7rem;
+    min-width: 5rem;
+}
+
+.md-freetable-scroll td input[type="date"],
+.md-freetable-scroll td input[type="time"] {
+    width: 100%;
+    min-width: 8.5rem;
 }
 
 /* Second label of a field (templates/fields/field_wrapper.html.twig): a help under the field,

@@ -202,6 +202,24 @@ function revealBlock(list, rank) {
 }
 
 /**
+ * Bring the top of a block into view, header included: scrollIntoView() alone slides it
+ * under the sticky header of GLPI (header.navbar.sticky-lg-top).
+ *
+ * @param {HTMLElement} block
+ */
+function goToBlock(block) {
+    const header = document.querySelector('header.navbar');
+    let offset = 16;
+    if (header instanceof HTMLElement && ['sticky', 'fixed'].includes(getComputedStyle(header).position)) {
+        offset += header.getBoundingClientRect().height;
+    }
+    window.scrollTo({
+        top: window.scrollY + block.getBoundingClientRect().top - offset,
+        behavior: 'smooth',
+    });
+}
+
+/**
  * Select a field: highlighted in the list and in the preview of its block.
  *
  * @param {HTMLElement} list
@@ -883,7 +901,10 @@ document.addEventListener('click', (event) => {
     const blockGoto = target.closest('[data-md-block-goto]');
     if (blockGoto !== null) {
         event.preventDefault();
-        revealBlock(list, blockGoto.dataset.mdBlockGoto)?.scrollIntoView({block: 'start', behavior: 'smooth'});
+        const block = revealBlock(list, blockGoto.dataset.mdBlockGoto);
+        if (block !== null) {
+            goToBlock(block);
+        }
         if (isPreviewShown(list)) {
             loadPreview(list, blockGoto.dataset.mdBlockGoto);
         }
