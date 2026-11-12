@@ -1280,6 +1280,16 @@ select.chained-select {
 .md-title-comment {
     margin-top: .2rem;
     font-size: .875rem;
+    /* Two lines at most, as on the cards of the forms (.md-choice-comment): the whole comment
+       in the tooltip */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.md-title-comment p {
+    margin: 0;
 }
 
 .md-title-requester {

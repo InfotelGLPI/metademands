@@ -32,7 +32,8 @@
  #  - illustration:         name of the illustration, drawn by render_illustration()
  #  - category_details_id:  service catalog category whose details open in a modal, 0 otherwise
  #  - category_details_url: page loaded in that modal
- #  - comment:              designer-defined rich HTML, sanitized by |safe_html
+ #  - comment:              designer-defined rich HTML, sanitized by |safe_html, its first lines shown
+ #  - comment_tooltip:      the whole comment as plain text, tooltip of the comment
  #  - models_and_drafts:    context of models_and_drafts.html.twig, null when not displayed
  #  - requester:           {name, entity} of the connected requester, null when not displayed
  #}
@@ -79,7 +80,9 @@
                     {% endif %}
                 </h2>
                 {% if comment is not empty %}
-                    <div class="md-title-comment text-secondary remove-last-tinymce-margin">
+                    {#- First lines only, as on the cards of the forms: the whole comment in the tooltip -#}
+                    <div class="md-title-comment text-secondary remove-last-tinymce-margin"
+                         {% if (comment_tooltip ?? '') is not empty %}title="{{ comment_tooltip }}"{% endif %}>
                         {{ comment|safe_html }}
                     </div>
                 {% endif %}

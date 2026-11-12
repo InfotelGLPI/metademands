@@ -418,6 +418,8 @@ class Wizard extends CommonDBTM
             'category_details_url'  => $category_details_url,
             'settings_url'          => $settings_url,
             'comment'               => $comment,
+            // The whole comment in the tooltip of the title, which shows its first lines only
+            'comment_tooltip'       => $comment !== '' ? RichText::getTextFromHtml((string) $comment) : '',
             'models_and_drafts'     => $models_and_drafts,
             'requester'             => $requester,
         ];
