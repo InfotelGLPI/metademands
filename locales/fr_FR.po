@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 08:11+0000\n"
+"POT-Creation-Date: 2026-11-12 09:59+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/"
@@ -1011,7 +1011,7 @@ msgstr "Editer la tâche de ticket"
 msgid "Edit translation"
 msgstr "Editer la traduction"
 
-#: src/MailTask.php:234 tests/MailTaskTest.php:371
+#: src/MailTask.php:241 tests/MailTaskTest.php:371
 msgid "Email sent"
 msgstr "Email envoyé"
 
@@ -1101,7 +1101,8 @@ msgstr ""
 msgid "Export the metademand to XML format for use on another GLPI"
 msgstr "Exporter la métademande en XML pour l'utiliser sur un autre GLPI"
 
-#: src/MailTask.php:228 tests/MailTaskTest.php:247 tests/MailTaskTest.php:372
+#: src/MailTask.php:210 src/MailTask.php:235 tests/MailTaskTest.php:247
+#: tests/MailTaskTest.php:372
 msgid "Fail to send email"
 msgstr "Echec de l'envoi du courriel"
 
