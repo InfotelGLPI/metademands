@@ -2330,7 +2330,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 $class::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'dropdown_object':
-            case 'dropdown_ldap' :
+            case 'dropdown_ldap':
             case 'dropdown':
             case 'dropdown_meta':
                 $class::showWizardField(

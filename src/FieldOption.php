@@ -1029,7 +1029,7 @@ class FieldOption extends CommonDBChild
     public static function getTypeOValueToCheck($params)
     {
         switch ($params['check_type_value']) {
-            case 2 :
+            case 2:
                 return  __('Regex', 'metademands');
                 break;
             default:

@@ -724,7 +724,7 @@ class TicketField extends CommonDBChild
                             case 'impact':
                                 $default_value = 3;
                                 break;
-                            case '_tasktemplates_id' :
+                            case '_tasktemplates_id':
                                 $exception = true;
                                 break;
                             default:
@@ -853,7 +853,7 @@ class TicketField extends CommonDBChild
                                 case 'priority':
                                     $default_value = 3;
                                     break;
-                                case '_tasktemplates_id' :
+                                case '_tasktemplates_id':
                                     $exception = true;
                                     break;
                                 default:

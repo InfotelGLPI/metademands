@@ -1097,8 +1097,8 @@ class Condition extends CommonDBChild
     public static function showCheckValue($fields_id, $ID = -1)
     {
         $field = new Field();
+        $condition = new self();
         if ($ID > 0) {
-            $condition = new self();
             $condition->getFromDB($ID);
         }
         $metademand = new Metademand();
