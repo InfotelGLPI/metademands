@@ -195,7 +195,6 @@ class MailTask extends CommonDBChild
 
     public static function sendMail($title, $recipient, $body)
     {
-
         $transport = Transport::fromDsn(GLPIMailer::buildDsn(true));
 
         $mmail = new GLPIMailer($transport);
@@ -221,7 +220,7 @@ class MailTask extends CommonDBChild
                 if (empty($r['name'])) {
                     $r['name'] = $r['email'];
                 }
-                $mail->to(new Address($r['email'],(string) $r['name']));
+                $mail->to(new Address($r['email'], (string) $r['name']));
             }
         } else {
             $mail->to(new Address($recipient, $recipient));
