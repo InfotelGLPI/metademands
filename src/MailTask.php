@@ -195,8 +195,6 @@ class MailTask extends CommonDBChild
 
     public static function sendMail($title, $recipient, $body)
     {
-        global $CFG_GLPI;
-
         $transport = Transport::fromDsn(GLPIMailer::buildDsn(true));
 
         $mmail = new GLPIMailer($transport);
@@ -206,14 +204,23 @@ class MailTask extends CommonDBChild
         // For exchange
         $mail->getHeaders()->addTextHeader("X-Auto-Response-Suppress", "OOF, DR, NDR, RN, NRN");
 
-        $mail->from(new Address($CFG_GLPI["from_email"], $CFG_GLPI["from_email_name"]));
+        $sender = \Config::getEmailSender();
+        if ($sender['email'] === null) {
+            Session::addMessageAfterRedirect(
+                __('Fail to send email', 'metademands'),
+                false,
+                ERROR,
+            );
+            return false;
+        }
+        $mail->from(new Address($sender['email'], $sender['name'] ?? ''));
 
         if (is_array($recipient)) {
             foreach ($recipient as $r) {
                 if (empty($r['name'])) {
                     $r['name'] = $r['email'];
                 }
-                $mail->to(new Address($r['email'], $r['name']));
+                $mail->to(new Address($r['email'], (string) $r['name']));
             }
         } else {
             $mail->to(new Address($recipient, $recipient));
