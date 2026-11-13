@@ -116,6 +116,8 @@ class FieldFormsWithoutRawTest extends DbTestCase
             $this->assertHasName($name, $html);
         }
         $this->assertMatchesRegularExpression('/id=[\'"]dropdown_type\d+[\'"]/', $html);
+        // A new field is active
+        $this->assertMatchesRegularExpression('/name="is_active" value="1" checked/', $html);
 
         $html = $this->capture(fn() => (new Field())->showExistingForm(-1, ['parent' => $metademand]));
         foreach (['type', 'rank', 'plugin_metademands_fields_id'] as $name) {
