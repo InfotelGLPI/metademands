@@ -233,7 +233,8 @@ function plugin_metademands_install()
         }
 
         //version 3.7.2
-        if (!$DB->fieldExists("glpi_plugin_metademands_fieldoptions", "validation_fields_id")) {
+        if (!$DB->fieldExists("glpi_plugin_metademands_fieldoptions", "validation_fields_ids")
+            || $DB->fieldExists("glpi_plugin_metademands_fieldoptions", "validation_fields_id")) {
             FieldOption::install($migration);
         }
     }

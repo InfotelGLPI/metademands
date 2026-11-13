@@ -251,7 +251,7 @@ CREATE TABLE `glpi_plugin_metademands_fieldoptions`
     `hidden_block`                 int unsigned NOT NULL DEFAULT '0',
     `hidden_block_same_block`      tinyint      NOT NULL DEFAULT '0',
     `users_id_validate`            int unsigned NOT NULL DEFAULT '0',
-    `validation_fields_id`         int unsigned NOT NULL DEFAULT '0',
+    `validation_fields_ids`        varchar(255) NOT NULL DEFAULT '[]',
     `childs_blocks`                varchar(255) NOT NULL DEFAULT '[]',
     `checkbox_value`               int unsigned NOT NULL DEFAULT '0',
     `checkbox_id`                  int unsigned NOT NULL DEFAULT '0',
@@ -578,8 +578,8 @@ CREATE TABLE `glpi_plugin_metademands_fieldvalidations`
     `id`                                int unsigned NOT NULL AUTO_INCREMENT,
     `tickets_id`                        int unsigned NOT NULL DEFAULT '0',
     `plugin_metademands_metademands_id` int unsigned NOT NULL DEFAULT '0',
-    `ticketvalidations_id`              int unsigned NOT NULL DEFAULT '0',
-    `users_id_validate`                 int unsigned NOT NULL DEFAULT '0',
+    `ticketvalidations_ids`             longtext,
+    `users_ids_validate`                longtext,
     `status`                            tinyint      NOT NULL DEFAULT '0',
     `tasklevel`                         int          NOT NULL DEFAULT '1',
     `as_tasks`                          tinyint      NOT NULL DEFAULT '0',
@@ -592,8 +592,6 @@ CREATE TABLE `glpi_plugin_metademands_fieldvalidations`
     PRIMARY KEY (`id`),
     KEY `tickets_id` (`tickets_id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
-    KEY `ticketvalidations_id` (`ticketvalidations_id`),
-    KEY `users_id_validate` (`users_id_validate`),
     KEY `status` (`status`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4

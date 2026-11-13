@@ -4850,7 +4850,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
     /**
      * Hold the child tickets of the values whose option designates a validator field
-     * (FieldOption.validation_fields_id): they are not created with the others but kept by
+     * (FieldOption.validation_fields_ids): they are not created with the others but kept by
      * FieldValidation, which requests the validation of the user chosen in that field on the
      * parent ticket and creates or drops them on its answer.
      *
@@ -4928,34 +4928,39 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             }
         } while ($added);
 
-        // One validation per validator field
+        // One hold per set of validator fields, all of their users validating
         $groups = [];
         foreach ($tasks as $key => $task) {
             $tasks_id = (int) $task['tasks_id'];
             if (isset($held_of[$tasks_id])) {
-                $groups[$held_of[$tasks_id]][$key] = $task;
+                $groups[implode(',', $held_of[$tasks_id])][$key] = $task;
             }
         }
 
-        foreach ($groups as $validation_fields_id => $group_tasks) {
-            // The validator is an actor of the ticket chosen by the submitter: same
-            // revalidation as the approver of the parent ticket (used_by_ticket 59)
-            $field_params = $form[$validation_fields_id] ?? [];
-            $field        = Field::getCachedField((int) $validation_fields_id);
-            if ($field !== null) {
-                $field_params = array_merge($field_params, Field::getAllParamsFromField($field));
+        foreach ($groups as $validation_fields_ids => $group_tasks) {
+            // The validators are actors of the ticket chosen by the submitter: same
+            // revalidation as the approver of the parent ticket (used_by_ticket 59). A
+            // multiple user field gives several of them; one user in two fields validates once.
+            $validators = [];
+            foreach (array_map('intval', explode(',', (string) $validation_fields_ids)) as $validation_fields_id) {
+                $field_params = $form[$validation_fields_id] ?? [];
+                $field        = Field::getCachedField($validation_fields_id);
+                if ($field !== null) {
+                    $field_params = array_merge($field_params, Field::getAllParamsFromField($field));
+                }
+                $validators = array_merge($validators, self::filterActorValues(
+                    $values[$validation_fields_id] ?? 0,
+                    User::class,
+                    $field_params,
+                ));
             }
-            $validators = self::filterActorValues(
-                $values[$validation_fields_id] ?? 0,
-                User::class,
-                $field_params,
-            );
+            $validators = array_values(array_unique($validators));
 
             if ($validators === []
                 || !FieldValidation::hold(
                     $parent_tickets_id,
                     $metademands_id,
-                    $validators[0],
+                    $validators,
                     $group_tasks,
                     $parent_fields,
                     $tasklevel,
@@ -6043,7 +6048,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $inputo['hidden_link'] = $associated_oldfields[$oldOption['hidden_link']] ?? 0;
                         $inputo['hidden_block'] = $oldOption['hidden_block'];
                         $inputo['users_id_validate'] = $oldOption['users_id_validate'];
-                        $inputo['validation_fields_id'] = $associated_oldfields[$oldOption['validation_fields_id'] ?? 0] ?? 0;
+                        $inputo['validation_fields_ids'] = json_encode(array_values(array_filter(array_map(
+                            static fn(int $id) => $associated_oldfields[$id] ?? 0,
+                            FieldOption::getValidationFieldsIds($oldOption),
+                        ))));
                         $inputo['childs_blocks'] = $oldOption['childs_blocks'];
                         $inputo['checkbox_value'] = $oldOption['checkbox_value'];
                         $inputo['checkbox_id'] = $oldOption['checkbox_id'];

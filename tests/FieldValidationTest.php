@@ -49,7 +49,7 @@ use User;
 
 /**
  * Child tickets held until the validation of a user chosen in the form
- * (FieldOption.validation_fields_id).
+ * (FieldOption.validation_fields_ids).
  *
  * The plugin is not active in the test environment, so Plugin::doHook() skips its
  * hooks: the ITEM_UPDATE / ITEM_PURGE hooks of TicketValidation are called here.
@@ -128,7 +128,7 @@ class FieldValidationTest extends DbTestCase
             'plugin_metademands_fields_id' => $equipment->getID(),
             'check_value'                  => self::YES,
             'plugin_metademands_tasks_id'  => $equip_task,
-            'validation_fields_id'         => $manager->getID(),
+            'validation_fields_ids'        => json_encode([$manager->getID()]),
         ], ['check_value']);
 
         return [
@@ -159,12 +159,12 @@ class FieldValidationTest extends DbTestCase
         return $task->getID();
     }
 
-    private function submit(int $equipment, int $manager): int
+    private function submit(int $equipment, int $manager, array $other_values = []): int
     {
         $result = Metademand::addObjects($this->form['metademand'], ['fields' => [
             $this->form['equipment'] => $equipment,
             $this->form['manager']   => $manager,
-        ]]);
+        ] + $other_values]);
         $this->assertIsArray($result);
         $this->assertGreaterThan(0, $result['id']);
 
@@ -245,9 +245,9 @@ class FieldValidationTest extends DbTestCase
         $option = $this->createItem(FieldOption::class, [
             'plugin_metademands_fields_id' => $this->form['equipment'],
             'check_value'                  => self::NO,
-            'validation_fields_id'         => $this->form['equipment'],
-        ], ['check_value', 'validation_fields_id']);
-        $this->assertSame(0, (int) $option->fields['validation_fields_id']);
+            'validation_fields_ids'        => [$this->form['equipment'], $this->form['manager']],
+        ], ['check_value', 'validation_fields_ids']);
+        $this->assertSame([$this->form['manager']], FieldOption::getValidationFieldsIds($option->fields));
     }
 
     public function testEquipmentChildTicketsWaitForTheValidator(): void
@@ -266,7 +266,8 @@ class FieldValidationTest extends DbTestCase
 
         $held = $this->getHeld($parent_id);
         $this->assertSame(FieldValidation::WAITING, (int) $held->fields['status']);
-        $this->assertSame($validation->getID(), (int) $held->fields['ticketvalidations_id']);
+        $this->assertSame([$validation->getID()], json_decode($held->fields['ticketvalidations_ids'], true));
+        $this->assertSame([$tech_id], json_decode($held->fields['users_ids_validate'], true));
         $this->assertTrue(FieldValidation::hasWaiting($parent_id));
     }
 
@@ -411,6 +412,94 @@ class FieldValidationTest extends DbTestCase
         $this->assertCount(3, $task_contents());
         $this->assertStringContainsString('EQUIPTASK', implode(' ', $task_contents()));
         $this->assertSame([], $this->getChildNames($parent_id));
+    }
+
+    /**
+     * Validators of the equipment value: the manager, and the users of a multiple user
+     * field. "tech" is in both: one request to him.
+     *
+     * @return array{0: int, 1: int, 2: int} parent ticket, tech and normal user ids
+     */
+    private function submitToSeveralValidators(): array
+    {
+        $metademands_id = $this->form['metademand'];
+        $approvers = $this->createItem(Field::class, [
+            'plugin_metademands_metademands_id' => $metademands_id,
+            'type'        => 'dropdown_multiple',
+            'item'        => User::class,
+            'name'        => 'Approvers',
+            'rank'        => 1,
+            'order'       => 4,
+            'entities_id' => 0,
+        ]);
+        $this->createItem(FieldParameter::class, [
+            'plugin_metademands_fields_id' => $approvers->getID(),
+            'informations_to_display'      => '["full_name"]',
+        ], ['informations_to_display']);
+
+        $option = new FieldOption();
+        $this->assertTrue($option->getFromDBByCrit(['plugin_metademands_fields_id' => $this->form['equipment']]));
+        $this->assertTrue($option->update([
+            'id'                    => $option->getID(),
+            'validation_fields_ids' => [$this->form['manager'], $approvers->getID()],
+        ]));
+
+        $tech_id   = getItemByTypeName(User::class, 'tech', true);
+        $normal_id = getItemByTypeName(User::class, 'normal', true);
+        $parent_id = $this->submit(self::YES, $tech_id, [$approvers->getID() => [$normal_id, $tech_id]]);
+
+        return [$parent_id, $tech_id, $normal_id];
+    }
+
+    /**
+     * Answer the validation requested to one user, as that user, then run the hook.
+     */
+    private function answerAs(int $parent_id, string $login, int $status, string $comment = ''): void
+    {
+        $this->login($login, $login);
+
+        $validation = new TicketValidation();
+        $this->assertTrue($validation->getFromDBByCrit([
+            'tickets_id'      => $parent_id,
+            'itemtype_target' => User::class,
+            'items_id_target' => getItemByTypeName(User::class, $login, true),
+        ]));
+        $this->assertTrue($validation->update([
+            'id'                 => $validation->getID(),
+            'status'             => $status,
+            'comment_validation' => $comment,
+        ]));
+        FieldValidation::afterTicketValidationUpdate($validation);
+    }
+
+    public function testEveryValidatorMustAccept(): void
+    {
+        [$parent_id, $tech_id, $normal_id] = $this->submitToSeveralValidators();
+
+        // One request to each validator, "tech" only once
+        $this->assertSame(2, countElementsInTable(TicketValidation::getTable(), ['tickets_id' => $parent_id]));
+        $this->assertSame([$tech_id, $normal_id], json_decode($this->getHeld($parent_id)->fields['users_ids_validate'], true));
+
+        $this->answerAs($parent_id, 'tech', CommonITILValidation::ACCEPTED);
+        // Still waiting for the second one
+        $this->assertSame(['OTHERTASK'], $this->getChildNames($parent_id));
+        $this->assertTrue(FieldValidation::hasWaiting($parent_id));
+        $this->assertStringContainsString('(1/2)', FieldValidation::getHeldRows($parent_id)[0]['status_name']);
+
+        $this->answerAs($parent_id, 'normal', CommonITILValidation::ACCEPTED);
+        $this->assertSame(['EQUIPTASK', 'OTHERTASK'], $this->getChildNames($parent_id));
+        $this->assertFalse(FieldValidation::hasWaiting($parent_id));
+    }
+
+    public function testOneRefusalAmongTheValidatorsDropsTheChildTickets(): void
+    {
+        [$parent_id] = $this->submitToSeveralValidators();
+
+        $this->answerAs($parent_id, 'tech', CommonITILValidation::ACCEPTED);
+        $this->answerAs($parent_id, 'normal', CommonITILValidation::REFUSED, 'Pas de budget');
+
+        $this->assertSame(['OTHERTASK'], $this->getChildNames($parent_id));
+        $this->assertSame(FieldValidation::REFUSED, (int) $this->getHeld($parent_id)->fields['status']);
     }
 
     public function testWithoutValidatorTheChildTicketsAreCreatedAtOnce(): void

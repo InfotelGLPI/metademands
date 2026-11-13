@@ -43,8 +43,10 @@ global $DB;
 if (!$DB->tableExists('glpi_plugin_metademands_metademands')) {
     require_once dirname(__DIR__) . '/hook.php';
     plugin_metademands_install();
-} elseif (!$DB->fieldExists('glpi_plugin_metademands_fieldoptions', 'validation_fields_id')
+} elseif (!$DB->fieldExists('glpi_plugin_metademands_fieldoptions', 'validation_fields_ids')
+    || $DB->fieldExists('glpi_plugin_metademands_fieldoptions', 'validation_fields_id')
     || !$DB->tableExists('glpi_plugin_metademands_fieldvalidations')
+    || !$DB->fieldExists('glpi_plugin_metademands_fieldvalidations', 'ticketvalidations_ids')
     || !$DB->fieldExists('glpi_plugin_metademands_basketobjects', 'rank')
     || !$DB->fieldExists('glpi_plugin_metademands_fieldvalidations', 'as_tasks')
     || !$DB->fieldExists('glpi_plugin_metademands_fields', 'is_active')) {
