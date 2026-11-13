@@ -764,6 +764,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'metademand_id'          => $this->fields['plugin_metademands_metademands_id'],
             'field_id'               => $this->fields['id'] ?? 0,
             'is_new'                 => $ID < 1,
+            // Active by default, also for a new field
+            'is_active'              => (int) ($this->fields['is_active'] ?? 1) === 1,
             'entities_id'            => $entities_id,
             'is_recursive'           => $is_recursive,
             'item_name'              => stripslashes($this->fields['name'] ?? ''),

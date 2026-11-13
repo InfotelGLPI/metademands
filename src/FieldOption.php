@@ -1759,6 +1759,9 @@ class FieldOption extends CommonDBChild
         $inner   = [];
         $uploads = [];
         $show    = [];
+        // Basket fields made mandatory: their inputs are named after the reference they
+        // hold, field[<id>][<reference>] or quantity[<id>][<reference>], none field[<id>]
+        $baskets = [];
         $field   = new Field();
         foreach ($check_values as $idc => $check_value) {
             $targets = [];
@@ -1774,6 +1777,14 @@ class FieldOption extends CommonDBChild
                 // The first input of file and checkbox fields carries the required state
                 if (in_array($field->fields['type'], ['file', 'checkbox'])) {
                     $inner[] = $fields_link;
+                }
+                if ($field->fields['type'] == 'basket') {
+                    $parameter = new FieldParameter();
+                    $custom    = $parameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fields_link])
+                        ? FieldParameter::_unserialize($parameter->fields['custom'])
+                        : [];
+                    // "With quantity" (custom index 0): a quantity above zero, otherwise a box checked
+                    $baskets[$fields_link] = (is_array($custom) && ($custom[0] ?? 0) == 1) ? 'quantity' : 'checked';
                 }
                 if (in_array($idc, $current)) {
                     if (!empty($options['show_current'])) {
@@ -1812,6 +1823,7 @@ class FieldOption extends CommonDBChild
             'inner'        => array_values(array_unique($inner)),
             'uploads'      => array_values(array_unique($uploads)),
             'show'         => array_values(array_unique($show)),
+            'baskets'      => (object) $baskets,
         ];
         if (isset($options['restore'])) {
             $config['restore'] = $options['restore'];
