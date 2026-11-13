@@ -138,11 +138,13 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `item`                              varchar(255)                             DEFAULT NULL,
     `plugin_metademands_fields_id`      int unsigned                    NOT NULL DEFAULT '0',
     `plugin_metademands_metademands_id` int unsigned                    NOT NULL DEFAULT '0',
+    `is_active`                         tinyint                         NOT NULL DEFAULT '1',
     `date_creation`                     timestamp                       NULL     DEFAULT NULL,
     `date_mod`                          timestamp                       NULL     DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
-    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+    KEY `is_active` (`is_active`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -249,6 +251,7 @@ CREATE TABLE `glpi_plugin_metademands_fieldoptions`
     `hidden_block`                 int unsigned NOT NULL DEFAULT '0',
     `hidden_block_same_block`      tinyint      NOT NULL DEFAULT '0',
     `users_id_validate`            int unsigned NOT NULL DEFAULT '0',
+    `validation_fields_id`         int unsigned NOT NULL DEFAULT '0',
     `childs_blocks`                varchar(255) NOT NULL DEFAULT '[]',
     `checkbox_value`               int unsigned NOT NULL DEFAULT '0',
     `checkbox_id`                  int unsigned NOT NULL DEFAULT '0',
@@ -569,6 +572,34 @@ CREATE TABLE `glpi_plugin_metademands_metademandvalidations`
   COLLATE = utf8mb4_unicode_ci
   ROW_FORMAT = DYNAMIC;
 
+DROP TABLE IF EXISTS `glpi_plugin_metademands_fieldvalidations`;
+CREATE TABLE `glpi_plugin_metademands_fieldvalidations`
+(
+    `id`                                int unsigned NOT NULL AUTO_INCREMENT,
+    `tickets_id`                        int unsigned NOT NULL DEFAULT '0',
+    `plugin_metademands_metademands_id` int unsigned NOT NULL DEFAULT '0',
+    `ticketvalidations_id`              int unsigned NOT NULL DEFAULT '0',
+    `users_id_validate`                 int unsigned NOT NULL DEFAULT '0',
+    `status`                            tinyint      NOT NULL DEFAULT '0',
+    `tasklevel`                         int          NOT NULL DEFAULT '1',
+    `as_tasks`                          tinyint      NOT NULL DEFAULT '0',
+    `tickets_to_create`                 longtext,
+    `parent_fields`                     longtext,
+    `input_field`                       longtext,
+    `input_field_main`                  longtext,
+    `date_creation`                     timestamp    NULL DEFAULT NULL,
+    `date_mod`                          timestamp    NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `tickets_id` (`tickets_id`),
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+    KEY `ticketvalidations_id` (`ticketvalidations_id`),
+    KEY `users_id_validate` (`users_id_validate`),
+    KEY `status` (`status`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+  ROW_FORMAT = DYNAMIC;
+
 DROP TABLE IF EXISTS `glpi_plugin_metademands_drafts_values`;
 CREATE TABLE `glpi_plugin_metademands_drafts_values`
 (
@@ -793,8 +824,10 @@ CREATE TABLE `glpi_plugin_metademands_basketobjects`
     `description`                             longtext,
     `reference`                               varchar(255) collate utf8mb4_unicode_ci,
     `plugin_metademands_basketobjecttypes_id` int unsigned NOT NULL                   DEFAULT '0',
+    `rank`                                    int          NOT NULL                   DEFAULT '0',
     PRIMARY KEY (`id`),
-    KEY `plugin_metademands_basketobjecttypes_id` (`plugin_metademands_basketobjecttypes_id`)
+    KEY `plugin_metademands_basketobjecttypes_id` (`plugin_metademands_basketobjecttypes_id`),
+    KEY `rank` (`rank`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci

@@ -59,6 +59,8 @@ $checks = [];
 $content = [];
 $data = $fields->find([
     'plugin_metademands_metademands_id' => $form_metademands_id,
+    // Inactive fields are not in the wizard
+    'is_active' => 1,
     //        'is_basket' => 1
 ]);
 //Clean $post & $data & $_POST

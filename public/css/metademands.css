@@ -905,6 +905,16 @@ select.chained-select {
     box-shadow: inset 3px 0 0 var(--tblr-primary);
 }
 
+/* Inactive field (Field.is_active): greyed out, its badges stay readable */
+.md-builder .md-field.md-field-inactive .md-type,
+.md-builder .md-field.md-field-inactive .md-label {
+    opacity: .5;
+}
+
+.md-builder .md-field.md-field-inactive .md-title {
+    text-decoration: line-through;
+}
+
 .md-builder .md-field-placeholder {
     border: 1px dashed var(--tblr-primary);
     background: var(--tblr-primary-lt);
@@ -2002,4 +2012,10 @@ select.md-yesno-buttons[data-md-yesno]:not(.select2-hidden-accessible) {
 
 .md-yesno.is-invalid .btn:not(.active) {
     border-color: var(--tblr-danger);
+}
+
+/* Column titles as written, not in capitals (Tabler card tables): display order of the
+   references of a basket field (templates/fields/field_basket_order.html.twig) */
+.table.md-plain-headers thead th {
+    text-transform: none;
 }

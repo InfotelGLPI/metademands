@@ -147,6 +147,9 @@
                                         {% if entry.users_id_validate is not empty %}
                                             <span class="badge bg-orange-lt" title="{{ __('Launch a validation', 'metademands') }}"><i class="ti ti-user-check me-1"></i>{{ entry.users_id_validate }}</span>
                                         {% endif %}
+                                        {% if entry.validation_field is not empty %}
+                                            <span class="badge bg-orange-lt" title="{{ __('Validation of the child tickets by the user of a field', 'metademands') }}"><i class="ti ti-user-question me-1"></i>{{ entry.validation_field }}</span>
+                                        {% endif %}
                                         {% if entry.checkbox_name is not empty %}
                                             <span class="badge bg-teal-lt" title="{{ __('Bind to the value of this checkbox', 'metademands') }}">
                                                 <i class="ti ti-checkbox me-1"></i>{{ entry.checkbox_name }}{% if entry.checkbox_value is not empty %} : {{ entry.checkbox_value }}{% endif %}

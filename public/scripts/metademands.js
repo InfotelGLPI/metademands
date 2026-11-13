@@ -122,29 +122,26 @@ function basketSearchInit(fieldId) {
     const table = document.getElementById('tablesearch-' + fieldId);
     if (!table) return;
 
-    const filterRefInput         = document.getElementById('searchref-' + fieldId);
-    const filterNameInput        = document.getElementById('searchname-' + fieldId);
-    const filterDescriptionInput = document.getElementById('searchdescription-' + fieldId);
+    // The reference and description columns are optional (basket custom values):
+    // only the inputs rendered are bound, and each one filters the cells flagged
+    // with the matching data-md-search, whatever their position in the row.
+    const filters = ['ref', 'name', 'description']
+        .map((column) => ({column, input: document.getElementById('search' + column + '-' + fieldId)}))
+        .filter((filter) => filter.input !== null);
     const rows = table.getElementsByTagName('tr');
 
     function filterTable() {
-        const filterRef  = filterRefInput.value.toUpperCase();
-        const filterName = filterNameInput.value.toUpperCase();
-        const filterDesc = filterDescriptionInput.value.toUpperCase();
-
-        for (let i = 0; i < rows.length; i++) {
-            const cells = rows[i].getElementsByTagName('td');
-            if (cells.length < 3) continue;
-            const ref  = cells[0].textContent.toUpperCase();
-            const name = cells[1].textContent.toUpperCase();
-            const desc = cells[2].textContent.toUpperCase();
-            rows[i].style.display = (ref.includes(filterRef) && name.includes(filterName) && desc.includes(filterDesc)) ? '' : 'none';
+        for (const row of rows) {
+            const visible = filters.every(({column, input}) => {
+                const cell = row.querySelector('td[data-md-search="' + column + '"]');
+                return cell === null
+                    || cell.textContent.toUpperCase().includes(input.value.toUpperCase());
+            });
+            row.style.display = visible ? '' : 'none';
         }
     }
 
-    filterRefInput.addEventListener('input', filterTable);
-    filterNameInput.addEventListener('input', filterTable);
-    filterDescriptionInput.addEventListener('input', filterTable);
+    filters.forEach(({input}) => input.addEventListener('input', filterTable));
 }
 
 

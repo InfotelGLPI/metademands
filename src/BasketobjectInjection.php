@@ -63,7 +63,7 @@ class BasketobjectInjection extends Basketobject implements PluginDatainjectionI
 
         $options['ignore_fields'] = [];
         $options['displaytype'] = [
-            "text" => [3, 4],
+            "text" => [3, 4, 8],
             "dropdown" => [7],
             //            "decimal" => [5],
         ];

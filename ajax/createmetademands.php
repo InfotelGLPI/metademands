@@ -185,7 +185,11 @@ if ($nofreetable == false) {
     } elseif (isset($_POST['form_metademands_id'])) {
         if ($metademands->canCreate()
             || Group::isUserHaveRight($_POST['form_metademands_id'])) {
-            $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+            // Inactive fields are not in the wizard: neither checked nor their options applied
+            $data = $fields->find([
+                'plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
+                'is_active'                         => 1,
+            ]);
             $metademands->getFromDB($_POST['form_metademands_id']);
 
             // Entity scope (anti-IDOR): plugin CREATE is a global bit, so mirror the

@@ -1,0 +1,98 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#-
+ # Display order of the references listed by a basket field (Basket::showFieldCustomValues()).
+ # Rendered INSIDE the <table> of the custom values, itself inside the form of the basket
+ # options: table rows only, and no input, so that the options form is left untouched.
+ # Each drop is saved at once by public/scripts/basket_order.js.
+ #
+ # Expected context:
+ #  - types_id, type_name: object type listed by the basket
+ #  - references: rows of the references of the type, in their display order
+ #  - order_url: endpoint saving the order (ajax/basketobject_order.php)
+ #  - catalog_url, form_url: reference catalog and form of a reference
+-#}
+<tr class="tab_bg_1">
+    <td colspan="4" class="pt-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="ti ti-arrows-sort me-1"></i>
+                    {{ __('Display order of the references', 'metademands') }}
+                    <span class="text-muted">({{ type_name }})</span>
+                </h5>
+            </div>
+            <div class="card-body pb-0">
+                <p class="text-muted mb-2">
+                    {{ __('Drag and drop the references to change their order in the basket, it is saved at once. The order belongs to the references: it applies to every basket listing this type.', 'metademands') }}
+                    <a href="{{ catalog_url }}">{{ __('Reference catalog', 'metademands') }}</a>
+                </p>
+            </div>
+            {% if references is empty %}
+                <div class="card-body pt-0">
+                    <div class="alert alert-info mb-0">{{ __('No reference of this type', 'metademands') }}</div>
+                </div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table card-table table-sm mb-0 md-plain-headers">
+                        <thead>
+                            <tr>
+                                <th style="width:44px"></th>
+                                {# As wide as its title, on one line whatever the language #}
+                                <th class="text-nowrap" style="width:1%">{{ __('Display order', 'metademands') }}</th>
+                                <th>{{ __('Reference', 'metademands') }}</th>
+                                <th>{{ __('Designation', 'metademands') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody data-md-basket-order
+                               data-md-url="{{ order_url }}"
+                               data-md-types-id="{{ types_id }}"
+                               data-md-saved="{{ __('Display order saved', 'metademands') }}"
+                               data-md-failed="{{ __('The display order could not be saved', 'metademands') }}">
+                            {% for id, reference in references %}
+                                <tr data-md-id="{{ id }}">
+                                    <td class="md-basket-order-handle text-center align-middle" style="cursor:move"
+                                        title="{{ __('Drag and drop to reorder', 'metademands') }}">
+                                        <i class="ti ti-grip-vertical"></i>
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="badge rounded-pill bg-secondary-lt" data-md-position>{{ loop.index }}</span>
+                                    </td>
+                                    <td class="align-middle">{{ reference.reference }}</td>
+                                    <td class="align-middle">
+                                        <a href="{{ form_url }}?id={{ id }}">{{ reference.name }}</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </td>
+</tr>

@@ -56,10 +56,16 @@
                       id='metademands_wizard_red{{ id }}'>{% if is_mandatory_star %}*{% endif %}</span>
             </div>
         {%- endif %}
+        {%- if is_basket %}</h4>{% endif %}
     {%- else %}
+        {#- The heading of a basket is closed before the div of a hidden title opens: closed
+         #  after it, the browser closed that div with the heading, and close_hidetitle_div
+         #  then closed the field wrapper, pushing the next blocks out of the form (summary
+         #  cut short, legacy buttons out of the layout) -#}
+        {%- if is_basket %}</h4>{% endif %}
         <div style='margin-top: 10px;'>{% if preview %}{{ _self.config_link(config_url) }}{% endif %}
             {%- endif %}
-        {%- if is_basket %}</h4>{% endif %}
+    {%- elseif is_basket %}</h4>
     {%- endif %}
     {# raw: wizard widget of any field type, printed by Field::getFieldInput(), whose renderers are not all in Twig yet #}
     {{- field_html|raw -}}

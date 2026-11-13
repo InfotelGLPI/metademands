@@ -1639,9 +1639,8 @@ class Wizard extends CommonDBTM
         $show_rule = $metademands->fields['show_rule'];
 
         if ($show_rule != Condition::SHOW_RULE_ALWAYS) {
-            $condition = new Condition();
-            $conditions = $condition->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]);
-            if (count($conditions) > 0) {
+            // Conditions on active fields only (Condition::conditionsTab())
+            if (count(Condition::conditionsTab((int) $metademands->fields['id'])) > 0) {
                 $use_condition = true;
             }
         }
@@ -1698,14 +1697,13 @@ class Wizard extends CommonDBTM
         $draft_id = 0,
         $draft_name = ""
     ) {
-        global $CFG_GLPI;
-
         $metademands = new Metademand();
         $metademands->getFromDB($metademands_id);
 
         //Redirected after end user Step
         $user_id = Session::getLoginUserID();
-        $url = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php";
+        // PLUGIN_METADEMANDS_WEBDIR already starts with root_doc (setup.php)
+        $url = PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php";
         if (isset($_SESSION['plugin_metademands'][$user_id]['redirect_wizard'])) {
             if (Plugin::isPluginActive('servicecatalog')
                 && Session::haveRight(Profile::RIGHT_SERVICECATALOG, READ)) {
@@ -1927,8 +1925,9 @@ class Wizard extends CommonDBTM
                     // The preview of the "Wizard creation" tab shows every tab.
                     $hidden_tabs = [];
                     $field = new Field();
+                    // The options of an inactive field hide no tab
                     $meta_fields_ids = array_column(
-                        $field->find(['plugin_metademands_metademands_id' => $metademands->getID()]),
+                        $field->find(['plugin_metademands_metademands_id' => $metademands->getID(), 'is_active' => 1]),
                         'id',
                     );
                     if (!$preview && count($meta_fields_ids) > 0) {
@@ -2020,6 +2019,7 @@ class Wizard extends CommonDBTM
                     'has_freetable'     => countElementsInTable(Field::getTable(), [
                         'plugin_metademands_metademands_id' => $metademands->getID(),
                         'type'                              => 'freetable',
+                        'is_active'                         => 1,
                     ]) > 0,
                     'cancel_form'       => $cancel_form,
                     'show_step_circles' => $see_summary == 0 && $displayBlocksAsTab == 0,
@@ -2755,8 +2755,10 @@ class Wizard extends CommonDBTM
                 }
             } elseif (Session::haveRight(Metademand::$rightname, READ)) {
                 if (Plugin::isPluginActive('servicecatalog') && method_exists(ServiceCatalogConfig::class, 'getTicketRedirection') && ServiceCatalogConfig::getConfig()->getTicketRedirection() && isset($result) && isset($result['id']) && $result['id'] > 0) {
-                    global $CFG_GLPI;
-                    Html::redirect($CFG_GLPI['root_doc'] . "front/ticket.form.php?id=" . $result['id']);
+                    // Absolute URL of the core form: root_doc . "front/..." lacked the slash, a
+                    // relative URL the browser resolved from the plugin page that posted the
+                    // form (/plugins/metademands/front/front/ticket.form.php)
+                    Html::redirect(\Ticket::getFormURLWithID((int) $result['id']));
                 } else {
                     Html::redirect($self->getFormURL() . "?step=" . Metademand::STEP_INIT);
                 }
@@ -2796,6 +2798,10 @@ class Wizard extends CommonDBTM
 
         $field = new Field();
         if ($field->getFromDB($value["id"])) {
+            // Not in the wizard: nothing to check nor to keep
+            if ((int) ($field->fields['is_active'] ?? 1) === 0) {
+                return ['result' => false, 'content' => []];
+            }
             $value = Field::getAllParamsFromField($field);
         }
 

@@ -37,6 +37,7 @@ use GlpiPlugin\Orderfollowup\Order;
 use Html;
 use Plugin;
 use GlpiPlugin\Metademands\Basketobject;
+use GlpiPlugin\Metademands\Basketobjecttype;
 use GlpiPlugin\Metademands\Config;
 use GlpiPlugin\Metademands\Draft;
 use GlpiPlugin\Metademands\Field;
@@ -94,10 +95,15 @@ class Basket extends CommonDBTM
             $namefield = 'field_basket_' . $idline;
         }
 
+        // Display order chosen on each reference, then alphabetical as before
         $criteria = [
             'FROM' => [Basketobject::getTable()],
             'SELECT' => [Basketobject::getTable() => '*'],
-            'ORDER' => ['name', 'description'],
+            'ORDER' => [
+                Basketobject::getTable() . '.rank',
+                Basketobject::getTable() . '.name',
+                Basketobject::getTable() . '.description',
+            ],
         ];
 
         $criteria['WHERE'] = ['plugin_metademands_basketobjecttypes_id' => $data['item']];
@@ -125,20 +131,8 @@ class Basket extends CommonDBTM
             }
         }
 
-        if (Plugin::isPluginActive('orderfollowup')) {
-            if (isset($custom_values[1]) && $custom_values[1] == 1) {
-                $where = ['unit_price' => ['>', 0]];
-            }
-
-            if (count($where)) {
-                $criteria['LEFT JOIN'][Material::getTable()] = [
-                    'ON' => [
-                        Material::getTable() => 'plugin_metademands_basketobjects_id',
-                        Basketobject::getTable() => 'id',
-                    ],
-                ];
-            }
-        }
+        // "With unit price (HT)" (custom index 1) only adds the price column: a reference
+        // priced 0 € is still offered, as in the basket object form.
 
         if (count($where)) {
             $criteria['WHERE'] = array_merge($criteria['WHERE'], $where);
@@ -151,10 +145,18 @@ class Basket extends CommonDBTM
         // stay in PHP; the cells carry values only (see field_basket.html.twig), the
         // quantity widget (showNumber, carrying the data-md-totalrow-* attributes read by
         // wizard_form.js) being rendered by the template.
+        // Enabled by default: baskets saved before these options kept both columns.
+        $with_reference = ($custom_values[5] ?? 1) == 1;
+        $with_description = ($custom_values[6] ?? 1) == 1;
+
         $headers = [];
-        $headers[] = ['label' => __('Reference', 'metademands'), 'style' => $background_color];
+        if ($with_reference) {
+            $headers[] = ['label' => __('Reference', 'metademands'), 'style' => $background_color];
+        }
         $headers[] = ['label' => __('Designation', 'metademands'), 'style' => $background_color];
-        $headers[] = ['label' => __('Description'), 'style' => $background_color];
+        if ($with_description) {
+            $headers[] = ['label' => __('Description'), 'style' => $background_color];
+        }
 
         if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
             $ordermaterialmeta = new PluginOrdermaterialMetademand();
@@ -170,7 +172,10 @@ class Basket extends CommonDBTM
             if ($ordermaterialmeta->getFromDBByCrit(
                 ['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']],
             )) {
-                $headers[] = ['label' => __('Unit', 'orderfollowup'), 'style' => $background_color];
+                // Without quantity, every object counts for one unit: the column only shows 1.
+                if (isset($custom_values[0]) && $custom_values[0] == 1) {
+                    $headers[] = ['label' => __('Unit', 'orderfollowup'), 'style' => $background_color];
+                }
 
                 if (isset($custom_values[1]) && $custom_values[1] == 1) {
                     $headers[] = ['label' => __('Unit price (HT)', 'orderfollowup'), 'style' => $background_color];
@@ -221,9 +226,13 @@ class Basket extends CommonDBTM
                 $key = $material['id'];
                 $cells = [];
 
-                $cells[] = ['t' => (string) $material['reference']];
-                $cells[] = ['t' => (string) $material['name']];
-                $cells[] = ['rich' => (string) $material['description']];
+                if ($with_reference) {
+                    $cells[] = ['t' => (string) $material['reference'], 'search' => 'ref'];
+                }
+                $cells[] = ['t' => (string) $material['name'], 'search' => 'name'];
+                if ($with_description) {
+                    $cells[] = ['rich' => (string) $material['description'], 'search' => 'description'];
+                }
 
                 if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
                     $ordermaterialmeta = new PluginOrdermaterialMetademand();
@@ -264,8 +273,11 @@ class Basket extends CommonDBTM
                                 ];
                             }
                         } else {
+                            // No price set for this object: blank unit and price, one cell per header
                             $cells[] = ['t' => ''];
-                            $cells[] = ['t' => ''];
+                            if (isset($custom_values[1]) && $custom_values[1] == 1) {
+                                $cells[] = ['t' => ''];
+                            }
                         }
                     }
                 }
@@ -342,9 +354,13 @@ class Basket extends CommonDBTM
                 $key = $material['id'];
                 $cells = [];
 
-                $cells[] = ['t' => (string) $material['reference']];
-                $cells[] = ['t' => (string) $material['name']];
-                $cells[] = ['rich' => (string) $material['description']];
+                if ($with_reference) {
+                    $cells[] = ['t' => (string) $material['reference'], 'search' => 'ref'];
+                }
+                $cells[] = ['t' => (string) $material['name'], 'search' => 'name'];
+                if ($with_description) {
+                    $cells[] = ['rich' => (string) $material['description'], 'search' => 'description'];
+                }
 
                 if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
                     $ordermaterialmeta = new PluginOrdermaterialMetademand();
@@ -373,15 +389,14 @@ class Basket extends CommonDBTM
                     if ($ordermaterialmeta->getFromDBByCrit(
                         ['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']],
                     )) {
-                        $ordermaterial = new Material();
-                        if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])) {
-                            $cells[] = ['t' => (string) $ordermaterial->fields['unit']];
-
-                            if (isset($custom_values[1]) && $custom_values[1] == 1) {
-                                $cells[] = [
-                                    't' => Html::formatNumber($ordermaterial->fields['unit_price'], false, 2) . " €",
-                                ];
-                            }
+                        if (isset($custom_values[1]) && $custom_values[1] == 1) {
+                            $ordermaterial = new Material();
+                            // No price set for this object: blank cell under the price header
+                            $cells[] = [
+                                't' => $ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])
+                                    ? Html::formatNumber($ordermaterial->fields['unit_price'], false, 2) . " €"
+                                    : '',
+                            ];
                         }
                     }
                 }
@@ -412,6 +427,9 @@ class Basket extends CommonDBTM
                 'background_style' => $background_color,
                 'headers' => $headers,
                 'nb' => $nb,
+                'with_search' => ($custom_values[4] ?? 1) == 1,
+                'with_reference' => $with_reference,
+                'with_description' => $with_description,
                 'search_id' => $search_id,
                 'ph_ref' => __('Search..', 'metademands'),
                 'ph_name' => __('Search for names..', 'metademands'),
@@ -431,6 +449,23 @@ class Basket extends CommonDBTM
         $rows[] = [
             ['text' => __('With quantity', 'metademands')],
             ['widget' => ['type' => 'yesno', 'name' => 'custom[0]', 'value' => $quantity]],
+            ['colspan' => 2],
+        ];
+
+        // Enabled by default: baskets saved before this option kept their search inputs.
+        $rows[] = [
+            ['text' => __('With integrated search engine', 'metademands')],
+            ['widget' => ['type' => 'yesno', 'name' => 'custom[4]', 'value' => $params['custom_values'][4] ?? 1]],
+            ['colspan' => 2],
+        ];
+        $rows[] = [
+            ['text' => __('With reference', 'metademands')],
+            ['widget' => ['type' => 'yesno', 'name' => 'custom[5]', 'value' => $params['custom_values'][5] ?? 1]],
+            ['colspan' => 2],
+        ];
+        $rows[] = [
+            ['text' => __('With description', 'metademands')],
+            ['widget' => ['type' => 'yesno', 'name' => 'custom[6]', 'value' => $params['custom_values'][6] ?? 1]],
             ['colspan' => 2],
         ];
 
@@ -463,6 +498,20 @@ class Basket extends CommonDBTM
             '@metademands/fields/field_customvalue_fixed.html.twig',
             ['rows' => $rows],
         );
+
+        // Display order of the references of the type, reordered by drag and drop
+        // (public/scripts/basket_order.js)
+        $types_id = (int) ($params['item'] ?? 0);
+        if ($types_id > 0 && Basketobject::canUpdate()) {
+            echo TemplateRenderer::getInstance()->render('@metademands/fields/field_basket_order.html.twig', [
+                'types_id'    => $types_id,
+                'type_name'   => \Dropdown::getDropdownName(Basketobjecttype::getTable(), $types_id),
+                'references'  => Basketobject::getOrderedOfType($types_id),
+                'order_url'   => PLUGIN_METADEMANDS_WEBDIR . '/ajax/basketobject_order.php',
+                'catalog_url' => Basketobject::getSearchURL(),
+                'form_url'    => Basketobject::getFormURL(),
+            ]);
+        }
     }
 
     public static function getParamsValueToCheck($fieldoption, $item, $params)
@@ -910,12 +959,14 @@ class Basket extends CommonDBTM
      *
      * @param array $materials
      *
-     * @return array [with price, with quantity]
+     * @return array [with price, with quantity, with reference, with description]
      */
     private static function getBasketPriceFlags(array $materials): array
     {
         $withprice = false;
         $withquantity = false;
+        $withreference = false;
+        $withdescription = false;
 
         foreach (array_keys($materials) as $id) {
             $field = new Field();
@@ -934,9 +985,16 @@ class Basket extends CommonDBTM
             if (($custom_values[1] ?? 0) == 1) {
                 $withprice = true;
             }
+            // Enabled by default, see showFieldCustomValues().
+            if (($custom_values[5] ?? 1) == 1) {
+                $withreference = true;
+            }
+            if (($custom_values[6] ?? 1) == 1) {
+                $withdescription = true;
+            }
         }
 
-        return [$withprice, $withquantity];
+        return [$withprice, $withquantity, $withreference, $withdescription];
     }
 
 
@@ -963,29 +1021,42 @@ class Basket extends CommonDBTM
         // column glpi_plugin_metademands_fields does not have, so it was always false:
         // the price columns were announced by the header and then left empty, and the
         // grand total never showed up at all.
-        [$withprice, $withquantity] = self::getBasketPriceFlags($materials);
+        [$withprice, $withquantity, $withreference, $withdescription] = self::getBasketPriceFlags($materials);
 
-        $headers = [
-            ['label' => __('Reference', 'metademands')],
-            ['label' => __('Designation', 'metademands')],
-            ['label' => __('Description')],
-        ];
+        $headers = [];
+        if ($withreference) {
+            $headers[] = ['label' => __('Reference', 'metademands')];
+        }
+        $headers[] = ['label' => __('Designation', 'metademands')];
+        if ($withdescription) {
+            $headers[] = ['label' => __('Description')];
+        }
         if ($has_ordermaterial) {
             $headers[] = ['label' => __('Estimated unit price', 'ordermaterial')];
         }
         if ($has_orderfollowup) {
-            $headers[] = ['label' => __('Unit', 'orderfollowup')];
+            if ($withquantity) {
+                $headers[] = ['label' => __('Unit', 'orderfollowup')];
+            }
             if ($withprice) {
                 $headers[] = ['label' => __('Unit price (HT)', 'orderfollowup')];
             }
         }
-        $headers[] = ['label' => __('Quantity', 'metademands')];
-        $headers[] = [
-            'label' => ($has_orderfollowup && $withprice)
-                ? __('Total (HT)', 'orderfollowup')
-                : __('Total', 'metademands'),
-            'align' => 'right',
-        ];
+        // "With quantity" disabled: every object counts for one, the quantity column and
+        // a total counting objects would only show 1 (getBasketSummaryRow())
+        if ($withquantity) {
+            $headers[] = ['label' => __('Quantity', 'metademands')];
+        }
+        if ($withprice && ($has_ordermaterial || $has_orderfollowup)) {
+            $headers[] = [
+                'label' => $has_orderfollowup
+                    ? __('Total (HT)', 'orderfollowup')
+                    : __('Total', 'metademands'),
+                'align' => 'right',
+            ];
+        } elseif ($withquantity) {
+            $headers[] = ['label' => __('Total', 'metademands'), 'align' => 'right'];
+        }
 
         $rows = [];
         $grandtotal = 0;
@@ -1015,6 +1086,9 @@ class Basket extends CommonDBTM
                     $withprice,
                     $has_ordermaterial,
                     $has_orderfollowup,
+                    $withquantity,
+                    $withreference,
+                    $withdescription,
                     $grandtotal,
                 );
             }
@@ -1049,6 +1123,9 @@ class Basket extends CommonDBTM
      * @param bool         $withprice
      * @param bool         $has_ordermaterial
      * @param bool         $has_orderfollowup
+     * @param bool         $withquantity
+     * @param bool         $withreference
+     * @param bool         $withdescription
      * @param float        $grandtotal
      *
      * @return array
@@ -1060,13 +1137,19 @@ class Basket extends CommonDBTM
         bool $withprice,
         bool $has_ordermaterial,
         bool $has_orderfollowup,
+        bool $withquantity,
+        bool $withreference,
+        bool $withdescription,
         &$grandtotal,
     ): array {
-        $cells = [
-            ['value' => $basket_obj->fields['reference']],
-            ['value' => $basket_obj->getName()],
-            ['value' => $basket_obj->fields['description']],
-        ];
+        $cells = [];
+        if ($withreference) {
+            $cells[] = ['value' => $basket_obj->fields['reference']];
+        }
+        $cells[] = ['value' => $basket_obj->getName()];
+        if ($withdescription) {
+            $cells[] = ['value' => $basket_obj->fields['description']];
+        }
 
         $totalrow = $quantity;
         $on_quotation = false;
@@ -1090,7 +1173,9 @@ class Basket extends CommonDBTM
         if ($has_orderfollowup) {
             $material = new Material();
             if ($material->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $mat_id])) {
-                $cells[] = ['value' => $material->fields['unit']];
+                if ($withquantity) {
+                    $cells[] = ['value' => $material->fields['unit']];
+                }
                 if ($withprice) {
                     $cells[] = ['value' => Html::formatNumber($material->fields['unit_price'], false, 2) . ' €'];
                     $totalrow = $quantity * $material->fields['unit_price'];
@@ -1098,23 +1183,31 @@ class Basket extends CommonDBTM
             } else {
                 // The legacy code pushed a single cell here even when the header had
                 // declared both the unit and the unit price, shifting the whole row.
-                $cells[] = ['value' => ''];
+                if ($withquantity) {
+                    $cells[] = ['value' => ''];
+                }
                 if ($withprice) {
                     $cells[] = ['value' => ''];
                 }
             }
         }
 
-        $cells[] = ['value' => $quantity];
+        // Without quantity every object counts for one: no quantity column, and no line
+        // total unless it is a price (see getBasketSummaryTable())
+        if ($withquantity) {
+            $cells[] = ['value' => $quantity];
+        }
 
         if ($withprice && ($has_ordermaterial || $has_orderfollowup)) {
-            $total = $on_quotation
-                ? __('On quotation', 'ordermaterial')
-                : Html::formatNumber($totalrow, false, 2) . ' €';
-        } else {
-            $total = Html::formatNumber($totalrow, false, 0);
+            $cells[] = [
+                'value' => $on_quotation
+                    ? __('On quotation', 'ordermaterial')
+                    : Html::formatNumber($totalrow, false, 2) . ' €',
+                'align' => 'right',
+            ];
+        } elseif ($withquantity) {
+            $cells[] = ['value' => Html::formatNumber($totalrow, false, 0), 'align' => 'right'];
         }
-        $cells[] = ['value' => $total, 'align' => 'right'];
 
         $grandtotal += $totalrow;
 
@@ -1161,50 +1254,57 @@ class Basket extends CommonDBTM
         }
 
         $total = 0;
-        $nb = 4;
         $has_ordermaterial = false;
         if (Plugin::isPluginActive('ordermaterial')) {
             $ordermaterialmeta = new PluginOrdermaterialMetademand();
             if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id])) {
                 $has_ordermaterial = true;
-                $nb = 6;
             }
         }
+
+        // Options of the basket field, see showFieldCustomValues().
+        $custom_values = [];
+        $fieldmeta = new FieldParameter();
+        if ($fieldmeta->getFromDBByCrit(["plugin_metademands_fields_id" => $field['id']])) {
+            $custom_values = FieldParameter::_unserialize($fieldmeta->fields['custom']);
+        }
+        if (!is_array($custom_values)) {
+            $custom_values = [];
+        }
+        $withquantity = ($custom_values[0] ?? 0) == 1;
+        $withreference = ($custom_values[5] ?? 1) == 1;
+        $withdescription = ($custom_values[6] ?? 1) == 1;
+
         $has_orderfollowup = false;
         $withprice = false;
         if (Plugin::isPluginActive('orderfollowup')) {
             $ordermaterialmeta = new OrderMetademand();
             if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id])) {
                 $has_orderfollowup = true;
-                $nb = 6;
             }
-            foreach ($materials as $id => $mat_id) {
-                $fieldmeta = new FieldParameter();
-                $fieldmeta->getFromDBByCrit(["plugin_metademands_fields_id" => $field['id']]);
-                $custom_values = FieldParameter::_unserialize($fieldmeta->fields['custom']);
-
-                if ($custom_values[1] == 1) {
-                    $withprice = true;
-                    $nb = 7;
-                } else {
-                    $nb = 5;
-                }
-            }
+            $withprice = ($custom_values[1] ?? 0) == 1;
         }
 
         if (is_array($materials) && count($materials) > 0) {
-            $header = [
-                __('Reference', 'metademands'),
-                __('Designation', 'metademands'),
-                __('Description'),
-            ];
+            $header = [];
+            if ($withreference) {
+                $header[] = __('Reference', 'metademands');
+            }
+            $header[] = __('Designation', 'metademands');
+            if ($withdescription) {
+                $header[] = __('Description');
+            }
             if ($has_ordermaterial) {
                 $header[] = __('Order type', 'ordermaterial');
             }
-            if ($has_orderfollowup) {
+            // Without quantity, every object counts for one unit: the unit and quantity
+            // columns would only show 1.
+            if ($has_orderfollowup && $withquantity) {
                 $header[] = __('Unit', 'orderfollowup');
             }
-            $header[] = __('Quantity', 'metademands');
+            if ($withquantity) {
+                $header[] = __('Quantity', 'metademands');
+            }
             if ($has_ordermaterial) {
                 $header[] = __('Estimated unit price', 'ordermaterial');
             }
@@ -1217,18 +1317,9 @@ class Basket extends CommonDBTM
                 $rows[0][] = ['text' => $text, 'heading' => true, 'table_only' => true];
             }
 
-            $custom_values = [];
             foreach ($materials as $mat_id => $q) {
                 $material = new Basketobject();
                 $material->getFromDB($mat_id);
-
-                $fieldmeta = new FieldParameter();
-                $fieldmeta->getFromDBByCrit(["plugin_metademands_fields_id" => $field['id']]);
-                $withquantity = false;
-                $custom_values = FieldParameter::_unserialize($fieldmeta->fields['custom']);
-                if ($custom_values[0] == 1) {
-                    $withquantity = true;
-                }
 
                 if ($withquantity == false) {
                     $quantity = 1;
@@ -1243,11 +1334,14 @@ class Basket extends CommonDBTM
                     continue;
                 }
 
-                $row = [
-                    ['text' => (string) $material->fields['reference']],
-                    ['text' => (string) $material->getName()],
-                    ['text' => (string) $material->fields['description']],
-                ];
+                $row = [];
+                if ($withreference) {
+                    $row[] = ['text' => (string) $material->fields['reference']];
+                }
+                $row[] = ['text' => (string) $material->getName()];
+                if ($withdescription) {
+                    $row[] = ['text' => (string) $material->fields['description']];
+                }
 
                 $catalog_material = null;
                 if ($has_ordermaterial) {
@@ -1263,11 +1357,16 @@ class Basket extends CommonDBTM
                     $ordermaterial = new Material();
                     if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $mat_id])) {
                         $followup_material = $ordermaterial;
-                        $row[] = ['text' => (string) $ordermaterial->fields['unit']];
+                    }
+                    // Blank when no price is set for this object, one cell per header
+                    if ($withquantity) {
+                        $row[] = ['text' => $followup_material !== null ? (string) $followup_material->fields['unit'] : ''];
                     }
                 }
 
-                $row[] = ['text' => $quantity > 0 ? (string) $quantity : "1"];
+                if ($withquantity) {
+                    $row[] = ['text' => (string) $quantity];
+                }
 
                 $totalrow = $quantity;
                 if ($catalog_material !== null) {
@@ -1278,26 +1377,35 @@ class Basket extends CommonDBTM
                     if ($withprice) {
                         $row[] = ['text' => Html::formatNumber($followup_material->fields['unit_price'], false, 2) . " €"];
                     }
-                    if ($followup_material->fields['unit_price'] == 0) {
-                        $totalrow = $quantity;
-                    } else {
+                    // With prices, a reference at 0 € costs 0 €: it no longer counts as its quantity
+                    if ($withprice || $followup_material->fields['unit_price'] != 0) {
                         $totalrow = $quantity * $followup_material->fields['unit_price'];
+                    } else {
+                        $totalrow = $quantity;
                     }
                     if ($withprice) {
                         $row[] = ['text' => Html::formatNumber($totalrow, false, 2) . " €"];
                     }
+                } elseif ($has_orderfollowup && $withprice) {
+                    // No price set for this object: blank price and total, nothing added
+                    $totalrow = 0;
+                    $row[] = ['text' => ''];
+                    $row[] = ['text' => ''];
                 }
 
                 $rows[] = $row;
                 $total += $totalrow;
             }
 
+            // The label spans every column but the last one, which holds the total: the
+            // former literal column counts did not follow the optional columns.
+            $colspan = count($header) - 1;
             $total_row = [];
             if (!Plugin::isPluginActive('orderfollowup')) {
-                $total_row[] = ['text' => __('Total', 'metademands'), 'heading' => true, 'colspan' => $nb - 1, 'table_only' => true];
+                $total_row[] = ['text' => __('Total', 'metademands'), 'heading' => true, 'colspan' => $colspan, 'table_only' => true];
             } elseif ($has_orderfollowup) {
                 $total_label = $withprice ? __('Grand total (HT)', 'orderfollowup') : __('Total', 'metademands');
-                $total_row[] = ['text' => $total_label, 'heading' => true, 'colspan' => $nb - 1, 'table_only' => true];
+                $total_row[] = ['text' => $total_label, 'heading' => true, 'colspan' => $colspan, 'table_only' => true];
             }
             if (isset($custom_values[1]) && $custom_values[1] == 1) {
                 $total_final = (string) $total;
@@ -1311,7 +1419,10 @@ class Basket extends CommonDBTM
                 $total_final .= " €";
             }
             $total_row[] = ['text' => $total_final];
-            $rows[] = $total_row;
+            // Without quantity nor price, the total would only count the objects listed
+            if ($withquantity || $has_ordermaterial || ($has_orderfollowup && $withprice)) {
+                $rows[] = $total_row;
+            }
 
             $result[$field['rank']]['content'] .= Field::renderContentRows(
                 (bool) $formatAsTable,
@@ -1346,12 +1457,20 @@ class Basket extends CommonDBTM
                 // "With unit price (HT)" option of the basket field (custom index 1).
                 // When disabled, the unit price / total / grand total columns must not
                 // appear in the PDF (index 0 is the "with quantity" option).
-                $with_price = false;
+                // Indexes 0, 5 and 6 (quantity, reference, description) drop their
+                // columns the same way; reference and description default to enabled.
+                $custom_values = [];
                 $fieldparam = new FieldParameter();
                 if ($fieldparam->getFromDBByCrit(['plugin_metademands_fields_id' => $elt['id']])) {
                     $custom_values = FieldParameter::_unserialize($fieldparam->fields['custom']);
-                    $with_price = isset($custom_values[1]) && $custom_values[1] == 1;
                 }
+                if (!is_array($custom_values)) {
+                    $custom_values = [];
+                }
+                $with_price = ($custom_values[1] ?? 0) == 1;
+                $with_quantity = ($custom_values[0] ?? 0) == 1;
+                $with_reference = ($custom_values[5] ?? 1) == 1;
+                $with_description = ($custom_values[6] ?? 1) == 1;
 
                 foreach ($orders as $id => $item) {
                     $material = new Basketobject();
@@ -1362,16 +1481,25 @@ class Basket extends CommonDBTM
                     // accented character — that is why the "Référence"/"Désignation"/
                     // "Quantité"/"Unité" column titles and the "Unité" cell vanished from
                     // the basket table. Keep the strings UTF-8: no decode on the PDF path.
-                    $values[$id][__('Reference', 'metademands')] = $material->fields['reference'];
+                    if ($with_reference) {
+                        $values[$id][__('Reference', 'metademands')] = $material->fields['reference'];
+                    }
                     $values[$id][__('Designation', 'metademands')] = $material->getName();
-                    $values[$id][__('Description')] = $material->fields['description'];
-                    $values[$id][__('Quantity', 'metademands')] = $item['quantity'];
+                    if ($with_description) {
+                        $values[$id][__('Description')] = $material->fields['description'];
+                    }
+                    // Without quantity, every object counts for one: no column showing 1
+                    if ($with_quantity) {
+                        $values[$id][__('Quantity', 'metademands')] = $item['quantity'];
+                    }
 
                     $ordermaterial = new Material();
                     if ($ordermaterial->getFromDBByCrit(
                         ['plugin_metademands_basketobjects_id' => $item['plugin_metademands_basketobjects_id']],
                     )) {
-                        $values[$id][__('Unit', 'orderfollowup')] = $ordermaterial->fields['unit'];
+                        if ($with_quantity) {
+                            $values[$id][__('Unit', 'orderfollowup')] = $ordermaterial->fields['unit'];
+                        }
 
                         if ($with_price) {
                             $values[$id][__('Unit price (HT)', 'orderfollowup')]
@@ -1383,6 +1511,15 @@ class Basket extends CommonDBTM
                                 false,
                                 2,
                             );
+                        }
+                    } else {
+                        // No price set for this object: blank cells keep the columns aligned
+                        if ($with_quantity) {
+                            $values[$id][__('Unit', 'orderfollowup')] = '';
+                        }
+                        if ($with_price) {
+                            $values[$id][__('Unit price (HT)', 'orderfollowup')] = '';
+                            $values[$id][__('Total (HT)', 'orderfollowup')] = '';
                         }
                     }
                 }

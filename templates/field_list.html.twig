@@ -40,6 +40,7 @@
      data-md-field-list-preview-url="{{ preview_url }}"
      data-md-field-list-move-url="{{ move_url }}"
      data-md-field-list-mandatory-url="{{ mandatory_url }}"
+     data-md-field-list-active-url="{{ active_url }}"
      data-md-field-list-mandatory-error="{{ __('The field could not be updated.', 'metademands') }}"
      data-md-field-list-move-error="{{ __('The field could not be moved: the list is reloaded.', 'metademands') }}"
      data-md-field-list-parameters-url="{{ parameters_url }}"
@@ -239,7 +240,7 @@
                         <div class="collapse show" id="md-block-body-{{ panel.id }}">
                             <div class="md-fields" data-md-fields data-md-rank="{{ panel.id }}">
                                 {% for row in panel.rows %}
-                                    <div class="md-field" id="md-field-{{ row.id }}" data-md-field-id="{{ row.id }}"
+                                    <div class="md-field{{ row.is_active ? '' : ' md-field-inactive' }}" id="md-field-{{ row.id }}" data-md-field-id="{{ row.id }}"
                                          data-md-type="{{ row.type }}"
                                          data-md-search="{{ (row.label ~ ' ' ~ row.id ~ ' ' ~ row.type_label)|lower }}">
                                         {% if canedit %}
@@ -274,6 +275,21 @@
                                             {% for warning in row.warnings %}
                                                 <span class="badge bg-yellow text-yellow-fg"><i class="ti ti-alert-triangle me-1"></i>{{ warning }}</span>
                                             {% endfor %}
+                                            {% if canedit %}
+                                                {# Switched in place (field_list.js -> ajax/fieldactive.php): an inactive
+                                                 # field is left out of the wizard, the ticket and the PDF #}
+                                                <button type="button" class="badge border-0 md-active {{ row.is_active ? 'bg-green-lt' : 'bg-secondary-lt text-secondary' }}"
+                                                        data-md-field-active="{{ row.id }}"
+                                                        aria-pressed="{{ row.is_active ? 'true' : 'false' }}"
+                                                        data-md-label-on="{{ __('Active') }}"
+                                                        data-md-label-off="{{ __('Inactive') }}"
+                                                        title="{{ __('Click to activate or deactivate the field', 'metademands') }}">
+                                                    <i class="ti {{ row.is_active ? 'ti-eye' : 'ti-eye-off' }} me-1"></i>
+                                                    <span>{{ row.is_active ? __('Active') : __('Inactive') }}</span>
+                                                </button>
+                                            {% elseif not row.is_active %}
+                                                <span class="badge bg-secondary-lt text-secondary"><i class="ti ti-eye-off me-1"></i>{{ __('Inactive') }}</span>
+                                            {% endif %}
                                             {% if canedit and row.can_be_mandatory %}
                                                 {# Switched in place (field_list.js -> ajax/fieldmandatory.php) #}
                                                 <button type="button" class="badge border-0 md-mandatory {{ row.is_mandatory ? 'bg-red-lt' : 'bg-secondary-lt text-secondary' }}"

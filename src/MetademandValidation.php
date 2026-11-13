@@ -437,6 +437,25 @@ class MetademandValidation extends CommonDBTM
             }
         }
 
+        // Children of the values validated by a user chosen in the form: held until that
+        // user answers (FieldValidation), now that the metademand itself is validated
+        if (is_array($meta_tasks)
+            && in_array($create_subticket, [self::CREATE_SUBTICKETS, self::CREATE_TASKS], true)) {
+            $meta_tasks = Metademand::holdTasksForFieldValidation(
+                $meta->getID(),
+                $meta->getID(),
+                (int) $ticket_id,
+                $meta_tasks,
+                1,
+                [],
+                $values_form,
+                $ticket->fields,
+                $inputField,
+                $inputFieldMain,
+                $create_subticket === self::CREATE_TASKS,
+            );
+        }
+
         if ($create_subticket === self::CREATE_SUBTICKETS) {
             if (!Metademand::createSonsTickets(
                 $meta->getID(),

@@ -370,17 +370,32 @@ class TicketContentCellsTest extends DbTestCase
         $extra = ['id' => $field_id, 'plugin_metademands_metademands_id' => 0, 'value' => [$object_id => 1]];
         $content = $this->renderContent(Basket::class, 'Basket', '', true, $extra);
 
+        // "With quantity" disabled: no quantity column nor total, which would only show 1
         $td = '<td style="border: 1px solid black;">';
         $this->assertStringNotContainsString('<img', $content);
         $this->assertStringStartsWith('<tr><th style="border: 1px solid black;">', $content);
-        $this->assertStringContainsString(
-            '<tr>' . $td . 'REF-1</td>' . $td . '&lt;img src=x onerror=alert(1)&gt;&quot;&#039;</td>' . $td . 'Desc</td>' . $td . '1</td></tr>',
+        $this->assertStringNotContainsString('Quantity', $content);
+        $this->assertStringEndsWith(
+            '<tr>' . $td . 'REF-1</td>' . $td . '&lt;img src=x onerror=alert(1)&gt;&quot;&#039;</td>' . $td . 'Desc</td></tr>',
             $content,
         );
-        $this->assertStringEndsWith('<th style="border: 1px solid black;" colspan="3">Total</th>' . $td . '1.00</td></tr>', $content);
 
         $text = $this->renderContent(Basket::class, 'Basket', '', false, $extra);
-        $this->assertSame('REF-1' . htmlspecialchars(self::XSS_LABEL, ENT_QUOTES) . 'Desc11.00', $text);
+        $this->assertSame('REF-1' . htmlspecialchars(self::XSS_LABEL, ENT_QUOTES) . 'Desc', $text);
+
+        // "With quantity" enabled: the quantity chosen and the total
+        $DB->update(FieldParameter::getTable(), ['custom' => '["1","0"]'], ['plugin_metademands_fields_id' => $field_id]);
+        $_SESSION['plugin_metademands'][0]['quantities'][$field_id][$object_id] = 3;
+        try {
+            $content = $this->renderContent(Basket::class, 'Basket', '', true, $extra);
+        } finally {
+            unset($_SESSION['plugin_metademands'][0]['quantities']);
+        }
+        $this->assertStringContainsString(
+            '<tr>' . $td . 'REF-1</td>' . $td . '&lt;img src=x onerror=alert(1)&gt;&quot;&#039;</td>' . $td . 'Desc</td>' . $td . '3</td></tr>',
+            $content,
+        );
+        $this->assertStringEndsWith('<th style="border: 1px solid black;" colspan="3">Total</th>' . $td . '3.00</td></tr>', $content);
     }
 
     /**

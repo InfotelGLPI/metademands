@@ -198,7 +198,8 @@ if (isset($_POST['update_basket_line'])) {
     if (isset($_POST['field_basket_' . $line])) {
 
         $content = [];
-        $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['metademands_id']]);
+        // Inactive fields are not in the wizard
+        $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['metademands_id'], 'is_active' => 1]);
 
         foreach ($data as $id => $value) {
             if ($value['type'] == 'radio') {

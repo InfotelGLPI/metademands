@@ -213,7 +213,8 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
 
                                 $meta_field_for_block = new Field();
                                 $meta_field_ids_for_block = array_keys(
-                                    $meta_field_for_block->find(['plugin_metademands_metademands_id' => $meta_id_for_block]),
+                                    // The options of an inactive field show no block
+                                    $meta_field_for_block->find(['plugin_metademands_metademands_id' => $meta_id_for_block, 'is_active' => 1]),
                                 );
 
                                 if (!empty($meta_field_ids_for_block)) {

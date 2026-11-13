@@ -488,15 +488,30 @@ class MetademandPdf extends \TCPDF
 
     public function BasicTable($header, $data, $color = '')
     {
-        // Basket column schema: Reference, Designation, Description, Quantity, Unit,
-        // [Unit price (HT), Total (HT)]. The last two columns exist only when the basket
-        // field has "with unit price (HT)" enabled, so Basket::displayFieldPDF omits them
-        // otherwise. The table adapts to the actual number of columns instead of assuming 7,
-        // and the grand total row (which only makes sense with prices) is drawn accordingly.
+        // Basket columns, built by Basket::displayFieldPDF: [Reference], Designation,
+        // [Description], Quantity, [Unit], [Unit price (HT), Total (HT)]. The bracketed
+        // ones follow the options of the basket field (with reference, with description,
+        // with quantity, with unit price), so each column is identified by its title
+        // rather than by its position.
+        $header = array_values($header);
         $nb = count($header);
-        $all_w = [20, 80, 80, 15, 30, 30, 20]; //275
-        $w = array_slice($all_w, 0, $nb);
-        $has_price = $nb >= 7;
+        $designation = __('Designation', 'metademands');
+        $description = __('Description');
+        $unit = __('Unit', 'orderfollowup');
+        $unit_price = __('Unit price (HT)', 'orderfollowup');
+        $total_label = __('Total (HT)', 'orderfollowup');
+        $widths = [
+            __('Reference', 'metademands') => 20,
+            $designation => 80,
+            $description => 80,
+            __('Quantity', 'metademands') => 15,
+            $unit => 30,
+            $unit_price => 30,
+            $total_label => 20,
+        ]; // 275 with every column
+        $w = array_map(static fn($title) => $widths[$title] ?? 20, $header);
+        $total_index = array_search($total_label, $header, true);
+        $has_price = $total_index !== false;
 
         $draw_header = function () use ($header, $w, $nb) {
             $this->SetBackgroundColor($this->default_bgcolor);
@@ -524,13 +539,15 @@ class MetademandPdf extends \TCPDF
             }
             for ($i = 0; $i < $nb; $i++) {
                 $val = $row[$i] ?? '';
-                if (($i === 1 || $i === 2) && Toolbox::strlen($val) > 40) {
+                $title = $header[$i];
+                if (($title === $designation || $title === $description) && Toolbox::strlen($val) > 40) {
                     // Designation / Description: keep the cell on a single line.
                     $val = Toolbox::substr($val, 0, 40) . "...";
-                } elseif ($i === 4) {
+                } elseif ($title === $unit) {
                     $val = Toolbox::substr($val, 0, 20);
                 }
-                if ($has_price && ($i === 5 || $i === 6)) {
+                // Blank for an object without price (Basket::displayFieldPDF)
+                if (($title === $unit_price || $title === $total_label) && $val !== '') {
                     $val = $val . " " . EURO;
                 }
                 $this->Cell($w[$i], 6, $val, 'LR', 0, 'L', $fill);
@@ -538,8 +555,9 @@ class MetademandPdf extends \TCPDF
             $this->Ln();
             $fill = !$fill;
 
-            if ($has_price) {
-                $total += $row[6];
+            // A blank total would be a TypeError in the sum
+            if ($has_price && ($row[$total_index] ?? '') !== '') {
+                $total += $row[$total_index];
             }
         }
         // Closing line
@@ -551,7 +569,8 @@ class MetademandPdf extends \TCPDF
             // bottom of the page: break for it so it is never the part that gets dropped.
             $this->checkPageBreakFor(6);
 
-            $this->Cell(195, 6, "", 0, 0, 'C', true);
+            // Blank up to the last two columns (60 + 20 mm): 195 mm with every column.
+            $this->Cell(max(0, array_sum($w) - 80), 6, "", 0, 0, 'C', true);
             $grandtotal = __('Grand total (HT)', 'orderfollowup');
             $this->SetBackgroundColor($this->default_bgcolor);
             $this->Cell(60, 6, $grandtotal, 1, 0, 'C', true);

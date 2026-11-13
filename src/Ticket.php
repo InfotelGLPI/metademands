@@ -146,7 +146,8 @@ class Ticket extends CommonDBTM
             if ($ticket_metademand->getFromDBByCrit(['parent_tickets_id' => $ticket_parent_id])) {
                 $validationmeta = new MetademandValidation();
                 $validation     = $validationmeta->getFromDBByCrit(['tickets_id' => $ticket_parent_id]);
-                $validation_todo  = false;
+                // Child tickets waiting for the validation of a user chosen in the form
+                $validation_todo  = FieldValidation::hasWaiting((int) $ticket_parent_id);
                 if ($validation) {
                     if (in_array(
                         $validationmeta->fields['validate'],

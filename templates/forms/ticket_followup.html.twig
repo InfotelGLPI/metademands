@@ -25,6 +25,48 @@
  # --------------------------------------------------------------------------
  #}
 
+{# Child tickets held by the validation of a user chosen in the form (FieldValidation):
+   not created yet, or never (refused) #}
+{% if held_rows is not empty %}
+    <div class="card mt-2">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="ti ti-user-question me-1"></i>
+                {{ __('Child tickets subject to a validation', 'metademands') }}
+            </h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table card-table">
+                <thead>
+                    <tr>
+                        <th>{{ __('Ticket') }}</th>
+                        <th>{{ __('Approver') }}</th>
+                        <th>{{ __('Request date') }}</th>
+                        <th class="text-center">{{ __('Status') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in held_rows %}
+                        <tr>
+                            <td>{{ row.task_name }}</td>
+                            <td>{{ row.validator }}</td>
+                            <td>{{ row.date }}</td>
+                            <td class="text-center">
+                                {% if row.is_waiting %}
+                                    <i class="ti ti-hourglass-high" style="font-size:2em;color:orange"></i>
+                                {% else %}
+                                    <i class="ti ti-circle-x" style="font-size:2em;color:darkred"></i>
+                                {% endif %}
+                                {{ row.status_name }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}
+
 {% if not has_tickets %}
     <div class="alert alert-info center">
         {{ __('There is no childs tickets', 'metademands') }}

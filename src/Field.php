@@ -266,11 +266,13 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                         `item`                              varchar(255)                             DEFAULT NULL,
                         `plugin_metademands_fields_id`      int {$default_key_sign}        NOT NULL DEFAULT '0',
                         `plugin_metademands_metademands_id` int {$default_key_sign}        NOT NULL DEFAULT '0',
+                        `is_active`                         tinyint                         NOT NULL DEFAULT '1',
                         `date_creation`                     timestamp                       NULL     DEFAULT NULL,
                         `date_mod`                          timestamp                       NULL     DEFAULT NULL,
                         PRIMARY KEY (`id`),
                         KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
-                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+                        KEY `is_active` (`is_active`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->doQuery($query);
@@ -312,6 +314,15 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         }
         if (!$DB->fieldExists($table, "date_mod")) {
             $migration->addField($table, "date_mod", "timestamp NULL DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+
+        //version 3.7.2
+        // An inactive field is left out of the wizard, the ticket and the PDF, and its
+        // options have no effect: active by default, existing fields included
+        if (!$DB->fieldExists($table, "is_active")) {
+            $migration->addField($table, "is_active", "tinyint NOT NULL DEFAULT '1'", ['after' => 'plugin_metademands_metademands_id']);
+            $migration->addKey($table, "is_active");
             $migration->migrationOneTable($table);
         }
 
@@ -1037,6 +1048,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                         'url' => Toolbox::getItemTypeFormURL(__CLASS__) . "?id=" . $value['id'],
                         'type_label' => $type_label,
                         'base_type_label' => self::getFieldTypesName($value['type']),
+                        // Switched from the list itself (ajax/fieldactive.php)
+                        'is_active' => (int) ($value['is_active'] ?? 1) === 1,
                         'is_mandatory' => $fp_cur ? $fp_cur['is_mandatory'] == 1 : false,
                         // Switched from the list itself (ajax/fieldmandatory.php), as its form offers it
                         'can_be_mandatory' => $fp_cur
@@ -1089,6 +1102,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'preview_url' => $webdir . '/ajax/previewMetademand.php',
             'move_url' => $webdir . '/ajax/movefield.php',
             'mandatory_url' => $webdir . '/ajax/fieldmandatory.php',
+            'active_url' => $webdir . '/ajax/fieldactive.php',
             // Edited in place under the line of a field: its parameters, then its label
             'parameters_url' => $webdir . '/ajax/fieldparameters.php',
             // "Preview" button: the form as the requesters fill it, in a new browser tab
@@ -2750,6 +2764,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
     public function cleanDBonPurge()
     {
+        global $DB;
+
         $temp = new FieldParameter();
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
 
@@ -2782,6 +2798,13 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
         $temp = new Condition();
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
+
+        // Options of other fields whose validator was chosen in this field
+        $DB->update(
+            FieldOption::getTable(),
+            ['validation_fields_id' => 0],
+            ['validation_fields_id' => $this->fields['id']],
+        );
     }
 
     /**
@@ -2942,6 +2965,16 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'field' => 'is_recursive',
             'name' => __('Child entities'),
             'datatype' => 'bool',
+        ];
+
+        // Massive action of the list: (de)activate several fields at once
+        $tab[] = [
+            'id' => '887',
+            'table' => $this->getTable(),
+            'field' => 'is_active',
+            'name' => __('Active'),
+            'datatype' => 'bool',
+            'massiveaction' => true,
         ];
 
         return $tab;

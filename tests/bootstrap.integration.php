@@ -43,6 +43,19 @@ global $DB;
 if (!$DB->tableExists('glpi_plugin_metademands_metademands')) {
     require_once dirname(__DIR__) . '/hook.php';
     plugin_metademands_install();
+} elseif (!$DB->fieldExists('glpi_plugin_metademands_fieldoptions', 'validation_fields_id')
+    || !$DB->tableExists('glpi_plugin_metademands_fieldvalidations')
+    || !$DB->fieldExists('glpi_plugin_metademands_basketobjects', 'rank')
+    || !$DB->fieldExists('glpi_plugin_metademands_fieldvalidations', 'as_tasks')
+    || !$DB->fieldExists('glpi_plugin_metademands_fields', 'is_active')) {
+    // Tables kept from a previous run: apply the schema changes made since
+    $migration = new Migration(PLUGIN_METADEMANDS_VERSION);
+    \GlpiPlugin\Metademands\Field::install($migration);
+    \GlpiPlugin\Metademands\Basketobject::install($migration);
+    \GlpiPlugin\Metademands\FieldOption::install($migration);
+    \GlpiPlugin\Metademands\FieldValidation::install($migration);
+    // add() keeps only the columns it has cached: forget the ones read before the change
+    $DB->clearSchemaCache();
 }
 
 // The test environment does not activate the plugin, so its Twig namespace is missing:

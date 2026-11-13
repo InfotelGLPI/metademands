@@ -44,6 +44,7 @@ use GlpiPlugin\Metademands\Interticketfollowup;
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldTranslation;
+use GlpiPlugin\Metademands\FieldValidation;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\MetademandTranslation;
 use GlpiPlugin\Metademands\Metademand_Resource;
@@ -134,6 +135,8 @@ function plugin_init_metademands()
             // button of the custom values of a field
             $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = "scripts/field_list.js";
             $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = "scripts/field_customvalue_list.js";
+            // Display order of the references, in the options of a basket field
+            $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = "scripts/basket_order.js";
         }
 
         Plugin::registerClass(Metademand::class, ['addtabon' => 'Ticket']);
@@ -186,6 +189,14 @@ function plugin_init_metademands()
                 => [Ticket::class, 'post_update_ticket'],
             'ITILCategory'
                 => [TicketField::class, 'update_category_fields'],
+            // Answer to the validation of held child tickets
+            TicketValidation::class
+                => [FieldValidation::class, 'afterTicketValidationUpdate'],
+        ];
+
+        $PLUGIN_HOOKS[Hooks::ITEM_PURGE]['metademands'] = [
+            TicketValidation::class
+                => [FieldValidation::class, 'afterTicketValidationPurge'],
         ];
 
         $PLUGIN_HOOKS[Hooks::ITEM_ADD]['metademands'] = [

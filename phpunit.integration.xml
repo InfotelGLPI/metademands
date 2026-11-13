@@ -56,6 +56,9 @@
         <file>tests/StepformWaitingWarningTest.php</file>
         <file>tests/StepByBlockListTest.php</file>
         <file>tests/MetademandPdfLogoTest.php</file>
+        <file>tests/FieldValidationTest.php</file>
+        <file>tests/BasketobjectOrderTest.php</file>
+        <file>tests/FieldActiveTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

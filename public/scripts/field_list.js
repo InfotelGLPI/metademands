@@ -422,6 +422,56 @@ async function toggleMandatory(list, button) {
 }
 
 /**
+ * Activate or deactivate a field from its badge: an inactive field is left out of the
+ * wizard, the ticket and the PDF.
+ *
+ * @param {HTMLElement} list
+ * @param {HTMLButtonElement} button a [data-md-field-active] badge
+ */
+async function toggleActive(list, button) {
+    const wanted = button.getAttribute('aria-pressed') !== 'true';
+    button.disabled = true;
+
+    let saved = null;
+    try {
+        const response = await post(list.dataset.mdFieldListActiveUrl, {
+            id: button.dataset.mdFieldActive,
+            is_active: wanted ? 1 : 0,
+        });
+        const result = response.ok ? await response.json() : null;
+        saved = result !== null && result.success === true ? result.is_active === 1 : null;
+    } catch {
+        saved = null;
+    }
+    button.disabled = false;
+
+    if (saved === null) {
+        toastError(list.dataset.mdFieldListMandatoryError);
+        return;
+    }
+
+    button.setAttribute('aria-pressed', saved ? 'true' : 'false');
+    button.classList.toggle('bg-green-lt', saved);
+    button.classList.toggle('bg-secondary-lt', !saved);
+    button.classList.toggle('text-secondary', !saved);
+    const icon = button.querySelector('i');
+    if (icon !== null) {
+        icon.className = `ti ${saved ? 'ti-eye' : 'ti-eye-off'} me-1`;
+    }
+    const label = button.querySelector('span');
+    if (label !== null) {
+        label.textContent = (saved ? button.dataset.mdLabelOn : button.dataset.mdLabelOff) ?? '';
+    }
+
+    // The preview leaves the inactive fields out: refresh it when it shows this block
+    const row = button.closest('.md-field');
+    if (row !== null) {
+        row.classList.toggle('md-field-inactive', !saved);
+        refreshPreviewOf(list, row);
+    }
+}
+
+/**
  * Show a mandatory badge in its state.
  *
  * @param {HTMLElement} button a [data-md-field-mandatory] badge
@@ -859,6 +909,15 @@ document.addEventListener('click', (event) => {
         const row = rename.closest('.md-field');
         if (row !== null) {
             startRename(list, row);
+        }
+        return;
+    }
+
+    const active = target.closest('[data-md-field-active]');
+    if (active !== null) {
+        event.preventDefault();
+        if (!active.disabled) {
+            toggleActive(list, active);
         }
         return;
     }

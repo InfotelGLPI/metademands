@@ -166,6 +166,7 @@ class FieldOption extends CommonDBChild
                         `hidden_block`                 int {$default_key_sign} NOT NULL DEFAULT '0',
                         `hidden_block_same_block`      tinyint      NOT NULL DEFAULT '0',
                         `users_id_validate`            int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `validation_fields_id`         int {$default_key_sign} NOT NULL DEFAULT '0',
                         `childs_blocks`                varchar(255) NOT NULL DEFAULT '[]',
                         `checkbox_value`               int {$default_key_sign} NOT NULL DEFAULT '0',
                         `checkbox_id`                  int {$default_key_sign} NOT NULL DEFAULT '0',
@@ -198,6 +199,13 @@ class FieldOption extends CommonDBChild
         //version 3.6.0
         if (!$DB->fieldExists($table, "assign_tech_group")) {
             $migration->addField($table, "assign_tech_group", " varchar(255) NOT NULL DEFAULT '[]'");
+            $migration->migrationOneTable($table);
+        }
+
+        //version 3.7.2
+        // User field of the form whose value is the validator of the held child tickets
+        if (!$DB->fieldExists($table, "validation_fields_id")) {
+            $migration->addField($table, "validation_fields_id", " int {$default_key_sign} NOT NULL DEFAULT '0'", ['after' => 'users_id_validate']);
             $migration->migrationOneTable($table);
         }
     }
@@ -513,6 +521,12 @@ class FieldOption extends CommonDBChild
                     }
                 }
 
+                $validation_field = "";
+                if ((int) ($data['validation_fields_id'] ?? 0) > 0
+                    && $fields->getFromDB($data['validation_fields_id'])) {
+                    $validation_field = $fields->fields['rank'] . " - " . $fields->fields['name'];
+                }
+
                 $checkbox_name  = "";
                 $checkbox_value = "";
                 $checkbox_field = new Field();
@@ -538,6 +552,7 @@ class FieldOption extends CommonDBChild
                     'same_block'              => $data['hidden_block'] > 0 && $data['hidden_block_same_block'] == 1,
                     'childs_blocks'           => $childs_blocks,
                     'users_id_validate'       => getUserName((int) $data["users_id_validate"]),
+                    'validation_field'        => $validation_field,
                     'checkbox_name'           => $checkbox_name,
                     'checkbox_value'          => $checkbox_value,
                 ];
@@ -628,6 +643,7 @@ class FieldOption extends CommonDBChild
             'display_type' => ($item->fields['type'] == 'dropdown_multiple') ?? $metademand_params->fields['display_type'] ?? 0,
             'check_value' => $this->fields['check_value'] ?? 0,
             'users_id_validate' => $this->fields['users_id_validate'] ?? 0,
+            'validation_fields_id' => $this->fields['validation_fields_id'] ?? 0,
             'checkbox_id' => $this->fields['checkbox_id'] ?? 0,
             'checkbox_value' => $this->fields['checkbox_value'] ?? 0,
             'check_type_value' => $this->fields['check_type_value'] ?? 0,
@@ -687,6 +703,9 @@ class FieldOption extends CommonDBChild
                 }
                 if (isset($_POST['users_id_validate']) && empty($params['users_id_validate'])) {
                     $params['users_id_validate'] = $_POST['users_id_validate'];
+                }
+                if (isset($_POST['validation_fields_id']) && empty($params['validation_fields_id'])) {
+                    $params['validation_fields_id'] = (int) $_POST['validation_fields_id'];
                 }
                 if (isset($_POST['checkbox_id']) && empty($params['checkbox_id'])) {
                     $params['checkbox_id'] = $_POST['checkbox_id'];
@@ -1366,6 +1385,23 @@ class FieldOption extends CommonDBChild
                 $blocks[] = ['kind' => 'hidden', 'name' => 'users_id_validate', 'value' => 0];
             }
 
+            // Validator chosen in the form: the child tickets of the tasks of this value wait
+            // for the answer of the user selected in a User field (FieldValidation)
+            if ($task) {
+                $blocks[] = self::getLinkBlock(
+                    __('Validation of the child tickets by the user of a field', 'metademands'),
+                    __(
+                        'If the value selected equals the value to check, the child tickets of the tasks of this value are only created once the user chosen in this field approves them',
+                        'metademands',
+                    ),
+                    [self::linkWidget('Dropdown::showFromArray', [
+                        'validation_fields_id',
+                        [0 => Dropdown::EMPTY_VALUE] + FieldValidation::getValidatorFieldChoices((int) $metademands_id),
+                        ['value' => $params['validation_fields_id'] ?? 0],
+                    ])],
+                );
+            }
+
             $checkboxarray = [];
             if ($params['check_value'] != "") {
                 foreach ($fieldoptions->find([
@@ -1923,6 +1959,13 @@ class FieldOption extends CommonDBChild
         $any    = $options['any'] ?? [];
         $negate = $options['negate'] ?? [];
 
+        // Options of the active fields of the metademand only: an inactive field controls
+        // no block, nor do the fields of the other metademands
+        $active_fields_ids = array_keys((new Field())->find([
+            'plugin_metademands_metademands_id' => (int) ($data['plugin_metademands_metademands_id'] ?? 0),
+            'is_active'                         => 1,
+        ]));
+
         $rules = [];
         $ranks = [];
         // Child blocks no field option controls are opened with their parent value
@@ -1951,7 +1994,11 @@ class FieldOption extends CommonDBChild
 
             $open = [];
             foreach ($childs as $child) {
-                $controlled[$child] ??= countElementsInTable(self::getTable(), ['hidden_block' => $child]) > 0;
+                $controlled[$child] ??= $active_fields_ids !== []
+                    && countElementsInTable(self::getTable(), [
+                        'hidden_block'                 => $child,
+                        'plugin_metademands_fields_id' => $active_fields_ids,
+                    ]) > 0;
                 if (!$controlled[$child]) {
                     $open[] = $child;
                 }
@@ -1979,7 +2026,7 @@ class FieldOption extends CommonDBChild
         // Mandatory fields of the blocks, required while their block is shown
         $mandatory = [];
         $ranks     = array_values(array_unique($ranks));
-        $fields    = (new Field())->find(['plugin_metademands_metademands_id' => $metaid, 'rank' => $ranks]);
+        $fields    = (new Field())->find(['plugin_metademands_metademands_id' => $metaid, 'rank' => $ranks, 'is_active' => 1]);
         if (count($fields) > 0) {
             $parameters = (new FieldParameter())->find([
                 'plugin_metademands_fields_id' => array_keys($fields),
@@ -2270,6 +2317,7 @@ class FieldOption extends CommonDBChild
         if (isset($input['childs_blocks'])) {
             $input['childs_blocks'] = self::normalizeChildsBlocks($input['childs_blocks']);
         }
+        $input = $this->filterValidationField($input);
 
         // CommonDBChild resolves the parent and the entity here, and may refuse the input.
         return parent::prepareInputForAdd($input);
@@ -2280,8 +2328,38 @@ class FieldOption extends CommonDBChild
         if (isset($input['childs_blocks'])) {
             $input['childs_blocks'] = self::normalizeChildsBlocks($input['childs_blocks']);
         }
+        $input = $this->filterValidationField($input);
 
         return parent::prepareInputForUpdate($input);
+    }
+
+    /**
+     * The validator field must be a user field of the same metademand
+     * (FieldValidation::getValidatorFieldChoices()): any other value is dropped.
+     */
+    private function filterValidationField(array $input): array
+    {
+        if (!isset($input['validation_fields_id'])) {
+            return $input;
+        }
+
+        $validation_fields_id = (int) $input['validation_fields_id'];
+        $input['validation_fields_id'] = 0;
+        if ($validation_fields_id <= 0) {
+            return $input;
+        }
+
+        $field = new Field();
+        $fields_id = (int) ($input['plugin_metademands_fields_id'] ?? $this->fields['plugin_metademands_fields_id'] ?? 0);
+        if ($field->getFromDB($fields_id)
+            && FieldValidation::isValidatorField(
+                $validation_fields_id,
+                (int) $field->fields['plugin_metademands_metademands_id'],
+            )) {
+            $input['validation_fields_id'] = $validation_fields_id;
+        }
+
+        return $input;
     }
 
     /**
