@@ -484,7 +484,9 @@ class FieldParameter extends CommonDBChild
                     if (Plugin::isPluginActive($plug)) {
                         $new_fields = self::addPluginAllowedFieldItems($plug);
                         if (is_array($new_fields) && count($new_fields) > 0) {
-                            $allowed_fields = array_merge($allowed_fields, $new_fields);
+                            // Keyed by search option id: array_merge() renumbered them, an id the
+                            // plugin added (66, observer, by requestevolutions) then went missing
+                            $allowed_fields = array_replace($allowed_fields, $new_fields);
                             unset($allowed_fields[-1]);
                         }
                     }
@@ -561,7 +563,7 @@ class FieldParameter extends CommonDBChild
                 }
             }
             if (isset($ticket_fields[Metademand::LINKED_TICKETS_OPTION])) {
-                $ticket_fields[Metademand::LINKED_TICKETS_OPTION] = __('Linked tickets');
+                $ticket_fields[Metademand::LINKED_TICKETS_OPTION] = __('Linked tickets', 'metademands');
             }
 
         }

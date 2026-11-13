@@ -2808,12 +2808,23 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         $temp = new Condition();
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
 
-        // Options of other fields whose validator was chosen in this field
-        $DB->update(
-            FieldOption::getTable(),
-            ['validation_fields_id' => 0],
-            ['validation_fields_id' => $this->fields['id']],
-        );
+        // Options of other fields whose validators were chosen in this field among others
+        $purged_id = (int) $this->fields['id'];
+        foreach ($DB->request([
+            'SELECT' => ['id', 'validation_fields_ids'],
+            'FROM'   => FieldOption::getTable(),
+            'WHERE'  => ['validation_fields_ids' => ['LIKE', '%' . $purged_id . '%']],
+        ]) as $option) {
+            $ids  = FieldOption::getValidationFieldsIds($option);
+            $kept = array_values(array_filter($ids, static fn(int $id) => $id !== $purged_id));
+            if ($kept !== $ids) {
+                $DB->update(
+                    FieldOption::getTable(),
+                    ['validation_fields_ids' => json_encode($kept)],
+                    ['id' => $option['id']],
+                );
+            }
+        }
     }
 
     /**

@@ -41,12 +41,13 @@ use User;
 /**
  * Child tickets held until a GLPI validation of the parent ticket is answered.
  *
- * A field option may designate its validator through a User field of the form
- * (FieldOption.validation_fields_id): when the option value is selected, the
- * child tickets of the tasks of this value are not created with the others
- * (Metademand::holdTasksForFieldValidation()). They are kept here, a native
- * TicketValidation is requested on the parent ticket, and the answer of the
- * validator creates them (accepted) or drops them (refused, request deleted).
+ * A field option may designate its validators through User fields of the form, single
+ * or multiple (FieldOption.validation_fields_ids): when the option value is selected,
+ * the child tickets of the tasks of this value are not created with the others
+ * (Metademand::holdTasksForFieldValidation()). They are kept here, and a native
+ * TicketValidation is requested on the parent ticket to each user of those fields.
+ * They are created once every validator accepted; one refusal, or a request deleted,
+ * drops them.
  */
 class FieldValidation extends CommonDBTM
 {
@@ -75,8 +76,8 @@ class FieldValidation extends CommonDBTM
                         `id`                                int {$default_key_sign} NOT NULL auto_increment,
                         `tickets_id`                        int {$default_key_sign} NOT NULL DEFAULT '0',
                         `plugin_metademands_metademands_id` int {$default_key_sign} NOT NULL DEFAULT '0',
-                        `ticketvalidations_id`              int {$default_key_sign} NOT NULL DEFAULT '0',
-                        `users_id_validate`                 int {$default_key_sign} NOT NULL DEFAULT '0',
+                        `ticketvalidations_ids`             longtext,
+                        `users_ids_validate`                longtext,
                         `status`                            tinyint      NOT NULL DEFAULT '0',
                         `tasklevel`                         int          NOT NULL DEFAULT '1',
                         `as_tasks`                          tinyint      NOT NULL DEFAULT '0',
@@ -89,8 +90,6 @@ class FieldValidation extends CommonDBTM
                         PRIMARY KEY (`id`),
                         KEY `tickets_id` (`tickets_id`),
                         KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
-                        KEY `ticketvalidations_id` (`ticketvalidations_id`),
-                        KEY `users_id_validate` (`users_id_validate`),
                         KEY `status` (`status`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
@@ -103,6 +102,27 @@ class FieldValidation extends CommonDBTM
             $migration->addField($table, 'as_tasks', "tinyint NOT NULL DEFAULT '0'", ['after' => 'tasklevel']);
             $migration->migrationOneTable($table);
         }
+
+        // Several validators: one validation request to each of them, as JSON lists
+        if (!$DB->fieldExists($table, 'ticketvalidations_ids')) {
+            $migration->addField($table, 'ticketvalidations_ids', 'longtext', ['after' => 'plugin_metademands_metademands_id']);
+            $migration->addField($table, 'users_ids_validate', 'longtext', ['after' => 'ticketvalidations_ids']);
+            $migration->migrationOneTable($table);
+        }
+        // The single validator of the first version joins the lists
+        if ($DB->fieldExists($table, 'ticketvalidations_id')) {
+            foreach ($DB->request(['FROM' => $table]) as $row) {
+                $DB->update($table, [
+                    'ticketvalidations_ids' => json_encode(array_values(array_filter([(int) $row['ticketvalidations_id']]))),
+                    'users_ids_validate'    => json_encode(array_values(array_filter([(int) $row['users_id_validate']]))),
+                ], ['id' => $row['id']]);
+            }
+            $migration->dropKey($table, 'ticketvalidations_id');
+            $migration->dropKey($table, 'users_id_validate');
+            $migration->dropField($table, 'ticketvalidations_id');
+            $migration->dropField($table, 'users_id_validate');
+            $migration->migrationOneTable($table);
+        }
     }
 
     public static function uninstall()
@@ -113,8 +133,8 @@ class FieldValidation extends CommonDBTM
     }
 
     /**
-     * User fields of a metademand that may designate the validator: a single user
-     * picker (dropdown_object on User), so that one validation is requested.
+     * User fields of a metademand that may designate validators: single user pickers
+     * (dropdown_object) and multiple ones (dropdown_multiple), each user validating.
      *
      * @return array<int, string> field id => "rank - name"
      */
@@ -124,7 +144,7 @@ class FieldValidation extends CommonDBTM
         $field   = new Field();
         foreach ($field->find([
             'plugin_metademands_metademands_id' => $metademands_id,
-            'type'                              => 'dropdown_object',
+            'type'                              => ['dropdown_object', 'dropdown_multiple'],
             'item'                              => User::getType(),
             // Not in the wizard: nobody to choose
             'is_active'                         => 1,
@@ -147,12 +167,12 @@ class FieldValidation extends CommonDBTM
      * Tasks whose child tickets wait for a validation, given the values saved for the
      * parent ticket.
      *
-     * An option carrying a validator field (FieldOption.validation_fields_id) holds the
+     * An option carrying validator fields (FieldOption.validation_fields_ids) holds the
      * tasks of every option of its value: same field, same value to check. The value is
      * tested as Ticket_Field::checkTicketCreation() tests it for the creation of the
      * tasks, so a held task is one that would have been created.
      *
-     * @return array<int, int> tasks id => validator field id
+     * @return array<int, int[]> tasks id => validator field ids, sorted
      */
     public static function getHeldTaskFields(int $metademands_id, int $tickets_id): array
     {
@@ -169,10 +189,14 @@ class FieldValidation extends CommonDBTM
 
         $held = [];
         foreach ($options as $data) {
-            $validation_fields_id = (int) ($data['validation_fields_id'] ?? 0);
-            if ($validation_fields_id <= 0 || !isset($validator_fields[$validation_fields_id])) {
+            $validation_fields_ids = array_values(array_filter(
+                FieldOption::getValidationFieldsIds($data),
+                static fn(int $id) => isset($validator_fields[$id]),
+            ));
+            if ($validation_fields_ids === []) {
                 continue;
             }
+            sort($validation_fields_ids);
 
             $fields_id = (int) $data['plugin_metademands_fields_id'];
             $saved     = new Ticket_Field();
@@ -195,7 +219,7 @@ class FieldValidation extends CommonDBTM
                     && ($same_value['check_type_value'] ?? 1) == ($data['check_type_value'] ?? 1)
                     && (string) ($same_value['check_value_regex'] ?? '') === (string) ($data['check_value_regex'] ?? '')
                     && !isset($held[$tasks_id])) {
-                    $held[$tasks_id] = $validation_fields_id;
+                    $held[$tasks_id] = $validation_fields_ids;
                 }
             }
         }
@@ -217,10 +241,29 @@ class FieldValidation extends CommonDBTM
             'tickets_id' => $tickets_id,
             'status'     => [self::WAITING, self::REFUSED],
         ], ['id']) as $data) {
+            $held = new self();
+            $held->fields = $data;
             $is_waiting = (int) $data['status'] === self::WAITING;
             $tasks      = json_decode($data['tickets_to_create'] ?? '', true);
             if (!is_array($tasks)) {
                 continue;
+            }
+
+            $validators = implode(', ', array_map(
+                static fn(int $users_id) => getUserName($users_id),
+                self::decodeIds($data['users_ids_validate'] ?? ''),
+            ));
+            $status_name = CommonITILValidation::getStatus(
+                $is_waiting ? CommonITILValidation::WAITING : CommonITILValidation::REFUSED,
+            );
+            // Several validators: how many already accepted
+            $statuses = $held->getValidationStatuses();
+            if ($is_waiting && count($statuses) > 1) {
+                $status_name .= sprintf(
+                    ' (%d/%d)',
+                    count(array_filter($statuses, static fn(int $status) => $status === CommonITILValidation::ACCEPTED)),
+                    count($statuses),
+                );
             }
 
             foreach ($tasks as $task) {
@@ -230,17 +273,68 @@ class FieldValidation extends CommonDBTM
                 }
                 $rows[] = [
                     'task_name'   => Metademand::$SON_PREFIX . ($task['tickettasks_name'] ?? ''),
-                    'validator'   => getUserName((int) $data['users_id_validate']),
+                    'validator'   => $validators,
                     'date'        => Html::convDateTime($data['date_creation']),
                     'is_waiting'  => $is_waiting,
-                    'status_name' => CommonITILValidation::getStatus(
-                        $is_waiting ? CommonITILValidation::WAITING : CommonITILValidation::REFUSED,
-                    ),
+                    'status_name' => $status_name,
                 ];
             }
         }
 
         return $rows;
+    }
+
+    /**
+     * Positive ids of a JSON list.
+     *
+     * @return int[]
+     */
+    private static function decodeIds(?string $json): array
+    {
+        $ids = json_decode((string) $json, true);
+
+        return is_array($ids) ? array_values(array_filter(array_map('intval', $ids), static fn(int $id) => $id > 0)) : [];
+    }
+
+    /**
+     * Status of each validation requested for the held child tickets, by validation id:
+     * a validation deleted since is missing.
+     *
+     * @return array<int, int>
+     */
+    private function getValidationStatuses(): array
+    {
+        $ids = self::decodeIds($this->fields['ticketvalidations_ids'] ?? '');
+        if ($ids === []) {
+            return [];
+        }
+
+        $statuses = [];
+        foreach ((new \TicketValidation())->find(['id' => $ids]) as $id => $validation) {
+            $statuses[(int) $id] = (int) $validation['status'];
+        }
+
+        return $statuses;
+    }
+
+    /**
+     * The held child tickets still waiting for this validation.
+     */
+    private static function findWaitingFor(\TicketValidation $validation): ?self
+    {
+        foreach ((new self())->find([
+            'tickets_id' => (int) $validation->fields['tickets_id'],
+            'status'     => self::WAITING,
+        ]) as $data) {
+            if (in_array($validation->getID(), self::decodeIds($data['ticketvalidations_ids'] ?? ''), true)) {
+                $held = new self();
+                $held->getFromDB((int) $data['id']);
+
+                return $held;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -255,11 +349,11 @@ class FieldValidation extends CommonDBTM
     }
 
     /**
-     * Request the validation of held child tickets on the parent ticket.
+     * Request the validation of held child tickets on the parent ticket, to each validator.
      *
      * @param int   $tickets_id        parent ticket
      * @param int   $metademands_id    metademand creating the children
-     * @param int   $users_id_validate validator
+     * @param int[] $users_ids         validators, each one must accept
      * @param array $tasks             task rows as given to Metademand::createSonsTickets()
      * @param array $parent_fields     parent fields as given to Metademand::createSonsTickets()
      * @param int   $tasklevel         level of the tasks
@@ -272,7 +366,7 @@ class FieldValidation extends CommonDBTM
     public static function hold(
         int $tickets_id,
         int $metademands_id,
-        int $users_id_validate,
+        array $users_ids,
         array $tasks,
         array $parent_fields,
         int $tasklevel,
@@ -280,30 +374,44 @@ class FieldValidation extends CommonDBTM
         array $input_field_main,
         bool $as_tasks = false,
     ): bool {
-        $validation = new \TicketValidation();
-        $validations_id = $validation->add([
-            'tickets_id'         => $tickets_id,
-            'itemtype_target'    => User::class,
-            'items_id_target'    => $users_id_validate,
-            'comment_submission' => sprintf(
-                htmlescape(__('Validation of the child tickets: %s', 'metademands')),
-                htmlescape(self::getTaskNames($tasks, $tasklevel)),
-            ),
-        ]);
-        if (!$validations_id) {
-            trigger_error(sprintf(
-                'metademands: the validation of the held child tickets of ticket %d could not be requested',
-                $tickets_id,
-            ), E_USER_WARNING);
+        $users_ids = array_values(array_unique(array_filter(array_map('intval', $users_ids), static fn(int $id) => $id > 0)));
+        if ($users_ids === []) {
             return false;
+        }
+
+        $comment = sprintf(
+            htmlescape(__('Validation of the child tickets: %s', 'metademands')),
+            htmlescape(self::getTaskNames($tasks, $tasklevel)),
+        );
+        $validation     = new \TicketValidation();
+        $validations_id = [];
+        foreach ($users_ids as $users_id) {
+            $id = $validation->add([
+                'tickets_id'         => $tickets_id,
+                'itemtype_target'    => User::class,
+                'items_id_target'    => $users_id,
+                'comment_submission' => $comment,
+            ]);
+            if (!$id) {
+                trigger_error(sprintf(
+                    'metademands: the validation of the held child tickets of ticket %d could not be requested',
+                    $tickets_id,
+                ), E_USER_WARNING);
+                // All or nothing: the children are created at once instead
+                foreach ($validations_id as $requested) {
+                    $validation->delete(['id' => $requested], true);
+                }
+                return false;
+            }
+            $validations_id[] = (int) $id;
         }
 
         $held = new self();
         if (!$held->add([
             'tickets_id'                        => $tickets_id,
             'plugin_metademands_metademands_id' => $metademands_id,
-            'ticketvalidations_id'              => $validations_id,
-            'users_id_validate'                 => $users_id_validate,
+            'ticketvalidations_ids'             => json_encode($validations_id),
+            'users_ids_validate'                => json_encode($users_ids),
             'status'                            => self::WAITING,
             'tasklevel'                         => $tasklevel,
             'as_tasks'                          => (int) $as_tasks,
@@ -312,8 +420,10 @@ class FieldValidation extends CommonDBTM
             'input_field'                       => json_encode($input_field, JSON_INVALID_UTF8_SUBSTITUTE),
             'input_field_main'                  => json_encode($input_field_main, JSON_INVALID_UTF8_SUBSTITUTE),
         ])) {
-            // Nothing would answer it: the children are created at once instead
-            $validation->delete(['id' => $validations_id], true);
+            // Nothing would answer them: the children are created at once instead
+            foreach ($validations_id as $requested) {
+                $validation->delete(['id' => $requested], true);
+            }
             return false;
         }
 
@@ -336,7 +446,8 @@ class FieldValidation extends CommonDBTM
     }
 
     /**
-     * ITEM_UPDATE hook of TicketValidation: create or drop the held child tickets.
+     * ITEM_UPDATE hook of TicketValidation: create the held child tickets once every
+     * validator accepted, drop them on the first refusal.
      */
     public static function afterTicketValidationUpdate(\TicketValidation $validation): void
     {
@@ -349,18 +460,21 @@ class FieldValidation extends CommonDBTM
             return;
         }
 
-        $held = new self();
-        if (!$held->getFromDBByCrit([
-            'ticketvalidations_id' => $validation->getID(),
-            'status'               => self::WAITING,
-        ])) {
+        $held = self::findWaitingFor($validation);
+        if ($held === null) {
             return;
         }
 
-        if ($status === CommonITILValidation::ACCEPTED) {
-            $held->createHeldTickets();
-        } else {
+        if ($status === CommonITILValidation::REFUSED) {
             $held->refuse($validation);
+            return;
+        }
+
+        // Every validation requested still there, and accepted
+        $statuses = $held->getValidationStatuses();
+        if (count($statuses) === count(self::decodeIds($held->fields['ticketvalidations_ids'] ?? ''))
+            && count(array_filter($statuses, static fn(int $s) => $s !== CommonITILValidation::ACCEPTED)) === 0) {
+            $held->createHeldTickets();
         }
     }
 
@@ -443,11 +557,8 @@ class FieldValidation extends CommonDBTM
      */
     public static function afterTicketValidationPurge(\TicketValidation $validation): void
     {
-        $held = new self();
-        if (!$held->getFromDBByCrit([
-            'ticketvalidations_id' => $validation->getID(),
-            'status'               => self::WAITING,
-        ])) {
+        $held = self::findWaitingFor($validation);
+        if ($held === null) {
             return;
         }
 

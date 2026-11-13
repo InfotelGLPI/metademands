@@ -3545,3 +3545,7 @@ msgstr "affiché par"
 #: ⁨standard input⁩:42
 msgid "to complete"
 msgstr "à compléter"
+
+#: src/FieldParameter.php:564
+msgid "Linked tickets"
+msgstr "Tickets liés"

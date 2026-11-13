@@ -1964,7 +1964,10 @@ class Export extends CommonDBTM
             $hidden_link = $old["hidden_link"] ?? 0;
             $hidden_block = $old["hidden_block"] ?? 0;
             $users_id_validate = $old["users_id_validate"] ?? 0;
-            $validation_fields_id = $old["validation_fields_id"] ?? 0;
+            // A list since validators may be several; a single id in the archives of the first version
+            $validation_fields_ids = isset($old["validation_fields_ids"])
+                ? FieldOption::getValidationFieldsIds($old)
+                : array_filter([(int) ($old["validation_fields_id"] ?? 0)]);
             $childs_blocks = $old["childs_blocks"] ?? [];
             $checkbox_value = $old["checkbox_value"] ?? 0;
             $checkbox_id = $old["checkbox_id"] ?? 0;
@@ -2012,8 +2015,12 @@ class Export extends CommonDBTM
             if ($users_id_validate != 0) {
                 $toUpdate["users_id_validate"] = $users_id_validate;
             }
-            if ($validation_fields_id != 0 && isset($mapTableField[$validation_fields_id])) {
-                $toUpdate["validation_fields_id"] = $mapTableField[$validation_fields_id];
+            $validation_fields_ids = array_values(array_filter(array_map(
+                static fn(int $id) => $mapTableField[$id] ?? 0,
+                $validation_fields_ids,
+            )));
+            if ($validation_fields_ids !== []) {
+                $toUpdate["validation_fields_ids"] = json_encode($validation_fields_ids);
             }
             // A flat list ([1]) is the value left by 3.6.15 (issue #367) on instances not updated
             // since: it hid no block there, while normalizeChildsBlocks() would make it a group
