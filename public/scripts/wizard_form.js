@@ -1427,6 +1427,16 @@
         if (config.inner.includes(key)) {
             $('[id-field="field' + key + '"] div input').first().attr('required', 'required');
         }
+        // Basket: its inputs are named after their reference, as the mandatory check of the
+        // form (metademands.js) reads them: a quantity above zero, or a box checked
+        const basket = (config.baskets || {})[key];
+        if (basket === 'quantity') {
+            $('select[name^="' + CSS.escape('quantity[' + key + ']') + '"]')
+                .attr({required: 'required', ismultiplenumber: 'ismultiplenumber'});
+        } else if (basket === 'checked') {
+            $('input[type="checkbox"][name^="' + CSS.escape('field[' + key + ']') + '"]').first()
+                .attr('required', 'required');
+        }
     }
 
     /**

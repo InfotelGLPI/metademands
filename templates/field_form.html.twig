@@ -59,6 +59,29 @@
     <div class="card mt-2">
         <div class="card-body">
 
+            {# Active / inactive, saved with the form: an inactive field is left out of the
+               wizard, the ticket and the PDF (the indicator follows the switch, see
+               .md-active-switch in metademands.css) #}
+            <div class="row mb-3">
+                <label class="col-4 col-form-label fw-bold" for="md-field-is-active">{{ __('Active') }}</label>
+                <div class="col-8">
+                    <label class="form-check form-switch mt-2 mb-0 md-active-switch">
+                        <input type="hidden" name="is_active" value="0">
+                        <input type="checkbox" class="form-check-input" id="md-field-is-active"
+                               name="is_active" value="1"{{ is_active ? ' checked' }}>
+                        <span class="form-check-label md-active-on">
+                            <span class="badge bg-green-lt"><i class="ti ti-eye me-1"></i>{{ __('Active') }}</span>
+                        </span>
+                        <span class="form-check-label md-active-off">
+                            <span class="badge bg-secondary-lt text-secondary"><i class="ti ti-eye-off me-1"></i>{{ __('Inactive') }}</span>
+                        </span>
+                    </label>
+                    <div class="form-text">
+                        {{ __('An inactive field is left out of the wizard, the ticket and the PDF, and its options have no effect', 'metademands') }}
+                    </div>
+                </div>
+            </div>
+
             {# Libellé #}
             <div class="row mb-3">
                 <label class="col-4 col-form-label fw-bold">

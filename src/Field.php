@@ -99,6 +99,8 @@ use RSSFeed;
 use Search;
 use Session;
 use Software;
+use SoftwareLicense;
+use SoftwareVersion;
 use Supplier;
 use TicketRecurrent;
 use Toolbox;
@@ -764,6 +766,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'metademand_id'          => $this->fields['plugin_metademands_metademands_id'],
             'field_id'               => $this->fields['id'] ?? 0,
             'is_new'                 => $ID < 1,
+            // Active by default, also for a new field
+            'is_active'              => (int) ($this->fields['is_active'] ?? 1) === 1,
             'entities_id'            => $entities_id,
             'is_recursive'           => $is_recursive,
             'item_name'              => stripslashes($this->fields['name'] ?? ''),
@@ -2691,6 +2695,15 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
 
     /**
+     * A new field is active: getEmpty() leaves every column empty, whatever its default
+     * in the table (the switch of the form, Field::showForm(), reads it).
+     */
+    public function post_getEmpty()
+    {
+        $this->fields['is_active'] = 1;
+    }
+
+    /**
      * @param array $input
      *
      * @return array|bool
@@ -3469,6 +3482,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 Computer::class => Computer::getTypeName(2),
                 Monitor::class => Monitor::getTypeName(2),
                 Software::class => Software::getTypeName(2),
+                SoftwareVersion::class => SoftwareVersion::getTypeName(2),
                 NetworkEquipment::class => NetworkEquipment::getTypeName(2),
                 Peripheral::class => Peripheral::getTypeName(2),
                 Printer::class => Printer::getTypeName(2),
@@ -3488,6 +3502,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 Contact::class => Contact::getTypeName(2),
                 Contract::class => Contract::getTypeName(2),
                 Document::class => Document::getTypeName(2),
+                SoftwareLicense::class => SoftwareLicense::getTypeName(2),
                 Project::class => Project::getTypeName(2),
                 Appliance::class => Appliance::getTypeName(2),
             ],

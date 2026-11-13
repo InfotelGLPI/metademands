@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands\Tests;
 
 use Glpi\Tests\DbTestCase;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Fields\Checkbox;
 use GlpiPlugin\Metademands\Fields\Dropdown;
 use GlpiPlugin\Metademands\Fields\Text;
@@ -159,6 +160,49 @@ class MandatoryTriggerTest extends DbTestCase
             'options' => [1 => ['fields_link' => [$linked->getID()]]],
         ]));
         $this->assertSame([$linked->getID()], $config['inner']);
+    }
+
+    /**
+     * A basket has no field[<id>] input: its boxes are field[<id>][<reference>], its
+     * quantities quantity[<id>][<reference>]. The trigger names the mode of each basket
+     * it makes mandatory, for wizard_form.js to flag those inputs.
+     */
+    public function testLinkedBasketFieldsGiveTheirMode(): void
+    {
+        $this->login();
+
+        $metademand = $this->createItem(Metademand::class, [
+            'name'             => 'Mandatory basket',
+            'entities_id'      => $this->getTestRootEntity(true),
+            'object_to_create' => 'Ticket',
+            'type'             => 0,
+        ]);
+        $basket = fn(string $custom) => $this->createItem(Field::class, [
+            'plugin_metademands_metademands_id' => $metademand->getID(),
+            'type'                              => 'basket',
+            'item'                              => 1,
+            'name'                              => 'Basket',
+            'rank'                              => 1,
+            'order'                             => 1,
+            'entities_id'                       => $this->getTestRootEntity(true),
+        ], ['order', 'item'])->getID();
+        $boxes      = $basket('["0","0"]');
+        $quantities = $basket('["1","0"]');
+        foreach ([$boxes => '["0","0"]', $quantities => '["1","0"]'] as $fields_id => $custom) {
+            $this->createItem(FieldParameter::class, [
+                'plugin_metademands_fields_id' => $fields_id,
+                'custom'                       => $custom,
+            ], ['custom']);
+        }
+
+        $config = $this->config($this->render(Text::class, [
+            'options' => [1 => ['fields_link' => [$boxes, $quantities]]],
+        ]));
+        $this->assertSame([$boxes => 'checked', $quantities => 'quantity'], $config['baskets']);
+
+        // No basket linked: an empty object, not a list
+        $html = $this->render(Text::class, ['options' => [1 => ['fields_link' => [7]]]]);
+        $this->assertStringContainsString('&quot;baskets&quot;:{}', $html);
     }
 
     public function testNothingIsEmittedWithoutLinksOrForRichText(): void

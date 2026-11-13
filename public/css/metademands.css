@@ -2019,3 +2019,10 @@ select.md-yesno-buttons[data-md-yesno]:not(.select2-hidden-accessible) {
 .table.md-plain-headers thead th {
     text-transform: none;
 }
+
+/* Active / inactive switch of the field form (templates/field_form.html.twig): only the
+   indicator matching the switch is shown */
+.md-active-switch input:checked ~ .md-active-off,
+.md-active-switch input:not(:checked) ~ .md-active-on {
+    display: none;
+}

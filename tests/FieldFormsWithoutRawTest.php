@@ -104,12 +104,20 @@ class FieldFormsWithoutRawTest extends DbTestCase
         }
         $this->assertStringContainsString('id="show_order"', $html);
         $this->assertStringContainsString('id="show_item"', $html);
+        // Active / inactive switch, saved with the form
+        $this->assertMatchesRegularExpression('/name="is_active" value="1" checked/', $html);
+
+        $field->update(['id' => $field->getID(), 'is_active' => 0]);
+        $html = $this->capture(fn() => (new Field())->showForm($field->getID()));
+        $this->assertStringContainsString('name="is_active" value="1">', $html);
 
         $html = $this->capture(fn() => (new Field())->showForm(-1, ['parent' => $metademand]));
         foreach (['type', 'rank', 'plugin_metademands_fields_id'] as $name) {
             $this->assertHasName($name, $html);
         }
         $this->assertMatchesRegularExpression('/id=[\'"]dropdown_type\d+[\'"]/', $html);
+        // A new field is active
+        $this->assertMatchesRegularExpression('/name="is_active" value="1" checked/', $html);
 
         $html = $this->capture(fn() => (new Field())->showExistingForm(-1, ['parent' => $metademand]));
         foreach (['type', 'rank', 'plugin_metademands_fields_id'] as $name) {
