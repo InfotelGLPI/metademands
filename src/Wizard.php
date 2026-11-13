@@ -299,32 +299,20 @@ class Wizard extends CommonDBTM
         $title_color       = "#000";
         $background_color  = "#000";
         $style_title_color = "";
-        if (!empty($meta->fields['title_color'])) {
-            $title_color       = $meta->fields['title_color'];
+        if (!empty($own_title_color = Metademand::getTitleColor($meta->fields))) {
+            $title_color       = $own_title_color;
             $style_title_color = $title_color;
         }
         if (!empty($meta->fields['background_color'])) {
             $background_color = $meta->fields['background_color'];
         }
         $background_color = Metademand::toThemedBackground($background_color);
-        $icon_color = "color:color-mix(in srgb, transparent, $title_color var(--tblr-link-opacity, 100%))";
+        $icon_color = "color:color-mix(in srgb, transparent, "
+            . (Metademand::getIconColor($meta->fields) ?: $title_color)
+            . " var(--tblr-link-opacity, 100%))";
 
-        $icon = "";
-        if (!empty($config['icon_incident']) && $meta->fields['type'] == \Ticket::INCIDENT_TYPE) {
-            $icon = $config['icon_incident'];
-        }
-        if (!empty($config['icon_request']) && $meta->fields['type'] == \Ticket::DEMAND_TYPE) {
-            $icon = $config['icon_request'];
-        }
-        if (!empty($config['icon_problem']) && $meta->fields['type'] == "Problem") {
-            $icon = $config['icon_problem'];
-        }
-        if (!empty($config['icon_change']) && $meta->fields['type'] == "Change") {
-            $icon = $config['icon_change'];
-        }
-        if (!empty($meta->fields['icon'])) {
-            $icon = $meta->fields['icon'];
-        }
+        // Its own icon, unless a Font Awesome one: then the one configured for its type
+        $icon = Metademand::getDisplayIcon($meta->fields, '');
 
         // Name of the illustration, drawn by render_illustration() in the template.
         $illustration = (string) ($meta->fields['illustration'] ?? '');
@@ -403,11 +391,23 @@ class Wizard extends CommonDBTM
             $models_and_drafts = self::getModelsAndDraftsContext($parameters, true);
         }
 
+        // Who files the request and where, on the right of the title (configuration "Show
+        // requester informations"): neither in the preview nor when an answer is consulted
+        $requester = null;
+        if (!empty($config['show_requester_informations'])
+            && empty($parameters['preview'])
+            && empty($parameters['seeform'])
+            && ($users_id = Session::getLoginUserID()) !== false) {
+            $requester = [
+                'name'   => getUserName((int) $users_id),
+                'entity' => \Dropdown::getDropdownName('glpi_entities', (int) ($_SESSION['glpiactive_entity'] ?? 0)),
+            ];
+        }
+
         return [
             'background_color'      => $background_color,
             'style_title_color'     => $style_title_color,
             'icon_color'            => $icon_color,
-            'margin_top'            => empty($illustration) ? "margin-top: 5px" : "margin-top: -45px",
             'illustration'          => $illustration,
             'icon'                  => $icon,
             'is_fa_icon'            => str_contains($icon, 'fa-'),
@@ -418,7 +418,10 @@ class Wizard extends CommonDBTM
             'category_details_url'  => $category_details_url,
             'settings_url'          => $settings_url,
             'comment'               => $comment,
+            // The whole comment in the tooltip of the title, which shows its first lines only
+            'comment_tooltip'       => $comment !== '' ? RichText::getTextFromHtml((string) $comment) : '',
             'models_and_drafts'     => $models_and_drafts,
+            'requester'             => $requester,
         ];
     }
 
@@ -495,6 +498,9 @@ class Wizard extends CommonDBTM
             'block_id' => 0,
             'itilcategories_id' => 0,
             'defaultvalues' => [],
+            // Opened by the "Preview" button of the "Wizard creation" tab: the form as the
+            // requesters fill it, even in maintenance for whoever may update the metademand
+            'render' => false,
         ];
 
         // if given parameters, override defaults
@@ -529,10 +535,16 @@ class Wizard extends CommonDBTM
             $models_and_drafts = self::getModelsAndDraftsContext($parameters, false);
         }
 
+        // The designer rendering the form passes the maintenance: right and entity of the
+        // metademand checked
+        $designer_render = $parameters['render']
+            && !$meta->isNewItem()
+            && $meta->can($meta->getID(), UPDATE);
+
         $template_vars = [
             'form_action'       => Toolbox::getItemTypeFormURL(__CLASS__),
             'models_and_drafts' => $models_and_drafts,
-            'maintenance'       => ($maintenance_mode == 1 && !$parameters['preview']),
+            'maintenance'       => ($maintenance_mode == 1 && !$parameters['preview'] && !$designer_render),
             'preview'           => (bool) $parameters['preview'],
             'breadcrumb'        => null,
             'hidden_fields'     => [],
@@ -544,6 +556,7 @@ class Wizard extends CommonDBTM
             'abort'             => "",
             'abort_message'     => "",
             'steps'             => "",
+            'back_url'          => "",
         ];
 
         if ($template_vars['maintenance']) {
@@ -572,36 +585,26 @@ class Wizard extends CommonDBTM
         if ($parameters['step'] == Metademand::STEP_INIT) {
             // Wizard title
             $template_vars['header'] = 'init';
-            $icon = "ti-share";
-            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
-                $icon = $meta->fields['icon'];
-            }
+            $icon = Metademand::getDisplayIcon($meta->fields);
             $template_vars['icon'] = $icon;
             $template_vars['is_fa_icon'] = str_contains($icon, 'fa-');
         } elseif ($parameters['step'] == Metademand::STEP_LIST) {
             // Wizard title
             $template_vars['header'] = 'list';
-            $icon = "ti-share";
-
-            $config = Config::getInstance();
-            if (!empty($config['icon_incident']) && $parameters['meta_type'] == \Ticket::INCIDENT_TYPE) {
-                $icon = $config['icon_incident'];
-            }
-            if (!empty($config['icon_request']) && $parameters['meta_type'] == \Ticket::DEMAND_TYPE) {
-                $icon = $config['icon_request'];
-            }
-            if (!empty($config['icon_problem']) && $parameters['meta_type'] == "Problem") {
-                $icon = $config['icon_problem'];
-            }
-            if (!empty($config['icon_change']) && $parameters['meta_type'] == "Change") {
-                $icon = $config['icon_change'];
-            }
-            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
-                $icon = $meta->fields['icon'];
+            // The icon of the listed type; a metademand loaded here keeps its own (not a
+            // Font Awesome one)
+            $icon = Metademand::getConfigTypeIcon($parameters['meta_type']) ?: 'ti-share';
+            if (!empty($meta->fields['icon'])) {
+                $icon = Metademand::getDisplayIcon(['type' => $parameters['meta_type']] + $meta->fields);
             }
 
             $template_vars['icon'] = $icon;
             $template_vars['is_fa_icon'] = str_contains($icon, 'fa-');
+            // Back to the choice of the type, which only shows with several types (a single
+            // one redirects here, see getAutoRedirectUrl())
+            if (count(self::countMetademandTypes()) > 1) {
+                $template_vars['back_url'] = PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=" . Metademand::STEP_INIT;
+            }
         } elseif ($parameters['step'] > Metademand::STEP_LIST) {
             $template_vars['header'] = 'form';
             if ($title == 1) {
@@ -1033,6 +1036,8 @@ class Wizard extends CommonDBTM
                 'icon'       => $icon,
                 'is_fa_icon' => str_contains($icon, 'fa-'),
                 'name'       => $typename,
+                // Plain text of the configuration, under the name of the type
+                'comment'    => Config::getTypeComment($type),
             ];
         }
 
@@ -1136,10 +1141,7 @@ class Wizard extends CommonDBTM
         foreach ($iterator as $row) {
             $meta = new Metademand();
             $meta->getFromDB($row['plugin_metademands_metademands_id']);
-            $icon = "ti-share";
-            if (!empty($meta->fields['icon'])) {
-                $icon = $meta->fields['icon'];
-            }
+            $icon = Metademand::getDisplayIcon($meta->fields);
 
             $entries[] = [
                 'url'        => PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $row['plugin_metademands_metademands_id'] . "&step=" . Metademand::STEP_SHOW,
@@ -1212,27 +1214,15 @@ class Wizard extends CommonDBTM
                 $comment_meta = $current->fields['comment'];
             }
 
-            $icon = "ti-share";
-            if (!empty($config['icon_incident']) && $type == \Ticket::INCIDENT_TYPE) {
-                $icon = $config['icon_incident'];
-            }
-            if (!empty($config['icon_request']) && $type == \Ticket::DEMAND_TYPE) {
-                $icon = $config['icon_request'];
-            }
-            if (!empty($config['icon_problem']) && $type == "Problem") {
-                $icon = $config['icon_problem'];
-            }
-            if (!empty($config['icon_change']) && $type == "Change") {
-                $icon = $config['icon_change'];
-            }
-            if (!empty($current->fields['icon'])) {
-                $icon = $current->fields['icon'];
-            }
+            // Its own icon, unless a Font Awesome one: then the one configured for the type
+            $icon = Metademand::getDisplayIcon(['type' => $type] + $current->fields);
 
-            if (!empty($current->fields['title_color'])) {
-                $icon_color = "color:color-mix(in srgb, transparent, " . $current->fields['title_color'] . " var(--tblr-link-opacity, 100%))";
+            if (!empty($own_icon_color = Metademand::getIconColor($current->fields))) {
+                $icon_color = "color:color-mix(in srgb, transparent, " . $own_icon_color . " var(--tblr-link-opacity, 100%))";
             } else {
-                $icon_color = "color:color-mix(in srgb, transparent, var(--tblr-navbar-color) var(--tblr-link-opacity, 100%))";
+                // The primary colour of the palette: the one of the navbar is white on a dark
+                // menu, and the tile of the card is tinted from this colour
+                $icon_color = "color:var(--tblr-primary)";
             }
 
             $drafts_label = "";
@@ -1381,6 +1371,10 @@ class Wizard extends CommonDBTM
                 && $see_summary == 0;
         }
 
+        $conditions_params = $has_data
+            ? self::getConditionsParams($metademands)
+            : ['use_condition' => false, 'show_button' => 1];
+
         TemplateRenderer::getInstance()->display('@metademands/wizard_metademands.html.twig', [
             'has_data'            => $has_data,
             'forms'               => $forms,
@@ -1389,6 +1383,20 @@ class Wizard extends CommonDBTM
             'actions_margin'      => $actions_margin,
             'ancestor_tickets_id' => $options['ancestor_tickets_id'] ?? null,
             'show_print'          => $show_print,
+            // Layout of public/scripts/wizard_layout.js (summary, stepper, yes / no buttons):
+            // neither in the preview of the "Wizard creation" tab nor for a basket, whose
+            // summary is its own
+            'enhanced_layout'     => $has_data && !$preview && $see_summary == 0,
+            // A request being filled, not one consulted: its mandatory fields hold the send button
+            'can_send'            => $has_data && !$preview && !$seeform,
+            // The request is sent only when it meets the conditions of the metademand: the
+            // layout then explains the send button the conditions hide
+            'use_conditions'      => $has_data && !$preview && !$seeform
+                && (bool) $conditions_params['use_condition'],
+            // 0: the send button needs the conditions met ("Hidden unless"), 1: the conditions
+            // met hide it ("Displayed unless"); read by the partial check of the steps
+            'conditions_show_button' => (int) $conditions_params['show_button'],
+            'conditions_url'      => PLUGIN_METADEMANDS_WEBDIR . '/ajax/condition.php',
         ]);
     }
 
@@ -1633,9 +1641,8 @@ class Wizard extends CommonDBTM
         $show_rule = $metademands->fields['show_rule'];
 
         if ($show_rule != Condition::SHOW_RULE_ALWAYS) {
-            $condition = new Condition();
-            $conditions = $condition->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]);
-            if (count($conditions) > 0) {
+            // Conditions on active fields only (Condition::conditionsTab())
+            if (count(Condition::conditionsTab((int) $metademands->fields['id'])) > 0) {
                 $use_condition = true;
             }
         }
@@ -1920,8 +1927,9 @@ class Wizard extends CommonDBTM
                     // The preview of the "Wizard creation" tab shows every tab.
                     $hidden_tabs = [];
                     $field = new Field();
+                    // The options of an inactive field hide no tab
                     $meta_fields_ids = array_column(
-                        $field->find(['plugin_metademands_metademands_id' => $metademands->getID()]),
+                        $field->find(['plugin_metademands_metademands_id' => $metademands->getID(), 'is_active' => 1]),
                         'id',
                     );
                     if (!$preview && count($meta_fields_ids) > 0) {
@@ -2009,6 +2017,12 @@ class Wizard extends CommonDBTM
                     'use_as_step'       => $use_as_step,
                     'use_draft'         => $use_draft,
                     'draft_mode'        => Draft::DEFAULT_MODE,
+                    // A free table shows the draft button with its first line only
+                    'has_freetable'     => countElementsInTable(Field::getTable(), [
+                        'plugin_metademands_metademands_id' => $metademands->getID(),
+                        'type'                              => 'freetable',
+                        'is_active'                         => 1,
+                    ]) > 0,
                     'cancel_form'       => $cancel_form,
                     'show_step_circles' => $see_summary == 0 && $displayBlocksAsTab == 0,
                     'step_count'        => $cpt,
@@ -2505,7 +2519,7 @@ class Wizard extends CommonDBTM
             }
 
             $title = [
-                'color' => Metademand::toThemedForeground($data['color'] ?? ''),
+                'color' => Metademand::toThemedForeground(Metademand::getTitleblockColor($data['color'] ?? '')),
                 'label' => $label,
                 'id' => $data['id'],
                 'label2' => (string) $label2,
@@ -2787,6 +2801,10 @@ class Wizard extends CommonDBTM
 
         $field = new Field();
         if ($field->getFromDB($value["id"])) {
+            // Not in the wizard: nothing to check nor to keep
+            if ((int) ($field->fields['is_active'] ?? 1) === 0) {
+                return ['result' => false, 'content' => []];
+            }
             $value = Field::getAllParamsFromField($field);
         }
 

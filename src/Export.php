@@ -1500,6 +1500,8 @@ class Export extends CommonDBTM
         $mapTableField = [];
         $mapTableFieldReverse = [];
         $mapTableCheckValue = [];
+        /** @var array<int|string, int> $customvalueFields old custom value id => old field id */
+        $customvalueFields = [];
 
         $fields = [];
         $stepconfig = [];
@@ -1809,6 +1811,7 @@ class Export extends CommonDBTM
                 $toUpdate["icon"] = $old["icon"] ?? "";
                 $toUpdate["readonly"] = $old["readonly"] ?? 0;
                 $toUpdate["hidden"] = $old["hidden"] ?? 0;
+                $toUpdate["show_location_card"] = $old["show_location_card"] ?? 0;
 
                 if ($plugin_metademands_fields_id != 0
                     && isset($mapTableField[$plugin_metademands_fields_id])) {
@@ -1890,6 +1893,9 @@ class Export extends CommonDBTM
 
                 $newcustomfield = $fieldMetacustom->add($toUpdate);
                 $mapTableCheckValue[$old["id"]] = $newcustomfield;
+                // The field each custom value belongs to: only the options of that field compare
+                // their value with it (see the options below)
+                $customvalueFields[$old["id"]] = (int) $plugin_metademands_fields_id;
             }
         }
 
@@ -1958,6 +1964,7 @@ class Export extends CommonDBTM
             $hidden_link = $old["hidden_link"] ?? 0;
             $hidden_block = $old["hidden_block"] ?? 0;
             $users_id_validate = $old["users_id_validate"] ?? 0;
+            $validation_fields_id = $old["validation_fields_id"] ?? 0;
             $childs_blocks = $old["childs_blocks"] ?? [];
             $checkbox_value = $old["checkbox_value"] ?? 0;
             $checkbox_id = $old["checkbox_id"] ?? 0;
@@ -1974,8 +1981,13 @@ class Export extends CommonDBTM
                 $toUpdate["check_value"] = $check_value;
             }
             if ($version >= "3.3.11") {
+                // A value to check is the id of a custom value of the same field only: a yes / no
+                // (1 / 2), a number or a dropdown item kept its value, which used to be mapped to
+                // the custom value of another field holding the same old id (a "yes" turned into
+                // the id of an unrelated custom value, and its option never matched again)
                 if ($check_value != 0
-                    && isset($mapTableCheckValue[$check_value])) {
+                    && isset($mapTableCheckValue[$check_value])
+                    && ($customvalueFields[$check_value] ?? null) === (int) $plugin_metademands_fields_id) {
                     $toUpdate['check_value'] = $mapTableCheckValue[$check_value];
                 }
             } else {
@@ -1999,6 +2011,9 @@ class Export extends CommonDBTM
             }
             if ($users_id_validate != 0) {
                 $toUpdate["users_id_validate"] = $users_id_validate;
+            }
+            if ($validation_fields_id != 0 && isset($mapTableField[$validation_fields_id])) {
+                $toUpdate["validation_fields_id"] = $mapTableField[$validation_fields_id];
             }
             // A flat list ([1]) is the value left by 3.6.15 (issue #367) on instances not updated
             // since: it hid no block there, while normalizeChildsBlocks() would make it a group

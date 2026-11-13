@@ -441,10 +441,84 @@
                 const target = document.getElementById(config.target);
                 if (target) {
                     target.value = id;
+                    // The hidden input gets no change event: refresh its card here
+                    syncLocationCards(target);
                 }
             },
         });
     }
+
+    /**
+     * Reload the location card of a dropdown / Location field (Fields/Dropdown.php)
+     * for the location now chosen, from ajax/locationCard.php. The endpoint prints
+     * nothing for a location the field does not offer.
+     *
+     * @param {HTMLElement} card    element carrying data-md-location-card
+     * @param {string}      value   chosen location id
+     */
+    function refreshLocationCard(card, value) {
+        const config = JSON.parse(card.dataset.mdLocationCard);
+        const locationsId = String(parseInt(value, 10) > 0 ? parseInt(value, 10) : 0);
+
+        if (card.dataset.mdLocationCardCurrent === locationsId) {
+            return;
+        }
+        card.dataset.mdLocationCardCurrent = locationsId;
+
+        if (locationsId === '0') {
+            card.replaceChildren();
+            return;
+        }
+
+        const params = new URLSearchParams({fields_id: config.fields_id, locations_id: locationsId});
+        fetch(config.url + '?' + params.toString(), {
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+        })
+            .then((response) => (response.ok ? response.text() : ''))
+            .then((html) => {
+                // Drop a late answer once another location has been chosen
+                if (card.dataset.mdLocationCardCurrent === locationsId) {
+                    // Server side Twig rendering, escaped there
+                    card.innerHTML = html;
+                }
+            });
+    }
+
+    /**
+     * Refresh the location cards fed by an input, when it carries one.
+     *
+     * @param {Element} input
+     */
+    function syncLocationCards(input) {
+        if (!input.name) {
+            return;
+        }
+        document.querySelectorAll('[data-md-location-card]').forEach(function (card) {
+            if (JSON.parse(card.dataset.mdLocationCard).field_name === input.name) {
+                refreshLocationCard(card, input.value);
+            }
+        });
+    }
+
+    /**
+     * Align a location card with its input once both are in the DOM: a field linked to a
+     * user field may preselect another location than the one rendered with the card.
+     *
+     * @param {HTMLElement} card
+     */
+    function initLocationCard(card) {
+        const config = JSON.parse(card.dataset.mdLocationCard);
+        const input = document.querySelector('[name="' + CSS.escape(config.field_name) + '"]');
+        // The hidden input of the cascading selector is empty until the selector is built
+        if (input !== null && input.value !== '') {
+            refreshLocationCard(card, input.value);
+        }
+    }
+
+    // Core dropdowns (select2) notify through jQuery only
+    $(document).on('change', 'select[name]', function () {
+        syncLocationCards(this);
+    });
 
     /**
      * Bind the time picker of a time field (Fields/Time.php).
@@ -1282,6 +1356,35 @@
     }
 
     /**
+     * Event fired on the inputs of a field shown or hidden by the rules of another field: its
+     * own hidden and mandatory triggers follow (initHiddenTrigger(), initMandatoryTrigger()).
+     */
+    const VISIBILITY_EVENT = 'md-visibility';
+
+    /**
+     * Whether a field whose rules are evaluated is hidden by the rules of its parent field.
+     * Only its own wrapper counts: the fields of another step, or of a folded block, are not
+     * hidden in that sense.
+     *
+     * @param {jQuery} inputs the inputs of the field
+     *
+     * @return {boolean}
+     */
+    function isSourceHidden(inputs) {
+        const wrapper = inputs.first().closest('[id-field]').get(0);
+        return wrapper !== undefined && wrapper.style.display === 'none';
+    }
+
+    /**
+     * Tell the triggers of a field that it was shown or hidden.
+     *
+     * @param {number} key id of the field
+     */
+    function notifyVisibility(key) {
+        $('[id-field="field' + key + '"]').find(':input').first().trigger(VISIBILITY_EVENT);
+    }
+
+    /**
      * Put back the value of a field kept in session, then run its handler.
      *
      * @param {jQuery}    inputs  the inputs of the field
@@ -1364,10 +1467,13 @@
         const inputs = $(sourceSelector(config.source));
 
         const update = function () {
+            // A field hidden by its own parent makes nothing mandatory (see initHiddenTrigger())
+            const source_hidden = isSourceHidden(inputs);
             // A field is mandatory as soon as one of the values linked to it matches
             const mandatory = new Map();
             config.rules.forEach(function (rule) {
-                const matches = taskRuleMatches(config.mode, rule, inputs) !== Boolean(rule.negate);
+                const matches = !source_hidden
+                    && taskRuleMatches(config.mode, rule, inputs) !== Boolean(rule.negate);
                 rule.targets.forEach(function (key) {
                     mandatory.set(key, mandatory.get(key) || matches);
                 });
@@ -1382,6 +1488,7 @@
         };
 
         inputs.on('change', update);
+        inputs.on(VISIBILITY_EVENT, update);
         if (config.mode === 'listed') {
             // The multiselect plugin moves options without any change event
             inputs.each(function () {
@@ -1405,6 +1512,7 @@
      * @param {number} key id of the field
      */
     function resetHiddenField(key) {
+        clearDatePickers(key);
         $('div[id-field="field' + key + '"]').find(':input').each(function () {
             switch (this.type) {
                 case 'password':
@@ -1441,6 +1549,78 @@
     }
 
     /**
+     * Empty the date pickers of a field. A date field keeps its value in a hidden input
+     * (flatpickr altInput): emptying the visible one only left a date nobody sees, still posted
+     * and passing the mandatory check. The picker instance sits on its wrapper (wrap mode).
+     *
+     * @param {number} key id of the field
+     */
+    /**
+     * Remember the date each picker of a field was rendered with, before any change: the
+     * hidden input of a picker loses it as soon as its value is set (a hidden input reflects
+     * its value into its attribute), and the picker does not keep it either.
+     *
+     * @param {number} key id of the field
+     */
+    function rememberDefaultDates(key) {
+        document.querySelectorAll(`[id-field="field${key}"] .flatpickr input[data-input], [id-field="field${key}-2"] .flatpickr input[data-input]`)
+            .forEach((input) => {
+                input.dataset.mdDefaultDate ??= input.getAttribute('value') ?? '';
+            });
+    }
+
+    function clearDatePickers(key) {
+        document.querySelectorAll(`[id-field="field${key}"] .flatpickr, [id-field="field${key}-2"] .flatpickr`)
+            .forEach((wrapper) => wrapper._flatpickr?.clear());
+    }
+
+    /**
+     * Give back its default value to a field shown again: resetHiddenField() emptied it when
+     * it was hidden, so that a field prefilled with the requester (for instance) came back
+     * empty, and mandatory. Only the controls left empty are restored, to the value the page
+     * was rendered with (selected option, initial text).
+     *
+     * @param {number} key id of the field
+     */
+    function restoreDefaultValues(key) {
+        // Date pickers: the date the page was rendered with (rememberDefaultDates())
+        document.querySelectorAll(`[id-field="field${key}"] .flatpickr, [id-field="field${key}-2"] .flatpickr`)
+            .forEach((wrapper) => {
+                const picker = wrapper._flatpickr;
+                const date = picker?.input.dataset.mdDefaultDate ?? '';
+                if (picker !== undefined && picker.input.value === '' && date !== '') {
+                    picker.setDate(date, true);
+                }
+            });
+        document.querySelectorAll(`[id-field="field${key}"], [id-field="field${key}-2"]`).forEach((wrapper) => {
+            wrapper.querySelectorAll('select, textarea, input').forEach((control) => {
+                let restored = false;
+                if (control instanceof HTMLSelectElement) {
+                    if (control.multiple || (control.value !== '' && control.value !== '0')) {
+                        return;
+                    }
+                    const option = [...control.options]
+                        .find((candidate) => candidate.defaultSelected && candidate.value !== '' && candidate.value !== '0');
+                    if (option !== undefined) {
+                        control.value = option.value;
+                        restored = true;
+                    }
+                } else if (control instanceof HTMLTextAreaElement
+                    || ['text', 'email', 'tel', 'url', 'number', 'date'].includes(control.type)) {
+                    if (control.value === '' && control.defaultValue !== '') {
+                        control.value = control.defaultValue;
+                        restored = true;
+                    }
+                }
+                if (restored) {
+                    // Native event: the select2 box and the jQuery handlers follow it
+                    control.dispatchEvent(new Event('change', {bubbles: true}));
+                }
+            });
+        });
+    }
+
+    /**
      * Show or hide the fields linked to the values of a field when the field
      * changes, as the script each Fields class generated did.
      *
@@ -1462,31 +1642,46 @@
 
         const inputs = $(sourceSelector(config.source));
         const field = (key) => $('[id-field="field' + key + '"], [id-field="field' + key + '-2"]');
+        const is_hidden = (key) => [...document.querySelectorAll(`[id-field="field${key}"], [id-field="field${key}-2"]`)]
+            .some((element) => element.style.display === 'none');
 
         /**
          * @param {boolean} reset empty the hidden fields and hide the blocks of the
          *                       values which no longer match (not when displayed)
          */
         const update = function (reset) {
+            // A field hidden by its own parent shows nothing: its default value (a yes / no
+            // set to "No", for instance) showed the fields of that value under a hidden field
+            const source_hidden = isSourceHidden(inputs);
             // A field is shown as soon as one of the values linked to it matches
             const visible = new Map();
             const opened = new Set();
             const closed = new Set();
             config.rules.forEach(function (rule) {
-                const matches = taskRuleMatches(config.mode, rule, inputs) !== Boolean(rule.negate);
+                const matches = !source_hidden
+                    && taskRuleMatches(config.mode, rule, inputs) !== Boolean(rule.negate);
                 rule.targets.forEach(function (key) {
                     visible.set(key, visible.get(key) || matches);
                 });
                 rule.blocks.forEach((block) => (matches ? opened : closed).add(block));
             });
             visible.forEach(function (is_visible, key) {
+                const was_hidden = is_hidden(key);
                 if (is_visible) {
                     field(key).show();
+                    if (reset && was_hidden) {
+                        restoreDefaultValues(key);
+                    }
                 } else {
                     field(key).hide();
                     if (reset) {
                         resetHiddenField(key);
                     }
+                }
+                if (reset && was_hidden !== !is_visible) {
+                    // The rules of the field shown or hidden follow: shown again with a value
+                    // kept, its own linked fields come back (no change event fires for it)
+                    notifyVisibility(key);
                 }
             });
             if (!reset) {
@@ -1502,12 +1697,16 @@
             });
         };
 
+        // The dates the linked fields are rendered with, given back when shown again
+        config.rules.forEach((rule) => rule.targets.forEach((key) => rememberDefaultDates(key)));
+
         // Restore the value kept in session before binding the handler, then show
         // the fields linked to the current state (default values included)
         restoreValue(inputs, config.restore, () => {});
         update(false);
 
         inputs.on('change', () => update(true));
+        inputs.on(VISIBILITY_EVENT, () => update(true));
         if (config.mode === 'listed') {
             // The multiselect plugin moves options without any change event
             inputs.each(function () {
@@ -1528,6 +1727,9 @@
      * @param {boolean} selects also put the selects back to the empty choice
      */
     function emptyBlock(block, selects) {
+        // Date pickers: their hidden input too (see clearDatePickers())
+        document.querySelectorAll(`div[bloc-id="bloc${block}"] .flatpickr, div[bloc-id="subbloc${block}"] .flatpickr`)
+            .forEach((wrapper) => wrapper._flatpickr?.clear());
         $('div[bloc-id="bloc' + block + '"], div[bloc-id="subbloc' + block + '"]').find(':input').each(function () {
             switch (this.type) {
                 case 'password':
@@ -1650,7 +1852,23 @@
                 }
             });
             shown.forEach(function (block) {
+                const containers = document.querySelectorAll(`[bloc-id="bloc${block}"], [bloc-id="subbloc${block}"]`);
+                const was_hidden = [...containers].some((container) => container.style.display === 'none');
                 toggle(block, true);
+                if (reset && was_hidden) {
+                    // Shown again: its fields get back the default value emptyBlock() removed
+                    // when it was hidden (a yes / no set to "No" came back without any answer),
+                    // as a field shown again does (initHiddenTrigger()). Fields hidden by their
+                    // own rules stay empty.
+                    containers.forEach(function (container) {
+                        container.querySelectorAll('[id-field^="field"]').forEach(function (wrapper) {
+                            const key = /^field(\d+)$/.exec(wrapper.getAttribute('id-field') ?? '');
+                            if (key !== null && wrapper.style.display !== 'none') {
+                                restoreDefaultValues(key[1]);
+                            }
+                        });
+                    });
+                }
             });
             // Mandatory fields of the blocks shown
             config.mandatory.forEach(function (field) {
@@ -1701,6 +1919,9 @@
         {selector: 'canvas[data-md-signature]', init: initSignature},
         {selector: 'input[type="range"][data-md-range-value]', init: initRange},
         {selector: 'select[data-md-chained-locations]', init: initChainedLocations},
+        {selector: '[data-md-location-card]', init: initLocationCard},
+        // A location dropdown reloaded by a linked user field (ajax/ulocationUpdate.php)
+        {selector: 'select[name]', init: syncLocationCards},
         {selector: '[data-md-timepicker]', init: initTimepicker},
         {selector: 'textarea[data-md-richtext]', init: initRichText},
         {selector: 'select[data-md-multiselect]', init: initMultiselect},
@@ -1849,6 +2070,8 @@
 
         bodies.forEach(function (body) {
             body.style.display = shown ? 'none' : '';
+            // Folded, not hidden: its mandatory fields stay mandatory (wizard_layout.js)
+            body.toggleAttribute('data-md-folded', shown);
         });
         chevron.classList.toggle('ti-chevron-up', !shown);
         chevron.classList.toggle('ti-chevron-down', shown);

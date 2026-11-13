@@ -29,6 +29,8 @@
  #  public/scripts/wizard_form.js (initFreetable and delegated handlers) from the
  #  data-md-freetable-* attributes, which Twig escapes. -#}
 {%- apply spaceless -%}
+{#- Kept in its card: a table wider than the block scrolls instead of overflowing it -#}
+<div class='md-freetable-scroll'>
 <table class='tab_cadre' width='100%' id='freetable_table{{ rand }}'
        style='overflow: auto;width:100%;{{ background_color }}'
        data-md-freetable='{{ rand }}' data-md-freetable-params='{{ params|json_encode }}'
@@ -82,6 +84,7 @@
         </tr>
     {%- endfor -%}
 </table>
+</div>
 {%- endapply -%}
 {%- if has_orderfollowup -%}
     {%- apply spaceless -%}

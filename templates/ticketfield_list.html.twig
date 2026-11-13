@@ -25,77 +25,86 @@
  # --------------------------------------------------------------------------
  #}
 
+{#
+ # Fields of the parent ticket (TicketField): one line per field, its value on the right.
+ # A whole line opens the field in edit_target (public/scripts/wizard_form.js), but its
+ # massive action checkbox (data-md-subitem-noopen).
+ #}
 {% if not has_rows %}
-    <div class="center first-bloc">
-        <table class="tab_cadre_fixe">
-            <tr class="tab_bg_1">
-                <td class="center">{{ __('No results found') }}</td>
-            </tr>
-        </table>
+    <div class="card">
+        <div class="card-body text-center text-muted py-5">
+            <i class="ti ti-filter-down fs-1 d-block mb-2"></i>
+            {{ __('No results found') }}
+        </div>
     </div>
 {% else %}
-    <div class="center first-bloc left">
-        {% if canedit %}
-            {# raw: massive actions, no core macro (§3.2) #}
-            {{ call('Html::getOpenMassiveActionsForm', [container])|raw }}
-            {# raw: massive actions, no core macro (§3.2) #}
-            {{ call('Html::showMassiveActions', [{
-                'item': itemtype,
-                'container': container,
-                'display': false
-            }])|raw }}
-        {% endif %}
+    {% if canedit %}
+        {# raw: massive actions, no core macro #}
+        {{ call('Html::getOpenMassiveActionsForm', [container])|raw }}
+        {# raw: massive actions, no core macro #}
+        {{ call('Html::showMassiveActions', [{
+            'item': itemtype,
+            'container': container,
+            'display': false
+        }])|raw }}
+    {% endif %}
 
-        <table class="tab_cadre_fixe">
-            <tr class="tab_bg_2">
-                <th class="center b" colspan="6">{{ title }}</th>
-            </tr>
-            <tr class="tab_bg_2">
-                <th width="10">
-                    {% if canedit %}
-                        {# raw: massive actions, no core macro (§3.2) #}
-                        {{ call('Html::getCheckAllAsCheckbox', [container])|raw }}
-                    {% endif %}
-                </th>
-                <th>{{ __('Name') }}</th>
-                <th>{{ __('Value') }}</th>
-            </tr>
+    <div class="card">
+        <div class="card-header py-2 d-flex align-items-center gap-2">
+            {% if canedit %}
+                {# raw: massive actions, no core macro #}
+                {{ call('Html::getCheckAllAsCheckbox', [container])|raw }}
+            {% endif %}
+            <h3 class="card-title m-0">{{ title }}</h3>
+            <span class="badge bg-secondary-lt">{{ rows|length }}</span>
+        </div>
+        <div class="list-group list-group-flush">
             {% for row in rows %}
-                <tr class="tab_bg_1">
-                    <td width="10">
-                        {% if canedit %}
-                            {# raw: massive actions, no core macro (§3.2) #}
+                <div class="list-group-item d-flex align-items-center gap-3{{ canedit ? ' list-group-item-action pointer' : '' }}"
+                     {% if canedit %}
+                         data-md-subitem-target="{{ edit_target }}"
+                         data-md-subitem-url="{{ edit_url }}"
+                         data-md-subitem-params="{{ row.edit_params|json_encode }}"
+                     {% endif %}>
+                    {% if canedit %}
+                        <div data-md-subitem-noopen>
+                            {# raw: massive actions, no core macro #}
                             {{ call('Html::getMassiveActionCheckBox', [itemtype, row.id])|raw }}
+                        </div>
+                    {% endif %}
+                    <div class="fw-semibold text-nowrap">
+                        {{ row.label }}
+                        {% if row.is_mandatory %}
+                            <span class="badge bg-red-lt ms-1" title="{{ __('Mandatory field') }}">*</span>
                         {% endif %}
-                    </td>
-                    <td>
-                        {% if canedit %}
-                            {# Loaded into edit_target by public/scripts/wizard_form.js. #}
-                            <a href="#" data-md-subitem-target="{{ edit_target }}" data-md-subitem-url="{{ edit_url }}"
-                               data-md-subitem-params="{{ row.edit_params|json_encode }}">{{ row.label }}</a>
+                    </div>
+                    {# getValueToDisplay() markup (links, line breaks), sanitized by the core #}
+                    <div class="ms-auto text-end text-break">
+                        {% if row.value_html|striptags|trim is not empty %}
+                            {{ row.value_html|safe_html }}
                         {% else %}
-                            {{ row.label }}
+                            <span class="text-muted">—</span>
                         {% endif %}
-                        {% if row.is_mandatory %}<span class="required">*</span>{% endif %}
-                    </td>
-                    {# getValueToDisplay() markup (links, line breaks), sanitized by the core (§3.1) #}
-                    <td>{{ row.value_html|safe_html }}</td>
-                </tr>
+                    </div>
+                    {% if canedit %}
+                        <i class="ti ti-chevron-right text-muted"></i>
+                    {% endif %}
+                </div>
             {% endfor %}
-        </table>
-
-        {% if canedit %}
-            {# Rendered after the rows on purpose: when it is not the top one, showMassiveActions()
-             # empties the selection that the row checkboxes read to restore their checked state #}
-            {# raw: massive actions, no core macro (§3.2) #}
-            {{ call('Html::showMassiveActions', [{
-                'item': itemtype,
-                'container': container,
-                'ontop': false,
-                'display': false
-            }])|raw }}
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
-            </form>
-        {% endif %}
+        </div>
     </div>
+
+    {% if canedit %}
+        {# Rendered after the rows on purpose: when it is not the top one, showMassiveActions()
+         # empties the selection that the row checkboxes read to restore their checked state #}
+        {# raw: massive actions, no core macro #}
+        {{ call('Html::showMassiveActions', [{
+            'item': itemtype,
+            'container': container,
+            'ontop': false,
+            'display': false
+        }])|raw }}
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        </form>
+    {% endif %}
 {% endif %}

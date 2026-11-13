@@ -1,4 +1,9 @@
 <phpunit bootstrap="tests/bootstrap.integration.php" colors="true" testdox="true">
+   <php>
+      <!-- The whole suite in one process: the default 128M ran out at the end (PDF tests), the
+           core suite allows 2G (phpunit.xml.dist) -->
+      <ini name="memory_limit" value="2G" />
+   </php>
    <testsuites>
       <testsuite name="Integration">
          <file>tests/MetademandTest.php</file>
@@ -12,6 +17,8 @@
          <file>tests/FieldOptionListTest.php</file>
         <file>tests/TaskListTest.php</file>
         <file>tests/FieldListTest.php</file>
+        <file>tests/FieldInlineEditTest.php</file>
+        <file>tests/FieldMassiveActionTest.php</file>
         <file>tests/TicketFieldListTest.php</file>
         <file>tests/FreetableFieldsTest.php</file>
         <file>tests/BasketlineSummaryTest.php</file>
@@ -29,6 +36,8 @@
         <file>tests/FieldCheckboxTest.php</file>
         <file>tests/FieldRadioTest.php</file>
         <file>tests/WizardMetademandsTest.php</file>
+        <file>tests/ConditionPartialTest.php</file>
+        <file>tests/ExportCheckValueTest.php</file>
         <file>tests/WizardTemplatesTest.php</file>
         <file>tests/WizardTitleTest.php</file>
         <file>tests/AjaxTemplatesTest.php</file>
@@ -41,6 +50,14 @@
         <file>tests/PendingAutoSolveBlockedTest.php</file>
         <file>tests/WizardAutoRedirectTest.php</file>
         <file>tests/ValidationSubticketTest.php</file>
+        <file>tests/LocationCardTest.php</file>
+        <file>tests/ConfigColorTest.php</file>
+        <file>tests/StepformWaitingWarningTest.php</file>
+        <file>tests/StepByBlockListTest.php</file>
+        <file>tests/MetademandPdfLogoTest.php</file>
+        <file>tests/FieldValidationTest.php</file>
+        <file>tests/BasketobjectOrderTest.php</file>
+        <file>tests/FieldActiveTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

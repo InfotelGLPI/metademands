@@ -45,6 +45,7 @@ use GlpiPlugin\Metademands\FieldCustomvalue;
 use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\FieldTranslation;
+use GlpiPlugin\Metademands\FieldValidation;
 use GlpiPlugin\Metademands\Form;
 use GlpiPlugin\Metademands\Form_Value;
 use GlpiPlugin\Metademands\Freetablefield;
@@ -105,6 +106,7 @@ function plugin_metademands_install()
         FieldOption::install($migration);
         FieldParameter::install($migration);
         FieldTranslation::install($migration);
+        FieldValidation::install($migration);
         Form::install($migration);
         Form_Value::install($migration);
         Freetablefield::install($migration);
@@ -147,6 +149,7 @@ function plugin_metademands_install()
         Field::install($migration);
         FieldParameter::install($migration);
         FieldTranslation::install($migration);
+        FieldValidation::install($migration);
         Form::install($migration);
         Form_Value::install($migration);
         Freetablefield::install($migration);
@@ -226,6 +229,11 @@ function plugin_metademands_install()
 
         //version 3.6.0
         if (!$DB->fieldExists("glpi_plugin_metademands_fieldoptions", "assign_tech_group")) {
+            FieldOption::install($migration);
+        }
+
+        //version 3.7.2
+        if (!$DB->fieldExists("glpi_plugin_metademands_fieldoptions", "validation_fields_id")) {
             FieldOption::install($migration);
         }
     }
@@ -345,6 +353,7 @@ function plugin_metademands_uninstall()
     FieldOption::uninstall();
     FieldParameter::uninstall();
     FieldTranslation::uninstall();
+    FieldValidation::uninstall();
     Form::uninstall();
     Form_Value::uninstall();
     Freetablefield::uninstall();
@@ -466,6 +475,9 @@ function plugin_metademands_item_purge($item)
         $temp->deleteByCriteria(['tickets_id' =>  $item->getID()]);
 
         $temp = new MetademandValidation();
+        $temp->deleteByCriteria(['tickets_id' =>  $item->getID()]);
+
+        $temp = new FieldValidation();
         $temp->deleteByCriteria(['tickets_id' =>  $item->getID()]);
 
         $temp = new Ticket_Field();

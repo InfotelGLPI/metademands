@@ -144,5 +144,13 @@ class DraftTemplatesTest extends DbTestCase
 
         $this->assertStringContainsString(_x('button', 'Save as draft', 'metademands'), $html);
         $this->assertStringContainsString('my_new_draft', $html);
+        // Shown in the wizard...
+        $this->assertMatchesRegularExpression('/<div id="div_save_draft" style="(?![^"]*display:none)[^"]*"/', $html);
+
+        // ... but a free table shows it with its first line only
+        ob_start();
+        Draft::showDraftInput(Draft::DEFAULT_MODE, true);
+        $html = (string) ob_get_clean();
+        $this->assertMatchesRegularExpression('/<div id="div_save_draft" style="[^"]*display:none"/', $html);
     }
 }

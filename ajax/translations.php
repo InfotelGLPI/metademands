@@ -33,6 +33,8 @@ use GlpiPlugin\Metademands\Basketobject;
 use GlpiPlugin\Metademands\BasketobjectTranslation;
 use GlpiPlugin\Metademands\Basketobjecttype;
 use GlpiPlugin\Metademands\BasketobjecttypeTranslation;
+use GlpiPlugin\Metademands\Config;
+use GlpiPlugin\Metademands\ConfigTranslation;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldTranslation;
 use GlpiPlugin\Metademands\Metademand;
@@ -50,6 +52,7 @@ $allowed_classes = [
     FieldTranslation::class,
     BasketobjectTranslation::class,
     BasketobjecttypeTranslation::class,
+    ConfigTranslation::class,
 ];
 
 if (!in_array($translation_class, $allowed_classes, true)) {
@@ -61,6 +64,7 @@ $itemtype_to_tr_class = [
     Field::class         => FieldTranslation::class,
     Basketobject::class  => BasketobjectTranslation::class,
     Basketobjecttype::class => BasketobjecttypeTranslation::class,
+    Config::class           => ConfigTranslation::class,
 ];
 
 switch ($action) {

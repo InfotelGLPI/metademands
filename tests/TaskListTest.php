@@ -102,9 +102,27 @@ class TaskListTest extends DbTestCase
             $html,
         );
         $this->assertStringContainsString('data-md-subitem-noopen', $html);
-        $this->assertStringContainsString('/lib/treetable/treetable', $html);
+        // One card per child, its depth in the tree carried by a CSS variable (no treetable library)
+        $this->assertMatchesRegularExpression('/class="list-group-item[^"]*md-child[^"]*"\s+style="--md-depth: \d+"/', $html);
+        $this->assertStringNotContainsString('/lib/treetable/treetable', $html);
         $this->assertStringContainsString('id="tags"', $html);
         $this->assertStringContainsString('name="_glpi_csrf_token"', $html);
+    }
+
+    public function testUnknownTagsAreTheOnesNoFieldAnswers(): void
+    {
+        $known = ['12', '12.login', 'requester.email', 'entity'];
+
+        $this->assertSame(
+            ['#13#', '#99#', '#12.mail#'],
+            Task::getUnknownTags([
+                'For #12# and #requester.email# [#12.login#|#13#]',
+                // HTML content: entities decoded, a lone # (ticket number) is not a tag
+                '<p>#99#, ticket #1234 &amp; #12.mail# &#35;entity&#35; #13#</p>',
+                null,
+            ], $known),
+        );
+        $this->assertSame([], Task::getUnknownTags(['No tag here'], $known));
     }
 
     public function testReadOnlyListHasNoFormNorMassiveActions(): void

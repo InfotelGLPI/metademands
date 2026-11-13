@@ -100,7 +100,8 @@ if (empty($_GET['resources_id']) || !is_scalar($_GET['resources_id'])) {
         $_GET['resources_id'] = $_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields']['resources_id'];
     } elseif (isset($_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields'])) {
         foreach ($_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields'] as $fieldKey => $field) {
-            if (!is_array($field) && is_int($field)) {
+            // Only the field ids: the other keys (_users_id_requester...) are no field
+            if (!is_array($field) && is_int($field) && (int) $fieldKey > 0) {
                 $metademandsField = new Field();
                 $metademandsField->getFromDB($fieldKey);
                 if ($metademandsField->getField('item') == Resource::class) {
@@ -196,7 +197,8 @@ if (isset($_POST['update_basket_line'])) {
     if (isset($_POST['field_basket_' . $line])) {
 
         $content = [];
-        $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['metademands_id']]);
+        // Inactive fields are not in the wizard
+        $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['metademands_id'], 'is_active' => 1]);
 
         foreach ($data as $id => $value) {
             if ($value['type'] == 'radio') {
@@ -325,6 +327,8 @@ if (isset($_POST['update_basket_line'])) {
         'resources_step' => $_GET['resources_step'],
         'itilcategories_id' => $itilcategories_id,
         'defaultvalues' =>  $_GET['field'] ?? [],
+        // "Preview" button of the "Wizard creation" tab (Wizard::showWizard() checks the right)
+        'render' => !empty($_GET['render']),
     ];
 
     if (isset($_GET['see_form']) && $_GET['see_form'] > 0) {
@@ -353,7 +357,10 @@ if (isset($_POST['update_basket_line'])) {
         $options['step'] = Metademand::STEP_INIT;
     }
 
-    Stepform::showWaitingWarning();
+    // The step form being filled (ajax/loadstepform.php) is not announced as waiting
+    Stepform::showWaitingWarning(
+        (int) ($_SESSION['plugin_metademands'][(int) $_GET['metademands_id']]['plugin_metademands_stepforms_id'] ?? 0),
+    );
 
     $wizard->showWizard($options);
 

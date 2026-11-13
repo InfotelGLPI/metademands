@@ -1,0 +1,44 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#-
+ # Anchor of the location card of a dropdown / Location field. Always rendered when the
+ # option is on: public/scripts/wizard_form.js (data-md-location-card) reloads it from
+ # ajax/locationCard.php whenever the input named config.field_name changes.
+ #
+ # Expected context:
+ #  - config:  {url, fields_id, field_name}
+ #  - current: id of the location shown at load time, 0 when none
+ #  - card:    context of fields/location_card.html.twig, or null
+-#}
+<div class="md-location-card-anchor"
+     data-md-location-card="{{ config|json_encode|e('html_attr') }}"
+     data-md-location-card-current="{{ current }}">
+    {%- if card is not null -%}
+        {{ include('@metademands/fields/location_card.html.twig', card, with_context = false) }}
+    {%- endif -%}
+</div>

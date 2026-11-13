@@ -852,7 +852,8 @@ class Dropdownobject extends CommonDBTM
             $name = 'field_plugin_servicecatalog_itilcategories_id';
         }
         $options = ['any' => [0, -1]];
-        if (isset($data['value']) && $data['value'] > 0) {
+        // A single value: an array (value of a multiple field kept in session) gave "Array"
+        if (isset($data['value']) && is_scalar($data['value']) && $data['value'] > 0) {
             $options['restore'] = ['val' => (string) $data['value']];
             $options['current'] = [$data['value']];
         }
@@ -880,7 +881,8 @@ class Dropdownobject extends CommonDBTM
     public static function fieldsHiddenScript($data)
     {
         $options = ['any' => [0, -1]];
-        if (isset($data['value']) && $data['value'] > 0) {
+        // A single value: an array (value of a multiple field kept in session) gave "Array"
+        if (isset($data['value']) && is_scalar($data['value']) && $data['value'] > 0) {
             $options['restore'] = ['val' => (string) $data['value']];
             $options['current'] = [$data['value']];
         }
@@ -890,7 +892,8 @@ class Dropdownobject extends CommonDBTM
     public static function blocksHiddenScript($data)
     {
         $options = ['any' => [-1]];
-        if (isset($data['value']) && $data['value'] > 0) {
+        // A single value: an array (value of a multiple field kept in session) gave "Array"
+        if (isset($data['value']) && is_scalar($data['value']) && $data['value'] > 0) {
             $options['restore'] = ['val' => (string) $data['value']];
         }
         FieldOption::displayBlockTrigger($data, ['name' => 'field[' . $data['id'] . ']', 'match' => 'exact'], 'select', $options);

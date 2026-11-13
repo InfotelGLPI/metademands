@@ -95,7 +95,8 @@
             with_check_type ? $('select[name="check_type_value"]').val() : 0,
             with_tech_group
                 ? JSON.stringify($('select[name="assign_tech_group[]"], select[name="assign_tech_group"]').val())
-                : 0
+                : 0,
+            document.querySelector('select[name="validation_fields_id"]')?.value ?? 0
         ];
     }
 
@@ -119,7 +120,8 @@
             users_id_validate: option[7],
             checkbox_id: option[8],
             check_type_value: option[9],
-            assign_tech_group: option[10]
+            assign_tech_group: option[10],
+            validation_fields_id: option[11]
         }));
     }
 

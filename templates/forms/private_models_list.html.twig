@@ -69,7 +69,7 @@
                         ~ __('Date') ~ ' : ' ~ entry.date|e
                         ~ (entry.url ? '<br>' ~ __('URL') ~ ' : ' ~ entry.url : '') %}
                     <tr>
-                        <td>{{ entry.meta_name }} / {{ entry.date }}</td>
+                        <td><span class="fw-medium">{{ entry.name }}</span> <span class="text-secondary small ms-1">{{ entry.date }}</span></td>
                         <td>
                             <span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top"
                                   data-bs-html="true" data-bs-title="{{ tooltip_content }}">?</span>

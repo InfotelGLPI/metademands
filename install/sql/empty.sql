@@ -60,7 +60,8 @@ CREATE TABLE `glpi_plugin_metademands_metademands`
     `hide_title`                       tinyint                                  DEFAULT '0',
     `title_color`                      varchar(255)                             DEFAULT '#000000',
     `background_color`                 varchar(255)                             DEFAULT '#FFFFFF',
-    `step_by_step_mode`                tinyint                         NOT NULL DEFAULT '0',
+    `icon_color`                       varchar(255)                             DEFAULT NULL,
+    `step_by_step_mode`               tinyint                         NOT NULL DEFAULT '0',
     `show_rule`                        tinyint                         NOT NULL DEFAULT '1',
     `initial_requester_childs_tickets` tinyint                         NOT NULL DEFAULT '1',
     `is_basket`                        tinyint                                  DEFAULT 0,
@@ -128,20 +129,22 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `id`                                int unsigned                    NOT NULL AUTO_INCREMENT,
     `entities_id`                       int unsigned                    NOT NULL DEFAULT '0',
     `is_recursive`                      int                             NOT NULL DEFAULT '0',
-    `comment`                           text COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
+    `comment`                           mediumtext COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
     `rank`                              int                             NOT NULL DEFAULT '0',
     `order`                             int                             NOT NULL DEFAULT '0',
     `name`                              varchar(255)                             DEFAULT NULL,
-    `label2`                            text COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
+    `label2`                            mediumtext COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
     `type`                              varchar(255)                             DEFAULT NULL,
     `item`                              varchar(255)                             DEFAULT NULL,
     `plugin_metademands_fields_id`      int unsigned                    NOT NULL DEFAULT '0',
     `plugin_metademands_metademands_id` int unsigned                    NOT NULL DEFAULT '0',
+    `is_active`                         tinyint                         NOT NULL DEFAULT '1',
     `date_creation`                     timestamp                       NULL     DEFAULT NULL,
     `date_mod`                          timestamp                       NULL     DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
-    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+    KEY `is_active` (`is_active`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -186,6 +189,7 @@ CREATE TABLE `glpi_plugin_metademands_fieldparameters`
     `ldap_filter`                         varchar(255) NOT NULL           DEFAULT '',
     `root_items_id`                       int unsigned                    DEFAULT 0,
     `location_depth`                      int                             DEFAULT 0,
+    `show_location_card`                  tinyint      NOT NULL           DEFAULT 0,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
 ) ENGINE = InnoDB
@@ -247,6 +251,7 @@ CREATE TABLE `glpi_plugin_metademands_fieldoptions`
     `hidden_block`                 int unsigned NOT NULL DEFAULT '0',
     `hidden_block_same_block`      tinyint      NOT NULL DEFAULT '0',
     `users_id_validate`            int unsigned NOT NULL DEFAULT '0',
+    `validation_fields_id`         int unsigned NOT NULL DEFAULT '0',
     `childs_blocks`                varchar(255) NOT NULL DEFAULT '[]',
     `checkbox_value`               int unsigned NOT NULL DEFAULT '0',
     `checkbox_id`                  int unsigned NOT NULL DEFAULT '0',
@@ -505,6 +510,13 @@ CREATE TABLE `glpi_plugin_metademands_configs`
     `icon_change`                       varchar(255)          DEFAULT NULL,
     `see_top`                           tinyint      NOT NULL DEFAULT '1',
     `redirect_to_ticket_list_when_change_user_step_by_step` tinyint      NOT NULL DEFAULT '0',
+    `title_color`                       varchar(255)          DEFAULT NULL,
+    `titleblock_color`                  varchar(255)          DEFAULT NULL,
+    `icon_color`                        varchar(255)          DEFAULT NULL,
+    `comment_incident`                  text                  DEFAULT NULL,
+    `comment_request`                   text                  DEFAULT NULL,
+    `comment_problem`                   text                  DEFAULT NULL,
+    `comment_change`                    text                  DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -555,6 +567,34 @@ CREATE TABLE `glpi_plugin_metademands_metademandvalidations`
     KEY `users_id` (`users_id`),
     KEY `tickets_id` (`tickets_id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+  ROW_FORMAT = DYNAMIC;
+
+DROP TABLE IF EXISTS `glpi_plugin_metademands_fieldvalidations`;
+CREATE TABLE `glpi_plugin_metademands_fieldvalidations`
+(
+    `id`                                int unsigned NOT NULL AUTO_INCREMENT,
+    `tickets_id`                        int unsigned NOT NULL DEFAULT '0',
+    `plugin_metademands_metademands_id` int unsigned NOT NULL DEFAULT '0',
+    `ticketvalidations_id`              int unsigned NOT NULL DEFAULT '0',
+    `users_id_validate`                 int unsigned NOT NULL DEFAULT '0',
+    `status`                            tinyint      NOT NULL DEFAULT '0',
+    `tasklevel`                         int          NOT NULL DEFAULT '1',
+    `as_tasks`                          tinyint      NOT NULL DEFAULT '0',
+    `tickets_to_create`                 longtext,
+    `parent_fields`                     longtext,
+    `input_field`                       longtext,
+    `input_field_main`                  longtext,
+    `date_creation`                     timestamp    NULL DEFAULT NULL,
+    `date_mod`                          timestamp    NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `tickets_id` (`tickets_id`),
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+    KEY `ticketvalidations_id` (`ticketvalidations_id`),
+    KEY `users_id_validate` (`users_id_validate`),
+    KEY `status` (`status`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -784,8 +824,10 @@ CREATE TABLE `glpi_plugin_metademands_basketobjects`
     `description`                             longtext,
     `reference`                               varchar(255) collate utf8mb4_unicode_ci,
     `plugin_metademands_basketobjecttypes_id` int unsigned NOT NULL                   DEFAULT '0',
+    `rank`                                    int          NOT NULL                   DEFAULT '0',
     PRIMARY KEY (`id`),
-    KEY `plugin_metademands_basketobjecttypes_id` (`plugin_metademands_basketobjecttypes_id`)
+    KEY `plugin_metademands_basketobjecttypes_id` (`plugin_metademands_basketobjecttypes_id`),
+    KEY `rank` (`rank`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci

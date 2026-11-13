@@ -293,13 +293,25 @@ class Group extends CommonDBChild
         if ($dataMetademandGroup) {
             foreach ($dataMetademandGroup as $field) {
                 $group = new \Group();
-                $group->getFromDB($field['groups_id']);
+                $found = $group->getFromDB($field['groups_id']);
                 $groups_items[] = [
-                    'id'   => $field['id'],
-                    'link' => $group->getLink(),
+                    'id'     => $field['id'],
+                    'link'   => $found ? $group->getLink() : '',
+                    'name'   => $found ? '' : sprintf(__('%1$s (%2$s)'), __('Item not found'), $field['groups_id']),
+                    // Its parents, to tell apart groups of the same name
+                    'parent' => $found && $group->fields['completename'] !== $group->fields['name']
+                        ? (string) preg_replace('/ > [^>]*$/', '', $group->fields['completename'])
+                        : '',
+                    'entity' => $found ? \Dropdown::getDropdownName('glpi_entities', $group->fields['entities_id']) : '',
                 ];
             }
         }
+
+        // The list holds the allowed groups, or the excluded ones (see isUserHaveRight())
+        $groupconfig = new GroupConfig();
+        $visibility  = $groupconfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->fields['id']])
+            ? (int) $groupconfig->fields['visibility']
+            : 0;
 
         TemplateRenderer::getInstance()->display('@metademands/group.html.twig', [
             'action'               => Toolbox::getItemTypeFormURL(Group::class),
@@ -309,6 +321,7 @@ class Group extends CommonDBChild
             'used_groups'          => $used_groups,
             'add_groups_with_regex' => (bool) $config->fields['add_groups_with_regex'],
             'groups_items'         => $groups_items,
+            'excluding'            => $visibility === 1,
             'itemtype'             => static::class,
         ]);
     }

@@ -66,11 +66,21 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
                         `description`                             longtext,
                         `reference`                               varchar(255) collate utf8mb4_unicode_ci,
                         `plugin_metademands_basketobjecttypes_id` int {$default_key_sign} NOT NULL                   DEFAULT '0',
+                        `rank`                                    int                    NOT NULL                   DEFAULT '0',
                         PRIMARY KEY (`id`),
-                        KEY `plugin_metademands_basketobjecttypes_id` (`plugin_metademands_basketobjecttypes_id`)
+                        KEY `plugin_metademands_basketobjecttypes_id` (`plugin_metademands_basketobjecttypes_id`),
+                        KEY `rank` (`rank`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->doQuery($query);
+        }
+
+        //version 3.7.2
+        // Display order of the references in the basket (Fields\Basket::showField())
+        if (!$DB->fieldExists($table, 'rank')) {
+            $migration->addField($table, 'rank', "int NOT NULL DEFAULT '0'");
+            $migration->addKey($table, 'rank');
+            $migration->migrationOneTable($table);
         }
     }
 
@@ -109,6 +119,74 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
             Session::addMessageAfterRedirect(__("The object type is mandatory", "metademands"), false, ERROR);
             return false;
         }
+        return self::normalizeRank($input);
+    }
+
+    /**
+     * @param array $input
+     *
+     * @return array|bool
+     */
+    public function prepareInputForUpdate($input)
+    {
+        return self::normalizeRank($input);
+    }
+
+    /**
+     * References of a type in their display order, as the basket lists them
+     * (Fields\Basket::showWizardField()).
+     *
+     * @return array<int, array> rows by id
+     */
+    public static function getOrderedOfType(int $types_id): array
+    {
+        return (new self())->find(
+            ['plugin_metademands_basketobjecttypes_id' => $types_id],
+            ['rank', 'name', 'description'],
+        );
+    }
+
+    /**
+     * Number the references of a type in the order given, from 1: the order of the
+     * basket field options (Fields\Basket::showFieldCustomValues()).
+     *
+     * @param int   $types_id type the references belong to
+     * @param int[] $ids      references, in their new order
+     *
+     * @return bool false when one of them may not be updated or is not of this type
+     */
+    public static function reorder(int $types_id, array $ids): bool
+    {
+        $of_type = self::getOrderedOfType($types_id);
+
+        $ok   = true;
+        $rank = 0;
+        foreach ($ids as $id) {
+            $id = (int) $id;
+            $reference = new self();
+            if (!isset($of_type[$id]) || !$reference->can($id, UPDATE)) {
+                $ok = false;
+                continue;
+            }
+            $rank++;
+            if ((int) $reference->fields['rank'] !== $rank) {
+                $ok = $reference->update(['id' => $id, 'rank' => $rank]) && $ok;
+            }
+        }
+
+        return $ok;
+    }
+
+    /**
+     * The display order is a positive integer: an empty or invalid value puts the
+     * reference first, with the others not ordered yet.
+     */
+    private static function normalizeRank(array $input): array
+    {
+        if (array_key_exists('rank', $input)) {
+            $input['rank'] = max(0, (int) $input['rank']);
+        }
+
         return $input;
     }
 
@@ -167,6 +245,18 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
             'field' => 'name',
             'name' => Basketobjecttype::getTypeName(),
             'datatype' => 'dropdown',
+        ];
+
+        // Editable from the list (massive action): reorder several references at once
+        $tab[] = [
+            'id' => 8,
+            'table' => $this->getTable(),
+            'field' => 'rank',
+            'name' => __('Display order', 'metademands'),
+            'datatype' => 'number',
+            'min' => 0,
+            'max' => 9999,
+            'step' => 1,
         ];
 
         if (Plugin::isPluginActive("ordermaterial")) {
@@ -241,6 +331,7 @@ class Basketobject extends CommonDBTM implements ProvideTranslationsInterface
             'name'               => $this->fields['name'] ?? '',
             'description'        => $this->fields['description'] ?? '',
             'reference'          => $this->fields['reference'] ?? '',
+            'rank'               => (int) ($this->fields['rank'] ?? 0),
             'type_name'          => Basketobjecttype::getTypeName(),
             'type_itemtype'      => Basketobjecttype::class,
             'types_id'           => $this->fields['plugin_metademands_basketobjecttypes_id'],

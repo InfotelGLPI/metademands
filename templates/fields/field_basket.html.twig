@@ -31,28 +31,32 @@
  #   - number: {name, options} of the quantity, Dropdown::showNumber()
  #   - total_id: id of the line total, reloaded by public/scripts/wizard_form.js
  #   - checkbox: {check, name, key, is_checked} of an object to pick
+ #   - search (optional, on t/rich cells): ref|name|description, the column the
+ #     matching search input filters; the reference and description columns can
+ #     be hidden, so the filter cannot rely on cell positions
  #  With several lines, the search inputs are
  #  bound by public/scripts/wizard_form.js through data-md-basket-search.
  #  background_style / header labels / placeholders carry data (admin colour,
  #  translations) and are escaped. Rendered on one physical line so
  #  no inter-element whitespace enters the output; the harness trims edge whitespace. -#}
-<table class='tab_cadre_fixehov' style='{{ background_style }}'{% if nb > 1 %} data-md-basket-search='{{ search_id }}'{% endif %}>
+{%- set show_search = nb > 1 and with_search -%}
+<table class='tab_cadre_fixehov' style='{{ background_style }}'{% if show_search %} data-md-basket-search='{{ search_id }}'{% endif %}>
     <tr class='tab_bg_1'>{% for header in headers %}
-            <th style='{{ header.style }}'>{{ header.label }}</th>{% endfor %}</tr>{% if nb > 1 %}
-    <tr class='tab_bg_1'>
+            <th style='{{ header.style }}'>{{ header.label }}</th>{% endfor %}</tr>{% if show_search %}
+    <tr class='tab_bg_1'>{% if with_reference %}
         <th style='{{ background_style }}'><input type='text' id='searchref-{{ search_id }}' size='10'
-                                                      placeholder='{{ ph_ref }}'></th>
+                                                      placeholder='{{ ph_ref }}'></th>{% endif %}
         <th style='{{ background_style }}'><input type='text' id='searchname-{{ search_id }}'
-                                                      placeholder='{{ ph_name }}'></th>
+                                                      placeholder='{{ ph_name }}'></th>{% if with_description %}
         <th style='{{ background_style }}'><input type='text' id='searchdescription-{{ search_id }}'
-                                                      placeholder='{{ ph_desc }}'></th>
+                                                      placeholder='{{ ph_desc }}'></th>{% endif %}
         <th colspan='4' style='{{ background_style }}'></th>
     </tr>
     <tbody id='tablesearch-{{ search_id }}'>{% else %}
     <tbody>{% endif %}{% for row in rows %}
         <tr class='tab_bg_1'>{% for cell in row %}{% if cell.t is defined %}
-            <td>{{ cell.t }}</td>{% elseif cell.rich is defined %}
-            <td>{{ cell.rich|safe_html }}</td>{% elseif cell.number is defined %}
+            <td{% if cell.search is defined %} data-md-search='{{ cell.search }}'{% endif %}>{{ cell.t }}</td>{% elseif cell.rich is defined %}
+            <td{% if cell.search is defined %} data-md-search='{{ cell.search }}'{% endif %}>{{ cell.rich|safe_html }}</td>{% elseif cell.number is defined %}
             <td>{% do call('Dropdown::showNumber', [cell.number.name, cell.number.options]) %}</td>{% elseif cell.total_id is defined %}
             <td style='text-align: right;' id='{{ cell.total_id }}'></td>{% else %}
             <td><input class='form-check-input' type='checkbox' check='{{ cell.checkbox.check }}' name='{{ cell.checkbox.name }}' key='{{ cell.checkbox.key }}' id='{{ cell.checkbox.name }}' value='{{ cell.checkbox.key }}'{% if cell.checkbox.is_checked %} checked{% endif %}></td>{% endif %}{% endfor %}</tr>{% endfor %}</tbody>

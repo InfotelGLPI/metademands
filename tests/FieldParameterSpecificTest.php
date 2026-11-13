@@ -169,6 +169,38 @@ class FieldParameterSpecificTest extends DbTestCase
         $this->assertSelected('use_richtext', '1', Textarea::showFieldParameters($this->getParams('textarea')));
     }
 
+    public function testYesnoOffersTheButtonsDisplay(): void
+    {
+        $this->login();
+
+        $html = Yesno::showFieldParameters($this->getParams('yesno', '', ['display_type' => Yesno::BUTTONS_DISPLAY]));
+        $this->assertSelected('display_type', (string) Yesno::BUTTONS_DISPLAY, $html);
+        foreach ([Yesno::CLASSIC_DISPLAY, Yesno::SWITCH_DISPLAY, Yesno::BUTTONS_DISPLAY] as $display) {
+            $this->assertMatchesRegularExpression('/<option value=[\'"]' . $display . '[\'"]/', $html);
+        }
+        // The mandatory warning belongs to the switch only
+        $this->assertStringNotContainsString("switch mode don't support", $html);
+
+        // Buttons: the select of the classic display, marked for public/scripts/wizard_layout.js
+        $render = static function (int $display): string {
+            ob_start();
+            Yesno::showWizardField(
+                ['id' => 42, 'is_mandatory' => 1, 'display_type' => $display, 'custom_values' => ''],
+                'field',
+                '',
+                false,
+            );
+            return (string) ob_get_clean();
+        };
+        $buttons = $render(Yesno::BUTTONS_DISPLAY);
+        $this->assertMatchesRegularExpression('/<select[^>]*name=[\'"]field\[42\][\'"][^>]*class=[\'"][^\'"]*md-yesno-buttons/', $buttons);
+        $classic = $render(Yesno::CLASSIC_DISPLAY);
+        $this->assertMatchesRegularExpression('/<select[^>]*name=[\'"]field\[42\][\'"][^>]*class=[\'"]yesno[\'"]/', $classic);
+        $this->assertStringNotContainsString('md-yesno-buttons', $classic);
+        $this->assertTrue(Yesno::usesSelect(Yesno::BUTTONS_DISPLAY));
+        $this->assertFalse(Yesno::usesSelect(Yesno::SWITCH_DISPLAY));
+    }
+
     public function testColorAndInformationType(): void
     {
         $this->login();

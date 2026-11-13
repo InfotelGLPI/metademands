@@ -477,22 +477,26 @@ class Draft extends CommonDBTM
     /**
      * Display the "Save as draft" button and its modal, for a template calling it in place.
      */
-    public static function showDraftInput(int $type): void
+    public static function showDraftInput(int $type, bool $freetable = false): void
     {
-        echo self::createDraftInput($type);
+        echo self::createDraftInput($type, $freetable);
     }
 
-    public static function createDraftInput($type, $freetable = 0)
+    /**
+     * @param int  $type      self::DEFAULT_MODE (wizard) or self::BASKET_MODE (basket summary)
+     * @param bool $freetable whether the form holds a free table: the button then waits for
+     *                        its first line, shown by showConfirmButton() of
+     *                        public/scripts/metademands_freelines.js
+     */
+    public static function createDraftInput($type, $freetable = false)
     {
         echo self::createDraftModalWindow("my_new_draft");
 
         //correct css with condition
-        if ($type == 1) {
-            //            if ($freetable == 'freetable') {
-            $style = "display:inline-block;margin: 10px;display:none";
-            //            } else {
-            //                $style = "display:inline-block;margin: 10px;";
-            //            }
+        if ($type == self::DEFAULT_MODE) {
+            $style = $freetable
+                ? "display:inline-block;margin: 10px;display:none"
+                : "display:inline-block;margin: 10px;";
         } else {
             $style = "display:inline-block;float:left;margin-right: 10px;";
         }

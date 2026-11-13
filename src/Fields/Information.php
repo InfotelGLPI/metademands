@@ -104,7 +104,11 @@ class Information extends CommonDBTM
             'has_icon'      => (bool) $icon,
             'icon'          => $icon,
             'icon_is_fa'    => str_contains($icon, 'fa-'),
-            'color'         => Metademand::toThemedForeground($data['color']),
+            // Black is the default of the parameter: the box then keeps the colours of its
+            // kind (information, warning, alert), a colour chosen by the designer wins
+            'color'         => Metademand::isDefaultTextColor($data['color'] ?? '')
+                ? ''
+                : Metademand::toThemedForeground($data['color']),
             'name'          => $name,
             'comment'       => $comment,
             'label2'        => $label2,

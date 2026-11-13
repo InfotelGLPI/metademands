@@ -190,7 +190,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         `hide_title`                       tinyint                                  DEFAULT '0',
                         `title_color`                      varchar(255)                             DEFAULT '#000000',
                         `background_color`                 varchar(255)                             DEFAULT '#FFFFFF',
-                        `step_by_step_mode`                tinyint                         NOT NULL DEFAULT '0',
+                        `icon_color`                       varchar(255)                             DEFAULT NULL,
+                        `step_by_step_mode`               tinyint                         NOT NULL DEFAULT '0',
                         `show_rule`                        tinyint                         NOT NULL DEFAULT '1',
                         `initial_requester_childs_tickets` tinyint                         NOT NULL DEFAULT '1',
                         `is_basket`                        tinyint                                  DEFAULT 0,
@@ -310,6 +311,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         }
         if (!$DB->fieldExists($table, "title_color")) {
             $migration->addField($table, "title_color", "varchar(255) COLLATE utf8mb4_unicode_ci default '#000000'");
+            $migration->migrationOneTable($table);
+        }
+        // Colour of the icon; empty: the one of the title
+        if (!$DB->fieldExists($table, "icon_color")) {
+            $migration->addField($table, "icon_color", "varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL");
             $migration->migrationOneTable($table);
         }
         //version 2.7.8
@@ -620,7 +626,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
         $this->addDefaultFormTab($ong);
         $this->addStandardTab(Field::class, $ong, $options);
-        $this->addStandardTab(Wizard::class, $ong, $options);
+        // No "Form preview" tab: the "Preview" button of the "Wizard creation" tab opens the
+        // form as the requesters fill it, in a new browser tab
         if ($this->getField('step_by_step_mode') == 1) {
             $this->addStandardTab(Configstep::class, $ong, $options);
             $this->addStandardTab(Step::class, $ong, $options);
@@ -734,7 +741,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      */
     public static function sanitizeColorInput($input)
     {
-        foreach (['title_color', 'background_color'] as $color_field) {
+        // A colour input always posts a colour: the "same as the title" checkbox empties the
+        // colour of the icon instead
+        if (Config::isColorReset($input, 'icon_color')) {
+            $input['icon_color'] = '';
+        }
+        foreach (['title_color', 'background_color', 'icon_color'] as $color_field) {
             if (
                 isset($input[$color_field])
                 && $input[$color_field] !== ''
@@ -785,6 +797,93 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      *
      * @return string
      */
+    /**
+     * Icon the plugin configuration gives to a type of metademand (incident, request,
+     * problem, change), empty when none.
+     *
+     * @param int|string|null $type
+     */
+    public static function getConfigTypeIcon($type): string
+    {
+        $config = Config::getInstance();
+        $key = match (true) {
+            $type == \Ticket::INCIDENT_TYPE => 'icon_incident',
+            $type == \Ticket::DEMAND_TYPE   => 'icon_request',
+            $type === 'Problem'             => 'icon_problem',
+            $type === 'Change'              => 'icon_change',
+            default                         => '',
+        };
+
+        return $key !== '' ? (string) ($config[$key] ?? '') : '';
+    }
+
+    /**
+     * Icon of a metademand in the wizard: its own one, except a Font Awesome one (fa-...)
+     * from the former versions, replaced by the icon the plugin configuration gives to its
+     * type; then the configured one, then $default.
+     *
+     * @param array<string, mixed> $fields fields of the metademand (icon, type)
+     */
+    public static function getDisplayIcon(array $fields, string $default = 'ti-share'): string
+    {
+        $icon = trim((string) ($fields['icon'] ?? ''));
+        if ($icon !== '' && !str_contains($icon, 'fa-')) {
+            return $icon;
+        }
+        $type_icon = self::getConfigTypeIcon($fields['type'] ?? null);
+        if ($type_icon !== '') {
+            return $type_icon;
+        }
+
+        return $icon !== '' ? $icon : $default;
+    }
+
+    /**
+     * Whether a text colour of a field is the default of its parameter (black, or none): the
+     * wizard then keeps the colours of the theme instead of painting the field in black.
+     *
+     * @param mixed $color
+     */
+    /**
+     * Colour of the title of a meta-demand: the one forced by the configuration, otherwise
+     * its own.
+     *
+     * @param array $fields fields of the meta-demand
+     */
+    public static function getTitleColor(array $fields): string
+    {
+        return Config::getForcedColor('title_color') ?: (string) ($fields['title_color'] ?? '');
+    }
+
+    /**
+     * Colour of the icon of a meta-demand: the one forced by the configuration, otherwise
+     * its own, otherwise the one of its title.
+     *
+     * @param array $fields fields of the meta-demand
+     */
+    public static function getIconColor(array $fields): string
+    {
+        return Config::getForcedColor('icon_color')
+            ?: (preg_match('/^#[0-9A-Fa-f]{3,8}$/', (string) ($fields['icon_color'] ?? '')) ? (string) $fields['icon_color'] : '')
+            ?: self::getTitleColor($fields);
+    }
+
+    /**
+     * Colour of a title-block field: the one forced by the configuration, otherwise the one
+     * of the field.
+     *
+     * @param mixed $color colour of the field
+     */
+    public static function getTitleblockColor($color): string
+    {
+        return Config::getForcedColor('titleblock_color') ?: (string) ($color ?? '');
+    }
+
+    public static function isDefaultTextColor($color): bool
+    {
+        return in_array(strtolower(trim((string) $color)), ['', '#000', '#000000'], true);
+    }
+
     public static function toThemedForeground($color)
     {
         $color = trim((string) $color);
@@ -1441,6 +1540,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             [
                 'plugin_metademands_metademands_id' => $this->fields['id'],
                 'step_by_step_interface' => Configstep::BOTH_INTERFACE,
+                // Created in step by step mode: its blocks shown as tabs by default
+                'see_blocks_as_tab' => ($this->fields['step_by_step_mode'] ?? 0) == 1 ? 1 : 0,
             ],
         );
 
@@ -1573,11 +1674,19 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         }
         $confStep = new Configstep();
 
+        // Step by step mode switched on: its blocks shown as tabs by default ("Use as tabs"
+        // checked in its configuration), left as set afterwards while the mode stays on
+        $step_by_step_on = in_array('step_by_step_mode', $this->updates, true)
+            && $this->fields['step_by_step_mode'] == 1;
+
         if (!$confStep->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->fields['id']])) {
             $confStep->add([
                 'plugin_metademands_metademands_id' => $this->fields['id'],
                 'step_by_step_interface' => Configstep::BOTH_INTERFACE,
+                'see_blocks_as_tab' => $step_by_step_on ? 1 : 0,
             ]);
+        } elseif ($step_by_step_on && $confStep->fields['see_blocks_as_tab'] != 1) {
+            $confStep->update(['id' => $confStep->getID(), 'see_blocks_as_tab' => 1]);
         }
         TicketField::updateMandatoryTicketFields($this->input);
     }
@@ -2378,7 +2487,17 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      * 'tasks' => array,Task->getTasks()
      * @throws \GlpitestSQLError
      */
-    public static function constructMetademands($metademands_id, $forms = [], $step = self::STEP_SHOW)
+    /**
+     * @param int   $metademands_id
+     * @param array $forms
+     * @param int   $step
+     * @param bool  $with_inactive also the inactive fields (Field.is_active): only to copy the
+     *                             metademand, they are left out of the wizard, of the ticket and
+     *                             of the PDF, and their options have no effect
+     *
+     * @return array
+     */
+    public static function constructMetademands($metademands_id, $forms = [], $step = self::STEP_SHOW, bool $with_inactive = false)
     {
         $metademands = new self();
         $metademands->getFromDB($metademands_id);
@@ -2391,10 +2510,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         if (!empty($metademands_id) && !$hidden) {
             // get normal form data
             $field = new Field();
-            $fields_data = $field->find(
-                ['plugin_metademands_metademands_id' => $metademands_id],
-                ['rank', 'order'],
-            );
+            $criteria = ['plugin_metademands_metademands_id' => $metademands_id];
+            if (!$with_inactive) {
+                $criteria['is_active'] = 1;
+            }
+            $fields_data = $field->find($criteria, ['rank', 'order']);
+            // An option making an inactive field mandatory or visible has no effect
+            $listed_ids = array_flip(array_keys($fields_data));
 
             // Construct array
             $forms[$step][$metademands_id]['form'] = [];
@@ -2406,6 +2528,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $fieldparameter = new FieldParameter();
                     if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $field_data["id"]])) {
                         $fields_data[$id]['informations_to_display'] = $fieldparameter->fields['informations_to_display'];
+                        $fields_data[$id]['show_location_card'] = (int) ($fieldparameter->fields['show_location_card'] ?? 0);
                         if ($fieldparameter->fields['link_to_user']) {
                             continue;
                         }
@@ -2417,6 +2540,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $check_value = $opt["check_value"];
                             if ($opt["check_type_value"] == 2) {
                                 $check_value = $opt["check_value_regex"];
+                            }
+                            foreach (['fields_link', 'hidden_link'] as $target) {
+                                if ($opt[$target] && !isset($listed_ids[$opt[$target]])) {
+                                    $opt[$target] = 0;
+                                }
                             }
 
                             if ($id > 0) {
@@ -2620,6 +2748,26 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
 
         unset($values['freetables']);
+
+        // A value of an inactive field (from a draft or a form saved before) is not used:
+        // the field is not in the wizard, and its options have no effect
+        if (isset($values['fields']) && is_array($values['fields'])) {
+            $field_ids = [];
+            foreach (array_keys($values['fields']) as $key) {
+                $field_id = (int) str_replace('-2', '', (string) $key);
+                if ($field_id > 0) {
+                    $field_ids[$key] = $field_id;
+                }
+            }
+            if ($field_ids !== []) {
+                $inactive = (new Field())->find(['id' => array_values($field_ids), 'is_active' => 0]);
+                foreach ($field_ids as $key => $field_id) {
+                    if (isset($inactive[$field_id])) {
+                        unset($values['fields'][$key]);
+                    }
+                }
+            }
+        }
 
         $itilcategory = 0;
         if (isset($values['field_plugin_servicecatalog_itilcategories_id'])) {
@@ -3687,6 +3835,21 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             unset($line['tasks'][$key]);
                                         }
                                     }
+
+                                    // Child tickets waiting for the validation of a user chosen in the form
+                                    $line['tasks'] = self::holdTasksForFieldValidation(
+                                        (int) $metademands_id,
+                                        (int) $form_metademands_id,
+                                        (int) $parent_tickets_id,
+                                        $line['tasks'],
+                                        $tasklevel,
+                                        $line['form'],
+                                        $values['fields'] ?? [],
+                                        self::mergeFields($parent_fields, $parent_ticketfields),
+                                        $inputField ?? [],
+                                        $inputFieldMain ?? [],
+                                    );
+
                                     if ($metademand->fields['force_create_tasks'] == 0) {
                                         //first sons
                                         if (!self::createSonsTickets(
@@ -3705,23 +3868,21 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             $KO[] = 1;
                                         }
                                     } else {
-                                        $meta_tasks = $line['tasks'];
-                                        if (is_array($meta_tasks)) {
-                                            foreach ($meta_tasks as $meta_task) {
-                                                if (Ticket_Field::checkTicketCreation(
-                                                    $meta_task['tasks_id'],
-                                                    $parent_tickets_id,
-                                                )) {
-                                                    $ticket_task = new \TicketTask();
-                                                    $input = [];
-                                                    $input['content'] = $meta_task['tickettasks_name']
-                                                     . " " . $meta_task['content'];
-                                                    $input['tickets_id'] = $parent_tickets_id;
-                                                    $input['groups_id_tech'] = $meta_task["groups_id_assign"];
-                                                    $input['users_id_tech'] = $meta_task["users_id_assign"];
-                                                    if (!$ticket_task->add($input)) {
-                                                        $KO[] = 1;
-                                                    }
+                                        // Always an array: returned by holdTasksForFieldValidation()
+                                        foreach ($line['tasks'] as $meta_task) {
+                                            if (Ticket_Field::checkTicketCreation(
+                                                $meta_task['tasks_id'],
+                                                $parent_tickets_id,
+                                            )) {
+                                                $ticket_task = new \TicketTask();
+                                                $input = [];
+                                                $input['content'] = $meta_task['tickettasks_name']
+                                                 . " " . $meta_task['content'];
+                                                $input['tickets_id'] = $parent_tickets_id;
+                                                $input['groups_id_tech'] = $meta_task["groups_id_assign"];
+                                                $input['users_id_tech'] = $meta_task["users_id_assign"];
+                                                if (!$ticket_task->add($input)) {
+                                                    $KO[] = 1;
                                                 }
                                             }
                                         }
@@ -4030,7 +4191,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
         $have_freetable = false;
         $fieldmeta = new Field();
-        $allfields = $fieldmeta->find(["plugin_metademands_metademands_id" => $metademands_id]);
+        // Layout of the content: an inactive free table is not in it
+        $allfields = $fieldmeta->find(["plugin_metademands_metademands_id" => $metademands_id, 'is_active' => 1]);
         foreach ($allfields as $allfield) {
             if ($allfield['type'] == 'freetable') {
                 $have_freetable = true;
@@ -4634,6 +4796,129 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             }
         }
         return $inputs;
+    }
+
+    /**
+     * Hold the child tickets of the values whose option designates a validator field
+     * (FieldOption.validation_fields_id): they are not created with the others but kept by
+     * FieldValidation, which requests the validation of the user chosen in that field on the
+     * parent ticket and creates or drops them on its answer.
+     *
+     * Only the tasks of the level being created are held, with their sub-tasks: those are
+     * only created once their parent child ticket is solved, so they follow it.
+     *
+     * When no validator can be determined, or the validation cannot be requested, the tasks
+     * are kept in the list and created at once, as without this option.
+     *
+     * Called where the children are actually created: on submission (addObjects()), or once
+     * the metademand is validated when it asks for it (MetademandValidation::validateMeta()).
+     *
+     * @param int   $metademands_id      metademand given to createSonsTickets()
+     * @param int   $form_metademands_id metademand of the form holding the field options
+     * @param int   $parent_tickets_id   parent ticket
+     * @param array $tasks               tasks to create, as given to createSonsTickets()
+     * @param int   $tasklevel           level of the tasks being created
+     * @param array $form                fields of the form, by id
+     * @param array $values              posted values of the fields, by field id
+     * @param array $parent_fields       parent fields, as given to createSonsTickets()
+     * @param array $input_field         values of the "fields" plugin for the children
+     * @param array $input_field_main    values of the "fields" plugin for the children
+     * @param bool  $as_tasks            the children are tasks of the parent ticket, as chosen by
+     *                                   the validator of the metademand (MetademandValidation)
+     *
+     * @return array the tasks to create now
+     */
+    public static function holdTasksForFieldValidation(
+        int $metademands_id,
+        int $form_metademands_id,
+        int $parent_tickets_id,
+        array $tasks,
+        int $tasklevel,
+        array $form,
+        array $values,
+        array $parent_fields,
+        array $input_field,
+        array $input_field_main,
+        bool $as_tasks = false,
+    ): array {
+        if ($tasks === []) {
+            return $tasks;
+        }
+
+        $held_fields = FieldValidation::getHeldTaskFields($form_metademands_id, $parent_tickets_id);
+        if ($held_fields === []) {
+            return $tasks;
+        }
+
+        // Tasks of the level being created, skipped by createSonsTickets() when hidden
+        $hidden  = $_SESSION['metademands_hide'] ?? [];
+        $held_of = [];
+        foreach ($tasks as $task) {
+            $tasks_id = (int) $task['tasks_id'];
+            if ((int) $task['level'] === $tasklevel
+                && isset($held_fields[$tasks_id])
+                && !in_array($task['tickettasks_id'], $hidden)) {
+                $held_of[$tasks_id] = $held_fields[$tasks_id];
+            }
+        }
+        if ($held_of === []) {
+            return $tasks;
+        }
+
+        // Their sub-tasks, of any level
+        do {
+            $added = false;
+            foreach ($tasks as $task) {
+                $tasks_id  = (int) $task['tasks_id'];
+                $parent_id = (int) ($task['parent_task'] ?? 0);
+                if (!isset($held_of[$tasks_id]) && $parent_id > 0 && isset($held_of[$parent_id])) {
+                    $held_of[$tasks_id] = $held_of[$parent_id];
+                    $added = true;
+                }
+            }
+        } while ($added);
+
+        // One validation per validator field
+        $groups = [];
+        foreach ($tasks as $key => $task) {
+            $tasks_id = (int) $task['tasks_id'];
+            if (isset($held_of[$tasks_id])) {
+                $groups[$held_of[$tasks_id]][$key] = $task;
+            }
+        }
+
+        foreach ($groups as $validation_fields_id => $group_tasks) {
+            // The validator is an actor of the ticket chosen by the submitter: same
+            // revalidation as the approver of the parent ticket (used_by_ticket 59)
+            $validators = self::filterActorValues(
+                $values[$validation_fields_id] ?? 0,
+                User::class,
+            );
+
+            if ($validators === []
+                || !FieldValidation::hold(
+                    $parent_tickets_id,
+                    $metademands_id,
+                    $validators[0],
+                    $group_tasks,
+                    $parent_fields,
+                    $tasklevel,
+                    $input_field,
+                    $input_field_main,
+                    $as_tasks,
+                )) {
+                Session::addMessageAfterRedirect(
+                    __('The validation of some child tickets could not be requested: they have been created without validation.', 'metademands'),
+                    false,
+                    WARNING,
+                );
+                continue;
+            }
+
+            $tasks = array_diff_key($tasks, $group_tasks);
+        }
+
+        return $tasks;
     }
 
     /**
@@ -5389,6 +5674,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             }
 
             echo TemplateRenderer::getInstance()->render('@metademands/forms/ticket_followup.html.twig', [
+                // Children waiting for the validation of a user chosen in the form
+                'held_rows' => FieldValidation::getHeldRows((int) $tickets_id),
                 'has_tickets' => $has_tickets,
                 'is_central' => $is_central,
                 'followup' => $followup,
@@ -5482,7 +5769,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $translationMeta->getFromDB($tr['id']);
                     $translationMeta->clone(["items_id" => $new_metademands_id]);
                 }
-                $metademands_data = self::constructMetademands($metademands_id);
+                // The copy keeps the inactive fields, inactive
+                $metademands_data = self::constructMetademands($metademands_id, [], self::STEP_SHOW, true);
 
                 if (count($metademands_data)) {
                     $associated_fields = [];
@@ -5503,6 +5791,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $input['order'] = $values['order'];
                                         $input['entities_id'] = $values['entities_id'];
                                         $input['is_recursive'] = $values['is_recursive'];
+                                        $input['is_active'] = $values['is_active'] ?? 1;
                                         $input['plugin_metademands_metademands_id'] = $new_metademands_id;
                                         if (!empty($values['name'])) {
                                             $input['name'] = $values['name'];
@@ -5653,6 +5942,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $input['authldaps_id'] = $oldParam['authldaps_id'];
                         $input['ldap_attribute'] = $oldParam['ldap_attribute'];
                         $input['ldap_filter'] = $oldParam['ldap_filter'];
+                        $input['show_location_card'] = $oldParam['show_location_card'] ?? 0;
                         $input['plugin_metademands_fields_id'] = $newField['id'];
                         $fieldparameters->add($input);
                     }
@@ -5697,6 +5987,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $inputo['hidden_link'] = $associated_oldfields[$oldOption['hidden_link']] ?? 0;
                         $inputo['hidden_block'] = $oldOption['hidden_block'];
                         $inputo['users_id_validate'] = $oldOption['users_id_validate'];
+                        $inputo['validation_fields_id'] = $associated_oldfields[$oldOption['validation_fields_id'] ?? 0] ?? 0;
                         $inputo['childs_blocks'] = $oldOption['childs_blocks'];
                         $inputo['checkbox_value'] = $oldOption['checkbox_value'];
                         $inputo['checkbox_id'] = $oldOption['checkbox_id'];
@@ -6825,10 +7116,8 @@ HTML;
                         if (!$meta->canCreate() && !Group::isUserHaveRight($id)) {
                             continue;
                         }
-                        $icon = "ti-share";
-                        if (!empty($meta->fields['icon'])) {
-                            $icon = $meta->fields['icon'];
-                        }
+                        // Its own icon, unless a Font Awesome one: then the one configured for its type
+                        $icon = self::getDisplayIcon($meta->fields);
                         // The icon ends up in a class attribute on the client side and the
                         // column is stored raw since GLPI 10: anything outside the charset a
                         // class token may contain falls back to the default, so a crafted

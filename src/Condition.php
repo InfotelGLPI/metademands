@@ -727,7 +727,10 @@ class Condition extends CommonDBChild
         $conditions = $dbu->getAllDataFromTable('glpi_plugin_metademands_conditions', $criterias);
         if (count($conditions) > 0) {
             foreach ($conditions as $cond) {
-                if ($field->getFromDB($cond['plugin_metademands_fields_id'])) {
+                // A condition on an inactive field is left out: the field is not in the
+                // wizard, its empty value would keep the submit button hidden for good
+                if ($field->getFromDB($cond['plugin_metademands_fields_id'])
+                    && (int) ($field->fields['is_active'] ?? 1) === 1) {
                     $tab[$cond['id']] = [
                         'conditions_id' => $cond['id'],
                         'type' => $field->fields['type'],

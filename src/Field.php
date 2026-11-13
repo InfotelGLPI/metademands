@@ -257,38 +257,40 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                         `id` int {$default_key_sign} NOT NULL auto_increment,
                         `entities_id`                       int {$default_key_sign}         NOT NULL DEFAULT '0',
                         `is_recursive`                      int                             NOT NULL DEFAULT '0',
-                        `comment`                           text COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
+                        `comment`                           mediumtext COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
                         `rank`                              int                             NOT NULL DEFAULT '0',
                         `order`                             int                             NOT NULL DEFAULT '0',
                         `name`                              varchar(255)                             DEFAULT NULL,
-                        `label2`                            text COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
+                        `label2`                            mediumtext COLLATE utf8mb4_unicode_ci NULL     DEFAULT NULL,
                         `type`                              varchar(255)                             DEFAULT NULL,
                         `item`                              varchar(255)                             DEFAULT NULL,
                         `plugin_metademands_fields_id`      int {$default_key_sign}        NOT NULL DEFAULT '0',
                         `plugin_metademands_metademands_id` int {$default_key_sign}        NOT NULL DEFAULT '0',
+                        `is_active`                         tinyint                         NOT NULL DEFAULT '1',
                         `date_creation`                     timestamp                       NULL     DEFAULT NULL,
                         `date_mod`                          timestamp                       NULL     DEFAULT NULL,
                         PRIMARY KEY (`id`),
                         KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
-                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+                        KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+                        KEY `is_active` (`is_active`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->doQuery($query);
         }
 
         if (!$DB->fieldExists($table, "comment")) {
-            $migration->addField($table, "comment", "text COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
+            $migration->addField($table, "comment", "mediumtext COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
             $migration->migrationOneTable($table);
         }
 
         if (!$DB->fieldExists($table, "label2")) {
-            $migration->addField($table, "label2", "text COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
+            $migration->addField($table, "label2", "mediumtext COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
             $migration->migrationOneTable($table);
         }
 
-        $migration->changeField($table, 'comment', 'comment', "TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+        $migration->changeField($table, 'comment', 'comment', "MEDIUMTEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
         $migration->migrationOneTable($table);
-        $migration->changeField($table, 'label2', 'label2', "TEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
+        $migration->changeField($table, 'label2', 'label2', "MEDIUMTEXT COLLATE utf8mb4_unicode_ci DEFAULT NULL");
         $migration->migrationOneTable($table);
 
         if (!$DB->fieldExists($table, "order")) {
@@ -312,6 +314,15 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         }
         if (!$DB->fieldExists($table, "date_mod")) {
             $migration->addField($table, "date_mod", "timestamp NULL DEFAULT NULL");
+            $migration->migrationOneTable($table);
+        }
+
+        //version 3.7.2
+        // An inactive field is left out of the wizard, the ticket and the PDF, and its
+        // options have no effect: active by default, existing fields included
+        if (!$DB->fieldExists($table, "is_active")) {
+            $migration->addField($table, "is_active", "tinyint NOT NULL DEFAULT '1'", ['after' => 'plugin_metademands_metademands_id']);
+            $migration->addKey($table, "is_active");
             $migration->migrationOneTable($table);
         }
 
@@ -816,23 +827,10 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             ];
         }
 
-        $cond['plugin_metademands_metademands_id'] = $meta_id;
-
-        $searched_block = (int) ($_SESSION['plugin_metademands_searchresults'][$meta_id]['block'] ?? 0);
-        if ($searched_block != 0) {
-            $cond['rank'] = $searched_block;
-        }
-        if (isset($_SESSION['plugin_metademands_searchresults'][$meta_id]['type'])
-            && $_SESSION['plugin_metademands_searchresults'][$meta_id]['type'] != 0) {
-            $cond['type'] = $_SESSION['plugin_metademands_searchresults'][$meta_id]['type'];
-        }
-        if (isset($_SESSION['plugin_metademands_searchresults'][$meta_id]['item'])
-            && $_SESSION['plugin_metademands_searchresults'][$meta_id]['item'] != 0) {
-            $cond['item'] = $_SESSION['plugin_metademands_searchresults'][$meta_id]['item'];
-        }
-
-        // A filtered list misses fields, so its orders cannot be checked for gaps
-        $is_filtered = isset($cond['rank']) || isset($cond['type']) || isset($cond['item']);
+        // Every field is listed: the search and the type filter of the list run in the browser
+        // (field_list.js). The former server-side filter, kept in the session, is no longer
+        // applied, as the list offers no way to clear it any more.
+        $cond = ['plugin_metademands_metademands_id' => $meta_id];
 
         $self = new self();
         $data = $self->find($cond, ['rank', 'order']);
@@ -885,62 +883,30 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
         }
 
-        $tabs = [];
         $block_fields = [];
-        if (count($blocks) > 0) {
-            foreach ($blocks as $idblock => $block) {
-                $tabs[] = ['id' => $idblock, 'name' => $block];
-            }
-
-            foreach ($blocks as $idblock => $block) {
-                foreach ($data as $value) {
-                    if ($idblock == $value['rank']) {
-                        $block_fields[$idblock][] = $value;
-                    }
+        foreach ($blocks as $idblock => $block) {
+            foreach ($data as $value) {
+                if ($idblock == $value['rank']) {
+                    $block_fields[$idblock][] = $value;
                 }
             }
         }
 
-        // Kept outside the block loop, as in the legacy code: the counters accumulate, so a
-        // block missing a parameter also flags every block rendered after it.
-        $koparams = 0;
-        $kocustom = 0;
         $searchOption = Search::getOptions('Ticket');
         $debug = isset($_SESSION['glpi_use_mode']) && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE;
         $is_order = $item->fields['is_order'] == 1;
         $form_url = self::getFormURL();
 
         $panels = [];
+        // Blocks a field shows depending on its value (FieldOption::hidden_block)
+        $conditional_blocks = [];
         foreach ($block_fields as $idblock => $blockdata) {
-            $blockrand = mt_rand();
-            $container = 'massMetaFields' . $blockrand;
-
             $orders = [];
             foreach ($blockdata as $value) {
                 $orders[] = $value['order'];
             }
 
-            $fix_orders = !$is_filtered && self::isSequentialFromOne($orders) == false;
-
-            foreach ($blockdata as $value) {
-                $fp_check = FieldParameter::getFromStaticCache((int) $value['id']);
-                if ($fp_check === false) {
-                    $fp_check = $fieldparameter->find(["plugin_metademands_fields_id" => $value['id']]);
-                }
-                if (!$fp_check) {
-                    $koparams++;
-                }
-
-                if (self::needsCustomValues($value, $allowed_customvalues_types, $allowed_customvalues_items, $new_types)) {
-                    $fc_check = FieldCustomvalue::getFromStaticCache((int) $value['id']);
-                    if ($fc_check === false) {
-                        $fc_check = $field_custom->find(["plugin_metademands_fields_id" => $value['id']]);
-                    }
-                    if (!$fc_check) {
-                        $kocustom++;
-                    }
-                }
-            }
+            $fix_orders = self::isSequentialFromOne($orders) == false;
 
             $rows = [];
             if (is_array($blockdata) && count($blockdata) > 0) {
@@ -1050,20 +1016,49 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                         }
                     }
 
+                    // What the field is missing, named so that the list points at it
+                    $warnings = [];
+                    if (!$fp_cur) {
+                        $warnings[] = __('Missing parameters', 'metademands');
+                    }
+                    if ($needs_custom && !$fc_cur) {
+                        $warnings[] = __('Missing values', 'metademands');
+                    }
+
+                    // Blocks this field shows depending on its value
+                    $shown_blocks = [];
+                    foreach ($fo_cur as $opt) {
+                        if ((int) $opt['hidden_block'] > 0) {
+                            $shown_blocks[] = (int) $opt['hidden_block'];
+                            // The field the block depends on, named in the header of that block
+                            $conditional_blocks[(int) $opt['hidden_block']][(int) $value['id']] = $label;
+                        }
+                    }
+                    $shown_blocks = array_values(array_unique($shown_blocks));
+
                     $rows[] = [
                         'order' => $value['order'],
                         'id' => $value['id'],
-                        'has_warning' => !$fp_cur || ($needs_custom && !$fc_cur),
+                        'rank' => (int) $value['rank'],
+                        'type' => $value['type'],
+                        'icon' => self::getFieldTypeIcon((string) $value['type']),
+                        'has_warning' => $warnings !== [],
+                        'warnings' => $warnings,
                         'label' => $label,
                         'url' => Toolbox::getItemTypeFormURL(__CLASS__) . "?id=" . $value['id'],
                         'type_label' => $type_label,
+                        'base_type_label' => self::getFieldTypesName($value['type']),
+                        // Switched from the list itself (ajax/fieldactive.php)
+                        'is_active' => (int) ($value['is_active'] ?? 1) === 1,
                         'is_mandatory' => $fp_cur ? $fp_cur['is_mandatory'] == 1 : false,
-                        'mandatory_label' => $fp_cur ? \Dropdown::getYesNo($fp_cur['is_mandatory']) : null,
-                        'value_to_check_label' => $value_to_check_label,
-                        'basket_label' => \Dropdown::getYesNo($fp_cur['is_basket'] ?? 0),
-                        'object_field_label' => $object_field_label,
+                        // Switched from the list itself (ajax/fieldmandatory.php), as its form offers it
+                        'can_be_mandatory' => $fp_cur
+                            && !in_array($value['type'], FieldParameter::NOT_MANDATORY_TYPES, true),
+                        'is_basket' => $is_order && ($fp_cur['is_basket'] ?? 0) == 1,
+                        'value_to_check_label' => $value_to_check_label === \Dropdown::EMPTY_VALUE ? '' : $value_to_check_label,
+                        'shown_blocks' => $shown_blocks,
+                        'object_field_label' => $object_field_label === \Dropdown::EMPTY_VALUE ? '' : $object_field_label,
                         'task_names' => $task_names,
-                        'no_task_label' => \Dropdown::EMPTY_VALUE,
                         'debug_order' => $debug ? $value['order'] : null,
                     ];
                 }
@@ -1071,37 +1066,94 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
             $panels[] = [
                 'id' => $idblock,
-                'is_default' => $idblock == 1,
+                'name' => $blocks[$idblock] ?? (__('Block', 'metademands') . ' ' . $idblock),
                 'fix_orders' => $fix_orders,
-                'ko_params' => $koparams > 0,
-                'ko_custom' => $kocustom > 0,
-                'container' => $container,
-                'purge_form_id' => 'purgeMetaField' . $blockrand,
-                'drag_id' => 'drag' . $blockrand,
-                'sortable_url' => $webdir . '/ajax/reorderfields.php',
-                'sortable_params' => json_encode([
-                    'plugin_metademands_metademands_id' => $meta_id,
-                    'rank' => $idblock,
-                ]),
+                'warning_count' => count(array_filter($rows, static fn(array $row): bool => $row['has_warning'])),
                 'rows' => $rows,
             ];
         }
 
+        // A block another field shows depending on its value is hidden at first: the fields
+        // it depends on are listed with it
+        foreach ($panels as &$panel) {
+            $panel['is_conditional']    = isset($conditional_blocks[$panel['id']]);
+            $panel['condition_sources'] = [];
+            foreach ($conditional_blocks[$panel['id']] ?? [] as $source_id => $source_label) {
+                $panel['condition_sources'][] = ['id' => $source_id, 'label' => $source_label];
+            }
+        }
+        unset($panel);
+
+        // Every field to complete, named, for the alert above the list
+        $to_complete = [];
+        $type_filter = [];
+        foreach ($panels as $panel) {
+            foreach ($panel['rows'] as $row) {
+                if ($row['has_warning']) {
+                    $to_complete[] = ['id' => $row['id'], 'label' => $row['label'], 'warnings' => $row['warnings']];
+                }
+                $type_filter[$row['type']] = $row['base_type_label'];
+            }
+        }
+        asort($type_filter);
+
         TemplateRenderer::getInstance()->display('@metademands/field_list.html.twig', [
             'meta_id' => $meta_id,
-            'searched_block' => $searched_block,
             'preview_url' => $webdir . '/ajax/previewMetademand.php',
+            'move_url' => $webdir . '/ajax/movefield.php',
+            'mandatory_url' => $webdir . '/ajax/fieldmandatory.php',
+            'active_url' => $webdir . '/ajax/fieldactive.php',
+            // Edited in place under the line of a field: its parameters, then its label
+            'parameters_url' => $webdir . '/ajax/fieldparameters.php',
+            // "Preview" button: the form as the requesters fill it, in a new browser tab
+            'render_url' => $webdir . '/front/wizard.form.php?metademands_id=' . (int) $meta_id
+                . '&step=' . Metademand::STEP_SHOW . '&render=1',
+            'rename_url' => $webdir . '/ajax/fieldname.php',
             'form_url' => $form_url,
             'itemtype' => __CLASS__,
             'canedit' => $canedit,
-            'is_order' => $is_order,
             'add' => $add,
-            'search_form' => self::getSearchFormContext($item, $cond),
-            'tabs' => $tabs,
+            'massive_container' => 'massMetaFields' . $rand,
+            'purge_form_id' => 'purgeMetaField' . $rand,
             'panels' => $panels,
-            'drag_style' => 'cursor: move;border-width: 0 !important;border-style: none !important;'
-                . ' border-color: initial !important;border-image: initial !important;',
+            'to_complete' => $to_complete,
+            'type_filter' => $type_filter,
         ]);
+    }
+
+    /**
+     * Tabler icon of a field type, for the field list of the "Wizard creation" tab
+     */
+    public static function getFieldTypeIcon(string $type): string
+    {
+        return match ($type) {
+            'title' => 'ti-heading',
+            'title-block' => 'ti-layout-navbar',
+            'informations' => 'ti-info-circle',
+            'tel' => 'ti-phone',
+            'email' => 'ti-mail',
+            'url', 'link' => 'ti-link',
+            'textarea' => 'ti-align-left',
+            'dropdown', 'dropdown_meta' => 'ti-list',
+            'dropdown_multiple' => 'ti-list-check',
+            'dropdown_object' => 'ti-database',
+            'dropdown_ldap' => 'ti-address-book',
+            'checkbox' => 'ti-checkbox',
+            'radio' => 'ti-circle-dot',
+            'yesno' => 'ti-toggle-right',
+            'number' => 'ti-123',
+            'range' => 'ti-adjustments-horizontal',
+            'freetable' => 'ti-table',
+            'date' => 'ti-calendar',
+            'time' => 'ti-clock',
+            'datetime' => 'ti-calendar-time',
+            'date_interval', 'datetime_interval' => 'ti-calendar-event',
+            'upload' => 'ti-paperclip',
+            'basket' => 'ti-basket',
+            'signature' => 'ti-signature',
+            'parent_field' => 'ti-arrow-back-up',
+            default => 'ti-forms',
+        };
     }
 
     /**
@@ -1910,6 +1962,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 'ldap_attribute' => $metademand_params->fields["ldap_attribute"] ?? 0,
                 'root_items_id' => (int) ($metademand_params->fields["root_items_id"] ?? 0),
                 'location_depth' => (int) ($metademand_params->fields["location_depth"] ?? 0),
+                'show_location_card' => (int) ($metademand_params->fields["show_location_card"] ?? 0),
                 'custom_values' => $custom_values,
                 'default_values' => $default_values,
             ];
@@ -2707,6 +2760,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
     public function cleanDBonPurge()
     {
+        global $DB;
+
         $temp = new FieldParameter();
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
 
@@ -2739,6 +2794,13 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
         $temp = new Condition();
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
+
+        // Options of other fields whose validator was chosen in this field
+        $DB->update(
+            FieldOption::getTable(),
+            ['validation_fields_id' => 0],
+            ['validation_fields_id' => $this->fields['id']],
+        );
     }
 
     /**
@@ -2901,6 +2963,16 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'datatype' => 'bool',
         ];
 
+        // Massive action of the list: (de)activate several fields at once
+        $tab[] = [
+            'id' => '887',
+            'table' => $this->getTable(),
+            'field' => 'is_active',
+            'name' => __('Active'),
+            'datatype' => 'bool',
+            'massiveaction' => true,
+        ];
+
         return $tab;
     }
 
@@ -2932,6 +3004,53 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     ],
                 );
                 return true;
+            case 'change_yesno_display':
+                TemplateRenderer::getInstance()->display(
+                    '@metademands/forms/massiveaction_field.html.twig',
+                    [
+                        'widget'       => 'array',
+                        'name'         => 'display_type',
+                        'value'        => Yesno::BUTTONS_DISPLAY,
+                        'elements'     => [
+                            Yesno::CLASSIC_DISPLAY => __("Classic display", "metademands"),
+                            Yesno::SWITCH_DISPLAY  => __("Switch display", "metademands"),
+                            Yesno::BUTTONS_DISPLAY => __("Buttons display", "metademands"),
+                        ],
+                        'submit_label' => _x('button', 'Post'),
+                    ],
+                );
+                return true;
+            case 'change_yesno_default':
+                TemplateRenderer::getInstance()->display(
+                    '@metademands/forms/massiveaction_field.html.twig',
+                    [
+                        'widget'       => 'array',
+                        'name'         => 'custom',
+                        'value'        => 2,
+                        'elements'     => [
+                            0 => \Dropdown::EMPTY_VALUE,
+                            1 => __('No'),
+                            2 => __('Yes'),
+                        ],
+                        'submit_label' => _x('button', 'Post'),
+                    ],
+                );
+                return true;
+            case 'change_mandatory':
+                TemplateRenderer::getInstance()->display(
+                    '@metademands/forms/massiveaction_field.html.twig',
+                    [
+                        'widget'       => 'array',
+                        'name'         => 'is_mandatory',
+                        'value'        => 1,
+                        'elements'     => [
+                            1 => __('Mandatory', 'metademands'),
+                            0 => __('Optional', 'metademands'),
+                        ],
+                        'submit_label' => _x('button', 'Post'),
+                    ],
+                );
+                return true;
         }
         return false;
     }
@@ -2944,6 +3063,9 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         if ($isadmin) {
             $actions['GlpiPlugin\Metademands\Field:change_icon'] = __("Modify icon", "metademands");
             $actions['GlpiPlugin\Metademands\Field:change_color'] = __("Modify color", "metademands");
+            $actions['GlpiPlugin\Metademands\Field:change_yesno_display'] = __("Modify the display of the yes / no", "metademands");
+            $actions['GlpiPlugin\Metademands\Field:change_yesno_default'] = __("Modify the default value of the yes / no", "metademands");
+            $actions['GlpiPlugin\Metademands\Field:change_mandatory'] = __("Make mandatory or optional", "metademands");
         }
 
         return $actions;
@@ -3039,6 +3161,62 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     }
                     $item->getFromDB($id);
                     $ma->itemDone($item->getType(), $id, $msg);
+                }
+                return;
+            case "change_yesno_display":
+            case "change_yesno_default":
+            case "change_mandatory":
+                $input = $ma->getInput();
+                // Per action: the posted input, its allowed values and the parameter it sets
+                [$key, $allowed, $column] = match ($ma->getAction()) {
+                    'change_yesno_display' => [
+                        'display_type',
+                        [Yesno::CLASSIC_DISPLAY, Yesno::SWITCH_DISPLAY, Yesno::BUTTONS_DISPLAY],
+                        'display_type',
+                    ],
+                    // Default value of a yes / no, stored raw in "custom" as its form does
+                    // (0: none, 1: no, 2: yes)
+                    'change_yesno_default' => ['custom', [0, 1, 2], 'custom'],
+                    default                => ['is_mandatory', [0, 1], 'is_mandatory'],
+                };
+                $yesno = $ma->getAction() !== 'change_mandatory';
+                $value = (int) ($input[$key] ?? -1);
+                if (!in_array($value, $allowed, true)) {
+                    foreach ($ids as $id) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                    }
+                    return;
+                }
+
+                foreach ($ids as $id) {
+                    // The per-item check ties each field to its metademand and its entity
+                    if (!$item->can($id, UPDATE)) {
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_NORIGHT);
+                        $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
+                        continue;
+                    }
+                    $field = new Field();
+                    $param = new FieldParameter();
+                    $applies = $field->getFromDB($id)
+                        && $param->getFromDBByCrit(['plugin_metademands_fields_id' => $id])
+                        && ($yesno
+                            ? $field->fields['type'] === 'yesno'
+                            : !in_array($field->fields['type'], FieldParameter::NOT_MANDATORY_TYPES, true));
+                    if (!$applies) {
+                        // Not a yes / no, or a field that cannot be mandatory (title, information...)
+                        $ma->addMessage(sprintf(
+                            __('%1$s: %2$s', 'metademands'),
+                            $field->fields['name'] ?? $id,
+                            __('You cannot do this for this field', 'metademands'),
+                        ));
+                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
+                        continue;
+                    }
+                    $updated = $param->update([
+                        'id'    => $param->getID(),
+                        $column => $column === 'custom' ? (string) $value : $value,
+                    ]);
+                    $ma->itemDone($item->getType(), $id, $updated ? MassiveAction::ACTION_OK : MassiveAction::ACTION_KO);
                 }
                 return;
         }
@@ -4163,6 +4341,79 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         ];
     }
 
+
+    /**
+     * Move the loaded field right after another field of a block, or at its top, the block
+     * being the same or another one (drag and drop of the "Wizard creation" tab).
+     *
+     * The field is placed by recalculateOrder(), as the "Display field after" setting of its
+     * form does, and the block it leaves is renumbered, so that both stay sequential.
+     *
+     * @param int $rank               target block
+     * @param int $previous_fields_id field of the target block to place it after, 0 for its top
+     *
+     * @return bool false when the field could not be moved
+     */
+    public function moveTo(int $rank, int $previous_fields_id): bool
+    {
+        if ($this->isNewItem() || $rank < 1) {
+            return false;
+        }
+
+        $id       = (int) $this->getID();
+        $meta_id  = (int) $this->fields['plugin_metademands_metademands_id'];
+        $old_rank = (int) $this->fields['rank'];
+
+        // The previous field must sit in the target block of the same metademand
+        if ($previous_fields_id > 0) {
+            $previous = new self();
+            if (
+                $previous_fields_id === $id
+                || !$previous->getFromDB($previous_fields_id)
+                || (int) $previous->fields['plugin_metademands_metademands_id'] !== $meta_id
+                || (int) $previous->fields['rank'] !== $rank
+            ) {
+                return false;
+            }
+        }
+
+        if ($old_rank !== $rank && !$this->update(['id' => $id, 'rank' => $rank])) {
+            return false;
+        }
+
+        $this->recalculateOrder([
+            'id'                                => $id,
+            'rank'                              => $rank,
+            'plugin_metademands_metademands_id' => $meta_id,
+            'plugin_metademands_fields_id'      => $previous_fields_id,
+        ]);
+
+        // The block left behind keeps a gap otherwise: renumber it from 1, each field
+        // following the previous one, as recalculateOrder() leaves a block
+        if ($old_rank !== $rank) {
+            $count       = 1;
+            $previous_id = 0;
+            foreach (
+                $this->find(
+                    ['plugin_metademands_metademands_id' => $meta_id, 'rank' => $old_rank],
+                    ['order'],
+                ) as $left_id => $left_field
+            ) {
+                if ((int) $left_field['order'] !== $count
+                    || (int) $left_field['plugin_metademands_fields_id'] !== $previous_id) {
+                    $renumbered = new self();
+                    $renumbered->getFromDB($left_id);
+                    $renumbered->fields['order']                        = $count;
+                    $renumbered->fields['plugin_metademands_fields_id'] = $previous_id;
+                    $renumbered->updateInDB(['order', 'plugin_metademands_fields_id']);
+                }
+                $previous_id = (int) $left_id;
+                $count++;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * @param array $params

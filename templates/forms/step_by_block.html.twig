@@ -25,80 +25,93 @@
  # --------------------------------------------------------------------------
  #}
 
-{#- The editor of a visibility is loaded into viewstep_div_id by
- #  public/scripts/metademands_reload.js, from the data-md-reload attributes.
+{#-
+ # Visibility of the blocks in step-by-step mode (Step::showStepByBlock()): one numbered step
+ # per block, who fills it in, then the creation of the object.
+ #
+ # The editor of a visibility is loaded into viewstep_div_id by
+ # public/scripts/metademands_reload.js, from the data-md-reload attributes.
  #}
-{% if canedit %}
-    <br><div id='{{ viewstep_div_id }}'></div>
-    <div class='center'>
-        <button type='button' class='submit btn btn-primary'
-                data-md-reload-event='click' data-md-reload='{{ add_reload|json_encode }}'>
-            {{ __('Define a new visibility', 'metademands') }}
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    {% if canedit %}
+        <button type="button" class="btn btn-primary ms-auto"
+                data-md-reload-event="click" data-md-reload="{{ add_reload|json_encode }}">
+            <i class="ti ti-plus me-1"></i>{{ __('Define a new visibility', 'metademands') }}
         </button>
-    </div>
+    {% endif %}
+</div>
+
+{% if canedit %}
+    <div id="{{ viewstep_div_id }}"></div>
 {% endif %}
 
 {% if warning_blocks %}
-    <div class='alert alert-warning d-flex'>
-        <i style='font-size:3em;' class='ti ti-alert-triangle'></i>&nbsp;
-        {{- __('Be careful if all blocks are not assigned, they will be displayed to the last assigned group', 'metademands') }}
+    <div class="alert alert-warning d-flex align-items-center gap-2">
+        <i class="ti ti-alert-triangle fs-2"></i>
+        <div>{{ __('Be careful if all blocks are not assigned, they will be displayed to the last assigned group', 'metademands') }}</div>
     </div>
 {% endif %}
-
-<link rel='stylesheet' type='text/css' href='{{ css_path('/plugins/metademands/css/_process-chart.css') }}'>
-<div class='row'>
-    <div class='col-12 col-lg-12'>
-        <ul class='process-chart'>
-            <li class='align-items-center d-flex justify-content-center my-4 pb-6 fs-1 fw-bold'>
-                <i class='ti ti-brand-databricks me-1'></i>
-                <span>{{ __('List of visibilities', 'metademands') }}</span>
-            </li>
-            {% if has_blocks %}
-                {% for card in cards %}
-                    <li class='step'>
-                        <a class='btn flex-column' href='#'
-                           {%- if card.edit_reload is not empty %} style='cursor:pointer' data-md-reload-event='click' data-md-reload='{{ card.edit_reload|json_encode }}'{% endif %}>
-                            <div class='d-flex align-items-center'>
-                                 <i class='ti ti-align-box-left-middle'></i>
-                                <span>&nbsp;{{ card.block_type_label }}&nbsp;-&nbsp;{{ card.block_label }}</span>
-                            </div>
-                            <div class='text-muted'>
-                                {%- if card.visibility.mode == 'groups' %}
-                                    <i class="ti ti-user-check"></i>&nbsp;
-                                    {{- _n('Only visible for this group', 'Only visible for these groups', card.visibility.groups|length, 'metademands') -}}
-                                    &nbsp;:<br>
-                                    {% for group in card.visibility.groups %}{{ group }}<br>{% endfor %}
-                                {%- elseif card.visibility.mode == 'supervisor' %}
-                                    <i class="ti ti-user-check"></i>&nbsp;{{ __('Only visible by supervisor', 'metademands') }}
-                                {%- elseif card.visibility.mode == 'all' %}
-                                    {{- __('Visible by all', 'metademands') -}}
-                                {%- endif %}
-                                {%- if card.visibility.message is not empty %}
-                                    <br><br><i class="ti ti-message-plus"></i>&nbsp;{{ card.visibility.message }}
-                                {%- endif %}
-                            </div>
-                        </a>
-                        {#- raw: Html::showSimpleForm() output, a core-built link carrying its own escaping and CSRF token #}
-                        <div class='btn flex-column' style='color:darkred'>{{ card.delete_form_html|raw }}</div>
-                    </li>
-                {% endfor %}
-                <li class='end'>
-                    <i class='ti ti-circle-check me-1'></i>
-                    <span>{{ __('The object is created', 'metademands') }}</span>
-                </li>
-            </ul>
-        </div>
-    {% else %}
-        <div class='center b'>{{ __('No visibility defined', 'metademands') }}</div>
-    {% endif %}
 
 {% if setup_problem %}
-    <div class='row'>
-        <div class='col-12 col-lg-12'>
-            <div class='center alert alert-danger' style='margin-top:20px'>
-                <i class='ti ti-alert-circle' style='color: darkred'></i>&nbsp;
-                {{- __('There is a problem with the setup', 'metademands') }}<br>{{ __('Your blocks are not all defined', 'metademands') }}&nbsp;
-            </div>
-        </div>
+    <div class="alert alert-danger d-flex align-items-center gap-2">
+        <i class="ti ti-alert-circle fs-2"></i>
+        <div>{{ __('There is a problem with the setup', 'metademands') }} — {{ __('Your blocks are not all defined', 'metademands') }}</div>
     </div>
 {% endif %}
+
+<div class="card md-visibilities">
+    <div class="card-header py-2 d-flex align-items-center gap-2">
+        <h3 class="card-title m-0"><i class="ti ti-brand-databricks me-2"></i>{{ __('List of visibilities', 'metademands') }}</h3>
+        <span class="badge bg-secondary-lt">{{ cards|length }}</span>
+    </div>
+    {% if has_blocks %}
+        <div class="list-group list-group-flush">
+            {% for card in cards %}
+                {% set opens = card.edit_reload is not empty %}
+                <div class="list-group-item d-flex align-items-start gap-3 md-visibility md-visibility-{{ card.visibility.mode }}{{ opens ? ' list-group-item-action' : '' }}"
+                     {% if opens %}data-md-reload-event="click" data-md-reload="{{ card.edit_reload|json_encode }}"{% endif %}>
+                    <span class="md-visibility-step">{{ loop.index }}</span>
+                    <div class="flex-fill">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <span class="fw-semibold"><i class="ti ti-align-box-left-middle me-1"></i>{{ card.block_label }}</span>
+                            <span class="badge bg-secondary-lt">{{ card.block_type_label }}</span>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center gap-1 mt-2">
+                            {% if card.visibility.mode == 'groups' %}
+                                <span class="small text-muted me-1">
+                                    <i class="ti ti-users me-1"></i>{{ _n('Only visible for this group', 'Only visible for these groups', card.visibility.groups|length, 'metademands') }} :
+                                </span>
+                                {% for group in card.visibility.groups %}
+                                    <span class="badge bg-blue-lt">{{ group }}</span>
+                                {% endfor %}
+                            {% elseif card.visibility.mode == 'supervisor' %}
+                                <span class="badge bg-orange-lt"><i class="ti ti-user-check me-1"></i>{{ __('Only visible by supervisor', 'metademands') }}</span>
+                            {% elseif card.visibility.mode == 'all' %}
+                                <span class="badge bg-green-lt"><i class="ti ti-world me-1"></i>{{ __('Visible by all', 'metademands') }}</span>
+                            {% endif %}
+                        </div>
+                        {% if card.visibility.message is not empty %}
+                            <div class="small text-muted mt-2"><i class="ti ti-message-plus me-1"></i>{{ card.visibility.message }}</div>
+                        {% endif %}
+                    </div>
+                    {% if canedit %}
+                        {#- raw: Html::showSimpleForm() output, a core-built link carrying its own escaping -#}
+                        <div class="md-visibility-delete" data-md-reload-noopen>{{ card.delete_form_html|raw }}</div>
+                    {% endif %}
+                    {% if opens %}
+                        <i class="ti ti-chevron-right text-muted pt-1"></i>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div class="list-group-item d-flex align-items-center gap-3 text-green">
+                <span class="md-visibility-step md-visibility-step-end"><i class="ti ti-check"></i></span>
+                <span class="fw-semibold">{{ __('The object is created', 'metademands') }}</span>
+            </div>
+        </div>
+    {% else %}
+        <div class="card-body text-center text-muted py-5">
+            <i class="ti ti-eye-off fs-1 d-block mb-2"></i>
+            {{ __('No visibility defined', 'metademands') }}
+        </div>
+    {% endif %}
+</div>

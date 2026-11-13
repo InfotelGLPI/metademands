@@ -25,42 +25,46 @@
  # --------------------------------------------------------------------------
  #}
 
+{#
+ # Toolbar of the "Parent ticket fields" tab (TicketField::showFromMetademand()), in a card
+ # like the one of the "Form creation" tab: the template the fields are synchronised with,
+ # the synchronisation button and the list of the available tags.
+ #}
 {% if canedit %}
-    <div class="center first-bloc">
-        <form name="ticketfield_form" method="post" action="{{ form_action }}">
-            <table class="tab_cadre_fixe">
-                <tr class="tab_bg_1">
-                    <th colspan="6">
+    <div class="card mb-3">
+        <div class="card-body py-2">
+            <form name="ticketfield_form" method="post" action="{{ form_action }}"
+                  class="d-flex flex-wrap align-items-center gap-2">
+                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                <div class="d-flex align-items-center gap-2 text-muted">
+                    <i class="ti ti-template fs-2"></i>
+                    <span>
                         {{ __('Synchronise with ticket template', 'metademands') }}
-                        {# raw: CommonDBTM::getLink() escapes the name (§3.1) #}
-                        {{ template_link|raw }}
-                    </th>
-                </tr>
-                <tr class="tab_bg_1">
-                    <td class="tab_bg_2 center">
-                        <button type="submit" name="template_sync" value="{{ __('Synchronise with ticket template', 'metademands') }}" class="btn btn-primary">
-                            <span>{{ __('Synchronise with ticket template', 'metademands') }}</span>
-                        </button>
-                        {% for name, value in item_fields %}
-                            <input type="hidden" name="{{ name }}" value="{{ value }}">
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr class="tab_bg_1 center">
-                    <td>
-                        <a href="#" class="submit btn btn-primary" data-bs-toggle="modal" data-bs-target="#tags"
-                           title="{{ __('Show list of available tags') }}">
-                            {{ __('Show list of available tags') }}
-                        </a>
-                        {% do call('Ajax::createIframeModalWindow', ['tags', tags_url, {
-                            'title': __('Show list of available tags'),
-                            'display': true
-                        }]) %}
-                    </td>
-                </tr>
-            </table>
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
-        </form>
+                        {% if template_link is not empty %}
+                            :
+                            {# raw: CommonDBTM::getLink() escapes the name (§3.1) #}
+                            <span class="fw-semibold">{{ template_link|raw }}</span>
+                        {% endif %}
+                    </span>
+                </div>
+                {% for name, value in item_fields %}
+                    <input type="hidden" name="{{ name }}" value="{{ value }}">
+                {% endfor %}
+                <div class="ms-auto d-flex flex-wrap gap-2">
+                    <a href="#" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#tags"
+                       title="{{ __('Show list of available tags') }}">
+                        <i class="ti ti-tags me-1"></i>{{ __('Show list of available tags') }}
+                    </a>
+                    <button type="submit" name="template_sync" value="1" class="btn btn-primary">
+                        <i class="ti ti-refresh me-1"></i>{{ __('Synchronise with ticket template', 'metademands') }}
+                    </button>
+                </div>
+            </form>
+            {% do call('Ajax::createIframeModalWindow', ['tags', tags_url, {
+                'title': __('Show list of available tags'),
+                'display': true
+            }]) %}
+        </div>
     </div>
 {% endif %}
 

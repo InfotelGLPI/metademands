@@ -116,7 +116,8 @@ class FieldOptionListTest extends DbTestCase
         $_SESSION['glpiactiveprofile'][Field::$rightname] = ALLSTANDARDRIGHT;
         $html = $this->renderOptions($field);
 
-        $this->assertStringContainsString('<td>&lt;b&gt;Option&lt;/b&gt;</td>', $html);
+        // The value to check is shown escaped, in the badge of its rule
+        $this->assertMatchesRegularExpression('/<span class="badge bg-purple-lt[^"]*"[^>]*>&lt;b&gt;Option&lt;\/b&gt;<\/span>/', $html);
         $this->assertStringNotContainsString(self::LABEL, $html);
         // The only scripts left are the ones of the core massive actions
         foreach (['showFieldOptionModal', 'addOption', 'reloadviewOption', 'viewEditOption'] as $generated) {

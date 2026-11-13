@@ -84,10 +84,18 @@ class Titleblock extends CommonDBTM
             }
         }
 
+        // The colour forced by the configuration, otherwise the one of the field
+        $color = Metademand::getTitleblockColor($data['color'] ?? '');
+
         echo TemplateRenderer::getInstance()->render('@metademands/fields/field_display_titleblock.html.twig', [
             'is_preview_or_debug' => (bool) ($preview || $debug),
             'bg_color'            => 'var(--tblr-bg-surface, #FFF)',
-            'color'               => Metademand::toThemedForeground($data['color']),
+            'color'               => Metademand::toThemedForeground($color),
+            // The line under the title takes the colour chosen by the designer; black, the
+            // default of the parameter, leaves the one of the theme
+            'border_color'        => Metademand::isDefaultTextColor($color)
+                ? ''
+                : Metademand::toThemedForeground($color),
             'rank'                => $rank,
             'has_icon'            => (bool) $icon,
             'icon'                => $icon,

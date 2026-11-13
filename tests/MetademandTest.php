@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands\Tests;
 
 use Glpi\Tests\DbTestCase;
 use GlpiPlugin\Metademands\Condition;
+use GlpiPlugin\Metademands\Configstep;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Step;
@@ -211,5 +212,46 @@ class MetademandTest extends DbTestCase
             ['plugin_metademands_metademands_id' => $metademand->getID()],
         );
         $this->assertSame(0, $remaining);
+    }
+
+    public function testStepByStepModeShowsItsBlocksAsTabsByDefault(): void
+    {
+        $this->login();
+
+        $tabs = static function (int $metademands_id): int {
+            $config = new Configstep();
+            $config->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
+
+            return (int) $config->fields['see_blocks_as_tab'];
+        };
+
+        $metademand = $this->createItem(Metademand::class, [
+            'name'             => 'Step by step',
+            'entities_id'      => $this->getTestRootEntity(true),
+            'object_to_create' => 'Ticket',
+            'type'             => 0,
+        ]);
+        $this->assertSame(0, $tabs($metademand->getID()));
+
+        // Switched on: "Use as tabs" checked
+        $this->updateItem(Metademand::class, $metademand->getID(), ['step_by_step_mode' => 1]);
+        $this->assertSame(1, $tabs($metademand->getID()));
+
+        // Then left as the designer sets it while the mode stays on
+        $config = new Configstep();
+        $config->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademand->getID()]);
+        $config->update(['id' => $config->getID(), 'see_blocks_as_tab' => 0]);
+        $this->updateItem(Metademand::class, $metademand->getID(), ['name' => 'Renamed']);
+        $this->assertSame(0, $tabs($metademand->getID()));
+
+        // Created in step by step mode: checked from the start
+        $created = $this->createItem(Metademand::class, [
+            'name'              => 'Created step by step',
+            'entities_id'       => $this->getTestRootEntity(true),
+            'object_to_create'  => 'Ticket',
+            'type'              => 0,
+            'step_by_step_mode' => 1,
+        ]);
+        $this->assertSame(1, $tabs($created->getID()));
     }
 }

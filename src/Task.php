@@ -517,6 +517,18 @@ class Task extends CommonDBChild
             'solved' => $solved,
         ];
 
+        // Tags a child may use (front/tags.php): those of the fields of the metademand,
+        // and those of the requester resolved by Metademand::getContentForUser()
+        $known_tags = array_map('strval', array_keys((new TicketField())->getTags($item->getID())));
+        foreach (['login', 'name', 'firstname', 'email'] as $user_tag) {
+            $known_tags[] = $user_tag;
+            $known_tags[] = 'requester.' . $user_tag;
+        }
+        $known_tags[] = 'entity';
+
+        $field_names = [];
+        $field_url = Toolbox::getItemTypeFormURL(Field::class);
+
         $entries = [];
         $tasks = $this->sortByParentChild($tasks);
 
@@ -536,7 +548,25 @@ class Task extends CommonDBChild
             $row_class = "";
             $meta_class = "metademand_metademandtasks";
             $fieldopt = new FieldOption();
-            if ($fieldopt->find(["plugin_metademands_tasks_id" => $id])) {
+            $options = $fieldopt->find(["plugin_metademands_tasks_id" => $id]);
+            // Fields whose answer launches this child, once each
+            $condition_sources = [];
+            foreach ($options as $option) {
+                $fields_id = (int) $option['plugin_metademands_fields_id'];
+                if (isset($condition_sources[$fields_id])) {
+                    continue;
+                }
+                if (!array_key_exists($fields_id, $field_names)) {
+                    $field = new Field();
+                    $field_names[$fields_id] = $field->getFromDB($fields_id) ? $field->fields['name'] : null;
+                }
+                $condition_sources[$fields_id] = [
+                    'id'   => $fields_id,
+                    'name' => $field_names[$fields_id] ?? sprintf(__('%1$s (%2$s)'), __('Item not found'), $fields_id),
+                    'url'  => $field_names[$fields_id] !== null ? $field_url . "?id=" . $fields_id : '',
+                ];
+            }
+            if ($options) {
                 if ($is_basic) {
                     $row_class = "linkedtooption";
                 } else {
@@ -648,7 +678,41 @@ class Task extends CommonDBChild
                 $block_labels = ["---"];
             }
 
+            $is_task = $value['type'] == self::TASK_TYPE;
+
+            // Tags of the title and the content that no field (anymore) answers: they
+            // would be left as is in the created child
+            $unknown_tags = [];
+            if ($is_basic) {
+                $texts = [
+                    $value['tickettasks_name'] ?? '',
+                    $value['type'] == self::MAIL_TYPE ? ($mailtask->fields['content'] ?? '') : ($value['content'] ?? ''),
+                ];
+                $unknown_tags = self::getUnknownTags($texts, $known_tags);
+            }
+
             $entries[] = [
+                'unknown_tags' => $unknown_tags,
+                'condition_sources' => array_values($condition_sources),
+                // Data of the card of the child (templates/task_list.html.twig): the settings
+                // only shown when they apply, rather than "Yes / No / ---" columns
+                'type_key' => (int) $value['type'],
+                'icon' => match ((int) $value['type']) {
+                    self::METADEMAND_TYPE => 'ti-sitemap',
+                    self::TASK_TYPE       => 'ti-checkbox',
+                    self::MAIL_TYPE       => 'ti-mail',
+                    default               => 'ti-ticket',
+                },
+                // A field option launches it: created only for some answers
+                'linked_to_option' => $row_class !== '',
+                'all_blocks' => !$is_task && empty($blocks),
+                'block_numbers' => !$is_task && !empty($blocks) ? array_values((array) $blocks) : [],
+                'uses_block' => !$is_task && $value['useBlock'] == 1,
+                'as_table' => !$is_task && $value['formatastable'] == 1,
+                'blocks_parent' => !$is_task && $value['type'] != self::MAIL_TYPE
+                    && $value['block_parent_ticket_resolution'] == 1,
+                'is_root' => $value['type'] != self::TICKET_TYPE || $value['level'] <= 1,
+
                 'id' => $id,
                 'parent' => $value['parent_task'],
                 'level' => $value['level'],
@@ -685,6 +749,32 @@ class Task extends CommonDBChild
             'tags_url' => PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" . $item->getID(),
             'entries' => $entries,
         ]);
+    }
+
+    /**
+     * Tags (#tag#) of texts that are not among the known ones.
+     *
+     * @param array<string|null> $texts      Plain text or HTML (entities are decoded)
+     * @param string[]           $known_tags Tags without their # delimiters
+     *
+     * @return string[] The unknown tags, with their # delimiters, once each
+     */
+    public static function getUnknownTags(array $texts, array $known_tags): array
+    {
+        $unknown = [];
+        foreach ($texts as $text) {
+            $text = html_entity_decode(strip_tags((string) $text), ENT_QUOTES | ENT_HTML5);
+            if (!preg_match_all('/#([A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*)#/', $text, $matches)) {
+                continue;
+            }
+            foreach ($matches[1] as $tag) {
+                if (!in_array($tag, $known_tags, true)) {
+                    $unknown['#' . $tag . '#'] = true;
+                }
+            }
+        }
+
+        return array_keys($unknown);
     }
 
     /**

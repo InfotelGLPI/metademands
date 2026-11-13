@@ -25,30 +25,36 @@
  # --------------------------------------------------------------------------
  #}
 
-{#- Title of the wizard (Fields\Title::showWizardField()).
+{#- Title of the wizard (Fields\Title::showWizardField()): a section heading inside its block,
+ #  small capitals over a thin line, as in the mockup of the wizard.
  #
- #  - label, icon, color, color_rgba: title and its look
+ #  - label, icon: title and its icon
+ #  - custom_color: colour chosen by the designer, empty for the default one (the theme
+ #    colours then apply); color is its fallback for the callers not giving it
  #  - label2, comment: rich texts of the designer, sanitized here
  #  - preview, config_url: link to the field settings in the preview
 -#}
 {% import '@metademands/fields/field_wrapper.html.twig' as wrapper %}
-<div id-field='field{{ id }}' class='card-header'
-     style='background-color: {{ color_rgba }}!important;border-color:{{ color }}!important;border-radius: 0;margin-bottom: 10px;'>
-    <br>
-    <h2 class='card-title'><span style='color:{{ color }};font-weight: normal;'>
+{%- set section_color = custom_color ?? color ?? '' -%}
+<div id-field='field{{ id }}' class='md-section-title'
+     {%- if section_color is not empty %} style='--md-section-color: {{ section_color }};'{% endif %}>
+    <h3 class='md-section-title-text'>
         {%- if has_icon -%}
             {%- if icon_is_fa -%}
-                <i class='fa-2x fas {{ icon }}'
-                   style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>&nbsp;
+                <i class='fas {{ icon }}'
+                   style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands';"></i>
             {%- else -%}
-                <i class='ti {{ icon }}' style="font-size:2em;"></i>&nbsp;
+                <i class='ti {{ icon }}'></i>
             {%- endif -%}
         {%- endif -%}
+        <span>
             {{- label -}}
             {%- if debug %} (ID:{{ id }}){% endif -%}
-            {%- if has_label2 %}&nbsp;<span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-title="{{ label2|safe_html|e }}">?</span>{% endif -%}
-            {%- if preview %}{{ wrapper.config_link(config_url) }}{% endif -%}
-    </span></h2>
+        </span>
+        {%- if has_label2 %}<span class="form-help" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-title="{{ label2|safe_html|e }}">?</span>{% endif -%}
+        {%- if preview %}{{ wrapper.config_link(config_url) }}{% endif -%}
+    </h3>
+    {%- if has_comment %}
+        <div class='md-section-title-comment'><i>{{ comment|safe_html }}</i></div>
+    {%- endif %}
 </div>
-{%- if has_comment %}
-    <div class='card-body'><i>{{ comment|safe_html }}</i></div>{% endif %}

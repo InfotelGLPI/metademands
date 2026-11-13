@@ -819,7 +819,8 @@ class TicketField extends CommonDBChild
 
         if ($item = getItemForItemtype($obj)) {
             $ticket = new $obj();
-            $tt = $ticket->getITILTemplateToUse(0, $type, $categid, $entity);
+            // No category comes as '': 0 for the core, which queries the category by id
+            $tt = $ticket->getITILTemplateToUse(0, $type, (int) $categid, $entity);
 
             $fieldnames = $tt->getAllowedFields(true);
 

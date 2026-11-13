@@ -218,6 +218,7 @@ class Ticket_Field extends CommonDBTM
             'SELECT'    => [
                 'glpi_plugin_metademands_fieldoptions.check_value',
                 'glpi_plugin_metademands_fields.type',
+                'glpi_plugin_metademands_fieldoptions.plugin_metademands_fields_id AS option_fields_id',
                 'glpi_plugin_metademands_fieldoptions.plugin_metademands_tasks_id',
                 'glpi_plugin_metademands_tickets_fields.plugin_metademands_fields_id',
                 'glpi_plugin_metademands_tickets_fields.value AS field_value',
@@ -243,20 +244,26 @@ class Ticket_Field extends CommonDBTM
             ],
         ]);
 
+        // The option of an inactive field is never met: the field is not in the wizard. Read
+        // from the field of the option itself: an inactive field has no value saved, so the
+        // columns joined through the values are null for it.
+        $inactive_fields = array_flip(array_keys((new Field())->find(['is_active' => 0])));
+
         if (count($iterator) > 0) {
             foreach ($iterator as $data) {
 
                 $plugin_metademands_tasks_id = $data['plugin_metademands_tasks_id'];
                 $check_values = $data['check_value'];
+                $is_active = !isset($inactive_fields[(int) $data['option_fields_id']]);
                 if (is_array($tasks_id)) {
                     foreach ($tasks_id as $task) {
                         if ($task == $plugin_metademands_tasks_id) {
-                            $test = self::isCheckValueOKFieldsLinks(FieldParameter::_unserialize($data['field_value']) ?? $data['field_value'], $check_values, $data['type']);
+                            $test = $is_active && self::isCheckValueOKFieldsLinks(FieldParameter::_unserialize($data['field_value']) ?? $data['field_value'], $check_values, $data['type']);
                             $check[] = ($test == false) ? 0 : 1;
                         }
                     }
                 } elseif ($tasks_id == $plugin_metademands_tasks_id) {
-                    $test = self::isCheckValueOKFieldsLinks(FieldParameter::_unserialize($data['field_value']) ?? $data['field_value'], $check_values, $data['type']);
+                    $test = $is_active && self::isCheckValueOKFieldsLinks(FieldParameter::_unserialize($data['field_value']) ?? $data['field_value'], $check_values, $data['type']);
                     $check[] = ($test == false) ? 0 : 1;
                 }
             }

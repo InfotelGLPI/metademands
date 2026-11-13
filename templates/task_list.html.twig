@@ -26,181 +26,204 @@
  #}
 
 {#
- # The add button and the rows of the basic tasks load the task form into
- # viewchild_id: data-md-subitem-* attributes, read by public/scripts/wizard_form.js.
- # The cells marked data-md-subitem-noopen do not open it.
+ # "Child creation" tab of a metademand (Task::showTaskslist()): one card per child (ticket,
+ # task, sub-metademand, mail), indented under its parent ticket, showing only the settings
+ # that apply to it.
+ #
+ # The add button and the rows of the basic children load the task form into viewchild_id:
+ # data-md-subitem-* attributes, read by public/scripts/wizard_form.js. The elements marked
+ # data-md-subitem-noopen do not open it.
  #}
-{% if canedit and solved %}
-    <div id="{{ viewchild_id }}"></div>
 
-    <div class="center">
-        <button type="button" class="submit btn btn-primary"
+{# Toolbar #}
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <a href="#" class="btn btn-outline-secondary" data-bs-toggle="modal"
+       data-bs-target="#tags" title="{{ __('Show list of available tags') }}">
+        <i class="ti ti-tags me-1"></i>{{ __('Show list of available tags') }}
+    </a>
+    {# Iframe modal, no core macro: printed directly, as core templates do #}
+    {% do call('Ajax::createIframeModalWindow', ['tags', tags_url, {
+        'title': __('Show list of available tags'),
+    }]) %}
+    {% if canedit and solved %}
+        <button type="button" class="btn btn-primary ms-auto"
                 data-md-subitem-target="{{ viewchild_id }}"
                 data-md-subitem-url="{{ viewsubitem_url }}"
                 data-md-subitem-params="{{ add_params|json_encode }}">
-            {{ __('Add a task', 'metademands') }}
+            <i class="ti ti-plus me-1"></i>{{ __('Add a task', 'metademands') }}
         </button>
-    </div>
-    <br>
-{% endif %}
-
-<div class="center first-bloc">
-    <table class="tab_cadre_fixe">
-        <tr class="tab_bg_1 center">
-            <td>
-                <a href="#" class="submit btn btn-primary" data-bs-toggle="modal"
-                   data-bs-target="#tags" title="{{ __('Show list of available tags') }}">
-                    {{ __('Show list of available tags') }}
-                </a>
-                {# Iframe modal, no core macro: printed directly, as core templates do (§3.2). #}
-                {% do call('Ajax::createIframeModalWindow', ['tags', tags_url, {
-                    'title': __('Show list of available tags'),
-                }]) %}
-            </td>
-        </tr>
-    </table>
+    {% endif %}
 </div>
 
+{% if canedit and solved %}
+    {# The add / edit form of a child is loaded here #}
+    <div id="{{ viewchild_id }}"></div>
+{% endif %}
+
 {% if entries|length > 0 %}
-    <script src="{{ js_path('/plugins/metademands/lib/treetable/treetable.js') }}"></script>
+    {% set with_unknown_tags = entries|filter(e => e.unknown_tags is not empty)|length %}
+    {% if with_unknown_tags > 0 %}
+        <div class="alert alert-warning d-flex align-items-center gap-2">
+            <i class="ti ti-alert-triangle fs-2"></i>
+            <div>
+                {{ _n(
+                    '%s child uses tags that match no field of the metademand.',
+                    '%s children use tags that match no field of the metademand.',
+                    with_unknown_tags,
+                    'metademands'
+                )|format(with_unknown_tags) }}
+                <a href="#" data-bs-toggle="modal" data-bs-target="#tags">{{ __('Show list of available tags') }}</a>
+            </div>
+        </div>
+    {% endif %}
 
-    <div class="left first-bloc">
-        {% if canedit and solved %}
-            {# raw: massive actions, no core macro (§3.2) #}
-            {{ call('Html::getOpenMassiveActionsForm', [mass_container])|raw }}
-            {# raw: massive actions, no core macro (§3.2) #}
-            {{ call('Html::showMassiveActions', [{
-                'item': itemtype,
-                'container': mass_container,
-                'display': false
-            }])|raw }}
-        {% endif %}
+    {% if canedit and solved %}
+        {# raw: massive actions, no core macro #}
+        {{ call('Html::getOpenMassiveActionsForm', [mass_container])|raw }}
+        {# raw: massive actions, no core macro #}
+        {{ call('Html::showMassiveActions', [{
+            'item': itemtype,
+            'container': mass_container,
+            'display': false
+        }])|raw }}
+    {% endif %}
 
-        <table id="tree-table" class="tab_cadre_fixehov">
-            <tr class="tab_bg_2">
-                <th class="left b" colspan="12">{{ __('Tasks', 'metademands') }}</th>
-            </tr>
-            <tr class="tab_bg_2">
-                <th width="10">
-                    {% if canedit and solved %}
-                        {# raw: massive actions, no core macro (§3.2) #}
-                        {{ call('Html::getCheckAllAsCheckbox', [mass_container])|raw }}
-                    {% endif %}
-                </th>
-                <th class="center b" width="6%">{{ __('ID') }}</th>
-                <th class="center b">{{ __('Name') }}</th>
-                <th class="center b">{{ __('Entity') }}</th>
-                <th class="center b">{{ __('Type') }}</th>
-                <th class="center b">{{ __('Category') }}</th>
-                <th class="center b">{{ __('Assigned to') }}</th>
-                <th class="center b">{{ __('Level', 'metademands') }}</th>
-                <th class="center b">{{ __('Block to use', 'metademands') }}</th>
-                <th class="center b">{{ __('Use block', 'metademands') }}</th>
-                <th class="center b">{{ __('Format the description of the childs ticket as a table', 'metademands') }}</th>
-                <th class="center b">{{ __('Block parent ticket resolution', 'metademands') }}</th>
-            </tr>
-
+    <div class="card md-children">
+        <div class="card-header py-2 d-flex align-items-center gap-2">
+            {% if canedit and solved %}
+                {# raw: massive actions, no core macro #}
+                {{ call('Html::getCheckAllAsCheckbox', [mass_container])|raw }}
+            {% endif %}
+            <h3 class="card-title m-0">{{ __('Tasks', 'metademands') }}</h3>
+            <span class="badge bg-secondary-lt">{{ entries|length }}</span>
+            {#- Legend with the counts: the children always created were the ones without any
+             #  mark, hard to tell apart from the conditional ones -#}
+            {% set conditional_count = entries|filter(e => e.linked_to_option)|length %}
+            <span class="ms-auto small text-muted d-none d-md-inline-flex align-items-center gap-3">
+                <span title="{{ __('Created whatever the answers', 'metademands') }}">
+                    <span class="badge bg-green-lt"><i class="ti ti-circle-check"></i></span>
+                    {{ __('Always created', 'metademands') }} ({{ entries|length - conditional_count }})
+                </span>
+                <span title="{{ __('Created only for some answers (field option)', 'metademands') }}">
+                    <span class="badge bg-purple-lt"><i class="ti ti-arrow-fork"></i></span>
+                    {{ __('Conditional', 'metademands') }} ({{ conditional_count }})
+                </span>
+            </span>
+        </div>
+        <div class="list-group list-group-flush">
             {% for entry in entries %}
-                {% set onhover = entry.edit_params is not empty %}
-                {# Cells opening the task form carry the pointer, the others their meta class #}
-                {% set cell_class = onhover ? 'pointer' : entry.td_class %}
-                <tr class="tab_bg_1 {{ entry.row_class }}"
-                    {% if entry.row_style is not empty %}style="{{ entry.row_style }}"{% endif %}
-                    data-id="{{ entry.id }}" data-parent="{{ entry.parent }}" data-level="{{ entry.level }}"
-                    {% if onhover %}
-                        data-md-subitem-target="{{ viewchild_id }}"
-                        data-md-subitem-url="{{ viewsubitem_url }}"
-                        data-md-subitem-params="{{ entry.edit_params|json_encode }}"
-                    {% endif %}>
-
-                    {# Massive action checkbox #}
-                    <td {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %} width="10" data-md-subitem-noopen>
-                        {% if canedit and solved %}
-                            {# raw: massive actions, no core macro (§3.2) #}
+                {% set opens = entry.edit_params is not empty %}
+                {% set depth = entry.type_key == 0 and entry.level > 1 ? entry.level - 1 : 0 %}
+                <div class="list-group-item d-flex align-items-start gap-3 md-child {{ entry.linked_to_option ? 'md-child-conditional' : 'md-child-always' }}{{ opens ? ' list-group-item-action' : '' }}"
+                     style="--md-depth: {{ depth }}"
+                     data-id="{{ entry.id }}" data-parent="{{ entry.parent }}" data-level="{{ entry.level }}"
+                     {% if opens %}
+                         data-md-subitem-target="{{ viewchild_id }}"
+                         data-md-subitem-url="{{ viewsubitem_url }}"
+                         data-md-subitem-params="{{ entry.edit_params|json_encode }}"
+                     {% endif %}>
+                    {% if canedit and solved %}
+                        <div class="pt-1" data-md-subitem-noopen>
+                            {# raw: massive actions, no core macro #}
                             {{ call('Html::getMassiveActionCheckBox', [itemtype, entry.id])|raw }}
+                        </div>
+                    {% endif %}
+                    {% if depth > 0 %}
+                        <i class="ti ti-corner-down-right text-muted pt-1 md-child-branch" title="{{ __('Level', 'metademands') }} {{ entry.level_label }}"></i>
+                    {% endif %}
+                    <span class="md-type" title="{{ entry.type }}"><i class="ti {{ entry.icon }}"></i></span>
+                    <div class="flex-fill">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            {% if entry.name_url is not empty %}
+                                <a href="{{ entry.name_url }}" class="fw-semibold" data-md-subitem-noopen>{{ entry.name }}</a>
+                            {% else %}
+                                <span class="fw-semibold">{{ entry.name }}</span>
+                            {% endif %}
+                            <span class="badge bg-secondary-lt">{{ entry.type }}</span>
+                            {% if entry.linked_to_option %}
+                                <span class="badge bg-purple-lt" title="{{ __('Created only for some answers (field option)', 'metademands') }}">
+                                    <i class="ti ti-arrow-fork me-1"></i>{{ __('Conditional', 'metademands') }}
+                                </span>
+                                {% if entry.condition_sources is not empty %}
+                                    <span class="small text-muted">
+                                        {{ __('from', 'metademands') }}
+                                        {% for source in entry.condition_sources %}
+                                            {% if source.url is not empty %}
+                                                <a href="{{ source.url }}" data-md-subitem-noopen>{{ source.name }}</a>
+                                            {% else %}
+                                                <span class="text-danger">{{ source.name }}</span>
+                                            {% endif %}{{ not loop.last ? ',' : '' }}
+                                        {% endfor %}
+                                    </span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-green-lt" title="{{ __('Created whatever the answers', 'metademands') }}">
+                                    <i class="ti ti-circle-check me-1"></i>{{ __('Always created', 'metademands') }}
+                                </span>
+                            {% endif %}
+                            {% if entry.unknown_tags is not empty %}
+                                <span class="badge bg-yellow-lt"
+                                      title="{{ __('These tags match no field of the metademand: they will be left as is in the created child', 'metademands') }}">
+                                    <i class="ti ti-alert-triangle me-1"></i>{{ _n('Unknown tag', 'Unknown tags', entry.unknown_tags|length, 'metademands') }} :
+                                    {{ entry.unknown_tags|join(', ') }}
+                                </span>
+                            {% endif %}
+                            <span class="text-muted small ms-auto">#{{ entry.id }}</span>
+                        </div>
+                        <div class="small text-muted mt-1 d-flex flex-wrap gap-3">
+                            <span title="{{ __('Entity') }}"><i class="ti ti-stack me-1"></i>{{ entry.entity }}</span>
+                            {% if entry.category is not empty and entry.category != '---' %}
+                                <span title="{{ __('Category') }}"><i class="ti ti-category me-1"></i>{{ entry.category }}</span>
+                            {% endif %}
+                            {% if entry.assign is not empty %}
+                                <span title="{{ __('Assigned to') }}"><i class="ti ti-user me-1"></i>{{ entry.assign|join(', ') }}</span>
+                            {% endif %}
+                        </div>
+                        {% if entry.type_key != 2 %}
+                            <div class="d-flex flex-wrap gap-1 mt-2">
+                                {% if entry.all_blocks %}
+                                    <span class="badge bg-azure-lt" title="{{ __('Block to use', 'metademands') }}"><i class="ti ti-layout-rows me-1"></i>{{ __('All') }}</span>
+                                {% else %}
+                                    {% for block in entry.block_numbers %}
+                                        <span class="badge bg-azure-lt" title="{{ __('Block to use', 'metademands') }}"><i class="ti ti-layout-rows me-1"></i>{{ __('Block %s', 'metademands')|format(block) }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if entry.uses_block %}
+                                    <span class="badge bg-blue-lt"><i class="ti ti-check me-1"></i>{{ __('Use block', 'metademands') }}</span>
+                                {% endif %}
+                                {% if entry.as_table %}
+                                    <span class="badge bg-blue-lt" title="{{ __('Format the description of the childs ticket as a table', 'metademands') }}"><i class="ti ti-table me-1"></i>{{ __('Description as a table', 'metademands') }}</span>
+                                {% endif %}
+                                {% if entry.blocks_parent %}
+                                    <span class="badge bg-orange-lt" title="{{ __('Block parent ticket resolution', 'metademands') }}"><i class="ti ti-lock me-1"></i>{{ __('Block parent ticket resolution', 'metademands') }}</span>
+                                {% endif %}
+                            </div>
                         {% endif %}
-                    </td>
-
-                    {# ID (name column anchor for treetable, which adds the expander) #}
-                    <td data-column="name" data-md-subitem-noopen>{{ entry.id }}</td>
-
-                    {# Name #}
-                    <td {% if cell_class is not empty %}class="{{ cell_class }}"{% endif %}>
-                        {% if entry.name_url is not empty %}
-                            <a href="{{ entry.name_url }}">{{ entry.name }}</a>
-                        {% else %}
-                            {{ entry.name }}
-                        {% endif %}
-                    </td>
-
-                    {# Entity #}
-                    <td {% if cell_class is not empty %}class="{{ cell_class }}"{% endif %}>
-                        {{ entry.entity }}
-                    </td>
-
-                    {# Type #}
-                    <td {% if cell_class is not empty %}class="{{ cell_class }}"{% endif %}>
-                        {{ entry.type }}
-                    </td>
-
-                    {# Category #}
-                    <td {% if cell_class is not empty %}class="{{ cell_class }}"{% endif %}>
-                        {{ entry.category }}
-                    </td>
-
-                    {# Assigned to #}
-                    <td {% if cell_class is not empty %}class="{{ cell_class }}"{% endif %}>
-                        {% for line in entry.assign %}
-                            {{ line }}{% if not loop.last %}<br>{% endif %}
-                        {% endfor %}
-                    </td>
-
-                    {# Level #}
-                    <td {% if cell_class is not empty %}class="{{ cell_class }}"{% endif %}>
-                        <div class="center">{{ entry.level_label }}</div>
-                    </td>
-
-                    {# Block to use #}
-                    <td {% if cell_class is not empty %}class="{{ cell_class }}"{% endif %}>
-                        {% for label in entry.block %}
-                            {{ label }}{% if not loop.last %}<br>{% endif %}
-                        {% endfor %}
-                    </td>
-
-                    {# Use block #}
-                    <td {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %} data-md-subitem-noopen>
-                        {{ entry.useblock }}
-                    </td>
-
-                    {# Format description as table #}
-                    <td {% if cell_class is not empty %}class="{{ cell_class }}"{% endif %}>
-                        {{ entry.formatastable }}
-                    </td>
-
-                    {# Block parent ticket resolution #}
-                    <td {% if entry.td_class is not empty %}class="{{ entry.td_class }}"{% endif %} data-md-subitem-noopen>
-                        {{ entry.block_parent }}
-                    </td>
-                </tr>
+                    </div>
+                    {% if opens %}
+                        <i class="ti ti-chevron-right text-muted pt-1"></i>
+                    {% endif %}
+                </div>
             {% endfor %}
-        </table>
-
-        {% if canedit and solved %}
-            {# raw: massive actions, no core macro (§3.2) #}
-            {{ call('Html::showMassiveActions', [{
-                'item': itemtype,
-                'container': mass_container,
-                'ontop': false,
-                'display': false
-            }])|raw }}
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
-            </form>
-        {% endif %}
+        </div>
     </div>
+
+    {% if canedit and solved %}
+        {# raw: massive actions, no core macro #}
+        {{ call('Html::showMassiveActions', [{
+            'item': itemtype,
+            'container': mass_container,
+            'ontop': false,
+            'display': false
+        }])|raw }}
+        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+        </form>
+    {% endif %}
 {% else %}
-    <div class="center first-bloc">
-        <table class="tab_cadre_fixe">
-            <tr class="tab_bg_1"><td class="center">{{ __('No results found') }}</td></tr>
-        </table>
+    <div class="card">
+        <div class="card-body text-center text-muted py-5">
+            <i class="ti ti-sitemap fs-1 d-block mb-2"></i>
+            {{ __('No results found') }}
+        </div>
     </div>
 {% endif %}

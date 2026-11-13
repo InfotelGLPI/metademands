@@ -36,9 +36,11 @@ use Document_Item;
 use Dropdown;
 use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Basket;
+use GlpiPlugin\Metademands\Fields\Dropdown as FieldDropdown;
 use GlpiPlugin\Metademands\Fields\Freetable;
 use GlpiPlugin\Metademands\Fields\Signature;
 use Html;
+use Location;
 use Plugin;
 use Session;
 use Toolbox;
@@ -79,6 +81,8 @@ class MetademandPdf extends \TCPDF
     public $fields;
     public $title;
     public $subtitle;
+    /** @var bool laid out as an order of the orderfollowup plugin (landscape, ID in the header) */
+    public $is_order_layout = false;
 
     /**
      * MetademandPdf constructor.
@@ -277,6 +281,26 @@ class MetademandPdf extends \TCPDF
         return true;
     }
 
+    /**
+     * An image file handed to TCPDF as its content ("@" prefix) rather than as a path: TCPDF 7
+     * only reads files under an allowlist of directories (its own, the current one, the one of
+     * the script, K_ALLOWED_PATHS), which the directory of the plugin is not part of on every
+     * server ("Unable to read image file").
+     *
+     * @param string $path file of the image
+     *
+     * @return string|null null when the file cannot be read
+     */
+    private static function getImageData(string $path): ?string
+    {
+        if ($path === '' || !is_file($path) || !is_readable($path)) {
+            return null;
+        }
+        $content = file_get_contents($path);
+
+        return ($content === false || $content === '') ? null : '@' . $content;
+    }
+
     public function Header()
     {
 
@@ -286,24 +310,29 @@ class MetademandPdf extends \TCPDF
         $largeurCaseTitre = $this->big_width_cell - ($this->margin_left * 2) - ($largeurCoteTitre * 2);
 
         //Cellule contenant l'image
-        $image = '../public/pics/login_logo_glpi.png';
+        // Absolute path from this file: the plugin directory of the GLPI configuration may be a
+        // relative one ("./marketplace", resolved against the current directory)
+        $image = dirname(__DIR__) . '/public/pics/login_logo_glpi.png';
         $target = 20;
-        list($width, $height, $type, $attr) = getimagesize($image);
-        list($width, $height) = $this->imageResize($width, $height, $target);
 
-        if (!Plugin::isPluginActive('orderfollowup')) {
+        if (!$this->is_order_layout) {
             $this->CellTitleValue($largeurCoteTitre, 20, "", 'TBL', 'L', 'grey', 0, $this->font_size, 'black');
-            $this->Image(
-                $image,
-                $this->margin_left + 5,
-                $this->margin_top + $height / 3,
-                $width,
-                $height,
-            ); // x, y, w, h
+            $image_size = is_readable($image) ? getimagesize($image) : false;
+            $image_data = self::getImageData($image);
+            if ($image_size !== false && $image_data !== null) {
+                [$width, $height] = $this->imageResize($image_size[0], $image_size[1], $target);
+                $this->Image(
+                    $image_data,
+                    $this->margin_left + 5,
+                    $this->margin_top + $height / 3,
+                    $width,
+                    $height,
+                ); // x, y, w, h
+            }
         } else {
             $this->CellTitleValue($largeurCoteTitre, 20, "ID : " . $this->id, 'TBL', 'C', 'grey', 0, $this->font_size, 'black');
         }
-        if (Plugin::isPluginActive('orderfollowup')) {
+        if ($this->is_order_layout) {
             $largeurCaseTitre += 85;
         }
 
@@ -435,8 +464,9 @@ class MetademandPdf extends \TCPDF
             } elseif ($type == 'textarea') {
                 $this->MultiCell($w, $h, $values, $border, $align, true);
             } elseif ($type == 'signature') {
-                // An empty path means the value was rejected upstream; TCPDF would raise on it.
-                $image = $values === '' ? '' : $this->Image($values, $x, $y + 8, 33.78);
+                // An empty path means the value was rejected upstream; TCPDF raises on missing files.
+                $data  = self::getImageData((string) $values);
+                $image = $data === null ? '' : $this->Image($data, $x, $y + 8, 33.78);
                 $this->MultiCell($w, $h + 10, $image, $border, $align, false);
             } else {
                 $width_values = $w;
@@ -456,15 +486,30 @@ class MetademandPdf extends \TCPDF
 
     public function BasicTable($header, $data, $color = '')
     {
-        // Basket column schema: Reference, Designation, Description, Quantity, Unit,
-        // [Unit price (HT), Total (HT)]. The last two columns exist only when the basket
-        // field has "with unit price (HT)" enabled, so Basket::displayFieldPDF omits them
-        // otherwise. The table adapts to the actual number of columns instead of assuming 7,
-        // and the grand total row (which only makes sense with prices) is drawn accordingly.
+        // Basket columns, built by Basket::displayFieldPDF: [Reference], Designation,
+        // [Description], Quantity, [Unit], [Unit price (HT), Total (HT)]. The bracketed
+        // ones follow the options of the basket field (with reference, with description,
+        // with quantity, with unit price), so each column is identified by its title
+        // rather than by its position.
+        $header = array_values($header);
         $nb = count($header);
-        $all_w = [20, 80, 80, 15, 30, 30, 20]; //275
-        $w = array_slice($all_w, 0, $nb);
-        $has_price = $nb >= 7;
+        $designation = __('Designation', 'metademands');
+        $description = __('Description');
+        $unit = __('Unit', 'orderfollowup');
+        $unit_price = __('Unit price (HT)', 'orderfollowup');
+        $total_label = __('Total (HT)', 'orderfollowup');
+        $widths = [
+            __('Reference', 'metademands') => 20,
+            $designation => 80,
+            $description => 80,
+            __('Quantity', 'metademands') => 15,
+            $unit => 30,
+            $unit_price => 30,
+            $total_label => 20,
+        ]; // 275 with every column
+        $w = array_map(static fn($title) => $widths[$title] ?? 20, $header);
+        $total_index = array_search($total_label, $header, true);
+        $has_price = $total_index !== false;
 
         $draw_header = function () use ($header, $w, $nb) {
             $this->SetBackgroundColor($this->default_bgcolor);
@@ -492,13 +537,15 @@ class MetademandPdf extends \TCPDF
             }
             for ($i = 0; $i < $nb; $i++) {
                 $val = $row[$i] ?? '';
-                if (($i === 1 || $i === 2) && Toolbox::strlen($val) > 40) {
+                $title = $header[$i];
+                if (($title === $designation || $title === $description) && Toolbox::strlen($val) > 40) {
                     // Designation / Description: keep the cell on a single line.
                     $val = Toolbox::substr($val, 0, 40) . "...";
-                } elseif ($i === 4) {
+                } elseif ($title === $unit) {
                     $val = Toolbox::substr($val, 0, 20);
                 }
-                if ($has_price && ($i === 5 || $i === 6)) {
+                // Blank for an object without price (Basket::displayFieldPDF)
+                if (($title === $unit_price || $title === $total_label) && $val !== '') {
                     $val = $val . " " . EURO;
                 }
                 $this->Cell($w[$i], 6, $val, 'LR', 0, 'L', $fill);
@@ -506,8 +553,9 @@ class MetademandPdf extends \TCPDF
             $this->Ln();
             $fill = !$fill;
 
-            if ($has_price) {
-                $total += $row[6];
+            // A blank total would be a TypeError in the sum
+            if ($has_price && ($row[$total_index] ?? '') !== '') {
+                $total += $row[$total_index];
             }
         }
         // Closing line
@@ -519,7 +567,8 @@ class MetademandPdf extends \TCPDF
             // bottom of the page: break for it so it is never the part that gets dropped.
             $this->checkPageBreakFor(6);
 
-            $this->Cell(195, 6, "", 0, 0, 'C', true);
+            // Blank up to the last two columns (60 + 20 mm): 195 mm with every column.
+            $this->Cell(max(0, array_sum($w) - 80), 6, "", 0, 0, 'C', true);
             $grandtotal = __('Grand total (HT)', 'orderfollowup');
             $this->SetBackgroundColor($this->default_bgcolor);
             $this->Cell(60, 6, $grandtotal, 1, 0, 'C', true);
@@ -986,6 +1035,17 @@ class MetademandPdf extends \TCPDF
                                     }
 
                                     break;
+                                case Location::class:
+                                    $value = \Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields[$elt['id']]);
+                                    $value = ($value == '&nbsp;') ? ' ' : Toolbox::stripTags($value);
+                                    // Address lines of the location card option, one per line
+                                    $address_lines = FieldDropdown::getLocationContentLines(
+                                        array_merge($elt, ['value' => $fields[$elt['id']] ?? 0]),
+                                    );
+                                    if ($address_lines !== []) {
+                                        $value .= "\n" . implode("\n", $address_lines);
+                                    }
+                                    break;
                                 case 'ITILCategory_Metademands':
                                     $value = \Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'), $fields[$elt['id']]);
                                     $value = ($value == '&nbsp;') ? ' ' : Toolbox::stripTags($value);
@@ -1381,7 +1441,10 @@ class MetademandPdf extends \TCPDF
     public function drawPdf($form, $fields, $metademands_id, $parent_tickets_id, $with_basket = false)
     {
         // TCPDF manages the total-page-count alias ({nb}) automatically — no AliasNbPages() call needed.
-        if (Plugin::isPluginActive('orderfollowup')) {
+        // The order layout for a metademand of the orderfollowup plugin only, not for every
+        // metademand as soon as the plugin is active; read by Header() on each page
+        $this->is_order_layout = Freetable::usesOrderfollowup((int) $metademands_id);
+        if ($this->is_order_layout) {
             $this->AddPage("L");
         } else {
             $this->AddPage("P");

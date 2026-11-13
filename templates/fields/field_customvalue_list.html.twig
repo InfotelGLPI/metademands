@@ -71,7 +71,16 @@
 {% if rows is not empty %}
     <tr>
         <td colspan="5" class="p-2">
-            <div id="drag">
+            {# Each value keeps its own save button; this one posts every value at once
+               (public/scripts/field_customvalue_list.js), which front/fieldcustomvalue.form.php
+               already handles as a batch #}
+            <div class="d-flex justify-content-end mb-2">
+                <button type="button" class="btn btn-sm btn-primary"
+                        data-md-customvalues-save-all="{{ form_target }}">
+                    <i class="ti ti-device-floppy me-1"></i>{{ __('Save all the values', 'metademands') }}
+                </button>
+            </div>
+            <div id="drag" data-md-customvalues>
                 <table class="w-100" style="border-collapse:collapse">
                     <tbody data-md-sortable
                            data-md-url="{{ reorder_url }}"
@@ -92,9 +101,9 @@
                                     <div class="d-flex align-items-center gap-2 flex-wrap">
                                         <input type="text" id="custom_values{{ row.id }}"
                                                name="name[{{ row.id }}]" value="{{ row.name }}"
-                                               class="form-control" style="width:200px">
+                                               class="form-control md-customvalue-name" title="{{ row.name }}">
                                         {% if show_comment %}
-                                            <div class="input-group flex-nowrap" style="width:270px">
+                                            <div class="input-group flex-nowrap md-customvalue-comment">
                                                 <span class="input-group-text text-nowrap">{{ __('Comment') }}</span>
                                                 <input type="text" id="comment_values{{ row.id }}"
                                                        name="comment[{{ row.id }}]" value="{{ row.comment }}"

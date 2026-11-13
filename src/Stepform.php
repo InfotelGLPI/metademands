@@ -770,9 +770,16 @@ class Stepform extends CommonDBTM
         return $waitingForms;
     }
 
-    public static function showWaitingWarning()
+    /**
+     * Banner telling the user how many step forms await them.
+     *
+     * @param int $current_stepforms_id step form being filled on the page, not counted: the
+     *                                  banner offered to open the very form the user was in
+     */
+    public static function showWaitingWarning(int $current_stepforms_id = 0)
     {
         $stepforms = self::getWaitingForms();
+        unset($stepforms[$current_stepforms_id]);
         if (count($stepforms) > 0) {
             TemplateRenderer::getInstance()->display('@metademands/forms/stepform_waiting_warning.html.twig', [
                 'count' => count($stepforms),
@@ -808,10 +815,8 @@ class Stepform extends CommonDBTM
             if ($meta->getFromDB($stepform['plugin_metademands_metademands_id'])) {
                 $metaID   = $stepform['plugin_metademands_metademands_id'];
                 $block_id = $stepform['block_id'];
-                $card_icon = "ti-share";
-                if (!empty($meta->fields['icon'])) {
-                    $card_icon = $meta->fields['icon'];
-                }
+                // Its own icon, unless a Font Awesome one: then the one configured for its type
+                $card_icon = Metademand::getDisplayIcon($meta->fields);
                 if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
                     $name = $meta->getName();
                 } else {
@@ -884,8 +889,9 @@ class Stepform extends CommonDBTM
     private function showWaitingFormReadOnly()
     {
 
-        $stepforms = self::getWaitingForms();
-        $stepforms = self::getWaitingFormsByMaker($stepforms);
+        // Without the forms to complete, listed above with a link to fill them: a form
+        // addressed to the user who also took part in it was listed twice
+        $stepforms = self::getWaitingFormsByMaker(self::getWaitingForms());
 
         // $meta is intentionally undefined here (matches legacy behavior): the header icon stays "ti-share".
         $icon = "ti-share";
@@ -901,10 +907,8 @@ class Stepform extends CommonDBTM
             $meta = new Metademand();
             if ($meta->getFromDB($stepform['plugin_metademands_metademands_id'])) {
                 $block_id  = $stepform['block_id'];
-                $card_icon = "fa-share-alt";
-                if (!empty($meta->fields['icon'])) {
-                    $card_icon = $meta->fields['icon'];
-                }
+                // Its own icon, unless a Font Awesome one: then the one configured for its type
+                $card_icon = Metademand::getDisplayIcon($meta->fields);
                 if (empty($n = Metademand::displayField($meta->getID(), 'name'))) {
                     $name = $meta->getName();
                 } else {
@@ -913,6 +917,8 @@ class Stepform extends CommonDBTM
                 // Same predicate as front/stepform.form.php, see showWaitingForm().
                 $can_delete = Session::haveRight(self::$rightname, DELETE) || self::canCancelForm($id);
                 $cards[] = [
+                    // The stepform deleted by the button of the card
+                    'id'              => $id,
                     'icon'            => $card_icon,
                     'is_fa'           => str_contains($card_icon, 'fa-'),
                     'name'            => $name,

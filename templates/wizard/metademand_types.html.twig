@@ -25,26 +25,39 @@
  # --------------------------------------------------------------------------
  #}
 
+{#
+ # Choice of the type of the meta-demands (incident, request, problem, change...).
+ #
+ # Expected context (built by Wizard::listMetademandTypes()):
+ #  - entries: {url, icon, is_fa_icon, name, comment} of each type, comment in plain text
+ #}
 {% if entries|length > 0 %}
-    {% for entry in entries %}
-        <a class="bt-buttons" href="{{ entry.url }}">
-            <div class="btnsc-normal-type" style="min-height: 190px;">
-                <div class="center">
-                    {% if entry.is_fa_icon %}
-                        <i class="bt-interface fa-menu-md fas {{ entry.icon }} fa-5x"
-                           style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;"></i>
-                    {% else %}
-                        <i class="bt-interface fa-menu-md ti {{ entry.icon }}" style="font-size:6em;"></i>
-                    {% endif %}
-                </div>
-                <br>
-                <p style="font-weight: normal;font-size: 13px;">
-                    {{ entry.name }}
-                    <br><em><span style="font-weight: normal;font-size: 11px;padding-left:5px"></span></em>
-                </p>
+    {#- Same cards as the list of the forms (metademands_list.html.twig) -#}
+    <div class="row row-cards">
+        {% for entry in entries %}
+            <div class="col-12 col-md-6 col-xl-4 d-flex">
+                <a class="card md-choice-card md-type-card flex-grow-1" href="{{ entry.url }}">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="md-choice-icon">
+                            {% if entry.is_fa_icon %}
+                                <i class="fas {{ entry.icon }}"
+                                   style="font-family:'Font Awesome 6 Free', 'Font Awesome 6 Brands',serif;"></i>
+                            {% else %}
+                                <i class="ti {{ entry.icon }}"></i>
+                            {% endif %}
+                        </div>
+                        <div class="md-choice-text">
+                            <h3 class="md-choice-name text-break{{ (entry.comment ?? '') is empty ? ' mb-0' }}">{{ entry.name }}</h3>
+                            {% if (entry.comment ?? '') is not empty %}
+                                <div class="md-choice-comment text-secondary">{{ entry.comment|nl2br }}</div>
+                            {% endif %}
+                        </div>
+                        <i class="ti ti-chevron-right md-choice-chevron" aria-hidden="true"></i>
+                    </div>
+                </a>
             </div>
-        </a>
-    {% endfor %}
+        {% endfor %}
+    </div>
 {% else %}
     <div class="alert alert-info center">
         {{ __('No existing forms founded', 'metademands') }}

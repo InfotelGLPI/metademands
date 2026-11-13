@@ -63,6 +63,14 @@
             </div>
 
             <div class="row mb-3">
+                <label class="col-4 col-form-label" for="basketobject_rank">{{ __('Display order', 'metademands') }}</label>
+                <div class="col-8">
+                    <input type="number" class="form-control" id="basketobject_rank" name="rank" value="{{ rank }}" min="0" step="1">
+                    <div class="form-text">{{ __('The references of the basket are listed by increasing order, then by designation', 'metademands') }}</div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
                 <label class="col-4 col-form-label">
                     {{ type_name }}
                     <span class="text-danger">*</span>

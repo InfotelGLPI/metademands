@@ -27,29 +27,28 @@
 
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
 
+{#- Visibility of the meta-demand (Group::showConfigForMetademand()): its groups are the
+ #  allowed ones, or the excluded ones -#}
 <form name="form" method="post" action="{{ action }}">
     {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
+    {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
 
-    <div class="center">
-        <table class="tab_cadre_fixe">
-            <tr>
-                <th>{{ __('Define visibility', 'metademands') }}</th>
-            </tr>
-            <tr class="tab_bg_1">
-                <td class="center">
-                    {{ __('Visibility', 'metademands') }}&nbsp;
-                    {% do call('Dropdown::showFromArray', ['visibility', visibility, {
-                        'id': 'visibility',
-                        'value': visibility_value
-                    }]) %}
-                </td>
-                <td class="tab_bg_2 center">
-                    <button class="btn btn-primary" type="submit" name="define_visibility" value="1">
-                        {{ _x('button', 'Save') }}
-                    </button>
-                    {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
-                </td>
-            </tr>
-        </table>
+    <div class="card mb-3">
+        <div class="card-header py-2">
+            <h3 class="card-title"><i class="ti ti-eye me-2"></i>{{ __('Define visibility', 'metademands') }}</h3>
+        </div>
+        <div class="card-body d-flex flex-wrap align-items-center gap-3">
+            <label class="form-label mb-0" for="visibility">{{ __('Visibility', 'metademands') }}</label>
+            <div style="min-width: 300px;">
+                {% do call('Dropdown::showFromArray', ['visibility', visibility, {
+                    'id': 'visibility',
+                    'value': visibility_value,
+                    'width': '100%'
+                }]) %}
+            </div>
+            <button class="btn btn-primary" type="submit" name="define_visibility" value="1">
+                <i class="ti ti-device-floppy me-1"></i>{{ _x('button', 'Save') }}
+            </button>
+        </div>
     </div>
 </form>

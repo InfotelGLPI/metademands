@@ -64,16 +64,19 @@ if (Plugin::isPluginActive('ordermaterial')) {
     $order_meta  = new Metademand();
 }
 
-if ($has_pricing
-    && $unit_price > 0
-    && $order_meta->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']])) {
+// A reference priced 0 € is still priced: its line totals 0 €, not its quantity
+$is_price = $has_pricing
+    && is_numeric($unit_price)
+    && $order_meta->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);
+
+if ($is_price) {
     $totalrow = $_POST['quantity'] * $unit_price;
 }
 
 TemplateRenderer::getInstance()->display('@metademands/forms/totalrow.html.twig', [
     'show_total' => $has_pricing,
-    'is_price'   => $unit_price > 0,
-    'total'      => $unit_price > 0 ? Html::formatNumber($totalrow, false, 2) : (string) $totalrow,
+    'is_price'   => $is_price,
+    'total'      => $is_price ? Html::formatNumber($totalrow, false, 2) : (string) $totalrow,
     'check'      => $_POST['check'] ?? '',
     'name'       => $_POST['name'] ?? '',
     'key'        => $_POST['key'] ?? '',

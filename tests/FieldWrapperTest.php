@@ -134,5 +134,8 @@ class FieldWrapperTest extends DbTestCase
             $html,
         );
         $this->assertStringNotContainsString('alert(1)', $html);
+        // A help under the field, no longer a grey box between the label and the field
+        $this->assertStringContainsString("<div class='md-field-help'>", $html);
+        $this->assertStringNotContainsString('alert-secondary', $html);
     }
 }

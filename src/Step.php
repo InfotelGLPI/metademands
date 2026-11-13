@@ -254,7 +254,8 @@ class Step extends CommonDBChild
             }
         } else {
             $field = new Field();
-            if ($fields = $field->find(['plugin_metademands_metademands_id' => $plugin_metademands_metademands_id])) {
+            // A block of inactive fields only is not a step
+            if ($fields = $field->find(['plugin_metademands_metademands_id' => $plugin_metademands_metademands_id, 'is_active' => 1])) {
                 foreach ($fields as $s) {
                     $list_blocks[] = $s['rank'];
                 }
@@ -303,7 +304,8 @@ class Step extends CommonDBChild
         $ranks = $DB->request([
             'SELECT' => ['MAX' => 'rank AS maxblock'],
             'FROM' => 'glpi_plugin_metademands_fields',
-            'WHERE' => ['plugin_metademands_metademands_id' => $plugin_metademands_metademands_id],
+            // Last block shown: inactive fields left out
+            'WHERE' => ['plugin_metademands_metademands_id' => $plugin_metademands_metademands_id, 'is_active' => 1],
         ]);
 
         foreach ($ranks as $data) {

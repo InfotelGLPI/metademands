@@ -94,6 +94,10 @@ class Title extends CommonDBTM
         echo TemplateRenderer::getInstance()->render('@metademands/fields/field_display_title.html.twig', [
             'id'                  => (int) $data['id'],
             'color'               => Metademand::toThemedForeground($data['color']),
+            // Section heading in the colours of the theme, unless the designer chose one
+            'custom_color'        => Metademand::isDefaultTextColor($data['color'] ?? '')
+                ? ''
+                : Metademand::toThemedForeground($data['color']),
             'color_rgba'          => Wizard::hex2rgba($data['color'], "0.03"),
             'has_icon'            => (bool) $icon,
             'icon'                => $icon,

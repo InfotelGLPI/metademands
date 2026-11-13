@@ -32,7 +32,8 @@
  #
  # Expected context:
  #  - widget:       'color' (colour picker, "color"), 'icon' (web-icon selector,
- #                  "icon") or none
+ #                  "icon"), 'array' (list of choices) or none
+ #  - name, elements, value: input name, choices (value => label) and current value of 'array'
  #  - submit_label: label of the submit button
  #  - stacked:      true to put the button on its own line, false to keep it inline
 -#}
@@ -40,6 +41,8 @@
     {% do call('Html::showColorField', ['color']) %}
 {% elseif widget|default('') == 'icon' %}
     {{ fields.dropdownWebIcons('icon', '', '', {'no_label': true, 'field_class': 'd-inline-block', 'mb': '', 'width': '175px'}) }}
+{% elseif widget|default('') == 'array' %}
+    {{ fields.dropdownArrayField(name, value|default(null), elements, '', {'no_label': true, 'field_class': 'd-inline-block', 'mb': '', 'width': '200px'}) }}
 {% endif %}
 {%- if stacked|default(false) %}<br>{% else %}&nbsp;{% endif -%}
 <button type="submit" name="massiveaction" value="{{ submit_label }}" class="btn">

@@ -31,6 +31,7 @@ namespace GlpiPlugin\Metademands\Tests;
 
 use Glpi\Tests\DbTestCase;
 use GlpiPlugin\Metademands\Group;
+use GlpiPlugin\Metademands\GroupConfig;
 use GlpiPlugin\Metademands\Metademand;
 
 /**
@@ -82,5 +83,31 @@ class GroupListTest extends DbTestCase
         $this->assertSame(substr_count($html, '<form'), substr_count($html, 'name="_glpi_csrf_token"'));
         $this->assertSame(2, substr_count($html, '<form'));
         $this->assertSame(2, substr_count($html, '</form>'));
+    }
+
+    public function testExcludingVisibilityTitlesTheListAsExcludedGroups(): void
+    {
+        $this->login();
+        $_SESSION["glpiactiveprofile"][Group::$rightname] = ALLSTANDARDRIGHT;
+
+        $metademand = $this->createItem(Metademand::class, [
+            'name'             => 'Excluded',
+            'entities_id'      => $this->getTestRootEntity(true),
+            'object_to_create' => 'Ticket',
+            'type'             => 0,
+        ]);
+        $this->createItem(GroupConfig::class, [
+            'plugin_metademands_metademands_id' => $metademand->getID(),
+            'visibility'                        => 1,
+        ]);
+
+        ob_start();
+        (new Group())->showForMetademand($metademand);
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString('All groups and not these groups', $html);
+        $this->assertStringNotContainsString('Groups allowed to enter a demand', $html);
+        // No group: an empty state, no massive actions form
+        $this->assertSame(1, substr_count($html, '<form'));
     }
 }

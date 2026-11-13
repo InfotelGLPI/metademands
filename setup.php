@@ -44,6 +44,7 @@ use GlpiPlugin\Metademands\Interticketfollowup;
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldTranslation;
+use GlpiPlugin\Metademands\FieldValidation;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\MetademandTranslation;
 use GlpiPlugin\Metademands\Metademand_Resource;
@@ -59,7 +60,7 @@ use GlpiPlugin\Resources\Resource;
 
 use function Safe\define;
 
-define('PLUGIN_METADEMANDS_VERSION', '3.6.17');
+define('PLUGIN_METADEMANDS_VERSION', '3.6.18');
 
 global $CFG_GLPI;
 
@@ -122,6 +123,8 @@ function plugin_init_metademands()
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = 'lib/fuse.js';
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = 'lib/diacritics.js';
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = 'lib/md_fuzzysearch.js';
+        // ES module: layout of the wizard (summary, stepper, yes / no buttons), in both interfaces
+        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = 'scripts/wizard_layout.js';
         //        $PLUGIN_HOOKS["javascript"]['metademands'] = [PLUGIN_METADEMANDS_WEBDIR . "/lib/fuse.js"];
         //        $PLUGIN_HOOKS["javascript"]['metademands'] = [PLUGIN_METADEMANDS_WEBDIR . "/lib/fuzzysearch.js.php"];
 
@@ -129,7 +132,12 @@ function plugin_init_metademands()
             && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = "scripts/plugin_metademands_sortable.js";
             $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = "scripts/fieldoption_valuetocheck.js";
-            $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = "scripts/field_list.js";
+            // ES modules: the "Wizard creation" tab (Field::listFields()) and the "save all"
+            // button of the custom values of a field
+            $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = "scripts/field_list.js";
+            $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = "scripts/field_customvalue_list.js";
+            // Display order of the references, in the options of a basket field
+            $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = "scripts/basket_order.js";
         }
 
         Plugin::registerClass(Metademand::class, ['addtabon' => 'Ticket']);
@@ -182,6 +190,14 @@ function plugin_init_metademands()
                 => [Ticket::class, 'post_update_ticket'],
             'ITILCategory'
                 => [TicketField::class, 'update_category_fields'],
+            // Answer to the validation of held child tickets
+            TicketValidation::class
+                => [FieldValidation::class, 'afterTicketValidationUpdate'],
+        ];
+
+        $PLUGIN_HOOKS[Hooks::ITEM_PURGE]['metademands'] = [
+            TicketValidation::class
+                => [FieldValidation::class, 'afterTicketValidationPurge'],
         ];
 
         $PLUGIN_HOOKS[Hooks::ITEM_ADD]['metademands'] = [

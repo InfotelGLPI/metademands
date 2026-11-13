@@ -163,7 +163,8 @@ class Ticket_Metademand extends CommonDBTM
 
         $reelassigntech = [];
 
-        foreach ($fields->find(['plugin_metademands_metademands_id' => $datas->input['plugin_metademands_metademands_id']]) as $idField => $valueField) {
+        // The options of an inactive field assign no group
+        foreach ($fields->find(['plugin_metademands_metademands_id' => $datas->input['plugin_metademands_metademands_id'], 'is_active' => 1]) as $idField => $valueField) {
             foreach ($fieldOption->find(['plugin_metademands_fields_id' => $idField]) as $idOption => $valueOption) {
                 // Only keep actual arrays of group ids: a malformed or scalar
                 // json_decode result would break the foreach loops below.
@@ -1648,7 +1649,8 @@ class Ticket_Metademand extends CommonDBTM
                 if ($not_change_status == 0) {
                     $validationmeta = new MetademandValidation();
                     $validation = $validationmeta->getFromDBByCrit(['tickets_id' => $ticket->fields['id']]);
-                    $validation_todo = false;
+                    // Child tickets waiting for the validation of a user chosen in the form
+                    $validation_todo = FieldValidation::hasWaiting((int) $ticket->fields['id']);
                     if ($validation) {
                         if (in_array(
                             $validationmeta->fields['validate'],

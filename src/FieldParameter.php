@@ -55,6 +55,9 @@ class FieldParameter extends CommonDBChild
 
     public static $rightname = 'plugin_metademands';
 
+    /** Field types that cannot be mandatory: nothing is typed into them */
+    public const NOT_MANDATORY_TYPES = ['title', 'title-block', 'informations', 'link'];
+
     public static $allowed_parameters_types = [
         'title',
         'title-block',
@@ -179,6 +182,7 @@ class FieldParameter extends CommonDBChild
                         `ldap_filter`                         varchar(255) NOT NULL           DEFAULT '',
                         `root_items_id`                       int {$default_key_sign}         DEFAULT 0,
                         `location_depth`                      int                             DEFAULT 0,
+                        `show_location_card`                  tinyint      NOT NULL           DEFAULT 0,
                         PRIMARY KEY (`id`),
                         KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
@@ -210,6 +214,10 @@ class FieldParameter extends CommonDBChild
         }
         if (!$DB->fieldExists($table, "location_depth")) {
             $migration->addField($table, "location_depth", "int DEFAULT 0");
+            $migration->migrationOneTable($table);
+        }
+        if (!$DB->fieldExists($table, "show_location_card")) {
+            $migration->addField($table, "show_location_card", "tinyint NOT NULL DEFAULT 0");
             $migration->migrationOneTable($table);
         }
     }
@@ -442,7 +450,7 @@ class FieldParameter extends CommonDBChild
 
         $type = $params['type'] ?? '';
 
-        $show_mandatory  = !in_array($type, ['title', 'title-block', 'informations', 'link']);
+        $show_mandatory  = !in_array($type, self::NOT_MANDATORY_TYPES, true);
         $show_hide_title = $type !== 'title-block';
         $show_row_display = !in_array($type, ['title', 'title-block']);
         $show_is_basket  = $show_row_display && ($params['is_order'] ?? 0) == 1;

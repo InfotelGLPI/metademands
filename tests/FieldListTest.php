@@ -105,7 +105,10 @@ class FieldListTest extends DbTestCase
             $this->assertStringNotContainsString($generated, $html);
         }
         $this->assertStringContainsString('data-md-field-list="' . $metademand->getID() . '"', $html);
-        $this->assertSame(2, substr_count($html, 'data-md-field-add="'));
+        // Toolbar: a new field and an existing one; then one "add here" button per block,
+        // which prefills the rank of its block
+        $this->assertSame(3, substr_count($html, 'data-md-field-add="'));
+        $this->assertSame(1, substr_count($html, 'data-md-field-add-rank="1"'));
         $this->assertStringContainsString('data-md-field-add-new', $html);
         $this->assertMatchesRegularExpression('/data-md-field-add-params="[^"]*&quot;id&quot;:-1[,}]/', $html);
         // Purge: one button per row, owned by the purge form of the block
@@ -117,30 +120,32 @@ class FieldListTest extends DbTestCase
         $this->assertStringContainsString('<form id="' . $matches[1] . '" method="post"', $html);
         // Fix the orders: a plain form with its token
         $this->assertStringContainsString('name="fixorders"', $html);
-        // Search form: the type reloads the object dropdown, no inline handler
-        $this->assertStringContainsString('data-md-reload-event="change"', $html);
-        $this->assertStringContainsString('name="search"', $html);
-        $this->assertGreaterThanOrEqual(4, substr_count($html, 'name="_glpi_csrf_token"'));
+        // Filters: run in the browser (public/scripts/field_list.js), no search form posted
+        $this->assertStringContainsString('data-md-field-search', $html);
+        $this->assertMatchesRegularExpression('/data-md-field-type-filter[^>]*>\s*<option value="">[^<]*<\/option>\s*<option value="text">/', $html);
+        $this->assertStringNotContainsString('name="search"', $html);
     }
 
     /**
-     * A filtered list misses fields: its orders look gapped whatever the stored ones.
+     * The list is filtered in the browser: a search criteria left in the session by the
+     * former search form neither hides fields nor the offer to fix their orders.
      */
-    public function testFilteredListDoesNotOfferToFixTheOrders(): void
+    public function testSessionSearchNoLongerFiltersTheList(): void
     {
         $this->login();
         [$metademand] = $this->createMetademandWithFields();
 
         $_SESSION['glpiactiveprofile'][Metademand::$rightname] = ALLSTANDARDRIGHT;
         $filters = [
-            ['block' => 1, 'type' => 0, 'item' => 0],
-            ['block' => 0, 'type' => 'text', 'item' => 0],
+            ['block' => 2, 'type' => 0, 'item' => 0],
+            ['block' => 0, 'type' => 'textarea', 'item' => 0],
         ];
         foreach ($filters as $search) {
             $html = $this->renderFields($metademand, $search);
 
             $this->assertStringContainsString('&lt;b&gt;Field&lt;/b&gt;', $html);
-            $this->assertStringNotContainsString('name="fixorders"', $html);
+            $this->assertSame(2, substr_count($html, 'data-md-field-id="'));
+            $this->assertStringContainsString('name="fixorders"', $html);
         }
         unset($_SESSION['plugin_metademands_searchresults']);
     }

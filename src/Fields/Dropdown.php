@@ -40,6 +40,7 @@ use Location;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\FieldParameter;
+use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\MetademandTask;
 use Session;
@@ -67,6 +68,199 @@ class Dropdown extends CommonDBTM
     public static function getTypeName($nb = 0)
     {
         return __('Dropdown');
+    }
+
+    /**
+     * Address columns of a location shown on its card and in the ticket content,
+     * in display order, with the label and icon of each.
+     *
+     * @return array<string, array{label: string, icon: string}>
+     */
+    public static function getLocationCardColumns(): array
+    {
+        return [
+            'address'  => ['label' => __('Address'), 'icon' => 'ti ti-home'],
+            'postcode' => ['label' => __('Postal code'), 'icon' => 'ti ti-mailbox'],
+            'town'     => ['label' => __('Town'), 'icon' => 'ti ti-building-community'],
+            'state'    => ['label' => _x('location', 'State'), 'icon' => 'ti ti-map'],
+            'country'  => ['label' => __('Country'), 'icon' => 'ti ti-world'],
+        ];
+    }
+
+    /**
+     * Non-empty address lines of a location, plain text.
+     *
+     * @return array<int, array{label: string, value: string, icon: string}>
+     */
+    public static function getLocationCardLines(Location $location): array
+    {
+        $lines = [];
+        foreach (self::getLocationCardColumns() as $column => $column_info) {
+            $value = trim((string) ($location->fields[$column] ?? ''));
+            if ($value === '') {
+                continue;
+            }
+            $lines[] = [
+                'label' => $column_info['label'],
+                'value' => $value,
+                'icon'  => $column_info['icon'],
+            ];
+        }
+
+        return $lines;
+    }
+
+    /**
+     * Context of fields/location_card.html.twig for a location, or null when there is
+     * nothing to show.
+     *
+     * @return array{name: string, icon: string, lines: array<int, array{label: string, value: string, icon: string}>}|null
+     */
+    public static function getLocationCardContext(?Location $location): ?array
+    {
+        if ($location === null || $location->isNewItem()) {
+            return null;
+        }
+
+        return [
+            'name'  => (string) \Dropdown::getDropdownName(Location::getTable(), $location->getID()),
+            'icon'  => Location::getIcon(),
+            'lines' => self::getLocationCardLines($location),
+        ];
+    }
+
+    /**
+     * Location card shown under a dropdown / Location field of the wizard, empty when
+     * there is no location.
+     */
+    public static function renderLocationCard(?Location $location): string
+    {
+        $context = self::getLocationCardContext($location);
+        if ($context === null) {
+            return '';
+        }
+
+        return TemplateRenderer::getInstance()->render('@metademands/fields/location_card.html.twig', $context);
+    }
+
+    /**
+     * The location $locations_id when the field $fields_id is a dropdown / Location field
+     * showing a location card, in a meta-demand the caller may fill in, and when its list
+     * offers that location: active entities (as getLocations()), below its root location
+     * and within its maximum depth. Null otherwise.
+     *
+     * Users of the simplified interface usually lack the READ right on locations: the
+     * boundary is the one of the list they are shown, not that right.
+     */
+    public static function getOfferedLocation(int $fields_id, int $locations_id): ?Location
+    {
+        /** @var \DBmysql $DB */
+        global $DB;
+
+        if ($fields_id <= 0 || $locations_id <= 0) {
+            return null;
+        }
+
+        $field = new Field();
+        if (
+            !$field->getFromDB($fields_id)
+            || $field->fields['type'] !== 'dropdown'
+            || $field->fields['item'] !== Location::class
+        ) {
+            return null;
+        }
+
+        $parameter = new FieldParameter();
+        if (
+            !$parameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fields_id])
+            || (int) ($parameter->fields['show_location_card'] ?? 0) !== 1
+        ) {
+            return null;
+        }
+
+        // A meta-demand the caller may fill in, as Config::isOfferedByUserField() checks it
+        $metademands_id = (int) $field->fields['plugin_metademands_metademands_id'];
+        $metademand     = new Metademand();
+        if (
+            !$metademand->getFromDB($metademands_id)
+            || !($metademand->canView() || Group::isUserHaveRight($metademands_id))
+            || !Session::haveAccessToEntity($metademand->fields['entities_id'], $metademand->fields['is_recursive'])
+        ) {
+            return null;
+        }
+
+        // The entity boundary of getLocations()
+        $row = $DB->request([
+            'SELECT' => ['id', 'level'],
+            'FROM'   => Location::getTable(),
+            'WHERE'  => [
+                'id' => $locations_id,
+                getEntitiesRestrictCriteria(
+                    Location::getTable(),
+                    '',
+                    $_SESSION['glpiactiveentities'] ?? [],
+                    true,
+                ),
+            ],
+        ])->current();
+        if ($row === null) {
+            return null;
+        }
+
+        // Below the root location of the field, the root itself excluded
+        $root_items_id = (int) ($parameter->fields['root_items_id'] ?? 0);
+        $root_level    = 0;
+        if ($root_items_id > 0) {
+            $sons = getSonsOf(Location::getTable(), $root_items_id);
+            unset($sons[$root_items_id]);
+            if (!isset($sons[$locations_id])) {
+                return null;
+            }
+            $root = new Location();
+            if ($root->getFromDB($root_items_id)) {
+                $root_level = (int) $root->fields['level'];
+            }
+        }
+
+        // Within the maximum depth of the field
+        $location_depth = (int) ($parameter->fields['location_depth'] ?? 0);
+        if ($location_depth > 0 && (int) $row['level'] > $root_level + $location_depth) {
+            return null;
+        }
+
+        $location = new Location();
+        if (!$location->getFromDB($locations_id)) {
+            return null;
+        }
+
+        return $location;
+    }
+
+    /**
+     * Anchor of the location card under a dropdown / Location field of the wizard,
+     * reloaded by public/scripts/wizard_form.js (data-md-location-card) on each change.
+     *
+     * @param array  $data       field data
+     * @param string $field_name name of the input carrying the location
+     * @param mixed  $value      location currently selected
+     */
+    private static function renderLocationCardAnchor(array $data, string $field_name, $value): string
+    {
+        $locations_id = is_numeric($value) ? (int) $value : 0;
+        $location     = self::getOfferedLocation((int) $data['id'], $locations_id);
+
+        return TemplateRenderer::getInstance()->render(
+            '@metademands/fields/location_card_anchor.html.twig',
+            [
+                'config' => [
+                    'url'        => PLUGIN_METADEMANDS_WEBDIR . '/ajax/locationCard.php',
+                    'fields_id'  => (int) $data['id'],
+                    'field_name' => $field_name,
+                ],
+                'current' => $location !== null ? $location->getID() : 0,
+                'card'    => self::getLocationCardContext($location),
+            ],
+        );
     }
 
     public static function getLocations(
@@ -323,6 +517,20 @@ class Dropdown extends CommonDBTM
                         $field .= self::locationDropdown($opt);
                     }
                 }
+
+                if ((int) ($data['show_location_card'] ?? 0) === 1) {
+                    // The location selected at load time: the classic list reads it back from
+                    // the session, the other renderings from $value. The script resyncs the
+                    // card on the input anyway (a linked user field may preselect another one).
+                    $card_value = ($data['link_to_user'] == 0 && $data['display_type'] == self::CLASSIC_DISPLAY)
+                        ? ($options['value'] ?? 0)
+                        : $value;
+                    $field .= self::renderLocationCardAnchor(
+                        $data,
+                        $namefield . "[" . $data['id'] . "]",
+                        $card_value,
+                    );
+                }
                 break;
 
             case "UserTitle":
@@ -540,6 +748,7 @@ class Dropdown extends CommonDBTM
                 'show_location_options' => $show_location_options,
                 'root_items_id'         => $params['root_items_id'] ?? 0,
                 'location_depth'        => $params['location_depth'] ?? 0,
+                'show_location_card'    => (int) ($params['show_location_card'] ?? 0),
                 'depths'                => $depths,
                 'show_display_type'     => !$show_location_options,
                 'display_type'          => $params['display_type'],
@@ -791,6 +1000,38 @@ class Dropdown extends CommonDBTM
         }
     }
 
+    /**
+     * Address lines ("Label : value", plain text) of the location chosen in a dropdown /
+     * Location field showing a location card, for the ticket content and the PDF.
+     * Empty when the option is off or the location has no address.
+     *
+     * @param array $field field data merged with its parameters, value included
+     *
+     * @return array<int, string>
+     */
+    public static function getLocationContentLines(array $field): array
+    {
+        if (
+            ($field['type'] ?? '') !== 'dropdown'
+            || ($field['item'] ?? '') !== Location::class
+            || (int) ($field['show_location_card'] ?? 0) !== 1
+            || !is_numeric($field['value'] ?? null)
+            || (int) $field['value'] <= 0
+        ) {
+            return [];
+        }
+
+        $location = new Location();
+        if (!$location->getFromDB((int) $field['value'])) {
+            return [];
+        }
+
+        return array_map(
+            static fn(array $line): string => sprintf(__('%1$s: %2$s'), $line['label'], $line['value']),
+            self::getLocationCardLines($location),
+        );
+    }
+
     public static function displayFieldItems(&$result, $formatAsTable, $title_style, $label, $field, $return_value, $lang, $is_order = false)
     {
 
@@ -798,6 +1039,36 @@ class Dropdown extends CommonDBTM
         $result[$field['rank']]['display'] = true;
         if ($field['value'] != 0) {
             switch ($field['item']) {
+                case Location::class:
+                    $lines = self::getLocationContentLines($field);
+                    if ($lines === []) {
+                        $result[$field['rank']]['content'] .= Field::renderContentCells(
+                            (bool) $formatAsTable,
+                            (string) $title_style,
+                            [[
+                                'label'   => (string) $label,
+                                'value'   => (string) self::getFieldValue($field),
+                                'colspan' => $colspan,
+                            ]],
+                        );
+                        break;
+                    }
+                    // The name, then one address line per row; a single line out of a table
+                    $cell = ['label' => (string) $label, 'colspan' => $colspan];
+                    if ($formatAsTable) {
+                        $cell['rows'] = array_map(
+                            static fn(string $line): array => [$line],
+                            array_merge([(string) self::getFieldValue($field)], $lines),
+                        );
+                    } else {
+                        $cell['value'] = (string) self::getFieldValue($field) . ' (' . implode(', ', $lines) . ')';
+                    }
+                    $result[$field['rank']]['content'] .= Field::renderContentCells(
+                        (bool) $formatAsTable,
+                        (string) $title_style,
+                        [$cell],
+                    );
+                    break;
                 default:
                     $result[$field['rank']]['content'] .= Field::renderContentCells(
                         (bool) $formatAsTable,
