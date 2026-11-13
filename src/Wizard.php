@@ -1692,14 +1692,13 @@ class Wizard extends CommonDBTM
         $draft_id = 0,
         $draft_name = ""
     ) {
-        global $CFG_GLPI;
-
         $metademands = new Metademand();
         $metademands->getFromDB($metademands_id);
 
         //Redirected after end user Step
         $user_id = Session::getLoginUserID();
-        $url = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php";
+        // PLUGIN_METADEMANDS_WEBDIR already starts with root_doc (setup.php)
+        $url = PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php";
         if (isset($_SESSION['plugin_metademands'][$user_id]['redirect_wizard'])) {
             if (Plugin::isPluginActive('servicecatalog')
                 && Session::haveRight("plugin_servicecatalog", READ)) {
@@ -2745,8 +2744,10 @@ class Wizard extends CommonDBTM
                 }
             } elseif (Session::haveRight("plugin_metademands", READ)) {
                 if (Plugin::isPluginActive('servicecatalog') && method_exists(ServiceCatalogConfig::class, 'getTicketRedirection') && ServiceCatalogConfig::getConfig()->getTicketRedirection() && isset($result) && isset($result['id']) && $result['id'] > 0) {
-                    global $CFG_GLPI;
-                    Html::redirect($CFG_GLPI['root_doc'] . "front/ticket.form.php?id=" . $result['id']);
+                    // Absolute URL of the core form: root_doc . "front/..." lacked the slash, a
+                    // relative URL the browser resolved from the plugin page that posted the
+                    // form (/plugins/metademands/front/front/ticket.form.php)
+                    Html::redirect(\Ticket::getFormURLWithID((int) $result['id']));
                 } else {
                     Html::redirect($self->getFormURL() . "?step=" . Metademand::STEP_INIT);
                 }
