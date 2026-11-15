@@ -31,7 +31,7 @@
         <td>{{ entry.date }}</td>
         <td>
             <button form="" class="submit btn btn-success btn-sm"
-                    onclick="loadDraft({{ entry.id }})">
+                    data-metademands-action="loadDraft" data-metademands-args="{{ [entry.id]|json_encode }}">
                 <i class="ti ti-cloud-download pointer"
                    title="{{ _x('button', 'Load draft', 'metademands') }}"
                    data-hasqtip="0" aria-hidden="true"></i>
@@ -39,7 +39,7 @@
         </td>
         <td>
             <button form="" class="submit btn btn-danger btn-sm"
-                    onclick="deleteDraft({{ entry.id }})">
+                    data-metademands-action="deleteDraft" data-metademands-args="{{ [entry.id]|json_encode }}">
                 <i class="ti ti-trash pointer"
                    title="{{ _x('button', 'Delete draft', 'metademands') }}"
                    data-hasqtip="0" aria-hidden="true"></i>

@@ -50,7 +50,8 @@
             {% endif %}
             {% if cancel_form is not null %}
                 {# Inside #wizard_form, where a nested <form> is dropped by the parser: the action is
-                 # posted by submitGetLink() of js/common.js, as Html::getSimpleForm() did. #}
+                 # posted by submitGetLink() of js/common.js, called by scripts/csp_handlers.js, as
+                 # Html::getSimpleForm() did. #}
                 {% set cancel_fields = {
                     'delete_form_from_list': 'delete_form_from_list',
                     'plugin_metademands_stepforms_id': cancel_form.stepforms_id,
@@ -58,7 +59,7 @@
                 } %}
                 <span style="color:darkred;font-size: 14px !important;margin-right: 8px">
                     <button type="button" class="btn btn-primary"
-                            onclick="submitGetLink({{ cancel_form.url|json_encode }}, {{ cancel_fields|json_encode }});">
+                            data-metademands-submit-get-link="{{ cancel_form.url }}" data-metademands-submit-get-link-fields="{{ cancel_fields|json_encode }}">
                         {{ _x('button', 'Cancel form', 'metademands') }}
                     </button>
                 </span>

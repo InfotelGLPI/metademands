@@ -86,6 +86,47 @@ class DraftTemplatesTest extends DbTestCase
         );
     }
 
+    public function testDraftListButtonsCarryNoInlineHandler(): void
+    {
+        $this->login();
+
+        $id = $this->createMetademand()->getID();
+        $name = '<b>x</b>"\'';
+        $draft = $this->createItem(Draft::class, [
+            'name'                              => $name,
+            'plugin_metademands_metademands_id' => $id,
+            'users_id'                          => Session::getLoginUserID(),
+            'date'                              => '2026-11-14 10:00:00',
+        ]);
+        // The loaded draft also gets its "save" button
+        $_SESSION['plugin_metademands'][$id]['plugin_metademands_drafts_id'] = $draft->getID();
+
+        $html = Draft::showDraftsForUserMetademand(Session::getLoginUserID(), $id);
+
+        // The CSP blocks inline handlers: the buttons only carry data attributes
+        $this->assertStringNotContainsString('onclick', $html);
+        $this->assertStringContainsString(
+            'data-metademands-action="loadDraft" data-metademands-args="[' . $draft->getID() . ']"',
+            $html,
+        );
+        $this->assertStringContainsString(
+            'data-metademands-action="deleteDraft" data-metademands-args="[' . $draft->getID() . ']"',
+            $html,
+        );
+        // The name, once a JS string of the handler, is JSON escaped into the attribute
+        $this->assertMatchesRegularExpression(
+            '/data-metademands-update-draft="(\d+)" data-metademands-args="'
+            . preg_quote(htmlescape(json_encode([$draft->getID(), $name])), '/') . '"/',
+            $html,
+        );
+        // ... and the listener bound right after it, on the same random number
+        preg_match('/data-metademands-update-draft="(\d+)"/', $html, $matches);
+        $this->assertStringContainsString(
+            "document.querySelectorAll('[data-metademands-update-draft=\"" . $matches[1] . "\"]')",
+            $html,
+        );
+    }
+
     public function testDraftModalWritesItsInputAndButton(): void
     {
         $this->login();
@@ -96,7 +137,9 @@ class DraftTemplatesTest extends DbTestCase
             '<input type="text" name="draft_name" value="" maxlength="250" size="40" class="draft_name"',
             $html,
         );
-        $this->assertStringContainsString('onclick="saveMyDraft()"', $html);
+        // Called by the delegated listener of public/scripts/csp_handlers.js (CSP)
+        $this->assertStringContainsString('data-metademands-action="saveMyDraft"', $html);
+        $this->assertStringNotContainsString('onclick', $html);
         $this->assertStringContainsString('<span>' . _x('button', 'Save as draft', 'metademands') . '</span>', $html);
     }
 

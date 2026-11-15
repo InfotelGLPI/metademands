@@ -79,6 +79,10 @@ function runScripts(container) {
         Array.from(original.attributes).forEach((attribute) => {
             script.setAttribute(attribute.name, attribute.value);
         });
+        // The nonce the HTML came with (the one of the page, that GLPI sends with its AJAX
+        // requests): once the script is in the page, its nonce attribute reads empty, only
+        // the property keeps it, and the Content Security Policy blocks a script without it
+        script.nonce = original.nonce;
         script.textContent = original.textContent;
         original.replaceWith(script);
     });

@@ -95,8 +95,9 @@
                         {% endif %}
                     </div>
                     {% if canedit %}
-                        {#- raw: Html::showSimpleForm() output, a core-built link carrying its own escaping -#}
-                        <div class="md-visibility-delete" data-md-reload-noopen>{{ card.delete_form_html|raw }}</div>
+                        {#- The link of Html::showSimpleForm(), posted by public/scripts/csp_handlers.js -#}
+                        {% set delete_label = _x('button', 'Delete visibility', 'metademands') %}
+                        <div class="md-visibility-delete" data-md-reload-noopen><a class="pointer" data-metademands-submit-get-link="{{ card.delete_form.url }}" data-metademands-submit-get-link-fields="{{ card.delete_form.fields|json_encode }}"><span class="ti ti-trash" title="{{ delete_label }}"><span class="visually-hidden">{{ delete_label }}</span></span></a></div>
                     {% endif %}
                     {% if opens %}
                         <i class="ti ti-chevron-right text-muted pt-1"></i>

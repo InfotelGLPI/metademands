@@ -184,7 +184,9 @@ class WizardTemplatesTest extends DbTestCase
             'step_count'        => 1,
         ]);
 
-        $this->assertStringContainsString('onclick="submitGetLink(&quot;\/plugins\/metademands\/front\/stepform.form.php&quot;', $html);
+        // Posted by the delegated listener of public/scripts/csp_handlers.js (CSP)
+        $this->assertStringContainsString('data-metademands-submit-get-link="/plugins/metademands/front/stepform.form.php"', $html);
+        $this->assertStringNotContainsString('onclick', $html);
         $this->assertStringContainsString('&quot;delete_form_from_list&quot;:&quot;delete_form_from_list&quot;', $html);
         $this->assertStringContainsString('&quot;plugin_metademands_stepforms_id&quot;:42', $html);
         $this->assertStringContainsString(_x('button', 'Cancel form', 'metademands'), $html);
@@ -200,7 +202,7 @@ class WizardTemplatesTest extends DbTestCase
             'step_count'        => 1,
         ]);
 
-        $this->assertStringNotContainsString('submitGetLink', $html);
+        $this->assertStringNotContainsString('data-metademands-submit-get-link', $html);
     }
 
     public function testNextButtonCarriesItsTitlesAsEscapedData(): void

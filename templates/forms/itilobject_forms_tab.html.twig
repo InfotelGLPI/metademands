@@ -59,7 +59,7 @@
                             <td class="text-end">
                                 <button form="" class="btn btn-sm btn-outline-secondary"
                                         title="{{ _x('button', 'Load form', 'metademands') }}"
-                                        onclick="loadForm({{ entry.id }}, {{ entry.meta_id }}, {{ entry.users_id }})">
+                                        data-metademands-action="loadForm" data-metademands-args="{{ [entry.id, entry.meta_id, entry.users_id]|json_encode }}">
                                     <i class="ti ti-cloud-download" aria-hidden="true"></i>
                                 </button>
                             </td>

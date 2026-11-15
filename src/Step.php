@@ -515,24 +515,24 @@ class Step extends CommonDBChild
                         $visibility['message'] = RichText::getTextFromHtml($data['message']);
                     }
 
-                    $target = PLUGIN_METADEMANDS_WEBDIR . "/front/step.form.php";
-
-                    ob_start();
-                    Html::showSimpleForm(
-                        $target,
-                        'delete',
-                        _sx('button', 'Delete visibility', 'metademands'),
-                        ['id' => $data['id']],
-                        'ti-trash',
-                    );
-                    $delete_form_html = ob_get_clean();
+                    // The request of Html::showSimpleForm(), without its inline onclick that
+                    // the CSP blocks: the template gives it to the delegated listener of
+                    // public/scripts/csp_handlers.js, which posts it with submitGetLink()
+                    $delete_form = [
+                        'url'    => PLUGIN_METADEMANDS_WEBDIR . "/front/step.form.php",
+                        'fields' => [
+                            'delete'            => 'delete',
+                            'id'                => (int) $data['id'],
+                            '_glpi_simple_form' => 1,
+                        ],
+                    ];
 
                     $cards[] = [
                         'edit_reload'      => $canedit ? $editor_reload((int) $data['id']) : [],
                         'block_type_label' => $block_type_label,
                         'block_label'       => $block_label,
                         'visibility'       => $visibility,
-                        'delete_form_html' => $delete_form_html,
+                        'delete_form'      => $delete_form,
                     ];
                 }
             }

@@ -50,11 +50,11 @@
             <div class="row g-2 align-items-center mb-2">
                 {% if show_mandatory %}
                     <label class="col-sm-3 col-form-label">{{ __('Mandatory field') }}</label>
-                    <div class="col-sm-3">{{ fields.dropdownYesNo('is_mandatory', is_mandatory, '', bare) }}</div>
+                    <div class="col-sm-3">{{ fields.sliderField('is_mandatory', is_mandatory, '', bare) }}</div>
                 {% endif %}
                 {% if show_hide_title %}
                     <label class="col-sm-3 col-form-label">{{ __('Hide title', 'metademands') }}</label>
-                    <div class="col-sm-3">{{ fields.dropdownYesNo('hide_title', hide_title, '', bare) }}</div>
+                    <div class="col-sm-3">{{ fields.sliderField('hide_title', hide_title, '', bare) }}</div>
                 {% endif %}
             </div>
         {% endif %}
@@ -68,7 +68,7 @@
         {% if show_row_display %}
             <div class="row g-2 align-items-center mb-2">
                 <label class="col-sm-3 col-form-label">{{ __('Takes the whole row', 'metademands') }}</label>
-                <div class="col-sm-3">{{ fields.dropdownYesNo('row_display', row_display, '', bare) }}</div>
+                <div class="col-sm-3">{{ fields.sliderField('row_display', row_display, '', bare) }}</div>
                 {% if show_is_basket %}
                     <label class="col-sm-3 col-form-label">{{ __('Display into the basket', 'metademands') }}</label>
                     <div class="col-sm-3">{{ fields.dropdownYesNo('is_basket', is_basket, '', bare) }}</div>

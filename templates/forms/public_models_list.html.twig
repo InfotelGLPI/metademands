@@ -54,7 +54,7 @@
                         </td>
                         <td>
                             <button form="" class="submit btn btn-success btn-sm"
-                                    onclick="loadForm({{ entry.id }})">
+                                    data-metademands-action="loadForm" data-metademands-args="{{ [entry.id]|json_encode }}">
                                 <i class="ti ti-cloud-download pointer"
                                    title="{{ _x('button', 'Load form', 'metademands') }}"
                                    data-hasqtip="0" aria-hidden="true"></i>

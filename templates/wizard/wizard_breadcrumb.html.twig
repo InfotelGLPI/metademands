@@ -33,6 +33,11 @@
         document.getElementById('title_cat').innerHTML = {{ tree_name|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }};
         let newScript = document.createElement('script');
         newScript.type = 'text/javascript';
+        // Nonce of the page, without which the Content Security Policy blocks the script
+        // (CFG_GLPI.csp_nonce only exists on the GLPI releases sending one)
+        if (CFG_GLPI.csp_nonce) {
+            newScript.nonce = CFG_GLPI.csp_nonce;
+        }
         {# raw: json_encode(JSON_HEX_TAG|JSON_HEX_AMP) in a script (§3.2); tree_script is the source built by Category::getTreeCategoryFriendlyName() #}
         let scriptContent = document.createTextNode({{ tree_script|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }});
         newScript.appendChild(scriptContent);

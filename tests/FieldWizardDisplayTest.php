@@ -206,7 +206,9 @@ class FieldWizardDisplayTest extends DbTestCase
         ]);
 
         $this->assertNoInjectedScript($html);
-        $this->assertStringContainsString('submitGetLink(', $html);
+        // Posted by the delegated listener of public/scripts/csp_handlers.js (CSP)
+        $this->assertStringContainsString('data-metademands-submit-get-link="/plugins/metademands/front/wizard.form.php"', $html);
+        $this->assertStringNotContainsString('onclick', $html);
         $this->assertStringContainsString('delete_basket_file', $html);
     }
 

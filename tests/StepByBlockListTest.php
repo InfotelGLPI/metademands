@@ -87,6 +87,17 @@ class StepByBlockListTest extends DbTestCase
         $this->assertStringContainsString('Hello you', $html);
         // The delete button keeps its own action inside the clickable row
         $this->assertStringContainsString('data-md-reload-noopen', $html);
+        // ... the request of Html::showSimpleForm(), posted by public/scripts/csp_handlers.js
+        // instead of an inline handler the CSP blocks
+        $step = new Step();
+        $this->assertTrue($step->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademand->getID()]));
+        $this->assertStringContainsString(
+            '<a class="pointer" data-metademands-submit-get-link="' . htmlescape(PLUGIN_METADEMANDS_WEBDIR . '/front/step.form.php')
+            . '" data-metademands-submit-get-link-fields="'
+            . htmlescape(json_encode(['delete' => 'delete', 'id' => $step->getID(), '_glpi_simple_form' => 1])) . '">',
+            $html,
+        );
+        $this->assertStringNotContainsString('onclick', $html);
         $this->assertSame(substr_count($html, '<div'), substr_count($html, '</div>'));
     }
 }
