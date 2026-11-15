@@ -56,16 +56,17 @@ use User;
 class ExportFieldLinksTest extends DbTestCase
 {
     /**
-     * Search option of the ticket whose values are items of $table.
+     * Search option of a field of the ticket templates: the location, the assigned group (the
+     * requester group is filled by the plugin itself, and may not be predefined).
      */
     private function getTicketOption(string $table): int
     {
-        foreach (Search::getOptions(Ticket::class) as $num => $option) {
-            if (is_array($option) && ($option['table'] ?? '') === $table && ($option['field'] ?? '') !== 'id') {
-                return (int) $num;
-            }
-        }
-        $this->fail("No search option on $table");
+        $field = ['glpi_locations' => 'locations_id', 'glpi_groups' => '_groups_id_assign'][$table];
+        $num   = array_search($field, \TicketTemplate::getAllowedFields(true, true), true);
+        $this->assertNotFalse($num, $field);
+        $this->assertSame($table, Search::getOptions(Ticket::class)[$num]['table']);
+
+        return (int) $num;
     }
 
     /**

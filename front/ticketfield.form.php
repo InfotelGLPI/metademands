@@ -41,7 +41,8 @@ $ticketField = new TicketField();
 if (isset($_POST["add"])) {
     // Creation right, resolved against the parent metademand carried by the input.
     $ticketField->check(-1, CREATE, $_POST);
-    $_POST['value'] = $_POST[$_POST['field']];
+    // The value widget names its input after the field ('field'), absent while none is chosen
+    $_POST['value'] = isset($_POST['field']) && is_string($_POST['field']) ? ($_POST[$_POST['field']] ?? '') : '';
     $_POST['id'] = $ticketField->add($_POST);
 
     Html::back();
@@ -60,7 +61,8 @@ if (isset($_POST["add"])) {
 } elseif (isset($_POST['template_sync'])) {
     // Syncing mandatory template fields is a configuration change: require the plugin update right.
     Session::checkRight(Metademand::$rightname, UPDATE);
-    TicketField::updateMandatoryTicketFields($_POST);
+    // With the template chosen in the tab, the one of the metademand by default
+    TicketField::updateMandatoryTicketFields($_POST, (int) ($_POST['_templates_id'] ?? 0));
     Html::back();
 } else {
     $ticketField->checkGlobal(READ);

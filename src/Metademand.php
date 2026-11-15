@@ -1496,9 +1496,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             if (is_array($input['itilcategories_id']) && count($input['itilcategories_id']) > 0) {
                 //retrieve all multiple cats from all metademands
 
-                if ($input['object_to_create'] != 'Ticket') {
+                // The categories may be updated alone
+                if (($input['object_to_create'] ?? $this->fields['object_to_create']) != 'Ticket') {
                     $input['type'] = 0;
                 }
+                $input['type'] ??= $this->fields['type'];
 
                 $iterator_cats = $DB->request([
                     'SELECT' => ['id', 'itilcategories_id'],
@@ -1760,7 +1762,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         } elseif ($step_by_step_on && $confStep->fields['see_blocks_as_tab'] != 1) {
             $confStep->update(['id' => $confStep->getID(), 'see_blocks_as_tab' => 1]);
         }
-        TicketField::updateMandatoryTicketFields($this->input);
+        // The fields of the object to create follow the template when it may have changed
+        // only: saving any tab used to synchronise them again
+        if (array_intersect(['itilcategories_id', 'type', 'object_to_create', 'entities_id'], $this->updates) !== []) {
+            TicketField::updateMandatoryTicketFields($this->input);
+        }
     }
 
     /**
@@ -6189,7 +6195,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $associated_oldfields,
                         );
                     }
-                    $ticketfields->add($ticketfield_data);
+                    TicketField::copyField((int) $new_metademands_id, $ticketfield_data);
                 }
 
                 // Redirect on finish

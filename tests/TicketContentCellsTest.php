@@ -373,10 +373,15 @@ class TicketContentCellsTest extends DbTestCase
         // "With quantity" disabled: no quantity column nor total, which would only show 1
         $td = '<td style="border: 1px solid black;">';
         $this->assertStringNotContainsString('<img', $content);
-        $this->assertStringStartsWith('<tr><th style="border: 1px solid black;">', $content);
+        // A table of its own, in a cell spanning the line of the field: its columns are not
+        // the label and the value of the content
+        $this->assertStringStartsWith(
+            '<td colspan="2" style="padding: 0;"><table style="width: 100%; border-collapse: collapse;"><tr><th style="border: 1px solid black;">',
+            $content,
+        );
         $this->assertStringNotContainsString('Quantity', $content);
         $this->assertStringEndsWith(
-            '<tr>' . $td . 'REF-1</td>' . $td . '&lt;img src=x onerror=alert(1)&gt;&quot;&#039;</td>' . $td . 'Desc</td></tr>',
+            '<tr>' . $td . 'REF-1</td>' . $td . '&lt;img src=x onerror=alert(1)&gt;&quot;&#039;</td>' . $td . 'Desc</td></tr></table></td>',
             $content,
         );
 
@@ -395,7 +400,7 @@ class TicketContentCellsTest extends DbTestCase
             '<tr>' . $td . 'REF-1</td>' . $td . '&lt;img src=x onerror=alert(1)&gt;&quot;&#039;</td>' . $td . 'Desc</td>' . $td . '3</td></tr>',
             $content,
         );
-        $this->assertStringEndsWith('<th style="border: 1px solid black;" colspan="3">Total</th>' . $td . '3.00</td></tr>', $content);
+        $this->assertStringEndsWith('<th style="border: 1px solid black;" colspan="3">Total</th>' . $td . '3.00</td></tr></table></td>', $content);
     }
 
     /**
@@ -430,10 +435,13 @@ class TicketContentCellsTest extends DbTestCase
         $td = '<td style="border: 1px solid #CCC;" colspan="6">';
         $this->assertStringNotContainsString('<img', $content);
         $this->assertSame(
-            '<tr><td class="title" style="color:#red;width: 40%;" colspan="2">' . $escaped . '</td></tr>'
+            // A table of its own, its label spanning its 12 columns (2 of 6 each)
+            '<td colspan="2" style="padding: 0;"><table style="width: 100%; border-collapse: collapse;">'
+            . '<tr><td class="title" style="color:#red;width: 40%;" colspan="12">' . $escaped . '</td></tr>'
             . '<tr><th style="border: 1px solid #CCC;" colspan="6">' . $escaped . '</th><th style="border: 1px solid #CCC;" colspan="6">When</th></tr>'
             // the requester value goes through the rich-text sanitizer first, which drops the tag
-            . '<tr>' . $td . '&quot;&#039;</td>' . $td . htmlspecialchars((string) \Html::convDate('2026-09-30')) . '</td></tr>',
+            . '<tr>' . $td . '&quot;&#039;</td>' . $td . htmlspecialchars((string) \Html::convDate('2026-09-30')) . '</td></tr>'
+            . '</table></td>',
             $content,
         );
     }

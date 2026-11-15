@@ -2236,7 +2236,6 @@ class Export extends CommonDBTM
         // when there is none (rather than pointing at another object holding the old id)
         $not_found = [];
         $object_to_create = (string) ($metademand->fields['object_to_create'] ?? '');
-        $meta_ticketfield = new TicketField();
         foreach ($ticketfields as $ticketfield) {
             if (!is_array($ticketfield) || !isset($ticketfield['num'])) {
                 continue;
@@ -2254,14 +2253,14 @@ class Export extends CommonDBTM
             } elseif (is_string($value)) {
                 $value = self::remapFieldTags($value, $mapTableField);
             }
-            $meta_ticketfield->add([
-                'num'                               => $num,
-                'value'                             => $value,
-                'is_mandatory'                      => (int) ($ticketfield['is_mandatory'] ?? 0),
-                'is_deletable'                      => (int) ($ticketfield['is_deletable'] ?? 1),
-                'is_recursive'                      => (int) ($ticketfield['is_recursive'] ?? 0),
-                'entities_id'                       => $_SESSION['glpiactive_entity'],
-                'plugin_metademands_metademands_id' => $newIDMeta,
+            // The field synchronised with the template on the add takes the value
+            TicketField::copyField((int) $newIDMeta, [
+                'num'          => $num,
+                'value'        => $value,
+                'is_mandatory' => (int) ($ticketfield['is_mandatory'] ?? 0),
+                'is_deletable' => (int) ($ticketfield['is_deletable'] ?? 1),
+                'is_recursive' => (int) ($ticketfield['is_recursive'] ?? 0),
+                'entities_id'  => $_SESSION['glpiactive_entity'],
             ]);
         }
         if ($not_found !== []) {
