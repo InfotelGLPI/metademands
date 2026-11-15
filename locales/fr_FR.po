@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 17:16+0000\n"
+"POT-Creation-Date: 2026-11-15 10:43+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/"
@@ -233,7 +233,7 @@ msgstr "Ajouter une pièce jointe"
 msgid "Add language"
 msgstr "Ajouter une langue"
 
-#: src/Wizard.php:1604 src/Wizard.php:1613 tests/WizardTemplatesTest.php:252
+#: src/Wizard.php:1604 src/Wizard.php:1613 tests/WizardTemplatesTest.php:254
 msgctxt "button"
 msgid "Add to basket"
 msgstr "Ajouter au panier"
@@ -449,7 +449,7 @@ msgstr "Annuler"
 msgid "Cancel / delete a form"
 msgstr "Annuler / supprimer un formulaire"
 
-#: tests/WizardTemplatesTest.php:190 ⁨standard input⁩:62
+#: tests/WizardTemplatesTest.php:192 ⁨standard input⁩:63
 msgctxt "button"
 msgid "Cancel form"
 msgstr "Annuler le formulaire"
@@ -540,7 +540,7 @@ msgctxt "button"
 msgid "Clear the basket"
 msgstr "Vider le panier"
 
-#: ⁨standard input⁩:68
+#: ⁨standard input⁩:73
 msgid "Click here for more informations"
 msgstr "Cliquez ici pour plus d'informations"
 
@@ -700,7 +700,7 @@ msgstr "Créer les tâches"
 msgid "Create tasks (not child tickets)"
 msgstr "Créer des tâches (pas des tickets enfants)"
 
-#: tests/FormListsTest.php:141 ⁨standard input⁩:47 ⁨standard input⁩:37
+#: tests/FormListsTest.php:174 ⁨standard input⁩:47 ⁨standard input⁩:37
 msgid "Created by"
 msgstr "Créé par"
 
@@ -820,7 +820,7 @@ msgstr "Définir la date par défaut"
 msgid "Define visibility"
 msgstr "Définir la visibilité"
 
-#: ⁨standard input⁩:101 ⁨standard input⁩:44
+#: ⁨standard input⁩:102 ⁨standard input⁩:44
 msgctxt "button"
 msgid "Delete draft"
 msgstr "Supprimer le brouillon"
@@ -850,7 +850,7 @@ msgstr "Supprimer cette ligne"
 msgid "Delete translation"
 msgstr "Supprimer la traduction"
 
-#: src/Step.php:524
+#: ⁨standard input⁩:99
 msgctxt "button"
 msgid "Delete visibility"
 msgstr "Supprimer la visibilité"
@@ -903,7 +903,7 @@ msgstr "Requêtes destructives"
 msgid "Devices own by my groups"
 msgstr "Matériels appartenant à mes groupes"
 
-#: ⁨standard input⁩:63
+#: ⁨standard input⁩:68
 msgid "Did you know that there is an FAQ article that may be able to help you?"
 msgstr ""
 "Savez-vous qu'il existe un article de la FAQ qui peut peut-être vous aider ?"
@@ -1637,7 +1637,7 @@ msgstr "Liste des tickets / tâches qui vont être créé après la validation"
 msgid "List of visibilities"
 msgstr "Liste des visibilités"
 
-#: ⁨standard input⁩:83 ⁨standard input⁩:36
+#: ⁨standard input⁩:84 ⁨standard input⁩:36
 msgctxt "button"
 msgid "Load draft"
 msgstr "Charger le brouillon"
@@ -1699,7 +1699,7 @@ msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 "Message affiché avant l'envoi au superviseur ou à l'utilisateur suivant"
 
-#: setup.php:315 src/Config.php:75 src/Profile.php:153 src/Metademand.php:131
+#: setup.php:317 src/Config.php:75 src/Profile.php:153 src/Metademand.php:131
 #: src/Menu.php:47 ⁨standard input⁩:73 ⁨standard input⁩:109 ⁨standard input⁩:146
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
@@ -1835,8 +1835,8 @@ msgstr "Nouveau suivi inter tickets"
 msgid "New model"
 msgstr "Nouveau modèle"
 
-#: src/Wizard.php:1594 tests/WizardTemplatesTest.php:247 ⁨standard input⁩:95
-#: ⁨standard input⁩:96 ⁨standard input⁩:71 ⁨standard input⁩:74
+#: src/Wizard.php:1594 tests/WizardTemplatesTest.php:249 ⁨standard input⁩:95
+#: ⁨standard input⁩:96 ⁨standard input⁩:72 ⁨standard input⁩:75
 msgid "Next"
 msgstr "Suivant"
 
@@ -1873,7 +1873,7 @@ msgstr "Pas de conditions trouvées"
 msgid "No default value"
 msgstr "Pas de valeur par défaut"
 
-#: front/draft.form.php:77 ⁨standard input⁩:108 ⁨standard input⁩:51
+#: front/draft.form.php:77 ⁨standard input⁩:109 ⁨standard input⁩:51
 msgid "No draft available for this form"
 msgstr "Pas de brouillons disponibles pour ce formulaire"
 
@@ -1935,7 +1935,7 @@ msgstr "Pas de résultats trouvés"
 msgid "No spaces, no special characters"
 msgstr "Pas d'espaces, pas de caractères spéciaux"
 
-#: ⁨standard input⁩:114
+#: ⁨standard input⁩:115
 msgid "No visibility defined"
 msgstr "Pas de visibilité définie"
 
@@ -2173,7 +2173,7 @@ msgstr "Groupement"
 msgid "Preview"
 msgstr "Aperçu"
 
-#: ⁨standard input⁩:67 ⁨standard input⁩:98 ⁨standard input⁩:64 ⁨standard input⁩:62
+#: ⁨standard input⁩:68 ⁨standard input⁩:98 ⁨standard input⁩:64 ⁨standard input⁩:62
 #: ⁨standard input⁩:63 ⁨standard input⁩:95 ⁨standard input⁩:96
 msgid "Previous"
 msgstr "Précédent"
@@ -2396,7 +2396,7 @@ msgctxt "button"
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: src/Wizard.php:1595 tests/WizardTemplatesTest.php:242 ⁨standard input⁩:97
+#: src/Wizard.php:1595 tests/WizardTemplatesTest.php:244 ⁨standard input⁩:97
 #: ⁨standard input⁩:98 ⁨standard input⁩:69
 msgctxt "button"
 msgid "Save & Post"
@@ -2412,7 +2412,7 @@ msgid "Save all the values"
 msgstr "Sauvegarder toutes les valeurs"
 
 #: src/Draft.php:507 tests/DraftTemplatesTest.php:78
-#: tests/DraftTemplatesTest.php:100 tests/DraftTemplatesTest.php:145
+#: tests/DraftTemplatesTest.php:143 tests/DraftTemplatesTest.php:188
 #: ⁨standard input⁩:96 ⁨standard input⁩:98 ⁨standard input⁩:58 ⁨standard input⁩:60
 msgctxt "button"
 msgid "Save as draft"
@@ -2423,7 +2423,7 @@ msgctxt "button"
 msgid "Save as model"
 msgstr "Sauvegarder comme modèle"
 
-#: ⁨standard input⁩:92
+#: ⁨standard input⁩:93
 msgctxt "button"
 msgid "Save draft"
 msgstr "Sauvegarder le brouillon"
@@ -2470,7 +2470,7 @@ msgstr "Chercher.."
 msgid "Secondaries services"
 msgstr "Service secondaire"
 
-#: src/Wizard.php:1607 tests/WizardTemplatesTest.php:256
+#: src/Wizard.php:1607 tests/WizardTemplatesTest.php:258
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr "Voir le récapitulatif du panier et Envoyer"
@@ -2707,7 +2707,7 @@ msgstr ""
 msgid "The default value has changed since the last translation"
 msgstr "La valeur par défaut a été modifiée depuis la dernière traduction"
 
-#: src/Fields/Textarea.php:504 tests/FieldWizardDisplayTest.php:373
+#: src/Fields/Textarea.php:504 tests/FieldWizardDisplayTest.php:375
 msgid "The description field is mandatory"
 msgstr "Le champ description est obligatoire"
 
@@ -2782,7 +2782,7 @@ msgstr "L'opérateur logique de la première condition n'est pas utilisé."
 msgid "The metademand is validated and affected"
 msgstr "La métademande est validée et affectée"
 
-#: ⁨standard input⁩:108
+#: ⁨standard input⁩:109
 msgid "The object is created"
 msgstr "L'objet est créé"
 
@@ -3448,7 +3448,7 @@ msgid "Your created forms"
 msgstr "Vos formulaires créés"
 
 #: front/draft.php:40 front/draftcreation.php:62 front/draft.form.php:69
-#: src/Wizard.php:466 ⁨standard input⁩:73
+#: src/Wizard.php:466 ⁨standard input⁩:74
 msgid "Your drafts"
 msgstr "Vos brouillons"
 

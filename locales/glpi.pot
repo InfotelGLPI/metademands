@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-14 17:16+0000\n"
+"POT-Creation-Date: 2026-11-15 10:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -213,7 +213,7 @@ msgstr ""
 msgid "Add language"
 msgstr ""
 
-#: src/Wizard.php:1604 src/Wizard.php:1613 tests/WizardTemplatesTest.php:252
+#: src/Wizard.php:1604 src/Wizard.php:1613 tests/WizardTemplatesTest.php:254
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
@@ -423,7 +423,7 @@ msgstr ""
 msgid "Cancel / delete a form"
 msgstr ""
 
-#: tests/WizardTemplatesTest.php:190 ⁨standard input⁩:62
+#: tests/WizardTemplatesTest.php:192 ⁨standard input⁩:63
 msgctxt "button"
 msgid "Cancel form"
 msgstr ""
@@ -511,7 +511,7 @@ msgctxt "button"
 msgid "Clear the basket"
 msgstr ""
 
-#: ⁨standard input⁩:68
+#: ⁨standard input⁩:73
 msgid "Click here for more informations"
 msgstr ""
 
@@ -667,7 +667,7 @@ msgstr ""
 msgid "Create tasks (not child tickets)"
 msgstr ""
 
-#: tests/FormListsTest.php:141 ⁨standard input⁩:47 ⁨standard input⁩:37
+#: tests/FormListsTest.php:174 ⁨standard input⁩:47 ⁨standard input⁩:37
 msgid "Created by"
 msgstr ""
 
@@ -784,7 +784,7 @@ msgstr ""
 msgid "Define visibility"
 msgstr ""
 
-#: ⁨standard input⁩:101 ⁨standard input⁩:44
+#: ⁨standard input⁩:102 ⁨standard input⁩:44
 msgctxt "button"
 msgid "Delete draft"
 msgstr ""
@@ -814,7 +814,7 @@ msgstr ""
 msgid "Delete translation"
 msgstr ""
 
-#: src/Step.php:524
+#: ⁨standard input⁩:99
 msgctxt "button"
 msgid "Delete visibility"
 msgstr ""
@@ -867,7 +867,7 @@ msgstr ""
 msgid "Devices own by my groups"
 msgstr ""
 
-#: ⁨standard input⁩:63
+#: ⁨standard input⁩:68
 msgid "Did you know that there is an FAQ article that may be able to help you?"
 msgstr ""
 
@@ -1566,7 +1566,7 @@ msgstr ""
 msgid "List of visibilities"
 msgstr ""
 
-#: ⁨standard input⁩:83 ⁨standard input⁩:36
+#: ⁨standard input⁩:84 ⁨standard input⁩:36
 msgctxt "button"
 msgid "Load draft"
 msgstr ""
@@ -1627,7 +1627,7 @@ msgstr ""
 msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 
-#: setup.php:315 src/Config.php:75 src/Profile.php:153 src/Metademand.php:131
+#: setup.php:317 src/Config.php:75 src/Profile.php:153 src/Metademand.php:131
 #: src/Menu.php:47 ⁨standard input⁩:73 ⁨standard input⁩:109 ⁨standard input⁩:146
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
@@ -1762,8 +1762,8 @@ msgstr ""
 msgid "New model"
 msgstr ""
 
-#: src/Wizard.php:1594 tests/WizardTemplatesTest.php:247 ⁨standard input⁩:95
-#: ⁨standard input⁩:96 ⁨standard input⁩:71 ⁨standard input⁩:74
+#: src/Wizard.php:1594 tests/WizardTemplatesTest.php:249 ⁨standard input⁩:95
+#: ⁨standard input⁩:96 ⁨standard input⁩:72 ⁨standard input⁩:75
 msgid "Next"
 msgstr ""
 
@@ -1800,7 +1800,7 @@ msgstr ""
 msgid "No default value"
 msgstr ""
 
-#: front/draft.form.php:77 ⁨standard input⁩:108 ⁨standard input⁩:51
+#: front/draft.form.php:77 ⁨standard input⁩:109 ⁨standard input⁩:51
 msgid "No draft available for this form"
 msgstr ""
 
@@ -1862,7 +1862,7 @@ msgstr ""
 msgid "No spaces, no special characters"
 msgstr ""
 
-#: ⁨standard input⁩:114
+#: ⁨standard input⁩:115
 msgid "No visibility defined"
 msgstr ""
 
@@ -2088,7 +2088,7 @@ msgstr ""
 msgid "Preview"
 msgstr ""
 
-#: ⁨standard input⁩:67 ⁨standard input⁩:98 ⁨standard input⁩:64 ⁨standard input⁩:62
+#: ⁨standard input⁩:68 ⁨standard input⁩:98 ⁨standard input⁩:64 ⁨standard input⁩:62
 #: ⁨standard input⁩:63 ⁨standard input⁩:95 ⁨standard input⁩:96
 msgid "Previous"
 msgstr ""
@@ -2306,7 +2306,7 @@ msgctxt "button"
 msgid "Save"
 msgstr ""
 
-#: src/Wizard.php:1595 tests/WizardTemplatesTest.php:242 ⁨standard input⁩:97
+#: src/Wizard.php:1595 tests/WizardTemplatesTest.php:244 ⁨standard input⁩:97
 #: ⁨standard input⁩:98 ⁨standard input⁩:69
 msgctxt "button"
 msgid "Save & Post"
@@ -2322,7 +2322,7 @@ msgid "Save all the values"
 msgstr ""
 
 #: src/Draft.php:507 tests/DraftTemplatesTest.php:78
-#: tests/DraftTemplatesTest.php:100 tests/DraftTemplatesTest.php:145
+#: tests/DraftTemplatesTest.php:143 tests/DraftTemplatesTest.php:188
 #: ⁨standard input⁩:96 ⁨standard input⁩:98 ⁨standard input⁩:58 ⁨standard input⁩:60
 msgctxt "button"
 msgid "Save as draft"
@@ -2333,7 +2333,7 @@ msgctxt "button"
 msgid "Save as model"
 msgstr ""
 
-#: ⁨standard input⁩:92
+#: ⁨standard input⁩:93
 msgctxt "button"
 msgid "Save draft"
 msgstr ""
@@ -2380,7 +2380,7 @@ msgstr ""
 msgid "Secondaries services"
 msgstr ""
 
-#: src/Wizard.php:1607 tests/WizardTemplatesTest.php:256
+#: src/Wizard.php:1607 tests/WizardTemplatesTest.php:258
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
@@ -2610,7 +2610,7 @@ msgstr ""
 msgid "The default value has changed since the last translation"
 msgstr ""
 
-#: src/Fields/Textarea.php:504 tests/FieldWizardDisplayTest.php:373
+#: src/Fields/Textarea.php:504 tests/FieldWizardDisplayTest.php:375
 msgid "The description field is mandatory"
 msgstr ""
 
@@ -2677,7 +2677,7 @@ msgstr ""
 msgid "The metademand is validated and affected"
 msgstr ""
 
-#: ⁨standard input⁩:108
+#: ⁨standard input⁩:109
 msgid "The object is created"
 msgstr ""
 
@@ -3298,7 +3298,7 @@ msgid "Your created forms"
 msgstr ""
 
 #: front/draft.php:40 front/draftcreation.php:62 front/draft.form.php:69
-#: src/Wizard.php:466 ⁨standard input⁩:73
+#: src/Wizard.php:466 ⁨standard input⁩:74
 msgid "Your drafts"
 msgstr ""
 

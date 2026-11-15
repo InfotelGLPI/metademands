@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-13 17:21+0000\n"
+"POT-Creation-Date: 2026-11-15 10:43+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Soporte Infraestructura Standby, 2023\n"
 "Language-Team: Spanish (Ecuador) (https://app.transifex.com/infotelGLPI/"
@@ -225,7 +225,7 @@ msgstr ""
 msgid "Add language"
 msgstr ""
 
-#: src/Wizard.php:1604 src/Wizard.php:1613 tests/WizardTemplatesTest.php:252
+#: src/Wizard.php:1604 src/Wizard.php:1613 tests/WizardTemplatesTest.php:254
 msgctxt "button"
 msgid "Add to basket"
 msgstr "Añadir a la cesta"
@@ -440,7 +440,7 @@ msgstr ""
 msgid "Cancel / delete a form"
 msgstr ""
 
-#: tests/WizardTemplatesTest.php:190 ⁨standard input⁩:62
+#: tests/WizardTemplatesTest.php:192 ⁨standard input⁩:63
 msgctxt "button"
 msgid "Cancel form"
 msgstr ""
@@ -529,7 +529,7 @@ msgctxt "button"
 msgid "Clear the basket"
 msgstr "Vaciar la cesta"
 
-#: ⁨standard input⁩:68
+#: ⁨standard input⁩:73
 msgid "Click here for more informations"
 msgstr ""
 
@@ -686,7 +686,7 @@ msgstr "Crear tareas"
 msgid "Create tasks (not child tickets)"
 msgstr "Crear tareas (no tickets secundarios)"
 
-#: tests/FormListsTest.php:141 ⁨standard input⁩:47 ⁨standard input⁩:37
+#: tests/FormListsTest.php:174 ⁨standard input⁩:47 ⁨standard input⁩:37
 msgid "Created by"
 msgstr ""
 
@@ -807,7 +807,7 @@ msgstr "Definir la fecha predeterminada"
 msgid "Define visibility"
 msgstr "Definir la visibilidad"
 
-#: ⁨standard input⁩:101 ⁨standard input⁩:44
+#: ⁨standard input⁩:102 ⁨standard input⁩:44
 msgctxt "button"
 msgid "Delete draft"
 msgstr "Eliminar borrador"
@@ -837,7 +837,7 @@ msgstr "Suprima esta línea"
 msgid "Delete translation"
 msgstr ""
 
-#: src/Step.php:524
+#: ⁨standard input⁩:99
 msgctxt "button"
 msgid "Delete visibility"
 msgstr ""
@@ -890,7 +890,7 @@ msgstr ""
 msgid "Devices own by my groups"
 msgstr ""
 
-#: ⁨standard input⁩:63
+#: ⁨standard input⁩:68
 msgid "Did you know that there is an FAQ article that may be able to help you?"
 msgstr ""
 
@@ -1611,7 +1611,7 @@ msgstr "Lista de tickets / tareas que se crearán tras la validación"
 msgid "List of visibilities"
 msgstr ""
 
-#: ⁨standard input⁩:83 ⁨standard input⁩:36
+#: ⁨standard input⁩:84 ⁨standard input⁩:36
 msgctxt "button"
 msgid "Load draft"
 msgstr "Cargar borrador"
@@ -1672,7 +1672,7 @@ msgstr "Número máximo de documentos :%s"
 msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 
-#: setup.php:315 src/Config.php:75 src/Profile.php:153 src/Metademand.php:131
+#: setup.php:317 src/Config.php:75 src/Profile.php:153 src/Metademand.php:131
 #: src/Menu.php:47 ⁨standard input⁩:73 ⁨standard input⁩:109 ⁨standard input⁩:146
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
@@ -1808,8 +1808,8 @@ msgstr "Nuevo seguimiento entre tickets"
 msgid "New model"
 msgstr "Nuevo modelo"
 
-#: src/Wizard.php:1594 tests/WizardTemplatesTest.php:247 ⁨standard input⁩:95
-#: ⁨standard input⁩:96 ⁨standard input⁩:71 ⁨standard input⁩:74
+#: src/Wizard.php:1594 tests/WizardTemplatesTest.php:249 ⁨standard input⁩:95
+#: ⁨standard input⁩:96 ⁨standard input⁩:72 ⁨standard input⁩:75
 msgid "Next"
 msgstr "Siguiente"
 
@@ -1846,7 +1846,7 @@ msgstr "Sin condiciones fundadas"
 msgid "No default value"
 msgstr ""
 
-#: front/draft.form.php:77 ⁨standard input⁩:108 ⁨standard input⁩:51
+#: front/draft.form.php:77 ⁨standard input⁩:109 ⁨standard input⁩:51
 msgid "No draft available for this form"
 msgstr "No hay borrador disponible para este formulario"
 
@@ -1908,7 +1908,7 @@ msgstr ""
 msgid "No spaces, no special characters"
 msgstr ""
 
-#: ⁨standard input⁩:114
+#: ⁨standard input⁩:115
 msgid "No visibility defined"
 msgstr ""
 
@@ -2140,7 +2140,7 @@ msgstr "Pool"
 msgid "Preview"
 msgstr ""
 
-#: ⁨standard input⁩:67 ⁨standard input⁩:98 ⁨standard input⁩:64 ⁨standard input⁩:62
+#: ⁨standard input⁩:68 ⁨standard input⁩:98 ⁨standard input⁩:64 ⁨standard input⁩:62
 #: ⁨standard input⁩:63 ⁨standard input⁩:95 ⁨standard input⁩:96
 msgid "Previous"
 msgstr "Anterior"
@@ -2361,7 +2361,7 @@ msgctxt "button"
 msgid "Save"
 msgstr ""
 
-#: src/Wizard.php:1595 tests/WizardTemplatesTest.php:242 ⁨standard input⁩:97
+#: src/Wizard.php:1595 tests/WizardTemplatesTest.php:244 ⁨standard input⁩:97
 #: ⁨standard input⁩:98 ⁨standard input⁩:69
 msgctxt "button"
 msgid "Save & Post"
@@ -2377,7 +2377,7 @@ msgid "Save all the values"
 msgstr ""
 
 #: src/Draft.php:507 tests/DraftTemplatesTest.php:78
-#: tests/DraftTemplatesTest.php:100 tests/DraftTemplatesTest.php:145
+#: tests/DraftTemplatesTest.php:143 tests/DraftTemplatesTest.php:188
 #: ⁨standard input⁩:96 ⁨standard input⁩:98 ⁨standard input⁩:58 ⁨standard input⁩:60
 msgctxt "button"
 msgid "Save as draft"
@@ -2388,7 +2388,7 @@ msgctxt "button"
 msgid "Save as model"
 msgstr "Guardar como modelo"
 
-#: ⁨standard input⁩:92
+#: ⁨standard input⁩:93
 msgctxt "button"
 msgid "Save draft"
 msgstr "Guardar proyecto"
@@ -2435,7 +2435,7 @@ msgstr ""
 msgid "Secondaries services"
 msgstr "Servicios secundarios"
 
-#: src/Wizard.php:1607 tests/WizardTemplatesTest.php:256
+#: src/Wizard.php:1607 tests/WizardTemplatesTest.php:258
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr "Ver el resumen de la cesta y enviarlo"
@@ -2670,7 +2670,7 @@ msgstr ""
 msgid "The default value has changed since the last translation"
 msgstr ""
 
-#: src/Fields/Textarea.php:504 tests/FieldWizardDisplayTest.php:373
+#: src/Fields/Textarea.php:504 tests/FieldWizardDisplayTest.php:375
 msgid "The description field is mandatory"
 msgstr ""
 
@@ -2739,7 +2739,7 @@ msgstr ""
 msgid "The metademand is validated and affected"
 msgstr "La metademanda se valida y afecta"
 
-#: ⁨standard input⁩:108
+#: ⁨standard input⁩:109
 msgid "The object is created"
 msgstr ""
 
@@ -3369,7 +3369,7 @@ msgid "Your created forms"
 msgstr "Sus formularios creados"
 
 #: front/draft.php:40 front/draftcreation.php:62 front/draft.form.php:69
-#: src/Wizard.php:466 ⁨standard input⁩:73
+#: src/Wizard.php:466 ⁨standard input⁩:74
 msgid "Your drafts"
 msgstr "Sus proyectos"
 
