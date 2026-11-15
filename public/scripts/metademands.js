@@ -1237,7 +1237,12 @@ function plugin_metademands_wizard_showStep(root_doc, arrayDatas)
                     var event = document.createEvent('Event');
                 }
                 $('#modalgroupspan').html(response);
-                $.globalEval(response.js);
+                // ajax/showStep.php returns the HTML alone, whose scripts .html() already ran:
+                // the eval only applies to a response holding a separate script, which needs
+                // the nonce of the page under the Content Security Policy
+                if (typeof response.js === 'string') {
+                    $.globalEval(response.js, {nonce: CFG_GLPI.csp_nonce});
+                }
                 $('#modalgroup').modal('show');
                 document.dispatchEvent(event);
             },

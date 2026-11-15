@@ -87,6 +87,23 @@ class StepByBlockListTest extends DbTestCase
         $this->assertStringContainsString('Hello you', $html);
         // The delete button keeps its own action inside the clickable row
         $this->assertStringContainsString('data-md-reload-noopen', $html);
+        // ... the request of Html::showSimpleForm(), posted by public/scripts/csp_handlers.js
+        // instead of an inline handler the CSP blocks
+        $step = new Step();
+        $this->assertTrue($step->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademand->getID()]));
+        $this->assertMatchesRegularExpression(
+            '/<a class="pointer" data-metademands-submit-get-link="'
+            . preg_quote(htmlescape(PLUGIN_METADEMANDS_WEBDIR . '/front/step.form.php'), '/')
+            . '" data-metademands-submit-get-link-fields="([^"]+)">/',
+            $html,
+        );
+        preg_match('/data-metademands-submit-get-link-fields="([^"]+)"/', $html, $matches);
+        $fields = json_decode(html_entity_decode($matches[1], ENT_QUOTES), true);
+        // With the CSRF token Html::getSimpleForm() added (GLPI 11)
+        $this->assertSame(['delete', 'id', '_glpi_csrf_token', '_glpi_simple_form'], array_keys($fields));
+        $this->assertSame(['delete', $step->getID(), 1], [$fields['delete'], $fields['id'], $fields['_glpi_simple_form']]);
+        $this->assertNotEmpty($fields['_glpi_csrf_token']);
+        $this->assertStringNotContainsString('onclick', $html);
         $this->assertSame(substr_count($html, '<div'), substr_count($html, '</div>'));
     }
 }

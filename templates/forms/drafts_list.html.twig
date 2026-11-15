@@ -69,6 +69,7 @@
         </tr>
     </table>
 
+    {% set rand = random() %}
     <table class="tab_cadre_fixe">
         <div class="card-header">{{ __('Your drafts', 'metademands') }}</div>
         <tbody id="bodyDraft">
@@ -78,7 +79,7 @@
                     <td>{{ entry.date }}</td>
                     <td>
                         <button form="" class="submit btn btn-success btn-sm"
-                                onclick="loadDraft({{ entry.id }})">
+                                data-metademands-action="loadDraft" data-metademands-args="{{ [entry.id]|json_encode }}">
                             <i class="ti ti-cloud-download pointer"
                                title="{{ _x('button', 'Load draft', 'metademands') }}"
                                data-hasqtip="0" aria-hidden="true"></i>
@@ -87,7 +88,7 @@
                     {% if entry.id == draft_id %}
                         <td>
                             <button class="submit btn btn-success btn-sm"
-                                    onclick="event.preventDefault();event.stopPropagation();udpateDraft({{ entry.id }}, '{{ entry.name|e('js') }}')">
+                                    data-metademands-update-draft="{{ rand }}" data-metademands-args="{{ [entry.id, entry.name]|json_encode }}">
                                 <i class="ti ti-device-floppy pointer"
                                    title="{{ _x('button', 'Save draft', 'metademands') }}"
                                    data-hasqtip="0" aria-hidden="true"></i>
@@ -96,7 +97,7 @@
                     {% endif %}
                     <td>
                         <button form="" class="submit btn btn-danger btn-sm"
-                                onclick="deleteDraft({{ entry.id }})">
+                                data-metademands-action="deleteDraft" data-metademands-args="{{ [entry.id]|json_encode }}">
                             <i class="ti ti-trash pointer"
                                title="{{ _x('button', 'Delete draft', 'metademands') }}"
                                data-hasqtip="0" aria-hidden="true"></i>
@@ -116,6 +117,16 @@
     <script>
         var meta_id = {{ meta_id }};
         var step = {{ step }};
+
+        {#- Bound on the button itself, not delegated on the document: the propagation of
+         # the click stops there, before its ancestors. -#}
+        document.querySelectorAll('[data-metademands-update-draft="{{ rand }}"]').forEach((button) => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                udpateDraft(...JSON.parse(button.dataset.metademandsArgs));
+            });
+        });
 
         function deleteDraft(draft_id) {
             var self_delete = false;

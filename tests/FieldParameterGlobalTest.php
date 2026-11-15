@@ -79,15 +79,35 @@ class FieldParameterGlobalTest extends DbTestCase
         );
     }
 
+    /**
+     * Core slider (fields.sliderField()) named $name: a hidden 0 posted when unchecked, and
+     * its checkbox posting 1, checked or not.
+     */
+    private function assertSlider(string $name, bool $checked, string $html): void
+    {
+        $quoted = preg_quote($name, '/');
+        $this->assertMatchesRegularExpression('/<input type="hidden"\s+name="' . $quoted . '" value="0"/', $html);
+        $checkbox = '/<input type="checkbox" name="' . $quoted . '" value="1" class="form-check-input" id="[^"]*"\s+checked/';
+        if ($checked) {
+            $this->assertMatchesRegularExpression($checkbox, $html);
+        } else {
+            $this->assertMatchesRegularExpression(
+                '/<input type="checkbox" name="' . $quoted . '" value="1" class="form-check-input"/',
+                $html,
+            );
+            $this->assertDoesNotMatchRegularExpression($checkbox, $html);
+        }
+    }
+
     public function testDropdownMetaOffersEveryParameterWithItsValue(): void
     {
         $this->login();
 
         $html = FieldParameter::showGlobalParameters($this->getParams('dropdown_meta', 'urgency'));
 
-        $this->assertSelected('is_mandatory', '1', $html);
-        $this->assertSelected('hide_title', '0', $html);
-        $this->assertSelected('row_display', '1', $html);
+        $this->assertSlider('is_mandatory', true, $html);
+        $this->assertSlider('hide_title', false, $html);
+        $this->assertSlider('row_display', true, $html);
         $this->assertSelected('is_basket', '0', $html);
         $this->assertSelected('used_by_ticket', '10', $html);
 

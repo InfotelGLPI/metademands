@@ -127,6 +127,39 @@ class FormListsTest extends DbTestCase
         $this->assertStringNotContainsString(self::MARKUP, $html);
     }
 
+    public function testPrivateModelButtonsCarryNoInlineHandler(): void
+    {
+        $this->login();
+
+        $metademand = $this->createMetademand();
+        $form = $this->createForm($metademand, ['is_model' => 1, 'is_private' => 1]);
+        // The loaded model also gets its "save" button
+        $_SESSION['plugin_metademands'][$metademand->getID()]['plugin_metademands_forms_id'] = $form->getID();
+
+        $html = Form::showPrivateFormsForUserMetademand(Session::getLoginUserID(), $metademand->getID());
+
+        // The CSP blocks inline handlers: the buttons only carry data attributes
+        $this->assertStringNotContainsString('onclick', $html);
+        foreach (['loadForm', 'deleteForm'] as $action) {
+            $this->assertStringContainsString(
+                'data-metademands-action="' . $action . '" data-metademands-args="[' . $form->getID() . ']"',
+                $html,
+            );
+        }
+        // The name, once a JS string of the handler, is JSON escaped into the attribute
+        $this->assertMatchesRegularExpression(
+            '/data-metademands-update-form="(\d+)" data-metademands-args="'
+            . preg_quote(htmlescape(json_encode([$form->getID(), self::MARKUP])), '/') . '"/',
+            $html,
+        );
+        // ... and the listener bound right after it, on the rand of the list
+        preg_match('/data-metademands-update-form="(\d+)"/', $html, $matches);
+        $this->assertStringContainsString(
+            "document.querySelectorAll('[data-metademands-update-form=\"" . $matches[1] . "\"]')",
+            $html,
+        );
+    }
+
     public function testPublicModelTooltipEscapesItsAuthor(): void
     {
         $this->login();

@@ -44,7 +44,7 @@
                     <td>{{ entry.date }}</td>
                     <td>
                         <button form="" class="submit btn btn-success btn-sm"
-                                onclick="loadForm({{ entry.id }}, {{ entry.meta_id }}, {{ entry.items_id }}, '{{ entry.itemtype }}')">
+                                data-metademands-action="loadForm" data-metademands-args="{{ [entry.id, entry.meta_id, entry.items_id, entry.itemtype]|json_encode }}">
                             <i class="ti ti-cloud-download pointer" style="font-size:2em"
                                title="{{ _x('button', 'Load form', 'metademands') }}"
                                data-hasqtip="0" aria-hidden="true"></i>
