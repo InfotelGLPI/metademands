@@ -33,22 +33,46 @@
  #  - field_name: translated name of the ticket field being predefined
  #  - entities_id, is_recursive, metademands_id, num: hidden values the save needs
  #  - value_url, value_params: AJAX endpoint and parameters filling the value cell
+ #  - field_choices, rand: new field (added by hand), the fields that may be added (search
+ #    option => label), the value cell following the one chosen; null for an existing field
 -#}
+{% import 'components/form/fields_macros.html.twig' as fields %}
 <tr class="tab_bg_1">
     <td>{{ __('Name') }}</td>
     <td>
-        {{ field_name }}
+        {% if field_choices is not null %}
+            {#- A field added by hand: the fields that may be, its value widget following -#}
+            {{ fields.dropdownArrayField('num', 0, field_choices, '', {
+                'no_label': true,
+                'field_class': '',
+                'mb': '',
+                'rand': rand,
+                'display_emptychoice': true,
+                'aria_label': __('Name'),
+            }) }}
+        {% else %}
+            {{ field_name }}
+            <input type="hidden" name="num" value="{{ num }}">
+        {% endif %}
         {# Required by the CommonDBChild rights check done in front/ticketfield.form.php:
            without the parent foreign key, check(-1, UPDATE, $_POST) cannot resolve the
            parent metademand and the save is rejected with an access denied error. #}
         <input type="hidden" name="entities_id" value="{{ entities_id }}">
         <input type="hidden" name="is_recursive" value="{{ is_recursive }}">
         <input type="hidden" name="plugin_metademands_metademands_id" value="{{ metademands_id }}">
-        <input type="hidden" name="num" value="{{ num }}">
     </td>
     <td>{{ __('Value') }}</td>
     <td>
         <span id="show_massiveaction_field">&nbsp;</span>
-        {% do call('Ajax::updateItem', ['show_massiveaction_field', value_url, value_params, '', true]) %}
+        {% if field_choices is not null %}
+            {% do call('Ajax::updateItemOnSelectEvent', [
+                'dropdown_num' ~ rand,
+                'show_massiveaction_field',
+                value_url,
+                value_params|merge({'id_field': '__VALUE__'}),
+            ]) %}
+        {% else %}
+            {% do call('Ajax::updateItem', ['show_massiveaction_field', value_url, value_params, '', true]) %}
+        {% endif %}
     </td>
 </tr>

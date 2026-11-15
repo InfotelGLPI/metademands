@@ -1825,14 +1825,47 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
      * @param array<int, array<int, array{text: string, colspan?: int, heading?: bool, title?: bool, table_only?: bool}>> $rows plain text
      * @param string $cell_style inline CSS of the plain and heading cells
      */
-    public static function renderContentRows(bool $formatAsTable, string $title_style, string $cell_style, array $rows): string
+    /**
+     * @param int $line_colspan columns of the line of the field in the content: 2 (label,
+     *                          value), 12 for a metademand in basket mode
+     */
+    public static function renderContentRows(bool $formatAsTable, string $title_style, string $cell_style, array $rows, int $line_colspan = 2): string
     {
+        // A table of its own, in a cell spanning the line of the field: its columns (those
+        // of a basket, a free table) are not the label and the value of the content, which
+        // its rows, written inside that line, used to break. A title alone on its row spans
+        // the whole table.
+        if ($formatAsTable) {
+            $width = 1;
+            foreach ($rows as $row) {
+                if (!self::isTitleRow($row)) {
+                    $width = max($width, array_sum(array_map(static fn($cell) => (int) ($cell['colspan'] ?? 1), $row)));
+                }
+            }
+            foreach ($rows as $index => $row) {
+                if (self::isTitleRow($row)) {
+                    $rows[$index][array_key_first($row)]['colspan'] = $width;
+                }
+            }
+        }
+
         return TemplateRenderer::getInstance()->render('@metademands/ticket_content/table_rows.html.twig', [
             'rows'            => $rows,
             'format_as_table' => $formatAsTable,
             'cell_style'      => $cell_style,
             'title_style'     => $title_style,
+            'line_colspan'    => $line_colspan,
         ]);
+    }
+
+    /**
+     * Whether a row of renderContentRows() is a title alone (the label of the field).
+     *
+     * @param array<int, array<string, mixed>> $row
+     */
+    private static function isTitleRow(array $row): bool
+    {
+        return count($row) === 1 && !empty($row[array_key_first($row)]['title']);
     }
 
     /**

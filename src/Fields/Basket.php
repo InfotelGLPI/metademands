@@ -1429,6 +1429,7 @@ class Basket extends CommonDBTM
                 (string) $title_style,
                 'border: 1px solid black;',
                 $rows,
+                $is_order ? 12 : 2,
             );
         }
 

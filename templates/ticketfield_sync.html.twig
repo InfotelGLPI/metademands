@@ -27,9 +27,14 @@
 
 {#
  # Toolbar of the "Parent ticket fields" tab (TicketField::showFromMetademand()), in a card
- # like the one of the "Form creation" tab: the template the fields are synchronised with,
- # the synchronisation button and the list of the available tags.
+ # like the one of the "Form creation" tab: the template the fields are synchronised with
+ # (the one of the metademand, or another one chosen), the synchronisation button, the
+ # button adding a field by hand and the list of the available tags.
+ #
+ #  - template_link, template_class, templates_id: template of the metademand
+ #  - add_url, add_params: form of a new field, loaded into viewticketchild_id
  #}
+{% import 'components/form/fields_macros.html.twig' as fields %}
 {% if canedit %}
     <div class="card mb-3">
         <div class="card-body py-2">
@@ -47,6 +52,16 @@
                         {% endif %}
                     </span>
                 </div>
+                {#- The template of the metademand by default, another one may be chosen -#}
+                <div style="min-width: 220px;">
+                    {{ fields.dropdownField(template_class, '_templates_id', templates_id, '', {
+                        'no_label': true,
+                        'field_class': '',
+                        'mb': '',
+                        'display_emptychoice': false,
+                        'aria_label': __('Template', 'metademands'),
+                    }) }}
+                </div>
                 {% for name, value in item_fields %}
                     <input type="hidden" name="{{ name }}" value="{{ value }}">
                 {% endfor %}
@@ -55,6 +70,12 @@
                        title="{{ __('Show list of available tags') }}">
                         <i class="ti ti-tags me-1"></i>{{ __('Show list of available tags') }}
                     </a>
+                    <button type="button" class="btn btn-outline-primary"
+                            data-md-subitem-target="{{ viewticketchild_id }}"
+                            data-md-subitem-url="{{ add_url }}"
+                            data-md-subitem-params="{{ add_params|json_encode }}">
+                        <i class="ti ti-plus me-1"></i>{{ __('Add a field', 'metademands') }}
+                    </button>
                     <button type="submit" name="template_sync" value="1" class="btn btn-primary">
                         <i class="ti ti-refresh me-1"></i>{{ __('Synchronise with ticket template', 'metademands') }}
                     </button>

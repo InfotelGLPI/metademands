@@ -583,6 +583,7 @@ class Freetable extends CommonDBTM
             (string) $title_style,
             'border: 1px solid #CCC;',
             $rows,
+            $is_order ? 12 : 2,
         );
 
         return $result;

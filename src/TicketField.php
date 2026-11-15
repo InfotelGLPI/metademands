@@ -264,6 +264,8 @@ class TicketField extends CommonDBChild
      */
     public function showFromMetademand($item)
     {
+        global $CFG_GLPI;
+
         if (!$this->canview()) {
             return false;
         }
@@ -293,31 +295,34 @@ class TicketField extends CommonDBChild
         $used_fields = $this->getPredefinedFields($item->fields['id'], true);
         $fields = $tt->getAllowedFieldsNames(true, isset($used_fields['itemtype']));
 
-        $cats = json_decode($item->fields['itilcategories_id'], true);
-
-        if (is_array($cats)) {
-            $cats = reset($cats);
-        }
-
         $rand = mt_rand();
         $template_link = '';
 
-        if ($canedit) {
-            $ticket = new $object();
-            // Beware: $tt is replaced here by the template actually in use, and that is the
-            // instance forwarded to listFields() below. A user without UPDATE therefore gets
-            // the mandatory marks of an empty template, which is the legacy behaviour.
-            $tt = $ticket->getITILTemplateToUse(0, $meta->fields["type"], $cats, $item->fields['entities_id']);
+        // The template of the metademand, the same whoever looks at it (issue #299): the
+        // one of its first category having one, otherwise the one of its entity
+        $tt = self::getMetademandTemplate($meta) ?? $tt;
+        if (!$tt->isNewItem()) {
             $template_link = $tt->getLink();
         }
 
+        $viewticketchild_id = 'viewticketchild' . $item->fields['id'] . $rand;
         echo TemplateRenderer::getInstance()->render('@metademands/ticketfield_sync.html.twig', [
             'canedit' => $canedit,
             'form_action' => Toolbox::getItemTypeFormURL(__CLASS__),
             'template_link' => $template_link,
+            'template_class' => $tt::class,
+            'templates_id' => $tt->isNewItem() ? 0 : $tt->getID(),
             'item_fields' => $item->fields,
             'tags_url' => PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" . $item->fields['id'],
-            'viewticketchild_id' => 'viewticketchild' . $item->fields['id'] . $rand,
+            'viewticketchild_id' => $viewticketchild_id,
+            // A field added by hand, as a destination of a core form: the field form, empty
+            'add_url' => $CFG_GLPI['root_doc'] . '/ajax/viewsubitem.php',
+            'add_params' => [
+                'type' => __CLASS__,
+                'parenttype' => Metademand::class,
+                Metademand::getForeignKeyField() => $item->fields['id'],
+                'id' => -1,
+            ],
         ]);
 
         $this->listFields($object, $ticketfield_data, $fields, $searchOption, $canedit, $tt, $item->fields['id'], $rand);
@@ -345,10 +350,16 @@ class TicketField extends CommonDBChild
             return false;
         }
 
-        if ($ID > 0) {
+        $is_new = $ID <= 0;
+        if (!$is_new) {
             $this->check($ID, READ);
         } else {
-            $this->check(-1, UPDATE);
+            // A field added by hand to the metademand of the tab
+            $parent_id = isset($options['parent']) && $options['parent'] instanceof Metademand
+                ? $options['parent']->getID()
+                : 0;
+            $parent_input = ['plugin_metademands_metademands_id' => $parent_id];
+            $this->check(-1, CREATE, $parent_input);
             $this->getEmpty();
         }
 
@@ -365,6 +376,10 @@ class TicketField extends CommonDBChild
         $object = $meta->fields['object_to_create'];
         $searchOption = Search::getOptions($object);
         $field_name = $searchOption[$this->fields['num']]['name'] ?? '';
+        if ($is_new) {
+            $this->fields['entities_id']  = $meta->fields['entities_id'];
+            $this->fields['is_recursive'] = $meta->fields['is_recursive'];
+        }
 
         $used_fields = $this->getPredefinedFields($metademands_id, true);
         $itemtype_used = $used_fields['itemtype'] ?? '';
@@ -378,6 +393,9 @@ class TicketField extends CommonDBChild
             'is_recursive'   => $this->fields["is_recursive"],
             'metademands_id' => $metademands_id,
             'num'            => $this->fields["num"],
+            // New field: the fields that may be added, the value following the choice
+            'field_choices'  => $is_new ? self::getAvailableFields($meta) : null,
+            'rand'           => mt_rand(),
             'value_url'      => PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownMassiveActionField.php",
             'value_params'   => [
                 'id_field'       => $this->fields["num"],
@@ -592,18 +610,22 @@ class TicketField extends CommonDBChild
     //   }
 
     /**
-     * @param $input
+     * Synchronise the fields of the object to create by a metademand with its template
+     * (getMetademandTemplate()), or with the one chosen in the "Parent ticket fields" tab.
+     *
+     * @param array $input        the metademand
+     * @param int   $templates_id template chosen instead of the one of the metademand
      *
      * @return bool
      */
-    public static function updateMandatoryTicketFields($input)
+    public static function updateMandatoryTicketFields($input, int $templates_id = 0)
     {
         if (isset($input['itilcategories_id']) && isset($input['entities_id']) && isset($input['id'])) {
             $meta = new Metademand();
             $meta->getFromDB($input['id']);
             $type = $meta->getField('type');
             // Add mandatory ticket fields
-            self::addTemplateFields($input['id'], $input['itilcategories_id'], $type, $input['entities_id']);
+            self::addTemplateFields($input['id'], $input['itilcategories_id'], $type, $input['entities_id'], 'mandatory', $templates_id);
             // Add predefined ticket fields
             self::addTemplateFields(
                 $input['id'],
@@ -611,6 +633,7 @@ class TicketField extends CommonDBChild
                 $type,
                 $input['entities_id'],
                 'predefined',
+                $templates_id,
             );
         }
 
@@ -633,12 +656,15 @@ class TicketField extends CommonDBChild
             $categid = $itilcategory->fields['id'];
         }
 
+        // The categories of a metademand are a JSON list: the former search on the bare id
+        // never matched it
         $metademands = new Metademand();
-        $metademands_data = $metademands->find([
-            'entities_id' => $_SESSION['glpiactive_entity'],
-            'itilcategories_id' => $categid,
-        ]);
+        $metademands_data = $metademands->find(['itilcategories_id' => ['LIKE', '%' . (int) $categid . '%']]);
         foreach ($metademands_data as $id => $value) {
+            $categories = json_decode((string) $value['itilcategories_id'], true);
+            if (!is_array($categories) || !in_array((int) $categid, array_map('intval', $categories), true)) {
+                continue;
+            }
             self::addTemplateFields($id, $categid, $value['type'], $value['entities_id']);
             self::addTemplateFields($id, $categid, $value['type'], $value['entities_id'], 'predefined');
         }
@@ -684,33 +710,27 @@ class TicketField extends CommonDBChild
         $ticketField = new TicketField();
         $metademands = new Metademand();
 
-        $metademands_data = $metademands->find();
+        // Metademands creating tickets only: the id of a template of tickets says nothing of
+        // the template of a change or a problem
+        $metademands_data = $metademands->find(['object_to_create' => \Ticket::class]);
         foreach ($metademands_data as $id => $value) {
-            // Search for the metademand template
-            $obj = $value['object_to_create'];
-            if ($item = getItemForItemtype($obj)) {
-                $ticket = new $obj();
-                if (is_array($value['itilcategories_id'])
-                    && count($value['itilcategories_id']) != 1) {
-                    continue;
-                }
-                $meta_tt = $ticket->getITILTemplateToUse(
-                    0,
-                    $value['type'],
-                    $value['itilcategories_id'],
-                    $value['entities_id'],
-                );
+            // Search for the metademand template, the same whoever changes the template
+            $meta = new Metademand();
+            if ($meta->getFromDB($id) && ($meta_tt = self::getMetademandTemplate($meta))) {
                 $fieldsname = $meta_tt->getAllowedFields(true);
 
                 // Template of metademand found
-                if ($meta_tt->fields['id'] == $ttp->fields['tickettemplates_id']) {
+                if ($meta_tt->fields['id'] == $ttp->fields['tickettemplates_id']
+                    && isset($fieldsname[$ttp->fields['num']])) {
                     if (!in_array($fieldsname[$ttp->fields['num']], self::$used_fields)
                         && $ttp->fields['num'] != -2) {
                         $used = false;
+                        $from_template = false;
                         $fields_data = $ticketField->find(['plugin_metademands_metademands_id' => $id]);
                         foreach ($fields_data as $fields_value) {
                             if ($fields_value['num'] == $ttp->fields['num']) {
                                 $used = $fields_value['id'];
+                                $from_template = (int) $fields_value['is_deletable'] === 0;
                                 break;
                             }
                         }
@@ -748,7 +768,8 @@ class TicketField extends CommonDBChild
                                     'entities_id' => $value['entities_id'],
                                     'plugin_metademands_metademands_id' => $id,
                                 ]);
-                            } else {
+                            } elseif ($from_template) {
+                                // A field added by hand keeps its value
                                 $ticketField->update(['id' => $used, 'value' => $default_value]);
                             }
                         } else {
@@ -777,11 +798,13 @@ class TicketField extends CommonDBChild
         $ticketField = new TicketField();
         $metademands = new Metademand();
 
-        $metademands_data = $metademands->find();
+        // As addFieldsFromTemplate(): the metademands creating tickets, their own template
+        $metademands_data = $metademands->find(['object_to_create' => \Ticket::class]);
         foreach ($metademands_data as $id => $value) {
-            $obj = $value['object_to_create'];
-            $ticket = new $obj();
-            $tt = $ticket->getITILTemplateToUse(0, $value['type'], $value['itilcategories_id'], $value['entities_id']);
+            $meta = new Metademand();
+            if (!$meta->getFromDB($id) || !($tt = self::getMetademandTemplate($meta))) {
+                continue;
+            }
 
             if ($tt->fields['id'] == $ttp->fields['tickettemplates_id']) {
                 $fieldsname = $tt->getAllowedFields(true);
@@ -795,8 +818,9 @@ class TicketField extends CommonDBChild
                 }
 
                 if (!$used) {
+                    // Only the field the template brought: one added by hand stays
                     $ticketField->deleteByCriteria(
-                        ['num' => $ttp->fields['num'], 'plugin_metademands_metademands_id' => $id],
+                        ['num' => $ttp->fields['num'], 'plugin_metademands_metademands_id' => $id, 'is_deletable' => 0],
                     );
                 }
             }
@@ -804,26 +828,197 @@ class TicketField extends CommonDBChild
     }
 
     /**
-     * @param        $metademands_id
-     * @param        $categid
-     * @param        $type
-     * @param        $entity
-     * @param string $templatetype
+     * Whether a field of the object to create may be predefined for a metademand: a field of
+     * its templates, but those the plugin fills itself (used_fields), and once only (the task
+     * templates excepted, of which a ticket may have several).
      */
-    public static function addTemplateFields($metademands_id, $categid, $type, $entity, $templatetype = 'mandatory')
+    public static function isFieldAvailable(Metademand $meta, int $num): bool
+    {
+        $tt = self::getMetademandTemplate($meta);
+        if ($tt === null || $num === -2) {
+            return false;
+        }
+        $name = $tt->getAllowedFields(true, true)[$num] ?? null;
+        if (!is_string($name)
+            || in_array($name, self::$used_fields, true)
+            || in_array($num, self::$used_fields, true)) {
+            return false;
+        }
+
+        return $name === '_tasktemplates_id'
+            || countElementsInTable(self::getTable(), [
+                'plugin_metademands_metademands_id' => $meta->getID(),
+                'num'                               => $num,
+            ]) === 0;
+    }
+
+    /**
+     * Fields of the object to create that may be added by hand to a metademand
+     * (isFieldAvailable()), as the destinations of a core form set them: title, urgency,
+     * impact, priority, request source, location, assigned group or technician...
+     *
+     * @return array<int, string> search option => label
+     */
+    public static function getAvailableFields(Metademand $meta): array
+    {
+        $tt = self::getMetademandTemplate($meta);
+        if ($tt === null) {
+            return [];
+        }
+
+        $available = [];
+        foreach ($tt->getAllowedFieldsNames(true, true) as $num => $label) {
+            if (self::isFieldAvailable($meta, (int) $num)) {
+                $available[(int) $num] = $label;
+            }
+        }
+        asort($available);
+
+        return $available;
+    }
+
+    /**
+     * Set a field of the object to create of a metademand from a copy or an import: the field
+     * already there (synchronised with the template when the metademand was added) takes the
+     * value, otherwise it is added; a field that may not be predefined is left out silently.
+     *
+     * @param array<string, mixed> $input row of the source, without its id
+     */
+    public static function copyField(int $metademands_id, array $input): bool
     {
         $meta = new Metademand();
-        $meta->getFromDB($metademands_id);
-        $obj = $meta->fields['object_to_create'];
+        $num  = (int) ($input['num'] ?? 0);
+        if (!$meta->getFromDB($metademands_id)) {
+            return false;
+        }
+
+        $ticketfield = new self();
+        $tt = self::getMetademandTemplate($meta);
+        $is_multiple = $tt !== null && ($tt->getAllowedFields(true, true)[$num] ?? null) === '_tasktemplates_id';
+        if (!$is_multiple
+            && $ticketfield->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id, 'num' => $num])) {
+            return $ticketfield->update([
+                'id'           => $ticketfield->getID(),
+                'value'        => $input['value'] ?? '',
+                'is_mandatory' => (int) ($input['is_mandatory'] ?? $ticketfield->fields['is_mandatory']),
+                'is_deletable' => (int) ($input['is_deletable'] ?? $ticketfield->fields['is_deletable']),
+            ]);
+        }
+        if (!self::isFieldAvailable($meta, $num)) {
+            return false;
+        }
+
+        return (bool) $ticketfield->add(['plugin_metademands_metademands_id' => $metademands_id] + $input);
+    }
+
+    public function prepareInputForAdd($input)
+    {
+        // Added by hand, by the synchronisation with a template or by an import: a field of the
+        // object to create, once
+        $meta = new Metademand();
+        if (!$meta->getFromDB((int) ($input['plugin_metademands_metademands_id'] ?? 0))
+            || !self::isFieldAvailable($meta, (int) ($input['num'] ?? 0))) {
+            Session::addMessageAfterRedirect(
+                __('This field cannot be predefined, or it already is', 'metademands'),
+                false,
+                ERROR,
+            );
+            return false;
+        }
+
+        return parent::prepareInputForAdd($input);
+    }
+
+    /**
+     * Id of the template the fields of the object to create by a metademand are synchronised
+     * with, the same whoever asks: the one of the first of its categories having one for its
+     * type, otherwise the one of its entity; 0 when there is none.
+     *
+     * getITILTemplateToUse() was given the categories as their JSON list, which it read as no
+     * category, and then took the template of the profile of the current user (issue #299).
+     */
+    public static function getMetademandTemplateId(Metademand $meta): int
+    {
+        $object = (string) ($meta->fields['object_to_create'] ?? '');
+        $item   = getItemForItemtype($object);
+        if (!$item instanceof \CommonITILObject) {
+            return 0;
+        }
+
+        // The template of a category depends on the type of a ticket only
+        $type = (int) ($meta->fields['type'] ?? 0);
+        if (!$item instanceof \Ticket || in_array($type, [\Ticket::INCIDENT_TYPE, \Ticket::DEMAND_TYPE], true)) {
+            $field      = $item->getTemplateFieldName($item instanceof \Ticket ? $type : true);
+            $categories = json_decode((string) ($meta->fields['itilcategories_id'] ?? ''), true);
+            $categories = is_array($categories) ? $categories : [$meta->fields['itilcategories_id'] ?? 0];
+            $category   = new ITILCategory();
+            foreach ($categories as $categories_id) {
+                if ((int) $categories_id > 0
+                    && $category->getFromDB((int) $categories_id)
+                    && (int) ($category->fields[$field] ?? 0) > 0) {
+                    return (int) $category->fields[$field];
+                }
+            }
+        }
+
+        return max(0, (int) \Entity::getUsedConfig(
+            strtolower($object) . 'templates_strategy',
+            (int) $meta->fields['entities_id'],
+            strtolower($object) . 'templates_id',
+            0,
+        ));
+    }
+
+    /**
+     * Template the fields of the object to create by a metademand are synchronised with
+     * (getMetademandTemplateId()), or the one chosen instead; an empty template, without
+     * mandatory nor predefined fields, when there is none.
+     *
+     * @return \ITILTemplate|null null when the object to create has no templates
+     */
+    public static function getMetademandTemplate(Metademand $meta, int $templates_id = 0): ?\ITILTemplate
+    {
+        $item = getItemForItemtype((string) ($meta->fields['object_to_create'] ?? ''));
+        if (!$item instanceof \CommonITILObject) {
+            return null;
+        }
+        $tt = getItemForItemtype($item::getTemplateClass());
+        if (!$tt instanceof \ITILTemplate) {
+            return null;
+        }
+
+        $templates_id = $templates_id > 0 ? $templates_id : self::getMetademandTemplateId($meta);
+        if ($templates_id <= 0 || !$tt->getFromDBWithData($templates_id, true)) {
+            $tt->getEmpty();
+        }
+
+        return $tt;
+    }
+
+    /**
+     * Add the mandatory or predefined fields of the template of the metademand
+     * (getMetademandTemplate()), or of the one chosen, to its fields of the object to create.
+     * A field added by hand (is_deletable) keeps its value.
+     *
+     * @param        $metademands_id
+     * @param        $categid       not used any more: the template is the one of the metademand
+     * @param        $type          not used any more
+     * @param        $entity        not used any more: the entity of the metademand
+     * @param string $templatetype  'mandatory' or 'predefined'
+     * @param int    $templates_id  template chosen instead of the one of the metademand
+     */
+    public static function addTemplateFields($metademands_id, $categid, $type, $entity, $templatetype = 'mandatory', int $templates_id = 0)
+    {
+        $meta = new Metademand();
+        if (!$meta->getFromDB($metademands_id)) {
+            return;
+        }
+        $entity = $meta->fields['entities_id'];
 
         $ticketField = new self();
         $fields_data = $ticketField->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
-        if ($item = getItemForItemtype($obj)) {
-            $ticket = new $obj();
-            // No category comes as '': 0 for the core, which queries the category by id
-            $tt = $ticket->getITILTemplateToUse(0, $type, (int) $categid, $entity);
-
+        if ($tt = self::getMetademandTemplate($meta, $templates_id)) {
             $fieldnames = $tt->getAllowedFields(true);
 
             $fieldnames = array_flip($fieldnames);
@@ -842,9 +1037,11 @@ class TicketField extends CommonDBChild
                         $num = $fieldnames[$key];
                         if (!in_array($key, self::$used_fields) && $num != -2) {
                             $used = false;
+                            $from_template = false;
                             foreach ($fields_data as $fields_value) {
                                 if ($fields_value['num'] == $num) {
                                     $used = $fields_value['id'];
+                                    $from_template = (int) $fields_value['is_deletable'] === 0;
                                     break;
                                 }
                             }
@@ -878,16 +1075,17 @@ class TicketField extends CommonDBChild
                                         'entities_id' => $entity,
                                         'plugin_metademands_metademands_id' => $metademands_id,
                                     ]);
-                                } else {
-                                    if (!empty($default_value)) {
-                                        $ticketField->update(['id' => $used, 'value' => $default_value]);
-                                    }
+                                } elseif ($from_template && !empty($default_value)) {
+                                    // A field added by hand keeps its value
+                                    $ticketField->update(['id' => $used, 'value' => $default_value]);
                                 }
                             } else {
+                                // The task templates of the template, replaced; those added by
+                                // hand are kept
                                 $ticketField->deleteByCriteria(
-                                    ['num' => $num, 'plugin_metademands_metademands_id' => $metademands_id],
+                                    ['num' => $num, 'plugin_metademands_metademands_id' => $metademands_id, 'is_deletable' => 0],
                                 );
-                                foreach ($tt->predefined[$key] as $key => $val) {
+                                foreach ($tt->predefined[$key] ?? [] as $val) {
                                     $ticketField->add([
                                         'value' => $val,
                                         'num' => $num,

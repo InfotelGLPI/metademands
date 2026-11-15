@@ -30,6 +30,7 @@
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Ticket_Field;
 use GlpiPlugin\Metademands\TicketField;
+use GlpiPlugin\Metademands\Metademand;
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
@@ -40,7 +41,8 @@ $ticketField = new TicketField();
 if (isset($_POST["add"])) {
     // Creation right, resolved against the parent metademand carried by the input.
     $ticketField->check(-1, CREATE, $_POST);
-    $_POST['value'] = $_POST[$_POST['field']];
+    // The value widget names its input after the field ('field'), absent while none is chosen
+    $_POST['value'] = isset($_POST['field']) && is_string($_POST['field']) ? ($_POST[$_POST['field']] ?? '') : '';
     $_POST['id'] = $ticketField->add($_POST);
 
     Html::back();
@@ -58,8 +60,9 @@ if (isset($_POST["add"])) {
     $ticketField->redirectToList();
 } elseif (isset($_POST['template_sync'])) {
     // Syncing mandatory template fields is a configuration change: require the plugin update right.
-    Session::checkRight('plugin_metademands', UPDATE);
-    TicketField::updateMandatoryTicketFields($_POST);
+    Session::checkRight(Metademand::$rightname, UPDATE);
+    // With the template chosen in the tab, the one of the metademand by default
+    TicketField::updateMandatoryTicketFields($_POST, (int) ($_POST['_templates_id'] ?? 0));
     Html::back();
 } else {
     $ticketField->checkGlobal(READ);
