@@ -248,6 +248,14 @@ class Export extends CommonDBTM
             $metafieldparameters = $metafieldparameter->find(['plugin_metademands_fields_id' => $metafield["id"]]);
             foreach ($metafieldparameters as $idparameters => $metafieldparam) {
                 $fields['metafieldparameters']['fieldparameters' . $idparameters] = $metafieldparam;
+                // "Members of these groups": their names, their ids differing on another GLPI
+                $group = new \Group();
+                foreach (FieldParameter::getMemberGroupsIds($metafieldparam['custom'] ?? '') as $groups_id) {
+                    if ($group->getFromDB($groups_id)) {
+                        $fields['metafieldparameters']['fieldparameters' . $idparameters]['member_groups_names']['group' . $groups_id]
+                            = $group->fields['completename'];
+                    }
+                }
             }
 
             $metaconditions = $condition->find(['plugin_metademands_fields_id' => $metafield['id']]);
@@ -303,14 +311,27 @@ class Export extends CommonDBTM
         $metaMailTask = new MailTask();
 
         foreach ($fields['tasks'] as $id => $task) {
-            if ($task['type'] == Task::TICKET_TYPE) {
-                $ticketTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
+            // A task of the parent ticket keeps its content in a TicketTask as well. Read
+            // into the same objects: a task without its row must not get the previous one
+            if (($task['type'] == Task::TICKET_TYPE || $task['type'] == Task::TASK_TYPE)
+                && $ticketTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']])) {
                 $fields['tasks'][$id]['tickettask'] = $ticketTask->fields;
             }
-            if ($task['type'] == Task::MAIL_TYPE) {
-                $metaMailTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
+            if ($task['type'] == Task::MAIL_TYPE
+                && $metaMailTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']])) {
                 $fields['tasks'][$id]['mailtask'] = $metaMailTask->fields;
             }
+        }
+
+        // Fields of the object to create: a value pointing at a GLPI object (user, group,
+        // location…) carries the name of that object as well, its id differing on another GLPI
+        $fields['ticketfields'] = [];
+        $ticketfields = (new TicketField())->find(['plugin_metademands_metademands_id' => $metademands->getID()]);
+        foreach ($ticketfields as $id => $ticketfield) {
+            $fields['ticketfields']['ticketfield' . $id] = $ticketfield + TicketField::getExportedValueItem(
+                (string) $metademands->fields['object_to_create'],
+                $ticketfield,
+            );
         }
 
         $xml = new SimpleXMLElement(
@@ -1568,6 +1589,11 @@ class Export extends CommonDBTM
             $translations = $datas['translations'];
         }
 
+        $ticketfields = [];
+        if (isset($datas['ticketfields']) && is_array($datas['ticketfields'])) {
+            $ticketfields = $datas['ticketfields'];
+        }
+
         foreach ($datas as $key => $data) {
             if (is_array($data) && empty($data)) {
                 $datas[$key] = '';
@@ -1582,8 +1608,14 @@ class Export extends CommonDBTM
         $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
         $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
 
+        /** @var array<int, array{fields_id: int, check_value: mixed}> $imported_conditions new condition id => old field id, value */
+        $imported_conditions = [];
+        /** @var array<int, int> $previous_fields new field id => old id of its "display after" field */
+        $previous_fields = [];
         foreach ($fields as $k => $field) {
             $metaconditions = [];
+            // The translations of the previous field otherwise went to a field without any
+            unset($fieldstranslations);
             foreach ($field as $key => $f) {
                 $fields[$k][$key] = $f;
 
@@ -1639,11 +1671,20 @@ class Export extends CommonDBTM
                     unset($cond['id']);
                     $cond['plugin_metademands_fields_id'] = $newIDField;
                     $cond['plugin_metademands_metademands_id'] = $newIDMeta;
-                    $condition->add($cond);
+                    $new_conditions_id = $condition->add($cond);
+                    // Its value may be a custom value of the field, not imported yet
+                    if ($new_conditions_id) {
+                        $imported_conditions[$new_conditions_id] = [
+                            'fields_id'   => (int) $oldIDField,
+                            'check_value' => $cond['check_value'] ?? null,
+                        ];
+                    }
                 }
             }
             $mapTableField[$oldIDField] = $newIDField;
             $mapTableFieldReverse[$newIDField] = $oldIDField;
+            // "Display field after": another field, which may not be imported yet
+            $previous_fields[$newIDField] = (int) ($fields[$k]['plugin_metademands_fields_id'] ?? 0);
             if (isset($fieldstranslations)) {
                 foreach ($fieldstranslations as $fieldstranslation) {
                     unset($fieldstranslation['id']);
@@ -1661,8 +1702,16 @@ class Export extends CommonDBTM
                     $trans->add($fieldstranslation);
                 }
             }
-            //TODO Change fields id for link_to_user fields
         }
+
+        foreach ($previous_fields as $new_fields_id => $old_previous_id) {
+            $metaField = new Field();
+            if ($old_previous_id > 0 && $metaField->getFromDB($new_fields_id)) {
+                $metaField->fields['plugin_metademands_fields_id'] = $mapTableField[$old_previous_id] ?? 0;
+                $metaField->updateInDB(['plugin_metademands_fields_id']);
+            }
+        }
+
         $mapTableTask = [];
         $mapTableTaskReverse = [];
 
@@ -1679,6 +1728,12 @@ class Export extends CommonDBTM
                 $task[$key] = $val;
             }
             $task['entities_id'] = $_SESSION['glpiactive_entity'];
+            // The tags of the title point at the fields created above
+            foreach (['name', 'completename'] as $key) {
+                if (isset($task[$key]) && is_string($task[$key])) {
+                    $task[$key] = self::remapFieldTags($task[$key], $mapTableField);
+                }
+            }
 
             $task['plugin_metademands_metademands_id'] = $newIDMeta;
 
@@ -1698,6 +1753,9 @@ class Export extends CommonDBTM
                         $tickettask[$key] = $val;
                     }
                 }
+                if (isset($tickettask['content']) && is_string($tickettask['content'])) {
+                    $tickettask['content'] = self::remapFieldTags($tickettask['content'], $mapTableField);
+                }
                 $tickettask['plugin_metademands_tasks_id'] = $newIDTask;
                 $tickettaskP = new TicketTask();
                 $tickettaskP->add($tickettask);
@@ -1712,6 +1770,9 @@ class Export extends CommonDBTM
                     } elseif (!is_array($val)) {
                         $mailtask[$key] = $val;
                     }
+                }
+                if (isset($mailtask['content']) && is_string($mailtask['content'])) {
+                    $mailtask['content'] = self::remapFieldTags($mailtask['content'], $mapTableField);
                 }
                 $mailtask['plugin_metademands_tasks_id'] = $newIDTask;
                 $mailtaskP = new MailTask();
@@ -1741,7 +1802,8 @@ class Export extends CommonDBTM
                 $toUpdate["display_type"] = $old["display_type"] ?? 0;
                 $toUpdate["used_by_ticket"] = $old["used_by_ticket"] ?? 0;
                 $toUpdate["used_by_child"] = $old["used_by_child"] ?? 0;
-                $toUpdate["link_to_user"] = $old["link_to_user"] ?? 0;
+                // "Link this field to a user field": the new id of that field
+                $toUpdate["link_to_user"] = $mapTableField[(int) ($old["link_to_user"] ?? 0)] ?? 0;
                 $toUpdate["default_use_id_requester"] = $old["default_use_id_requester"] ?? 0;
                 $toUpdate["default_use_id_requester_supervisor"] = $old["default_use_id_requester_supervisor"] ?? 0;
                 $toUpdate["use_future_date"] = $old["use_future_date"] ?? 0;
@@ -1770,6 +1832,7 @@ class Export extends CommonDBTM
             }
         }
 
+        $groups_not_found = [];
         if ($version >= "3.3.11") {
             foreach ($fieldparameters as $new => $old) {
                 $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
@@ -1777,6 +1840,25 @@ class Export extends CommonDBTM
                 ;
 
                 $toUpdate["custom"] = $old["custom"] ?? $empty_values;
+                // "Members of these groups": the groups of the same names here, the others
+                // left out (rather than the groups holding their old ids)
+                $custom = FieldParameter::_unserialize($toUpdate["custom"]);
+                if (is_array($custom) && FieldParameter::getMemberGroupsIds($custom) !== []) {
+                    $member_groups = [];
+                    foreach ((array) ($old['member_groups_names'] ?? []) as $group_name) {
+                        if (!is_string($group_name) || $group_name === '') {
+                            continue;
+                        }
+                        $groups_id = TicketField::findValueItem(\Group::class, $group_name, (int) $_SESSION['glpiactive_entity']);
+                        if ($groups_id > 0) {
+                            $member_groups[] = $groups_id;
+                        } else {
+                            $groups_not_found[] = '"' . $group_name . '"';
+                        }
+                    }
+                    $custom['member_groups'] = FieldParameter::formatMemberGroups($member_groups);
+                    $toUpdate["custom"] = FieldParameter::_serialize($custom);
+                }
                 $toUpdate["default"] = $old["default"] ?? $empty_values;
                 $toUpdate["hide_title"] = $old["hide_title"] ?? 0;
                 $toUpdate["is_mandatory"] = $old["is_mandatory"] ?? 0;
@@ -1788,7 +1870,8 @@ class Export extends CommonDBTM
                 $toUpdate["display_type"] = $old["display_type"] ?? 0;
                 $toUpdate["used_by_ticket"] = $old["used_by_ticket"] ?? 0;
                 $toUpdate["used_by_child"] = $old["used_by_child"] ?? 0;
-                $toUpdate["link_to_user"] = $old["link_to_user"] ?? 0;
+                // "Link this field to a user field": the new id of that field
+                $toUpdate["link_to_user"] = $mapTableField[(int) ($old["link_to_user"] ?? 0)] ?? 0;
                 $toUpdate["default_use_id_requester"] = $old["default_use_id_requester"] ?? 0;
                 $toUpdate["default_use_id_requester_supervisor"] = $old["default_use_id_requester_supervisor"] ?? 0;
                 $toUpdate["use_future_date"] = $old["use_future_date"] ?? 0;
@@ -1940,8 +2023,26 @@ class Export extends CommonDBTM
                     $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
                 }
 
-                $newfreetablefield = $fieldMetafreetablefield->add($toUpdate);
-                $mapTableCheckValue[$old["id"]] = $newfreetablefield;
+                // Not in $mapTableCheckValue: no option checks a column of a free table, and its
+                // old id overwrote the mapping of a custom value holding the same old id
+                $fieldMetafreetablefield->add($toUpdate);
+            }
+        }
+
+        // The value a condition compares its field with: the new id of a custom value of that
+        // field, as for the value an option checks below
+        if ($version >= "3.3.11") {
+            $condition = new Condition();
+            foreach ($imported_conditions as $new_conditions_id => $imported_condition) {
+                $check_value = $imported_condition['check_value'];
+                if (is_numeric($check_value)
+                    && isset($mapTableCheckValue[(int) $check_value])
+                    && ($customvalueFields[(int) $check_value] ?? null) === $imported_condition['fields_id']) {
+                    $condition->update([
+                        'id'          => $new_conditions_id,
+                        'check_value' => $mapTableCheckValue[(int) $check_value],
+                    ]);
+                }
             }
         }
 
@@ -2034,11 +2135,21 @@ class Export extends CommonDBTM
             if ($childs_blocks) {
                 $toUpdate["childs_blocks"] = $childs_blocks;
             }
-            if ($checkbox_value != 0) {
-                $toUpdate["checkbox_value"] = $checkbox_value;
-            }
-            if ($checkbox_id != 0) {
-                $toUpdate["checkbox_id"] = $checkbox_id;
+            // The checkbox field the option depends on, and the custom value of that field
+            // it checks, as the value to check above
+            if ($checkbox_id != 0 && isset($mapTableField[$checkbox_id])) {
+                $toUpdate["checkbox_id"] = $mapTableField[$checkbox_id];
+                if ($checkbox_value != 0) {
+                    $toUpdate["checkbox_value"] = $checkbox_value;
+                    if ($version >= "3.3.11") {
+                        if (isset($mapTableCheckValue[$checkbox_value])
+                            && ($customvalueFields[$checkbox_value] ?? null) === (int) $checkbox_id) {
+                            $toUpdate["checkbox_value"] = $mapTableCheckValue[$checkbox_value];
+                        }
+                    } elseif (isset($mapTableCheckValue[$checkbox_id][$checkbox_value])) {
+                        $toUpdate["checkbox_value"] = $mapTableCheckValue[$checkbox_id][$checkbox_value];
+                    }
+                }
             }
             if ($hidden_block_same_block != 0) {
                 $toUpdate["hidden_block_same_block"] = $hidden_block_same_block;
@@ -2120,6 +2231,60 @@ class Export extends CommonDBTM
             }
         }
 
+        // Fields of the object to create: the tags of a text point at the new fields, a value
+        // pointing at a GLPI object at the object of the same name here, the row being left out
+        // when there is none (rather than pointing at another object holding the old id)
+        $not_found = [];
+        $object_to_create = (string) ($metademand->fields['object_to_create'] ?? '');
+        $meta_ticketfield = new TicketField();
+        foreach ($ticketfields as $ticketfield) {
+            if (!is_array($ticketfield) || !isset($ticketfield['num'])) {
+                continue;
+            }
+            $num   = (int) $ticketfield['num'];
+            $value = $ticketfield['value'] ?? '';
+            $itemtype = TicketField::getValueItemtype($object_to_create, $num);
+            if ($itemtype !== null && is_numeric($value) && (int) $value > 0) {
+                $name  = is_string($ticketfield['value_name'] ?? null) ? $ticketfield['value_name'] : '';
+                $value = TicketField::findValueItem($itemtype, $name, (int) $_SESSION['glpiactive_entity']);
+                if ($value === 0) {
+                    $not_found[] = $itemtype::getTypeName(1) . ' "' . ($name !== '' ? $name : $ticketfield['value']) . '"';
+                    continue;
+                }
+            } elseif (is_string($value)) {
+                $value = self::remapFieldTags($value, $mapTableField);
+            }
+            $meta_ticketfield->add([
+                'num'                               => $num,
+                'value'                             => $value,
+                'is_mandatory'                      => (int) ($ticketfield['is_mandatory'] ?? 0),
+                'is_deletable'                      => (int) ($ticketfield['is_deletable'] ?? 1),
+                'is_recursive'                      => (int) ($ticketfield['is_recursive'] ?? 0),
+                'entities_id'                       => $_SESSION['glpiactive_entity'],
+                'plugin_metademands_metademands_id' => $newIDMeta,
+            ]);
+        }
+        if ($not_found !== []) {
+            Session::addMessageAfterRedirect(
+                sprintf(
+                    __('Fields of the ticket not imported, no item of that name here: %s', 'metademands'),
+                    implode(', ', $not_found),
+                ),
+                false,
+                WARNING,
+            );
+        }
+        if ($groups_not_found !== []) {
+            Session::addMessageAfterRedirect(
+                sprintf(
+                    __('Groups left out of "Members of these groups", no group of that name here: %s', 'metademands'),
+                    implode(', ', array_unique($groups_not_found)),
+                ),
+                false,
+                WARNING,
+            );
+        }
+
         if (!empty($translations)) {
             foreach ($translations as $key => $trans) {
                 $meta_translation = new MetademandTranslation();
@@ -2139,6 +2304,29 @@ class Export extends CommonDBTM
         }
 
         return $newIDMeta;
+    }
+
+    /**
+     * Point the field tags of a text (#id# and #id.attr#, resolved by
+     * Metademand::resolvePlaceholders()) at the new ids of their fields.
+     *
+     * Only the ids of the map are changed, in one pass so that a new id is never mapped
+     * again. A tag may end on the '#' opening the next one (#12#13#), as the resolver splits
+     * the text on '#': the closing '#' is looked ahead, not consumed.
+     *
+     * @param array<int|string, int|string> $map_fields old field id => new field id
+     */
+    public static function remapFieldTags(string $text, array $map_fields): string
+    {
+        if ($text === '' || $map_fields === []) {
+            return $text;
+        }
+
+        return preg_replace_callback(
+            '/#([1-9][0-9]*)(?=(?:\.[A-Za-z0-9_]+)?#)/',
+            static fn(array $matches): string => '#' . ($map_fields[$matches[1]] ?? $matches[1]),
+            $text,
+        ) ?? $text;
     }
 
     private static function normalizeXmlData($data)

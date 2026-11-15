@@ -40,7 +40,6 @@ use Dropdown;
 use Glpi\DBAL\QueryExpression;
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Form\Category;
-use Glpi\Form\ServiceCatalog\ServiceCatalog;
 use Glpi\Form\ServiceCatalog\ServiceCatalogLeafInterface;
 use Glpi\ItemTranslation\Context\ProvideTranslationsInterface;
 use Glpi\ItemTranslation\Context\TranslationHandler;
@@ -636,7 +635,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         $this->addStandardTab(MetademandTranslation::class, $ong, $options);
         $this->addStandardTab(Task::class, $ong, $options);
         $this->addStandardTab(Group::class, $ong, $options);
-        $this->addStandardTab(ServiceCatalog::class, $ong, $options);
+        // The service catalog tab of the core, whose illustration can be removed
+        $this->addStandardTab(ServiceCatalogConfig::class, $ong, $options);
         if (Session::getCurrentInterface() == 'central') {
             $this->addStandardTab('Log', $ong, $options);
         }
@@ -725,6 +725,31 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         $this->fields["background_color"] = '#ffffff';
         $this->fields["hide_no_field"] = 1;
         $this->fields["is_active"] = 1;
+    }
+
+    /**
+     * Illustration posted by the service catalog tab (ServiceCatalogConfig): "Remove the
+     * illustration" goes back to the inherited one (of its category, or the default one), and
+     * the inherited one, shown in the picker, stays inherited when saved unchanged instead of
+     * becoming the illustration of the metademand.
+     *
+     * @param array $input
+     *
+     * @return array
+     */
+    private static function handleIllustrationInput($input)
+    {
+        if (!empty($input['_blank_illustration'])) {
+            $input['illustration'] = '';
+        } elseif (
+            isset($input['illustration'], $input['_inherited_illustration'])
+            && $input['illustration'] === $input['_inherited_illustration']
+        ) {
+            $input['illustration'] = '';
+        }
+        unset($input['_blank_illustration'], $input['_inherited_illustration']);
+
+        return $input;
     }
 
     /**
@@ -1032,6 +1057,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         // submitter (User::dropdown() right 'groups') and the submitter themself
         $my_groups_only = $itemtype === User::class
             && (int) ($field['custom_values']['user_group'] ?? 0) === 1;
+        // "Members of these groups": the picker offered no one else
+        $member_groups = $itemtype === User::class
+            ? FieldParameter::getMemberGroupsIds($field['custom'] ?? ($field['custom_values'] ?? []))
+            : [];
 
         foreach (is_array($value) ? $value : [$value] as $actor_id) {
             $actor_id = (int) $actor_id;
@@ -1057,6 +1086,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     continue;
                 }
                 if ($my_groups_only && !self::sharesAGroupWithMe($actor_id)) {
+                    continue;
+                }
+                if ($member_groups !== [] && !FieldParameter::isMemberOfGroups($actor_id, $member_groups)) {
                     continue;
                 }
                 // A user carries no entities_id of its own: reachability is the
@@ -1455,6 +1487,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     public function prepareInputForUpdate($input)
     {
         global $DB;
+        $input = self::handleIllustrationInput($input);
         $input = self::sanitizeColorInput($input);
         $input = self::sanitizeIconInput($input);
         $cat_already_store = false;
@@ -5905,34 +5938,51 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     $tasks->fields['sons_cache'] = '';
                                     $tasks->fields['ancestors_cache'] = '';
                                     unset($tasks->fields['id']);
+                                    // The tags of the title point at the fields of the copy
+                                    foreach (['name', 'completename'] as $key) {
+                                        if (is_string($tasks->fields[$key] ?? null)) {
+                                            $tasks->fields[$key] = Export::remapFieldTags(
+                                                $tasks->fields[$key],
+                                                $associated_oldfields,
+                                            );
+                                        }
+                                    }
 
                                     $new_tasks_id = $tasks->add($tasks->fields);
                                     $associated_tasks[$values['tasks_id']] = $new_tasks_id;
                                     $parent_tasks[$values['tasks_id']] = $new_tasks_id;
 
-                                    // Ticket tasks
-                                    if ($values['type'] == Task::TICKET_TYPE) {
+                                    // Content of a child ticket, or of a task of the parent ticket
+                                    if ($values['type'] == Task::TICKET_TYPE || $values['type'] == Task::TASK_TYPE) {
                                         $tickettasks_data = $tickettasks->find(
                                             ['plugin_metademands_tasks_id' => $values['tasks_id']],
                                         );
-                                        if (count($tickettasks_data)) {
-                                            foreach ($tickettasks_data as $values) {
-                                                unset($values['id']);
-                                                $values['plugin_metademands_tasks_id'] = $new_tasks_id;
-                                                $tickettasks->add($values);
+                                        foreach ($tickettasks_data as $tickettask_data) {
+                                            unset($tickettask_data['id']);
+                                            $tickettask_data['plugin_metademands_tasks_id'] = $new_tasks_id;
+                                            if (is_string($tickettask_data['content'])) {
+                                                $tickettask_data['content'] = Export::remapFieldTags(
+                                                    $tickettask_data['content'],
+                                                    $associated_oldfields,
+                                                );
                                             }
+                                            $tickettasks->add($tickettask_data);
                                         }
                                     }
                                     if ($values['type'] == Task::MAIL_TYPE) {
                                         $mailtasks_data = $mailtasks->find(
                                             ['plugin_metademands_tasks_id' => $values['tasks_id']],
                                         );
-                                        if (count($mailtasks_data)) {
-                                            foreach ($mailtasks_data as $values) {
-                                                unset($values['id']);
-                                                $values['plugin_metademands_tasks_id'] = $new_tasks_id;
-                                                $mailtasks->add($values);
+                                        foreach ($mailtasks_data as $mailtask_data) {
+                                            unset($mailtask_data['id']);
+                                            $mailtask_data['plugin_metademands_tasks_id'] = $new_tasks_id;
+                                            if (is_string($mailtask_data['content'])) {
+                                                $mailtask_data['content'] = Export::remapFieldTags(
+                                                    $mailtask_data['content'],
+                                                    $associated_oldfields,
+                                                );
                                             }
+                                            $mailtasks->add($mailtask_data);
                                         }
                                     }
                                 }
@@ -5945,6 +5995,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                 $associated_tasks[0] = 0;
 
                 $mapTableCheckValue = [];
+                // Old custom value id => old id of its field: the value an option or a
+                // condition checks is a custom value of its own field only (a yes / no "2"
+                // used to be mapped to the custom value of another field holding the id 2)
+                $customvalue_fields = [];
+                // New option id => old custom value its checkbox field checks, mapped once the
+                // custom values of every field are copied
+                $checkbox_options = [];
                 // duplicate metademand task
                 $tasks_data = $tasks->find([
                     'plugin_metademands_metademands_id' => $metademands_id,
@@ -5989,7 +6046,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $input['display_type'] = $oldParam['display_type'];
                         $input['used_by_ticket'] = $oldParam['used_by_ticket'];
                         $input['used_by_child'] = $oldParam['used_by_child'];
-                        $input['link_to_user'] = $oldParam['link_to_user'];
+                        // "Link this field to a user field": that field in the copy
+                        $input['link_to_user'] = $associated_oldfields[$oldParam['link_to_user']] ?? 0;
                         $input['default_use_id_requester'] = $oldParam['default_use_id_requester'];
                         $input['default_use_id_requester_supervisor'] = $oldParam['default_use_id_requester_supervisor'];
                         $input['use_future_date'] = $oldParam['use_future_date'];
@@ -6020,6 +6078,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
                         $newcustomfield = $fieldcustoms->add($inputc);
                         $mapTableCheckValue[$oldCustom["id"]] = $newcustomfield;
+                        $customvalue_fields[$oldCustom["id"]] = (int) $old_field_id;
                     }
 
                     $old_field_id = $associated_fields[$newField["id"]];
@@ -6035,8 +6094,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $inputf['rank'] = $oldFreeTable['rank'];
                         $inputf['plugin_metademands_fields_id'] = $newField['id'];
 
-                        $newfreetablefield = $fieldfreetables->add($inputf);
-                        $mapTableCheckValue[$oldFreeTable["id"]] = $newfreetablefield;
+                        // Not in $mapTableCheckValue: no option checks a column of a free table,
+                        // and its old id overwrote the mapping of a custom value holding the same
+                        $fieldfreetables->add($inputf);
                     }
 
                     $old_field_id = $associated_fields[$newField["id"]];
@@ -6053,17 +6113,25 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             FieldOption::getValidationFieldsIds($oldOption),
                         ))));
                         $inputo['childs_blocks'] = $oldOption['childs_blocks'];
+                        // The checkbox field of the copy; its custom value is mapped below
                         $inputo['checkbox_value'] = $oldOption['checkbox_value'];
-                        $inputo['checkbox_id'] = $oldOption['checkbox_id'];
+                        $inputo['checkbox_id'] = $associated_oldfields[$oldOption['checkbox_id']] ?? 0;
                         $inputo['plugin_metademands_fields_id'] = $newField['id'];
 
                         $check_value = $oldOption["check_value"] ?? 0;
                         if ($check_value != 0
-                            && isset($mapTableCheckValue[$check_value])) {
+                            && isset($mapTableCheckValue[$check_value])
+                            && ($customvalue_fields[$check_value] ?? null) === (int) $old_field_id) {
                             $inputo['check_value'] = $mapTableCheckValue[$check_value];
                         }
 
-                        $fieldoptions->add($inputo);
+                        $new_options_id = $fieldoptions->add($inputo);
+                        if ($new_options_id && $inputo['checkbox_id'] > 0 && $oldOption['checkbox_value'] > 0) {
+                            $checkbox_options[$new_options_id] = [
+                                'fields_id'   => (int) $oldOption['checkbox_id'],
+                                'check_value' => (int) $oldOption['checkbox_value'],
+                            ];
+                        }
                     }
 
                     $old_field_id = $associated_fields[$newField["id"]];
@@ -6076,9 +6144,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $input['show_condition'] = $oldCond['show_condition'];
                         $input['show_logic'] = $oldCond['show_logic'];
                         if (isset($oldCond["check_value"]) && is_numeric($oldCond["check_value"])) {
-                            $check_value = $oldCond["check_value"] ?? 0;
+                            // A yes / no or a number stays as is; it used to be lost
+                            $check_value = $oldCond["check_value"];
+                            $input['check_value'] = $check_value;
                             if ($check_value != 0
-                                && isset($mapTableCheckValue[$check_value])) {
+                                && isset($mapTableCheckValue[$check_value])
+                                && ($customvalue_fields[$check_value] ?? null) === (int) $old_field_id) {
                                 $input['check_value'] = $mapTableCheckValue[$check_value];
                             }
                         } elseif (isset($oldCond["check_value"]) && is_string($oldCond["check_value"])) {
@@ -6093,16 +6164,33 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $fieldcondition->add($input);
                     }
                 }
-                // Add ticket fields
-                //                $ticketfields_data = $ticketfields->find(['plugin_metademands_metademands_id' => $metademands_id]);
-                //                if (count($ticketfields_data)) {
-                //                    foreach ($ticketfields_data as $values) {
-                //                        unset($values['id']);
-                //                        $values['plugin_metademands_metademands_id'] = $new_metademands_id;
-                //                        $values['value'] = addslashes($values['value']);
-                //                        $ticketfields->add($values);
-                //                    }
-                //                }
+                // The custom value the checkbox field of an option checks, now that the
+                // custom values of every field are copied
+                foreach ($checkbox_options as $new_options_id => $checkbox_option) {
+                    $check_value = $checkbox_option['check_value'];
+                    if (isset($mapTableCheckValue[$check_value])
+                        && ($customvalue_fields[$check_value] ?? null) === $checkbox_option['fields_id']) {
+                        $fieldoptions->update([
+                            'id'             => $new_options_id,
+                            'checkbox_value' => $mapTableCheckValue[$check_value],
+                        ]);
+                    }
+                }
+
+                // Add ticket fields: the copy has no category, so none was created from a
+                // ticket template; the tags of a text point at the fields of the copy
+                $ticketfields_data = $ticketfields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+                foreach ($ticketfields_data as $ticketfield_data) {
+                    unset($ticketfield_data['id']);
+                    $ticketfield_data['plugin_metademands_metademands_id'] = $new_metademands_id;
+                    if (is_string($ticketfield_data['value'])) {
+                        $ticketfield_data['value'] = Export::remapFieldTags(
+                            $ticketfield_data['value'],
+                            $associated_oldfields,
+                        );
+                    }
+                    $ticketfields->add($ticketfield_data);
+                }
 
                 // Redirect on finish
                 if (isset($options['redirect'])) {
@@ -7581,6 +7669,15 @@ HTML;
         if ($this->fields['illustration']) {
             return $this->fields['illustration'];
         }
+        return $this->getInheritedServiceCatalogIllustration();
+    }
+
+    /**
+     * Illustration of the metademand in the service catalog when it has none of its own: the
+     * one of its category, or the default one.
+     */
+    public function getInheritedServiceCatalogIllustration(): string
+    {
         $category = new Category();
         if ($this->fields['forms_categories_id'] && $category->getFromDB($this->fields['forms_categories_id'])) {
             return $category->fields['illustration'];

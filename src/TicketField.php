@@ -31,6 +31,8 @@ namespace GlpiPlugin\Metademands;
 
 use ChangeTemplate;
 use CommonDBChild;
+use CommonDBTM;
+use CommonTreeDropdown;
 use DBConnection;
 use DbUtils;
 use GlpiPlugin\Metademands\Fields\Time;
@@ -901,6 +903,91 @@ class TicketField extends CommonDBChild
                 }
             }
         }
+    }
+
+    /**
+     * GLPI object a value of a field of the object to create points at (user, group, location…),
+     * from the search option of that field: its itemtype, null for a value written as is (title,
+     * urgency, dates…).
+     *
+     * @param string $object object to create by the metademand (Ticket, Change, Problem)
+     *
+     * @return class-string<CommonDBTM>|null
+     */
+    public static function getValueItemtype(string $object, int $num): ?string
+    {
+        if (!is_a($object, CommonDBTM::class, true)) {
+            return null;
+        }
+        $table = Search::getOptions($object)[$num]['table'] ?? '';
+        if (!is_string($table) || $table === '' || $table === $object::getTable()) {
+            return null;
+        }
+        $itemtype = getItemTypeForTable($table);
+
+        return is_a($itemtype, CommonDBTM::class, true) ? $itemtype : null;
+    }
+
+    /**
+     * Column an object pointed at by a value is found again by on another GLPI, where its id
+     * differs: the login of a user, the complete name of a tree, the name otherwise.
+     *
+     * @param class-string<CommonDBTM> $itemtype
+     */
+    private static function getValueNameField(string $itemtype): string
+    {
+        if (is_a($itemtype, CommonTreeDropdown::class, true)) {
+            return 'completename';
+        }
+
+        return 'name';
+    }
+
+    /**
+     * Itemtype and name of the object a value points at, exported with it so that the import
+     * finds that object again on another GLPI ([] for a value written as is).
+     *
+     * @param array<string, mixed> $ticketfield row of the table
+     *
+     * @return array{value_itemtype?: string, value_name?: string}
+     */
+    public static function getExportedValueItem(string $object, array $ticketfield): array
+    {
+        $itemtype = self::getValueItemtype($object, (int) ($ticketfield['num'] ?? 0));
+        $value    = $ticketfield['value'] ?? '';
+        if ($itemtype === null || !is_numeric($value) || (int) $value <= 0) {
+            return [];
+        }
+        $item = getItemForItemtype($itemtype);
+        $name_field = self::getValueNameField($itemtype);
+        if (!$item || !$item->getFromDB((int) $value) || (string) ($item->fields[$name_field] ?? '') === '') {
+            return [];
+        }
+
+        return [
+            'value_itemtype' => $itemtype,
+            'value_name'     => (string) $item->fields[$name_field],
+        ];
+    }
+
+    /**
+     * Id on this GLPI of the object an imported value points at, found by its name among the
+     * objects visible from the entity; 0 when there is none, or several.
+     *
+     * @param class-string<CommonDBTM> $itemtype
+     */
+    public static function findValueItem(string $itemtype, string $name, int $entities_id): int
+    {
+        $item = getItemForItemtype($itemtype);
+        if (!$item || $name === '') {
+            return 0;
+        }
+        $criteria = [self::getValueNameField($itemtype) => $name];
+        if ($item->isEntityAssign()) {
+            $criteria += getEntitiesRestrictCriteria($item::getTable(), '', $entities_id, true);
+        }
+
+        return $item->getFromDBByCrit($criteria) ? (int) $item->getID() : 0;
     }
 
     /**

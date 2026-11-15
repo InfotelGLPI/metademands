@@ -118,6 +118,17 @@ if (isset($_POST['fields_id'])
 // of the dropdown rendered below (shared rule for the whole u*Update.php family).
 $_POST['field'] = Config::normalizePostedFieldName($_POST['field'] ?? '');
 
+// "Members of these groups" of the field rebuilt here: its list and its value stay restricted
+$member_groups = [];
+$member_fields_id = (int) ($id ?? ($_POST['fields_id'] ?? 0));
+$member_parameter = new FieldParameter();
+if ($member_fields_id > 0 && $member_parameter->getFromDBByCrit(['plugin_metademands_fields_id' => $member_fields_id])) {
+    $member_groups = FieldParameter::getMemberGroupsIds($member_parameter->fields['custom'] ?? '');
+}
+if ($member_groups !== [] && (int) $val > 0 && !FieldParameter::isMemberOfGroups((int) $val, $member_groups)) {
+    $val = 0;
+}
+
 $opt = [
     'name' => $_POST['field'],
     'value' => $val,
@@ -127,6 +138,9 @@ $opt = [
     ],
     'right'  => 'all',
 ];
+if ($member_groups !== []) {
+    $opt['url'] = Dropdownobject::getGroupMembersUrl($member_fields_id);
+}
 
 if ($readonly == 1) {
     $opt['display_emptychoice'] = false;

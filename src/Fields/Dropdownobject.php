@@ -122,6 +122,111 @@ class Dropdownobject extends CommonDBTM
     }
 
     /**
+     * Endpoint of the list of a user field offering the members of some groups only
+     * ("Members of these groups"), passed as the 'url' of User::dropdown().
+     */
+    public static function getGroupMembersUrl(int $fields_id): string
+    {
+        return PLUGIN_METADEMANDS_WEBDIR . '/ajax/dropdownGroupMembers.php?fields_id=' . $fields_id;
+    }
+
+    /**
+     * List of a user field offering the members of some groups only (ajax/dropdownGroupMembers.php),
+     * in the format of Dropdown::getDropdownUsers(): the active users, within their dates, of
+     * the active entities, members of one of $groups_ids and, for "Only users of my groups",
+     * of one of $my_groups_ids too.
+     *
+     * @param int[]                $groups_ids
+     * @param int[]|null           $my_groups_ids null when not restricted to the groups of the user
+     * @param array<string, mixed> $post          request of the dropdown (searchText, page, page_limit…)
+     *
+     * @return array{results: array<int, array<string, mixed>>, count: int}
+     */
+    public static function getGroupMembersDropdown(array $groups_ids, ?array $my_groups_ids, array $post): array
+    {
+        global $CFG_GLPI, $DB;
+
+        $page   = max(1, (int) ($post['page'] ?? 1));
+        $limit  = max(1, (int) ($post['page_limit'] ?? $CFG_GLPI['dropdown_max']));
+        $search = trim((string) ($post['searchText'] ?? ''));
+        $now    = $_SESSION['glpi_currenttime'];
+
+        $where = [
+            ['glpi_users.id' => self::getMembersSubQuery($groups_ids)],
+            'glpi_users.is_deleted' => 0,
+            'glpi_users.is_active'  => 1,
+            ['OR' => [['glpi_users.begin_date' => null], ['glpi_users.begin_date' => ['<', $now]]]],
+            ['OR' => [['glpi_users.end_date' => null], ['glpi_users.end_date' => ['>', $now]]]],
+        ] + getEntitiesRestrictCriteria('glpi_profiles_users', '', $_SESSION['glpiactiveentities'] ?? [], true);
+        if ($my_groups_ids !== null) {
+            $where[] = ['glpi_users.id' => self::getMembersSubQuery($my_groups_ids)];
+        }
+        if (isset($post['_one_id']) && (int) $post['_one_id'] > 0) {
+            $where['glpi_users.id'] = (int) $post['_one_id'];
+        }
+        // Left out by the dropdown (option 'used' of User::dropdown())
+        $used = array_filter(array_map('intval', (array) ($post['used'] ?? [])));
+        if ($used !== []) {
+            $where[] = ['NOT' => ['glpi_users.id' => array_values($used)]];
+        }
+        // Each word in the login, the surname or the first name, in any order
+        foreach (preg_split('/\s+/', $search, -1, PREG_SPLIT_NO_EMPTY) ?: [] as $word) {
+            $like    = \Search::makeTextSearchValue($word);
+            $where[] = ['OR' => [
+                'glpi_users.name'      => ['LIKE', $like],
+                'glpi_users.realname'  => ['LIKE', $like],
+                'glpi_users.firstname' => ['LIKE', $like],
+            ]];
+        }
+
+        $iterator = $DB->request([
+            'SELECT'     => ['glpi_users.id', 'glpi_users.name', 'glpi_users.realname', 'glpi_users.firstname'],
+            'DISTINCT'   => true,
+            'FROM'       => User::getTable(),
+            'INNER JOIN' => [
+                'glpi_profiles_users' => [
+                    'ON' => ['glpi_profiles_users' => 'users_id', 'glpi_users' => 'id'],
+                ],
+            ],
+            'WHERE'      => $where,
+            'ORDER'      => ($_SESSION['glpinames_format'] ?? User::REALNAME_BEFORE) == User::FIRSTNAME_BEFORE
+                ? ['glpi_users.firstname', 'glpi_users.realname', 'glpi_users.name']
+                : ['glpi_users.realname', 'glpi_users.firstname', 'glpi_users.name'],
+            'START'      => ($page - 1) * $limit,
+            'LIMIT'      => $limit,
+        ]);
+
+        $results = [];
+        if ($page === 1 && $search === '' && (int) ($post['display_emptychoice'] ?? 1) === 1) {
+            $results[] = ['id' => 0, 'text' => Dropdown::EMPTY_VALUE];
+        }
+        $count = 0;
+        foreach ($iterator as $data) {
+            $text = formatUserName($data['id'], $data['name'], $data['realname'], $data['firstname']);
+            $results[] = [
+                'id'    => (int) $data['id'],
+                'text'  => $text,
+                'title' => sprintf(__('%1$s - %2$s'), $text, $data['name']),
+            ];
+            $count++;
+        }
+
+        return ['results' => $results, 'count' => $count];
+    }
+
+    /**
+     * @param int[] $groups_ids
+     */
+    private static function getMembersSubQuery(array $groups_ids): \Glpi\DBAL\QuerySubQuery
+    {
+        return new \Glpi\DBAL\QuerySubQuery([
+            'SELECT' => 'users_id',
+            'FROM'   => Group_User::getTable(),
+            'WHERE'  => ['groups_id' => $groups_ids === [] ? [0] : $groups_ids],
+        ]);
+    }
+
+    /**
      * Build the "toupdate" entries handed to User::dropdown(): each field linked to this
      * user field is reloaded from its own endpoint whenever the selection changes.
      *
@@ -351,6 +456,17 @@ class Dropdownobject extends CommonDBTM
                         (int) $opt['value'] !== $my_supervisor
                         && !Config::canCurrentUserViewRequester((int) $opt['value'], (int) $data['id'])
                     ) {
+                        $opt['value'] = 0;
+                    }
+                }
+
+                // "Members of these groups": the list comes from the plugin, the core offering
+                // no such restriction, and a value preselected outside it is dropped
+                $member_groups = FieldParameter::getMemberGroupsIds($data['custom'] ?? '');
+                if ($member_groups !== []) {
+                    $opt['url'] = self::getGroupMembersUrl((int) $data['id']);
+                    if ((int) $opt['value'] > 0
+                        && !FieldParameter::isMemberOfGroups((int) $opt['value'], $member_groups)) {
                         $opt['value'] = 0;
                     }
                 }
@@ -600,6 +716,16 @@ class Dropdownobject extends CommonDBTM
             $rows[] = [
                 ['label' => __('Only users of my groups', 'metademands'), 'name' => 'user_group', 'value' => $custom_values['user_group'] ?? 0],
                 $used_by_child,
+            ];
+            $rows[] = [
+                [
+                    'label'    => __('Members of these groups', 'metademands'),
+                    'name'     => 'member_groups',
+                    'value'    => FieldParameter::getMemberGroupsIds($custom_values),
+                    'elements' => FieldParameter::getMemberGroupsChoices(),
+                    'multiple' => true,
+                ],
+                ['empty' => true],
             ];
             $rows[] = [
                 ['label' => __('Use id of requester by default', 'metademands'), 'name' => 'default_use_id_requester', 'value' => $params['default_use_id_requester']],

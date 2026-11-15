@@ -59,6 +59,10 @@
         <file>tests/FieldValidationTest.php</file>
         <file>tests/BasketobjectOrderTest.php</file>
         <file>tests/FieldActiveTest.php</file>
+        <file>tests/ExportFieldTagsTest.php</file>
+        <file>tests/ExportFieldLinksTest.php</file>
+        <file>tests/ServiceCatalogConfigTest.php</file>
+        <file>tests/FieldMemberGroupsTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

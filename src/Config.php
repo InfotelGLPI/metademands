@@ -164,6 +164,16 @@ class Config extends CommonDBTM implements ProvideTranslationsInterface
             return false;
         }
 
+        // "Members of these groups": no one else, the caller and their supervisor included
+        $parameter = new FieldParameter();
+        if (
+            $parameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fields_id])
+            && ($member_groups = FieldParameter::getMemberGroupsIds($parameter->fields['custom'] ?? '')) !== []
+            && !FieldParameter::isMemberOfGroups($users_id, $member_groups)
+        ) {
+            return false;
+        }
+
         // The picker offers the caller themself, and the supervisor it may preselect
         if ($users_id === (int) Session::getLoginUserID()) {
             return true;

@@ -59,6 +59,10 @@ if (isset($field->fields['type']) && $field->fields['type'] == 'dropdown_object'
     if (isset($_POST['user_group'])) {
         $custom_values['user_group'] = $_POST['user_group'];
     }
+    // "Members of these groups" (user field): ids separated by commas
+    if (isset($_POST['member_groups'])) {
+        $custom_values['member_groups'] = FieldParameter::formatMemberGroups($_POST['member_groups']);
+    }
 }
 
 if (isset($field->fields['item']) && isset($field->fields['type'])
@@ -151,8 +155,16 @@ if (isset($_POST["add"])) {
     }
     if (isset($field->fields['type']) && ($field->fields['type'] == 'dropdown_multiple' || $field->fields['type'] == 'dropdown_object')
         && isset($field->fields['item']) && $field->fields['item'] == 'User') {
+        // Built above for a single user field, not for a multiple one
+        $custom_values ??= [];
         if (isset($_POST['user_group'])) {
             $custom_values['user_group'] = $_POST['user_group'];
+        }
+        // "Members of these groups": ids separated by commas
+        if (isset($_POST['member_groups'])) {
+            $custom_values['member_groups'] = FieldParameter::formatMemberGroups($_POST['member_groups']);
+        }
+        if (isset($_POST['user_group']) || isset($_POST['member_groups'])) {
             $_POST["custom"] = FieldParameter::_serialize($custom_values);
         }
     }

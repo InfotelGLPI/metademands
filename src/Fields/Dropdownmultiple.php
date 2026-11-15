@@ -117,6 +117,18 @@ class Dropdownmultiple extends CommonDBTM
                 }
             }
 
+            // "Members of these groups"
+            $member_groups = FieldParameter::getMemberGroupsIds($data['custom'] ?? '');
+            if ($member_groups !== []) {
+                $criteria['WHERE'][] = [
+                    getTableForItemType($data['item']) . '.id' => new \Glpi\DBAL\QuerySubQuery([
+                        'SELECT' => 'users_id',
+                        'FROM'   => Group_User::getTable(),
+                        'WHERE'  => ['groups_id' => $member_groups],
+                    ]),
+                ];
+            }
+
             $iterator = $DB->request($criteria);
 
             $list = [];
@@ -140,6 +152,10 @@ class Dropdownmultiple extends CommonDBTM
                     $value = [];
                 }
             }
+            if ($member_groups !== []) {
+                // A user outside the groups (the requester by default...) is not offered
+                $value = array_values(array_filter($value, static fn($users_id) => isset($list[$users_id])));
+            }
 
             if ($data["display_type"] != self::CLASSIC_DISPLAY) {
                 $field .= self::loadMultiselectDiv($namefield, $data['plugin_metademands_metademands_id'], $data['id'], $data['item'], $required, $list, $value);
@@ -158,6 +174,9 @@ class Dropdownmultiple extends CommonDBTM
                         $user = new User();
                         $user->getFromDB(Session::getLoginUserID());
                         $default_user = ($data['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                    }
+                    if ($member_groups !== [] && !isset($list[$default_user])) {
+                        $default_user = 0;
                     }
                     $opt['value'] = $default_user;
                 }
@@ -442,12 +461,14 @@ class Dropdownmultiple extends CommonDBTM
 
         $is_user = $params["item"] == 'User';
         $user_group = 0;
+        $member_groups = [];
         $values = [];
         $informations = [];
 
         if ($is_user) {
             $custom_values = FieldParameter::_unserialize($params['custom_values']);
             $user_group = $custom_values['user_group'] ?? 0;
+            $member_groups = FieldParameter::getMemberGroupsIds($custom_values);
 
             $decode = json_decode($params['informations_to_display']);
             $values = empty($decode) ? ['full_name'] : $decode;
@@ -467,6 +488,8 @@ class Dropdownmultiple extends CommonDBTM
                 'display_types'                       => $disp,
                 'is_user'                             => $is_user,
                 'user_group'                          => $user_group,
+                'member_groups'                       => $member_groups,
+                'member_groups_choices'               => $is_user ? FieldParameter::getMemberGroupsChoices() : [],
                 'default_use_id_requester'            => $params['default_use_id_requester'],
                 'default_use_id_requester_supervisor' => $params['default_use_id_requester_supervisor'],
                 'informations_to_display'             => $values,
