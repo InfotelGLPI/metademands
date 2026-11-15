@@ -806,6 +806,83 @@ class FieldParameter extends CommonDBChild
         return true;
     }
 
+    /**
+     * Groups whose members only a user field offers ("Members of these groups"), from the
+     * custom options of its parameters, where they are ids separated by commas (each option
+     * is a string, see _serialize()).
+     *
+     * @param mixed $custom custom options, serialized or not
+     *
+     * @return int[]
+     */
+    public static function getMemberGroupsIds($custom): array
+    {
+        $options = is_array($custom) ? $custom : self::_unserialize($custom);
+        if (!is_array($options) || empty($options['member_groups'])) {
+            return [];
+        }
+
+        return self::toMemberGroupsIds(explode(',', (string) $options['member_groups']));
+    }
+
+    /**
+     * Groups posted for "Members of these groups" (the multiple select also posts an empty
+     * value), as stored in the custom options.
+     *
+     * @param mixed $posted
+     */
+    public static function formatMemberGroups($posted): string
+    {
+        return implode(',', self::toMemberGroupsIds((array) $posted));
+    }
+
+    /**
+     * @param array<mixed> $ids
+     *
+     * @return int[]
+     */
+    private static function toMemberGroupsIds(array $ids): array
+    {
+        return array_values(array_unique(array_filter(array_map('intval', $ids), static fn(int $id) => $id > 0)));
+    }
+
+    /**
+     * Whether the user is a member of one of the groups.
+     *
+     * @param int[] $groups_ids
+     */
+    public static function isMemberOfGroups(int $users_id, array $groups_ids): bool
+    {
+        return $users_id > 0 && $groups_ids !== [] && countElementsInTable(\Group_User::getTable(), [
+            'users_id'  => $users_id,
+            'groups_id' => $groups_ids,
+        ]) > 0;
+    }
+
+    /**
+     * Groups that may be picked for "Members of these groups": those holding users, visible
+     * from the active entities.
+     *
+     * @return array<int, string> id => complete name
+     */
+    public static function getMemberGroupsChoices(): array
+    {
+        global $DB;
+
+        $choices  = [];
+        $iterator = $DB->request([
+            'SELECT' => ['id', 'completename'],
+            'FROM'   => \Group::getTable(),
+            'WHERE'  => ['is_usergroup' => 1] + getEntitiesRestrictCriteria(\Group::getTable(), '', '', true),
+            'ORDER'  => 'completename',
+        ]);
+        foreach ($iterator as $data) {
+            $choices[(int) $data['id']] = $data['completename'];
+        }
+
+        return $choices;
+    }
+
 
     /**
      * @param $input
