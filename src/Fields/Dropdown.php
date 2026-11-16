@@ -419,6 +419,9 @@ class Dropdown extends CommonDBTM
 
         switch ($data['item']) {
             case "Location":
+                // The location selected at load time, shown by the location card: the classic
+                // list reads it back from the session (below), the other renderings from $value
+                $card_value = $value;
                 if ($data['link_to_user'] > 0) {
                     // The included endpoint prints the field: capture it and let the template
                     // own the input-group wrapper, which two distant `echo` used to open and close.
@@ -471,6 +474,7 @@ class Dropdown extends CommonDBTM
                     $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? 0;
 
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+                        $card_value     = $options['value'];
                         $root_items_id  = (int) ($data['root_items_id'] ?? 0);
                         $location_depth = (int) ($data['location_depth'] ?? 0);
                         $allowed_ids = null;
@@ -519,12 +523,8 @@ class Dropdown extends CommonDBTM
                 }
 
                 if ((int) ($data['show_location_card'] ?? 0) === 1) {
-                    // The location selected at load time: the classic list reads it back from
-                    // the session, the other renderings from $value. The script resyncs the
-                    // card on the input anyway (a linked user field may preselect another one).
-                    $card_value = ($data['link_to_user'] == 0 && $data['display_type'] == self::CLASSIC_DISPLAY)
-                        ? ($options['value'] ?? 0)
-                        : $value;
+                    // The script resyncs the card on the input anyway (a linked user field may
+                    // preselect another location)
                     $field .= self::renderLocationCardAnchor(
                         $data,
                         $namefield . "[" . $data['id'] . "]",
