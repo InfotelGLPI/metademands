@@ -523,7 +523,7 @@ class Dropdown extends CommonDBTM
                     // the session, the other renderings from $value. The script resyncs the
                     // card on the input anyway (a linked user field may preselect another one).
                     $card_value = ($data['link_to_user'] == 0 && $data['display_type'] == self::CLASSIC_DISPLAY)
-                        ? ($options['value'] ?? 0)
+                        ? $options['value']
                         : $value;
                     $field .= self::renderLocationCardAnchor(
                         $data,

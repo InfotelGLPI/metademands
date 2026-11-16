@@ -1923,8 +1923,8 @@ class Wizard extends CommonDBTM
                 if (count($blocks) > 0) {
                     // A tab is hidden as soon as one field option of this meta-demand hides its
                     // block. The legacy loop asked the very same question with two queries per
-                    // block, so the answer is resolved once here.
-                    // The preview of the "Wizard creation" tab shows every tab.
+                    // block, so the answer is resolved once here. The preview never gets here
+                    // (tabs are only built outside it, see above), so it hides no tab.
                     $hidden_tabs = [];
                     $field = new Field();
                     // The options of an inactive field hide no tab
@@ -1932,7 +1932,7 @@ class Wizard extends CommonDBTM
                         $field->find(['plugin_metademands_metademands_id' => $metademands->getID(), 'is_active' => 1]),
                         'id',
                     );
-                    if (!$preview && count($meta_fields_ids) > 0) {
+                    if (count($meta_fields_ids) > 0) {
                         $fieldopt = new FieldOption();
                         foreach ($fieldopt->find([
                             'plugin_metademands_fields_id' => $meta_fields_ids,
