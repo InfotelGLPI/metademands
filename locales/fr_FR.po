@@ -619,7 +619,7 @@ msgstr "Condition non ajoutée"
 
 #: ⁨standard input⁩:109 ⁨standard input⁩:145
 msgid "Conditional"
-msgstr "Contitionnel"
+msgstr "Conditionnel"
 
 #: ⁨standard input⁩:210
 msgid "Conditional block"
