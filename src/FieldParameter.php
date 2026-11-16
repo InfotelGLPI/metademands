@@ -895,10 +895,7 @@ class FieldParameter extends CommonDBChild
             if (is_array($input)) {
                 foreach ($input as &$value) {
                     if ($value != null) {
-                        $clean = $value;
-                        if ($clean != null) {
-                            $value = urlencode($clean);
-                        }
+                        $value = urlencode($value);
                     }
                 }
 
