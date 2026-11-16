@@ -97,17 +97,25 @@
             <h3 class="card-title m-0">{{ __('Tasks', 'metademands') }}</h3>
             <span class="badge bg-secondary-lt">{{ entries|length }}</span>
             {#- Legend with the counts: the children always created were the ones without any
-             #  mark, hard to tell apart from the conditional ones -#}
+             #  mark, hard to tell apart from the conditional ones. A click on a count shows only
+             #  those children, a second click shows them all again (public/scripts/wizard_form.js) -#}
             {% set conditional_count = entries|filter(e => e.linked_to_option)|length %}
-            <span class="ms-auto small text-muted d-none d-md-inline-flex align-items-center gap-3">
-                <span title="{{ __('Created whatever the answers', 'metademands') }}">
-                    <span class="badge bg-green-lt"><i class="ti ti-circle-check"></i></span>
-                    {{ __('Always created', 'metademands') }} ({{ entries|length - conditional_count }})
-                </span>
-                <span title="{{ __('Created only for some answers (field option)', 'metademands') }}">
-                    <span class="badge bg-purple-lt"><i class="ti ti-arrow-fork"></i></span>
+            {% set always_count = entries|length - conditional_count %}
+            <span class="ms-auto small d-none d-md-inline-flex align-items-center gap-1">
+                <button type="button" class="btn btn-sm btn-ghost-secondary"
+                        data-md-children-filter="always" aria-pressed="false"
+                        title="{{ __('Created whatever the answers', 'metademands') }}"
+                        {{ always_count == 0 ? 'disabled' }}>
+                    <span class="badge bg-green-lt me-1"><i class="ti ti-circle-check"></i></span>
+                    {{ __('Always created', 'metademands') }} ({{ always_count }})
+                </button>
+                <button type="button" class="btn btn-sm btn-ghost-secondary"
+                        data-md-children-filter="conditional" aria-pressed="false"
+                        title="{{ __('Created only for some answers (field option)', 'metademands') }}"
+                        {{ conditional_count == 0 ? 'disabled' }}>
+                    <span class="badge bg-purple-lt me-1"><i class="ti ti-arrow-fork"></i></span>
                     {{ __('Conditional', 'metademands') }} ({{ conditional_count }})
-                </span>
+                </button>
             </span>
         </div>
         <div class="list-group list-group-flush">

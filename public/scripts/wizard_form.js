@@ -1031,6 +1031,38 @@
             .load(this.dataset.mdSubitemUrl, JSON.parse(this.dataset.mdSubitemParams));
     });
 
+    // Legend of the "Child creation" tab (templates/task_list.html.twig): a click on "Always
+    // created" or "Conditional" shows only those children, a second click shows them all again.
+    // The checkboxes of the hidden children are disabled: "check all" (checkAsCheckboxes() only
+    // takes the enabled ones) and the massive actions then apply to the children shown only.
+    $(document).on('click', '[data-md-children-filter]', function (event) {
+        event.preventDefault();
+
+        const card = this.closest('.md-children');
+        if (card === null) {
+            return;
+        }
+
+        const shown = card.dataset.mdChildrenShown === this.dataset.mdChildrenFilter
+            ? ''
+            : this.dataset.mdChildrenFilter;
+        card.dataset.mdChildrenShown = shown;
+
+        card.querySelectorAll('[data-md-children-filter]').forEach((button) => {
+            const active = button.dataset.mdChildrenFilter === shown;
+            button.classList.toggle('active', active);
+            button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+
+        card.querySelectorAll('.md-child').forEach((row) => {
+            const hidden = shown !== '' && !row.classList.contains('md-child-' + shown);
+            row.classList.toggle('d-none', hidden);
+            row.querySelectorAll('input.massive_action_checkbox').forEach((checkbox) => {
+                checkbox.disabled = hidden;
+            });
+        });
+    });
+
     // A basket quantity reloads the total of its line (Fields/Basket.php).
     $(document).on('change', 'select[data-md-totalrow-target]', function () {
         const params = JSON.parse(this.dataset.mdTotalrowParams);
