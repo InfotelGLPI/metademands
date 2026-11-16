@@ -124,6 +124,34 @@ class TaskListTest extends DbTestCase
         $this->assertSame([], Task::getUnknownTags(['No tag here'], $known));
     }
 
+    public function testLegendFiltersTheChildrenByKind(): void
+    {
+        $this->login();
+        [$metademand] = $this->createMetademandWithTask();
+
+        $_SESSION['glpiactiveprofile'][Task::$rightname] = READ;
+        $html = $this->renderTasks($metademand);
+
+        $doc = new \DOMDocument();
+        @$doc->loadHTML('<?xml encoding="utf-8"?>' . $html);
+        $xpath = new \DOMXPath($doc);
+
+        // The two counts of the legend are the filter buttons of public/scripts/wizard_form.js:
+        // the task is always created, there is no conditional child to show
+        $always = $xpath->query('//button[@data-md-children-filter="always"]')->item(0);
+        $conditional = $xpath->query('//button[@data-md-children-filter="conditional"]')->item(0);
+        $this->assertInstanceOf(\DOMElement::class, $always);
+        $this->assertInstanceOf(\DOMElement::class, $conditional);
+        $this->assertStringContainsString('(1)', $always->textContent);
+        $this->assertFalse($always->hasAttribute('disabled'));
+        $this->assertStringContainsString('(0)', $conditional->textContent);
+        $this->assertTrue($conditional->hasAttribute('disabled'));
+
+        // The rows carry the class the filter selects them by
+        $this->assertSame(1, $xpath->query('//*[contains(@class, "md-child-always")]')->length);
+        $this->assertSame(0, $xpath->query('//*[contains(@class, "md-child-conditional")]')->length);
+    }
+
     public function testReadOnlyListHasNoFormNorMassiveActions(): void
     {
         $this->login();
