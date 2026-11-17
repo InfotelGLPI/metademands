@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 12:43+0000\n"
+"POT-Creation-Date: 2026-11-17 16:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,6 +44,13 @@ msgstr[1] ""
 #, php-format
 msgid "%d level"
 msgid_plural "%d levels"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Metademand.php:7767
+#, php-format
+msgid "%d parent ticket solved"
+msgid_plural "%d parent tickets solved"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -243,6 +250,10 @@ msgstr ""
 
 #: src/Group.php:238 ⁨standard input⁩:97
 msgid "All groups and not these groups"
+msgstr ""
+
+#: src/Ticket_Metademand.php:1751
+msgid "All the child tickets are closed."
 msgstr ""
 
 #: src/Interticketfollowup.php:448
@@ -548,23 +559,23 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
-#: ⁨standard input⁩:143
+#: ⁨standard input⁩:155
 msgid "Comment for Service Catalog widget"
 msgstr ""
 
-#: src/Config.php:411 ⁨standard input⁩:98
+#: src/Config.php:413 ⁨standard input⁩:98
 msgid "Comment for changes"
 msgstr ""
 
-#: src/Config.php:408 ⁨standard input⁩:84
+#: src/Config.php:410 ⁨standard input⁩:84
 msgid "Comment for incidents"
 msgstr ""
 
-#: src/Config.php:410 ⁨standard input⁩:96
+#: src/Config.php:412 ⁨standard input⁩:96
 msgid "Comment for problems"
 msgstr ""
 
-#: src/Config.php:409 ⁨standard input⁩:86
+#: src/Config.php:411 ⁨standard input⁩:86
 msgid "Comment for requests"
 msgstr ""
 
@@ -604,7 +615,7 @@ msgid ""
 "joined by the logical operator of the first condition of the second pool."
 msgstr ""
 
-#: ⁨standard input⁩:135
+#: ⁨standard input⁩:147
 msgid "Configuration of the Service Catalog plugin"
 msgstr ""
 
@@ -622,6 +633,12 @@ msgstr ""
 
 #: ⁨standard input⁩:38
 msgid "Confirmation"
+msgstr ""
+
+#: ⁨standard input⁩:140
+msgid ""
+"Content and type of the solution added to the parent ticket. Without "
+"template, a default solution is added."
 msgstr ""
 
 #: front/stepform.php:49 front/stepform.php:51
@@ -949,6 +966,12 @@ msgstr ""
 msgid "Do you want to validate her?"
 msgstr ""
 
+#: ⁨standard input⁩:136
+msgid ""
+"Done by the automatic action \"Solve the parent tickets whose child tickets "
+"are all closed\""
+msgstr ""
+
 #: src/Metademand.php:7215
 msgid "Done on"
 msgstr ""
@@ -1265,7 +1288,7 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
-#: hook.php:607
+#: hook.php:609
 msgid "Group child ticket"
 msgstr ""
 
@@ -1342,7 +1365,7 @@ msgstr ""
 msgid "Icon display"
 msgstr ""
 
-#: ⁨standard input⁩:147
+#: ⁨standard input⁩:159
 msgid "Icon for Service Catalog widget"
 msgstr ""
 
@@ -1547,7 +1570,7 @@ msgstr ""
 msgid "Link this to a user field"
 msgstr ""
 
-#: hook.php:618
+#: hook.php:620
 msgid "Link to metademands"
 msgstr ""
 
@@ -1661,11 +1684,11 @@ msgstr[1] ""
 msgid "Meta-demands linked"
 msgstr ""
 
-#: src/Metademand.php:7774
+#: src/Metademand.php:7812
 msgid "Metademand"
 msgstr ""
 
-#: hook.php:578
+#: hook.php:580
 msgid "Metademand approver"
 msgstr ""
 
@@ -1677,7 +1700,7 @@ msgstr ""
 msgid "Metademand need a validation"
 msgstr ""
 
-#: hook.php:591
+#: hook.php:593
 msgid "Metademand status"
 msgstr ""
 
@@ -1695,15 +1718,15 @@ msgstr ""
 msgid "Metademands list"
 msgstr ""
 
-#: front/tools.form.php:70 src/Metademand.php:7761
+#: front/tools.form.php:70 src/Metademand.php:7799
 msgid "Metademands statuses updated"
 msgstr ""
 
-#: src/Metademand.php:6635 hook.php:1068
+#: src/Metademand.php:6635 hook.php:1070
 msgid "Metademands to be closed"
 msgstr ""
 
-#: src/Metademand.php:6717 hook.php:1085
+#: src/Metademand.php:6717 hook.php:1087
 msgid "Metademands to be validated"
 msgstr ""
 
@@ -2308,11 +2331,11 @@ msgstr ""
 msgid "Rule"
 msgstr ""
 
-#: src/Metademand.php:6474 hook.php:1051
+#: src/Metademand.php:6474 hook.php:1053
 msgid "Running metademands"
 msgstr ""
 
-#: src/Metademand.php:6542 hook.php:1102
+#: src/Metademand.php:6542 hook.php:1104
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -2490,6 +2513,20 @@ msgstr ""
 msgid "Signature"
 msgstr ""
 
+#: ⁨standard input⁩:139
+msgid "Solution template"
+msgid_plural "Solution templates"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ⁨standard input⁩:135
+msgid "Solve the parent ticket once all its child tickets are closed"
+msgstr ""
+
+#: src/Metademand.php:7734
+msgid "Solve the parent tickets whose child tickets are all closed"
+msgstr ""
+
 #: ⁨standard input⁩:47
 msgid "Son ticket tag"
 msgstr ""
@@ -2620,7 +2657,7 @@ msgid ""
 "maintenance mode"
 msgstr ""
 
-#: hook.php:630
+#: hook.php:632
 msgid "Technician child ticket"
 msgstr ""
 
@@ -2929,7 +2966,7 @@ msgstr ""
 msgid "Title color"
 msgstr ""
 
-#: ⁨standard input⁩:139
+#: ⁨standard input⁩:151
 msgid "Title for Service Catalog widget"
 msgstr ""
 
@@ -3044,7 +3081,7 @@ msgstr[1] ""
 msgid "Unselect all"
 msgstr ""
 
-#: ⁨standard input⁩:72 ⁨standard input⁩:156
+#: ⁨standard input⁩:72 ⁨standard input⁩:168
 msgctxt "button"
 msgid "Update"
 msgstr ""
