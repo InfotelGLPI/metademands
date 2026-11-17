@@ -46,7 +46,6 @@ class MailTaskTest extends DbTestCase
         parent::setUp();
 
         $ref = new \ReflectionProperty(Config::class, 'instance');
-        $ref->setAccessible(true);
         $ref->setValue(null, null);
 
         global $DB;
