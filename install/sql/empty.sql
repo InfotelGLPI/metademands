@@ -604,8 +604,8 @@ CREATE TABLE `glpi_plugin_metademands_drafts_values`
     `id`                           int unsigned NOT NULL AUTO_INCREMENT,
     `plugin_metademands_drafts_id` int unsigned NOT NULL DEFAULT '0',
     `plugin_metademands_fields_id` int unsigned NOT NULL DEFAULT '0',
-    `value`                        text         NOT NULL,
-    `value2`                       text         NOT NULL,
+    `value`                        longtext     DEFAULT NULL,
+    `value2`                       longtext     DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_drafts_id` (`plugin_metademands_drafts_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
@@ -674,8 +674,8 @@ CREATE TABLE `glpi_plugin_metademands_forms_values`
     `id`                           int unsigned NOT NULL AUTO_INCREMENT,
     `plugin_metademands_forms_id`  int unsigned NOT NULL DEFAULT '0',
     `plugin_metademands_fields_id` int unsigned NOT NULL DEFAULT '0',
-    `value`                        text         NOT NULL,
-    `value2`                       text         NOT NULL,
+    `value`                        longtext     DEFAULT NULL,
+    `value2`                       longtext     DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_forms_id` (`plugin_metademands_forms_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)

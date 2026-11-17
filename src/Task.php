@@ -145,8 +145,10 @@ class Task extends CommonDBChild
             $migration->addField($table, "block_use", "varchar(255) NOT NULL DEFAULT '[]'");
             $migration->migrationOneTable($table);
         }
-        //version 2.7.9
-        if (!$DB->fieldExists($table, "hideTable")) {
+        //version 2.7.9 - renamed formatastable in 3.0.0: never re-added on a table that has it
+        // (fresh installs create formatastable directly)
+        if (!$DB->fieldExists($table, "hideTable", false)
+            && !$DB->fieldExists($table, "formatastable", false)) {
             $migration->addField($table, "hideTable", "tinyint NOT NULL DEFAULT '0'");
             $migration->migrationOneTable($table);
         }
@@ -156,7 +158,13 @@ class Task extends CommonDBChild
         }
 
         //version 3.0.0
-        if ($DB->fieldExists($table, "hideTable")) {
+        if ($DB->fieldExists($table, "hideTable", false)
+            && $DB->fieldExists($table, "formatastable", false)) {
+            // hideTable re-added next to formatastable by the former 2.7.9 step: changeField()
+            // would drop formatastable - the setting of every task - and rename hideTable over it
+            $migration->dropField($table, 'hideTable');
+            $migration->migrationOneTable($table);
+        } elseif ($DB->fieldExists($table, "hideTable", false)) {
             $migration->changeField($table, 'hideTable', 'formatastable', "tinyint NOT NULL DEFAULT '1'");
             $migration->migrationOneTable($table);
             $query = $DB->buildUpdate(
