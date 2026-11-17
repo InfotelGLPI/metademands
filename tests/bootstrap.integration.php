@@ -49,9 +49,11 @@ if (!$DB->tableExists('glpi_plugin_metademands_metademands')) {
     || !$DB->fieldExists('glpi_plugin_metademands_fieldvalidations', 'ticketvalidations_ids')
     || !$DB->fieldExists('glpi_plugin_metademands_basketobjects', 'rank')
     || !$DB->fieldExists('glpi_plugin_metademands_fieldvalidations', 'as_tasks')
-    || !$DB->fieldExists('glpi_plugin_metademands_fields', 'is_active')) {
+    || !$DB->fieldExists('glpi_plugin_metademands_fields', 'is_active')
+    || !$DB->fieldExists('glpi_plugin_metademands_configs', 'solutiontemplates_id')) {
     // Tables kept from a previous run: apply the schema changes made since
     $migration = new Migration(PLUGIN_METADEMANDS_VERSION);
+    \GlpiPlugin\Metademands\Config::install($migration);
     \GlpiPlugin\Metademands\Field::install($migration);
     \GlpiPlugin\Metademands\Basketobject::install($migration);
     \GlpiPlugin\Metademands\FieldOption::install($migration);

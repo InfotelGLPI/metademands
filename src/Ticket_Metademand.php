@@ -1585,59 +1585,10 @@ class Ticket_Metademand extends CommonDBTM
      */
     public static function changeMetademandGlobalStatus($ticket)
     {
-
-        $ticket_metademand = new self();
-        $ticket_metademand_data = $ticket_metademand->find(['parent_tickets_id' => $ticket->fields['id']]);
-        $tickets_founded = [];
-        $metademands_id = 0;
-        // If ticket is Parent : Check if all sons ticket are closed
-        if (count($ticket_metademand_data)) {
-            $ticket_metademand_data = reset($ticket_metademand_data);
-            $tickets_founded = Ticket::getSonTickets(
-                $ticket->fields['id'],
-                $ticket_metademand_data['plugin_metademands_metademands_id'],
-                [],
-                true,
-                true,
-            );
-            $metademands_id = $ticket_metademand_data['plugin_metademands_metademands_id'];
-        } else {
-            $ticket_task = new Ticket_Task();
-            $ticket_task_data = $ticket_task->find(['tickets_id' => $ticket->fields['id']]);
-
-            if (count($ticket_task_data)) {
-                $tickets_founded = Ticket::getAncestorTickets($ticket->fields['id'], true);
-            }
-        }
-
-        $tickets_list = [];
-        $tickets_next = [];
-
-        $statuses = [];
-        if (is_array($tickets_founded)
-            && count($tickets_founded)
-            && $metademands_id > 0) {
-            foreach ($tickets_founded as $tickets) {
-                if (!empty($tickets['tickets_id'])) {
-                    $tickets_list[] = $tickets;
-                } else {
-                    if (isset($tickets['tickets_id']) && $tickets['tickets_id'] == 0) {
-                        $tickets_next[] = $tickets;
-                    }
-                }
-            }
-            if (count($tickets_list)) {
-                foreach ($tickets_list as $values) {
-                    $childticket = new \Ticket();
-                    $childticket->getFromDB($values['tickets_id']);
-
-                    $statuses[] = $childticket->fields['status'];
-                }
-            }
-        }
-        if (count($tickets_next) == 0) {
+        $children = self::getChildTicketsState($ticket);
+        if ($children['pending'] == 0) {
             $not_change_status = 0;
-            foreach ($statuses as $status) {
+            foreach ($children['statuses'] as $status) {
                 if (!in_array($status, [\Ticket::CLOSED])) {
                     $not_change_status++;
                 }
@@ -1647,21 +1598,7 @@ class Ticket_Metademand extends CommonDBTM
                 && Session::haveRight(Metademand::$rightname, READ)
                 && Session::getCurrentInterface() == 'central') {
                 if ($not_change_status == 0) {
-                    $validationmeta = new MetademandValidation();
-                    $validation = $validationmeta->getFromDBByCrit(['tickets_id' => $ticket->fields['id']]);
-                    // Child tickets waiting for the validation of a user chosen in the form
-                    $validation_todo = FieldValidation::hasWaiting((int) $ticket->fields['id']);
-                    if ($validation) {
-                        if (in_array(
-                            $validationmeta->fields['validate'],
-                            [
-                                MetademandValidation::TO_VALIDATE,
-                                MetademandValidation::TO_VALIDATE_WITHOUTTASK,
-                            ],
-                        )) {
-                            $validation_todo = true;
-                        }
-                    }
+                    $validation_todo = self::hasPendingValidation($ticket);
 
                     if (!$validation_todo) {
                         $metaStatus->update(
@@ -1685,6 +1622,174 @@ class Ticket_Metademand extends CommonDBTM
                 }
             }
         }
+    }
+
+    /**
+     * Child tickets of a metademand parent ticket: the status of each one created, and how
+     * many are still to be created (tasks of a next level)
+     *
+     * @param \Ticket $ticket
+     *
+     * @return array{statuses: list<mixed>, pending: int}
+     */
+    public static function getChildTicketsState(\Ticket $ticket): array
+    {
+        $state = ['statuses' => [], 'pending' => 0];
+
+        $ticket_metademand = new self();
+        $ticket_metademand_data = $ticket_metademand->find(['parent_tickets_id' => $ticket->fields['id']]);
+        // Not a parent ticket (a child one is followed by its own parent)
+        if (count($ticket_metademand_data) === 0) {
+            return $state;
+        }
+        $ticket_metademand_data = reset($ticket_metademand_data);
+        if ($ticket_metademand_data['plugin_metademands_metademands_id'] <= 0) {
+            return $state;
+        }
+
+        $tickets_founded = Ticket::getSonTickets(
+            $ticket->fields['id'],
+            $ticket_metademand_data['plugin_metademands_metademands_id'],
+            [],
+            true,
+            true,
+        );
+        if (!is_array($tickets_founded)) {
+            return $state;
+        }
+        foreach ($tickets_founded as $tickets) {
+            if (!empty($tickets['tickets_id'])) {
+                $childticket = new \Ticket();
+                $childticket->getFromDB($tickets['tickets_id']);
+                $state['statuses'][] = $childticket->fields['status'] ?? null;
+            } elseif (isset($tickets['tickets_id']) && $tickets['tickets_id'] == 0) {
+                $state['pending']++;
+            }
+        }
+
+        return $state;
+    }
+
+    /**
+     * Whether a validation is still waited for on a metademand parent ticket: the one of the
+     * metademand, or the one of a user chosen in the form for child tickets
+     *
+     * @param \Ticket $ticket
+     *
+     * @return bool
+     */
+    public static function hasPendingValidation(\Ticket $ticket): bool
+    {
+        if (FieldValidation::hasWaiting((int) $ticket->fields['id'])) {
+            return true;
+        }
+
+        $validationmeta = new MetademandValidation();
+
+        return $validationmeta->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])
+            && in_array(
+                $validationmeta->fields['validate'],
+                [
+                    MetademandValidation::TO_VALIDATE,
+                    MetademandValidation::TO_VALIDATE_WITHOUTTASK,
+                ],
+            );
+    }
+
+    /**
+     * Whether a metademand parent ticket can be solved automatically: still open, with child
+     * tickets all created and closed, and no validation waited for
+     *
+     * @param \Ticket $ticket
+     *
+     * @return bool
+     */
+    public static function isParentReadyToSolve(\Ticket $ticket): bool
+    {
+        if (!empty($ticket->fields['is_deleted'])
+            || in_array($ticket->fields['status'] ?? null, $ticket->getSolvedStatusArray())) {
+            return false;
+        }
+
+        $children = self::getChildTicketsState($ticket);
+        if (count($children['statuses']) === 0 || $children['pending'] > 0) {
+            return false;
+        }
+        foreach ($children['statuses'] as $status) {
+            if ($status != \Ticket::CLOSED) {
+                return false;
+            }
+        }
+
+        return !self::hasPendingValidation($ticket);
+    }
+
+    /**
+     * Solve a metademand parent ticket whose child tickets are all closed (automatic action
+     * MetademandsAutoSolveParents): with the solution template given, a default solution
+     * otherwise. Its closing then follows the entity configuration, as for any solution.
+     *
+     * @param \Ticket $ticket
+     * @param int     $solutiontemplates_id 0 for the default solution
+     *
+     * @return bool the solution was added
+     */
+    public static function autoSolveParentTicket(\Ticket $ticket, int $solutiontemplates_id = 0): bool
+    {
+        if (!self::isParentReadyToSolve($ticket)) {
+            return false;
+        }
+
+        $input = [
+            'itemtype' => \Ticket::class,
+            'items_id' => $ticket->getID(),
+        ];
+        if ($solutiontemplates_id > 0 && (new \SolutionTemplate())->getFromDB($solutiontemplates_id)) {
+            // Content rendered for the ticket and solution type, by ITILSolution::prepareInputForAdd()
+            $input['_solutiontemplates_id'] = $solutiontemplates_id;
+        } else {
+            $input['content'] = __('All the child tickets are closed.', 'metademands');
+        }
+
+        return (bool) (new \ITILSolution())->add($input);
+    }
+
+    /**
+     * Metademand parent tickets still open (neither solved nor closed, nor deleted)
+     *
+     * @return list<int>
+     */
+    public static function getOpenParentTicketIds(): array
+    {
+        global $DB;
+
+        $table = self::getTable();
+        $iterator = $DB->request([
+            'SELECT'     => "$table.parent_tickets_id",
+            'DISTINCT'   => true,
+            'FROM'       => $table,
+            'INNER JOIN' => [
+                \Ticket::getTable() => [
+                    'ON' => [
+                        \Ticket::getTable() => 'id',
+                        $table              => 'parent_tickets_id',
+                    ],
+                ],
+            ],
+            'WHERE'      => [
+                \Ticket::getTable() . '.is_deleted' => 0,
+                'NOT'                               => [
+                    \Ticket::getTable() . '.status' => [\Ticket::SOLVED, \Ticket::CLOSED],
+                ],
+            ],
+        ]);
+
+        $ids = [];
+        foreach ($iterator as $data) {
+            $ids[] = (int) $data['parent_tickets_id'];
+        }
+
+        return $ids;
     }
 
 

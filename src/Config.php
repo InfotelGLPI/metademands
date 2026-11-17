@@ -308,6 +308,8 @@ class Config extends CommonDBTM implements ProvideTranslationsInterface
         'comment_request',
         'comment_problem',
         'comment_change',
+        'auto_solve_parent_ticket',
+        'solutiontemplates_id',
     ];
 
     /**
@@ -514,7 +516,10 @@ class Config extends CommonDBTM implements ProvideTranslationsInterface
                         `comment_request`                   text                  DEFAULT NULL,
                         `comment_problem`                   text                  DEFAULT NULL,
                         `comment_change`                    text                  DEFAULT NULL,
-                        PRIMARY KEY (`id`)
+                        `auto_solve_parent_ticket`          tinyint      NOT NULL DEFAULT '0',
+                        `solutiontemplates_id`              int {$default_key_sign} NOT NULL DEFAULT '0',
+                        PRIMARY KEY (`id`),
+                        KEY `solutiontemplates_id` (`solutiontemplates_id`)
                ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
 
             $DB->doQuery($query);
@@ -643,6 +648,11 @@ class Config extends CommonDBTM implements ProvideTranslationsInterface
                 $migration->addField($table, $comment_field, "text DEFAULT NULL");
             }
         }
+        // Parent ticket solved once all its child tickets are closed (automatic action
+        // MetademandsAutoSolveParents), with this solution template
+        $migration->addField($table, "auto_solve_parent_ticket", "tinyint NOT NULL DEFAULT '0'");
+        $migration->addField($table, "solutiontemplates_id", sprintf("int %s NOT NULL DEFAULT '0'", $default_key_sign));
+        $migration->addKey($table, "solutiontemplates_id");
         $migration->migrationOneTable($table);
 
     }

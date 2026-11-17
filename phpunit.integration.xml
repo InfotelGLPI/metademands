@@ -65,6 +65,8 @@
         <file>tests/FieldMemberGroupsTest.php</file>
         <file>tests/TicketFieldManualTest.php</file>
         <file>tests/FieldSavedInputTest.php</file>
+        <file>tests/HiddenBlockTicketTest.php</file>
+        <file>tests/AutoSolveParentTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

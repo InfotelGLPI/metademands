@@ -517,7 +517,10 @@ CREATE TABLE `glpi_plugin_metademands_configs`
     `comment_request`                   text                  DEFAULT NULL,
     `comment_problem`                   text                  DEFAULT NULL,
     `comment_change`                    text                  DEFAULT NULL,
-    PRIMARY KEY (`id`)
+    `auto_solve_parent_ticket`          tinyint      NOT NULL DEFAULT '0',
+    `solutiontemplates_id`              int unsigned NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id`),
+    KEY `solutiontemplates_id` (`solutiontemplates_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
