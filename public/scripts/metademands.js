@@ -734,6 +734,7 @@ function plugin_metademands_wizard_showTab(firstnumTab, metademandparams, metade
     if (metademandparams.use_as_step == 1) {
         plugin_metademands_wizard_displayStepButton(metademandparams);
         plugin_metademands_wizard_displayStepMsg(metademandparams);
+        plugin_metademands_wizard_refreshStepTabs(metademandparams);
     }
 }
 
@@ -1350,6 +1351,82 @@ function updateActiveTab(rank)
     document.getElementById('ablock' + rank)?.scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'});
 }
 
+/**
+ * Rank of the block a .tab-step holds.
+ *
+ * @param {Element|undefined} tab
+ * @returns {?number}
+ */
+function plugin_metademands_wizard_tabBlock(tab)
+{
+    const bloc = tab?.firstChild?.getAttribute?.('bloc-id');
+    return bloc ? parseInt(bloc.replace('bloc', ''), 10) : null;
+}
+
+/**
+ * Index of the first .tab-step the current actor cannot open: the first displayed block after
+ * the one they start on (the block a step form resumes on, the first one otherwise) that is not
+ * among their step blocks (listStepBlock). That is where "Next" hands the form over to the next
+ * actor (plugin_metademands_wizard_nextBtn()), so neither it nor the blocks after it may be
+ * opened from the tab bar.
+ *
+ * @param {HTMLCollectionOf<Element>} tabs
+ * @param {Object} metademandparams
+ * @returns {number} tabs.length when every block is reachable
+ */
+function plugin_metademands_wizard_stepBoundary(tabs, metademandparams)
+{
+    const list = (metademandparams.listStepBlock ?? []).map(Number);
+    const start_block = parseInt(metademandparams.block_id, 10) || 0;
+    let start = 0;
+    if (start_block > 0) {
+        for (let t = 0; t < tabs.length; t++) {
+            if (plugin_metademands_wizard_tabBlock(tabs[t]) === start_block) {
+                start = t;
+                break;
+            }
+        }
+    }
+    for (let t = start + 1; t < tabs.length; t++) {
+        if (tabs[t]?.firstChild?.style.display === 'none') {
+            continue;
+        }
+        if (!list.includes(plugin_metademands_wizard_tabBlock(tabs[t]))) {
+            return t;
+        }
+    }
+    return tabs.length;
+}
+
+/**
+ * Grey out the tabs of the blocks the current actor cannot open (see
+ * plugin_metademands_wizard_stepBoundary()).
+ *
+ * @param {Object} metademandparams
+ */
+function plugin_metademands_wizard_refreshStepTabs(metademandparams)
+{
+    const tabs = document.getElementsByClassName('tab-step');
+    const boundary = plugin_metademands_wizard_stepBoundary(tabs, metademandparams);
+    for (let t = 0; t < tabs.length; t++) {
+        const link = document.getElementById('ablock' + plugin_metademands_wizard_tabBlock(tabs[t]));
+        if (link === null) {
+            continue;
+        }
+        const locked = t >= boundary;
+        if (link.classList.contains('disabled') !== locked) {
+            link.classList.toggle('disabled', locked);
+            if (locked) {
+                link.setAttribute('aria-disabled', 'true');
+                link.setAttribute('tabindex', '-1');
+            } else {
+                link.removeAttribute('aria-disabled');
+                link.removeAttribute('tabindex');
+            }
+        }
+    }
+}
+
 async function plugin_metademands_wizard_goToTab(targetBlockId, firstnumTab, metademandparams, metademandconditionsparams)
 {
     if (metademandparams.use_as_step != 1) return;
@@ -1369,6 +1446,9 @@ async function plugin_metademands_wizard_goToTab(targetBlockId, firstnumTab, met
     // Bloc introuvable, déjà actif, ou caché : on ignore
     if (targetTabIndex === -1 || targetTabIndex === metademandparams.currentTab) return;
     if (tabs[targetTabIndex]?.firstChild?.style.display === 'none') return;
+    // A block of a later actor (the supervisor, another group...): only "Next" leads there,
+    // by handing the form over
+    if (targetTabIndex >= plugin_metademands_wizard_stepBoundary(tabs, metademandparams)) return;
 
     const goingForward = targetTabIndex > metademandparams.currentTab;
 

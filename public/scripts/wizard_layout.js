@@ -817,7 +817,6 @@ async function checkStepConditions(wizard) {
     }
     known.forEach((id) => body.append('known_fields[]', id));
 
-    const token = document.querySelector('meta[property="glpi:csrf_token"]')?.getAttribute('content');
     // Only the latest answer counts: the request it replaces is aborted
     state.conditionsAbort?.abort();
     const abort = new AbortController();
@@ -831,7 +830,6 @@ async function checkStepConditions(wizard) {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'X-Requested-With': 'XMLHttpRequest',
-                ...(token ? {'X-Glpi-Csrf-Token': token} : {}),
             },
             body: body.toString(),
         });

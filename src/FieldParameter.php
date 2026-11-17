@@ -779,7 +779,9 @@ class FieldParameter extends CommonDBChild
         $msg = [];
         $checkKo = false;
 
-        $id = $input['id'] ?? 0;
+        // The input is not kept in $_SESSION['glpi_plugin_metademands_fields']: only the field
+        // forms read it back (Field::restoreSavedInput()), by field id, so the parameters left
+        // there, under their own id or 0, ended up in the form of another field
         foreach ($input as $key => $value) {
             if ($key === 'informations_to_display'
                 && (isset($input['type'])
@@ -791,8 +793,6 @@ class FieldParameter extends CommonDBChild
                     $checkKo = true;
                 }
             }
-
-            $_SESSION['glpi_plugin_metademands_fields'][$id][$key] = $value;
         }
 
         if ($checkKo) {

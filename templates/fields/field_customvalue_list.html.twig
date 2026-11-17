@@ -55,8 +55,11 @@
  # Trigger adding one more value. The hidden inputs are read by
  # metademands_add_custom_values() (public/scripts/metademands.js), the click by
  # public/scripts/wizard_form.js.
+ # The values added are saved one by one, or all at once by #add_custom_values, shown by
+ # metademands_add_custom_values() once a value is added and posted by
+ # public/scripts/field_customvalue_list.js.
  #}
-{% macro add_value(add, fields_id, root_doc) %}
+{% macro add_value(add, fields_id, root_doc, form_target) %}
     <input type="hidden" id="display_comment" name="display_comment" value="{{ add.display_comment ? 1 : 0 }}">
     <input type="hidden" id="count_custom_values" name="count_custom_values" value="{{ add.count }}">
     <input type="hidden" id="display_default" name="display_default" value="1">
@@ -66,6 +69,10 @@
         <i class="ti ti-square-plus"></i>
         <span class="sr-only">{{ _x('button', 'Add') }}</span>
     </button>&nbsp;
+    <button type="button" id="add_custom_values" class="btn btn-sm btn-primary" style="display: none"
+            data-md-customvalues-add-all="{{ form_target }}">
+        <i class="ti ti-device-floppy me-1"></i>{{ __('Save the new values', 'metademands') }}
+    </button>
 {% endmacro %}
 
 {% if rows is not empty %}
@@ -165,7 +172,7 @@
     {% if not specific %}
         <tr>
             <td colspan="5" class="px-2 pb-2">
-                {{ _self.add_value(add, fields_id, root_doc) }}
+                {{ _self.add_value(add, fields_id, root_doc, form_target) }}
             </td>
         </tr>
         {% include '@metademands/fields/field_customvalue_import.html.twig' with {
@@ -204,7 +211,7 @@
     </tr>
 {% else %}
     <tr class="tab_bg_1">
-        <td colspan="5" id="show_custom_fields">{{ _self.add_value(add, fields_id, root_doc) }}</td>
+        <td colspan="5" id="show_custom_fields">{{ _self.add_value(add, fields_id, root_doc, form_target) }}</td>
     </tr>
     {% include '@metademands/fields/field_customvalue_import.html.twig' with {
         'import_action': import_action,

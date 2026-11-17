@@ -513,6 +513,33 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
     }
 
 
+    /**
+     * Refill the form with the input of an add or update refused by checkMandatoryFields(),
+     * once. A new field only takes back the input posted for its own metademand.
+     *
+     * @param int $ID
+     *
+     * @return void
+     */
+    private function restoreSavedInput(int $ID): void
+    {
+        $session_id = $ID > 0 ? $ID : 0;
+        if (!isset($_SESSION['glpi_plugin_metademands_fields'][$session_id])) {
+            return;
+        }
+        $saved = $_SESSION['glpi_plugin_metademands_fields'][$session_id];
+        unset($_SESSION['glpi_plugin_metademands_fields']);
+
+        if (!is_array($saved)
+            || (int) ($saved['plugin_metademands_metademands_id'] ?? $this->fields['plugin_metademands_metademands_id'])
+                !== (int) $this->fields['plugin_metademands_metademands_id']) {
+            return;
+        }
+        foreach ($saved as $key => $value) {
+            $this->fields[$key] = $value;
+        }
+    }
+
     public function showExistingForm($ID, $options = [])
     {
         global $PLUGIN_HOOKS;
@@ -550,13 +577,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             $this->fields['color'] = '#000';
         }
 
-        $sessionId = $ID > 0 ? $ID : 0;
-        if (isset($_SESSION['glpi_plugin_metademands_fields'][$sessionId])) {
-            foreach ($_SESSION['glpi_plugin_metademands_fields'][$sessionId] as $key => $value) {
-                $this->fields[$key] = $value;
-            }
-            unset($_SESSION['glpi_plugin_metademands_fields']);
-        }
+        $this->restoreSavedInput((int) $ID);
 
         TemplateRenderer::getInstance()->display('@metademands/field_existing_form.html.twig', [
             'action'         => Toolbox::getItemTypeFormURL(Field::class),
@@ -623,13 +644,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         }
 
         // Data saved in session
-        $sessionId = $ID > 0 ? $ID : 0;
-        if (isset($_SESSION['glpi_plugin_metademands_fields'][$sessionId])) {
-            foreach ($_SESSION['glpi_plugin_metademands_fields'][$sessionId] as $key => $value) {
-                $this->fields[$key] = $value;
-            }
-            unset($_SESSION['glpi_plugin_metademands_fields']);
-        }
+        $this->restoreSavedInput((int) $ID);
 
         // --- Warnings ---
         $metademand_fields = new self();
@@ -2915,10 +2930,13 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                     }
                 }
             }
-            $_SESSION['glpi_plugin_metademands_fields'][$id][$key] = $value;
         }
 
         if ($checkKo) {
+            // Given back to the form displayed after the redirect (restoreSavedInput()). Only on
+            // failure: every add and update used to leave its input there, so the next "new
+            // field" form opened with the data of the last field imported, duplicated...
+            $_SESSION['glpi_plugin_metademands_fields'][$id] = $input;
             Session::addMessageAfterRedirect(
                 sprintf(__("Mandatory fields are not filled. Please correct: %s"), implode(', ', $msg)),
                 false,

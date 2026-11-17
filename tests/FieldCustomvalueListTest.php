@@ -156,6 +156,12 @@ class FieldCustomvalueListTest extends DbTestCase
         $this->assertStringContainsString('id="show_custom_fields"', $html);
         $this->assertStringContainsString('data-md-customvalue-add="42"', $html);
         $this->assertMatchesRegularExpression('/id="count_custom_values" name="count_custom_values" value="-1"/', $html);
+        // The values added are saved all at once (field_customvalue_list.js), the button being
+        // shown by metademands_add_custom_values() once one is added
+        $this->assertMatchesRegularExpression(
+            '/id="add_custom_values" class="btn btn-sm btn-primary" style="display: none"\s+data-md-customvalues-add-all="[^"]*\/front\/fieldcustomvalue\.form\.php"/',
+            $html,
+        );
         $this->assertStringContainsString('name="importreplacecsv"', $html);
         $this->assertStringNotContainsString('name="delete"', $html);
         $this->assertNoPluginInlineScript($html);
