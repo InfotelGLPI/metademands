@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 10:18+0000\n"
+"POT-Creation-Date: 2026-11-17 12:43+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/"
@@ -35,7 +35,7 @@ msgstr "%1$s %2$s créés avec succès"
 msgid "%1$s / %2$s mandatory fields filled"
 msgstr "%1$s / %2$s champs obligatoires remplis"
 
-#: src/Field.php:3269
+#: src/Field.php:3287
 #, php-format
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
@@ -164,11 +164,10 @@ msgstr "Acteurs"
 msgid "Add"
 msgstr "Ajouter"
 
-#: ⁨standard input⁩:94 ⁨standard input⁩:55 ⁨standard input⁩:70 ⁨standard input⁩:64
-#: ⁨standard input⁩:67 ⁨standard input⁩:43 ⁨standard input⁩:46 ⁨standard input⁩:129
-#: ⁨standard input⁩:38 ⁨standard input⁩:39 ⁨standard input⁩:47 ⁨standard input⁩:96
-#: ⁨standard input⁩:98 ⁨standard input⁩:88 ⁨standard input⁩:58 ⁨standard input⁩:63
-#: ⁨standard input⁩:89
+#: ⁨standard input⁩:94 ⁨standard input⁩:55 ⁨standard input⁩:70 ⁨standard input⁩:67
+#: ⁨standard input⁩:43 ⁨standard input⁩:46 ⁨standard input⁩:129 ⁨standard input⁩:38
+#: ⁨standard input⁩:39 ⁨standard input⁩:47 ⁨standard input⁩:96 ⁨standard input⁩:98
+#: ⁨standard input⁩:88 ⁨standard input⁩:58 ⁨standard input⁩:63 ⁨standard input⁩:89
 msgctxt "button"
 msgid "Add"
 msgstr "Ajouter"
@@ -242,7 +241,7 @@ msgstr "Ajouter au panier"
 msgid "Add your signature"
 msgstr "Ajouter votre signature"
 
-#: src/Field.php:2898 src/Field.php:2983 src/Field.php:4584 ⁨standard input⁩:99
+#: src/Field.php:2913 src/Field.php:3001 src/Field.php:4602 ⁨standard input⁩:99
 msgid "Additional label"
 msgstr "Label supplémentaire"
 
@@ -387,7 +386,7 @@ msgstr "Lier à la valeur de cette case à cocher"
 msgid "Blank Template"
 msgstr "Gabarit vide"
 
-#: src/Wizard.php:1916 src/Field.php:885 src/Field.php:1073 src/Field.php:2965
+#: src/Wizard.php:1916 src/Field.php:900 src/Field.php:1088 src/Field.php:2983
 #: src/Step.php:418 src/Step.php:472 ⁨standard input⁩:140 ⁨standard input⁩:135
 #: ⁨standard input⁩:62 ⁨standard input⁩:164 ⁨standard input⁩:320 ⁨standard input⁩:39
 #: ⁨standard input⁩:44
@@ -433,7 +432,7 @@ msgstr "Les deux"
 msgid "Button Type"
 msgstr "Type de bouton"
 
-#: src/Field.php:3078 src/Fields/Yesno.php:187
+#: src/Field.php:3096 src/Fields/Yesno.php:187
 msgid "Buttons display"
 msgstr "Affichage mode bouton"
 
@@ -469,7 +468,7 @@ msgstr[0] "Catégorie"
 msgstr[1] "Catégories"
 msgstr[2] "Catégories"
 
-#: src/Field.php:1711 tests/AjaxTemplatesTest.php:132
+#: src/Field.php:1726 tests/AjaxTemplatesTest.php:132
 msgid "Category of the metademand"
 msgstr "Catégorie de la métademande"
 
@@ -522,7 +521,7 @@ msgstr "Tickets enfants récupèrent les informations du ticket parent"
 msgid "Choose a template"
 msgstr "Choisissez un gabarit"
 
-#: src/Field.php:3076 src/Fields/Radio.php:192 src/Fields/Checkbox.php:181
+#: src/Field.php:3094 src/Fields/Radio.php:192 src/Fields/Checkbox.php:181
 #: src/Fields/Dropdown.php:733 src/Fields/Dropdownmeta.php:1070
 #: src/Fields/Yesno.php:185 src/Fields/Dropdownmultiple.php:459
 msgid "Classic display"
@@ -574,7 +573,7 @@ msgstr "Couleur"
 msgid "Coming"
 msgstr "A venir"
 
-#: ⁨standard input⁩:106 ⁨standard input⁩:52 ⁨standard input⁩:96 ⁨standard input⁩:81
+#: ⁨standard input⁩:113 ⁨standard input⁩:52 ⁨standard input⁩:96 ⁨standard input⁩:81
 #: ⁨standard input⁩:46
 msgid "Comment"
 msgstr "Commentaire"
@@ -786,7 +785,7 @@ msgid "Default (%s)"
 msgstr "Defaut (%s)"
 
 #: src/Fields/Yesno.php:169 src/Fields/Dropdownmultiple.php:434
-#: ⁨standard input⁩:115 ⁨standard input⁩:60
+#: ⁨standard input⁩:122 ⁨standard input⁩:60
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] "Valeur par défaut"
@@ -834,8 +833,9 @@ msgid "Delete form"
 msgstr "Supprimer le formulaire"
 
 #: ⁨standard input⁩:86 ⁨standard input⁩:104 ⁨standard input⁩:119 ⁨standard input⁩:35
-#: ⁨standard input⁩:146 ⁨standard input⁩:148 ⁨standard input⁩:204 ⁨standard input⁩:129
-#: ⁨standard input⁩:344 ⁨standard input⁩:71 ⁨standard input⁩:103
+#: ⁨standard input⁩:153 ⁨standard input⁩:155 ⁨standard input⁩:146 ⁨standard input⁩:148
+#: ⁨standard input⁩:204 ⁨standard input⁩:129 ⁨standard input⁩:344 ⁨standard input⁩:71
+#: ⁨standard input⁩:103
 msgctxt "button"
 msgid "Delete permanently"
 msgstr "Supprimer définitivement"
@@ -903,7 +903,7 @@ msgstr "Entité de destination"
 msgid "Destructive queries"
 msgstr "Requêtes destructives"
 
-#: src/Field.php:3739 src/Fields/Dropdownmeta.php:701
+#: src/Field.php:3757 src/Fields/Dropdownmeta.php:701
 msgid "Devices own by my groups"
 msgstr "Matériels appartenant à mes groupes"
 
@@ -1167,7 +1167,7 @@ msgstr "Echec de l'envoi du courriel"
 msgid "Failed to check the sanity of the tables!"
 msgstr "Échec de la vérification de l'intégrité des tables !"
 
-#: src/Field.php:1305
+#: src/Field.php:1320
 msgid "Father's field"
 msgstr "Champ père"
 
@@ -1531,7 +1531,7 @@ msgstr "Information"
 msgid "Informations"
 msgstr "Informations"
 
-#: src/FieldParameter.php:790 src/Fields/Dropdownobject.php:751
+#: src/FieldParameter.php:792 src/Fields/Dropdownobject.php:751
 #: ⁨standard input⁩:72
 msgid "Informations to display in ticket and PDF"
 msgstr "Informations à afficher dans les tickets et dans le PDF"
@@ -1690,7 +1690,7 @@ msgstr "Faire une demande de changement"
 msgid "Make a request"
 msgstr "Faire une demande"
 
-#: src/Field.php:3129
+#: src/Field.php:3147
 msgid "Make mandatory or optional"
 msgstr "Rendre obligatoire ou facultatif"
 
@@ -1698,7 +1698,7 @@ msgstr "Rendre obligatoire ou facultatif"
 msgid "Make this field mandatory"
 msgstr "Rendre ce champ obligatoire"
 
-#: src/Field.php:3108 ⁨standard input⁩:122 ⁨standard input⁩:89 ⁨standard input⁩:298
+#: src/Field.php:3126 ⁨standard input⁩:122 ⁨standard input⁩:89 ⁨standard input⁩:298
 #: ⁨standard input⁩:302 ⁨standard input⁩:305
 msgid "Mandatory"
 msgstr "Obligatoire"
@@ -1711,7 +1711,7 @@ msgstr "Champ obligatoire"
 msgid "Maximum depth"
 msgstr "Profondeur maximum"
 
-#: src/Field.php:2131
+#: src/Field.php:2146
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr "Nombre maximum de documents : %s "
@@ -1787,7 +1787,7 @@ msgstr "Métademandes à valider"
 msgid "Minimal mandatory"
 msgstr "Minimum obligatoire"
 
-#: src/Field.php:1026
+#: src/Field.php:1041
 msgid "Missing parameters"
 msgstr "Paramètres manquants"
 
@@ -1795,23 +1795,23 @@ msgstr "Paramètres manquants"
 msgid "Missing table"
 msgstr "Table manquante"
 
-#: src/Field.php:1029
+#: src/Field.php:1044
 msgid "Missing values"
 msgstr "Valeurs manquantes"
 
-#: src/Field.php:3126
+#: src/Field.php:3144
 msgid "Modify color"
 msgstr "Modifier la couleur"
 
-#: src/Field.php:3125
+#: src/Field.php:3143
 msgid "Modify icon"
 msgstr "Modifier l'icone"
 
-#: src/Field.php:3128
+#: src/Field.php:3146
 msgid "Modify the default value of the yes / no"
 msgstr "Modifier la valeur par défaut de oui/non"
 
-#: src/Field.php:3127
+#: src/Field.php:3145
 msgid "Modify the display of the yes / no"
 msgstr "Modifier l'affichage de oui/non"
 
@@ -1827,7 +1827,7 @@ msgstr "Déplacer"
 msgid "Multiple selection"
 msgstr "Sélection multiple"
 
-#: src/Field.php:966
+#: src/Field.php:981
 msgid "Multiples"
 msgstr "Multiples"
 
@@ -1835,7 +1835,7 @@ msgstr "Multiples"
 msgid "My metademands"
 msgstr "Mes métademandes"
 
-#: src/Field.php:1709
+#: src/Field.php:1724
 msgid "My values"
 msgstr "Valeurs personnalisées"
 
@@ -2016,7 +2016,7 @@ msgstr "Nombre de suivis inter tickets"
 msgid "OR"
 msgstr "OU"
 
-#: src/Field.php:2900 tests/AjaxTemplatesTest.php:130 ⁨standard input⁩:152
+#: src/Field.php:2915 tests/AjaxTemplatesTest.php:130 ⁨standard input⁩:152
 #: ⁨standard input⁩:37 ⁨standard input⁩:52
 msgid "Object"
 msgstr "Objet"
@@ -2102,7 +2102,7 @@ msgstr[0] "Option"
 msgstr[1] "Options"
 msgstr[2] "Options"
 
-#: src/Field.php:3109 ⁨standard input⁩:50 ⁨standard input⁩:299 ⁨standard input⁩:302
+#: src/Field.php:3127 ⁨standard input⁩:50 ⁨standard input⁩:299 ⁨standard input⁩:302
 msgid "Optional"
 msgstr "Optionnel"
 
@@ -2113,7 +2113,7 @@ msgstr ""
 "Les options ne sont pas disponibles pour un champ dont la valeur est liée à "
 "un champ utilisateur"
 
-#: src/Field.php:2974 ⁨standard input⁩:271
+#: src/Field.php:2992 ⁨standard input⁩:271
 msgid "Order"
 msgstr "Ordre"
 
@@ -2422,8 +2422,8 @@ msgid "Save"
 msgstr "Sauvegarder"
 
 #: ⁨standard input⁩:99 ⁨standard input⁩:34 ⁨standard input⁩:35 ⁨standard input⁩:110
-#: ⁨standard input⁩:55 ⁨standard input⁩:128 ⁨standard input⁩:130 ⁨standard input⁩:197
-#: ⁨standard input⁩:199 ⁨standard input⁩:77 ⁨standard input⁩:79 ⁨standard input⁩:136
+#: ⁨standard input⁩:55 ⁨standard input⁩:135 ⁨standard input⁩:137 ⁨standard input⁩:204
+#: ⁨standard input⁩:206 ⁨standard input⁩:77 ⁨standard input⁩:79 ⁨standard input⁩:136
 #: ⁨standard input⁩:138 ⁨standard input⁩:198 ⁨standard input⁩:49 ⁨standard input⁩:58
 #: ⁨standard input⁩:63 ⁨standard input⁩:96
 msgctxt "button"
@@ -2441,7 +2441,7 @@ msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr "Sauvegarder et envoyer à un autre utilisateur/groupe"
 
-#: ⁨standard input⁩:80
+#: ⁨standard input⁩:87
 msgid "Save all the values"
 msgstr "Sauvegarder toutes les valeurs"
 
@@ -2470,6 +2470,10 @@ msgstr "Sauvegarder le brouillon"
 msgctxt "button"
 msgid "Save model"
 msgstr "Sauvegarder le modèle"
+
+#: ⁨standard input⁩:74
+msgid "Save the new values"
+msgstr ""
 
 #: ⁨standard input⁩:123
 msgid "Save translation"
@@ -2662,7 +2666,7 @@ msgstr "Requêtes suggérées"
 msgid "Summary"
 msgstr "Sommaire"
 
-#: src/Field.php:3077 src/Fields/Yesno.php:186
+#: src/Field.php:3095 src/Fields/Yesno.php:186
 msgid "Switch display"
 msgstr "Affichage type Switch"
 
@@ -3422,8 +3426,8 @@ msgstr ""
 "Vous ne pouvez pas ajouter de nouvelles tâches tant que les tickets liés ne "
 "sont pas résolus"
 
-#: src/Field.php:3153 src/Field.php:3180 src/Field.php:3196 src/Field.php:3219
-#: src/Field.php:3271
+#: src/Field.php:3171 src/Field.php:3198 src/Field.php:3214 src/Field.php:3237
+#: src/Field.php:3289
 msgid "You cannot do this for this field"
 msgstr "Vous ne pouvez pas faire cela pour ce champ"
 
