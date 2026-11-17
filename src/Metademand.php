@@ -7666,8 +7666,46 @@ HTML;
                     'description' =>  _x('button', 'Verify metademands global status', 'metademands'),
                 ]; // Optional
                 break;
+            case 'MetademandsAutoSolveParents':
+                return [
+                    'description' => __('Solve the parent tickets whose child tickets are all closed', 'metademands'),
+                ];
         }
         return [];
+    }
+
+    /**
+     * Solve the parent tickets whose child tickets are all closed, with the solution template
+     * of the configuration (Config auto_solve_parent_ticket and solutiontemplates_id)
+     *
+     * @param \CronTask|null $task for log, if NULL display
+     *
+     * @return int
+     */
+    public static function cronMetademandsAutoSolveParents($task = null)
+    {
+        $config = Config::getInstance();
+        if (!is_array($config) || empty($config['auto_solve_parent_ticket'])) {
+            return 0;
+        }
+
+        $nb = 0;
+        foreach (Ticket_Metademand::getOpenParentTicketIds() as $tickets_id) {
+            $ticket = new \Ticket();
+            if ($ticket->getFromDB($tickets_id)
+                && Ticket_Metademand::autoSolveParentTicket($ticket, (int) ($config['solutiontemplates_id'] ?? 0))) {
+                $nb++;
+            }
+        }
+
+        if ($task !== null) {
+            $task->addVolume($nb);
+            if ($nb > 0) {
+                $task->log(sprintf(_n('%d parent ticket solved', '%d parent tickets solved', $nb, 'metademands'), $nb));
+            }
+        }
+
+        return $nb > 0 ? 1 : 0;
     }
 
     /**

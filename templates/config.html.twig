@@ -130,6 +130,18 @@
                     __('Redirect to ticket list when you change user in step by step mode', 'metademands')) }}
             </div>
 
+            {#- Automatic action MetademandsAutoSolveParents (Metademand::cronMetademandsAutoSolveParents()) -#}
+            <div class="row">
+                {{ fields.sliderField('auto_solve_parent_ticket', config.auto_solve_parent_ticket ?? 0,
+                    __('Solve the parent ticket once all its child tickets are closed', 'metademands'), {
+                        'helper': __('Done by the automatic action "Solve the parent tickets whose child tickets are all closed"', 'metademands'),
+                    }) }}
+                {{ fields.dropdownField('SolutionTemplate', 'solutiontemplates_id', config.solutiontemplates_id ?? 0,
+                    _n('Solution template', 'Solution templates', 1), {
+                        'helper': __('Content and type of the solution added to the parent ticket. Without template, a default solution is added.', 'metademands'),
+                    }) }}
+            </div>
+
             {% if config.display_buttonlist_servicecatalog == 1 %}
                 <div class="hr mt-4 mb-2"></div>
                 <div class="row">

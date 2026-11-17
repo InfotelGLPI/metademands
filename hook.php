@@ -317,6 +317,8 @@ function plugin_metademands_install()
     Stepform::addNotifications();
 
     CronTask::Register(Metademand::class, 'MetademandsGlobalStatus', DAY_TIMESTAMP);
+    // Does nothing until enabled in the configuration of the plugin
+    CronTask::Register(Metademand::class, 'MetademandsAutoSolveParents', HOUR_TIMESTAMP);
 
     Profile::initProfile();
     Profile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);

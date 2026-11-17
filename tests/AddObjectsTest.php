@@ -47,7 +47,6 @@ class AddObjectsTest extends DbTestCase
 
         // Reset Config singleton so each test reloads config from DB
         $ref = new \ReflectionProperty(Config::class, 'instance');
-        $ref->setAccessible(true);
         $ref->setValue(null, null);
 
         // Ensure plugin config row exists (required by formatFields())
