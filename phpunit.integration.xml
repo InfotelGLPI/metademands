@@ -63,6 +63,7 @@
         <file>tests/ServiceCatalogConfigTest.php</file>
         <file>tests/FieldMemberGroupsTest.php</file>
         <file>tests/TicketFieldManualTest.php</file>
+        <file>tests/FieldSavedInputTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

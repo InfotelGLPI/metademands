@@ -564,6 +564,19 @@ textarea.invalid,
     max-width: 500px !important;
 }
 
+/* Dropdowns sized by their text (no width option, like the GLPI object ones: a ticket, a
+   software...): a long label stays in its column, cut with an ellipsis, instead of running over
+   the field on its right. With the comment icon, core wraps the select2 in a .btn-group, whose
+   flex items do not shrink below their content unless allowed to. */
+[id-field] .btn-group,
+[id-field] .select2-container {
+    max-width: 100%;
+}
+
+[id-field] .btn-group > .select2-container {
+    min-width: 0;
+}
+
 .md_buttonelt {
     max-width: 200px;
     min-width: 200px;
@@ -1861,6 +1874,12 @@ select.chained-select {
     color: #fff;
 }
 
+/* Block of a later actor, out of reach from the tab bar (see
+   plugin_metademands_wizard_refreshStepTabs() in scripts/metademands.js) */
+.md-wizard-layout #fieldslist .nav-link.tablinks.disabled {
+    opacity: .5;
+}
+
 .md-wizard-layout .md-steps-progress {
     margin-bottom: 1rem;
 }
@@ -1869,12 +1888,15 @@ select.chained-select {
     margin-bottom: .25rem;
 }
 
-.md-wizard-layout .step_wizard_div {
+/* Footer: keyed on the attribute printed by the server, not on the md-wizard-layout class
+   added by public/scripts/wizard_layout.js. GLPI loads the plugin modules at the end of the
+   page, so until then the legacy buttons showed under the loading spinner. */
+.md-wizard[data-md-wizard-layout] .step_wizard_div {
     display: none;
 }
 
 /* Actions always reachable at the bottom of the screen */
-.md-wizard-layout .form-sc-group {
+.md-wizard[data-md-wizard-layout] .form-sc-group {
     position: sticky;
     bottom: 0;
     z-index: 10;
@@ -1886,7 +1908,7 @@ select.chained-select {
 }
 
 /* "Save as draft" on the left, then the sections / step, the navigation on the right */
-.md-wizard-layout .form-sc-group > .center > div {
+.md-wizard[data-md-wizard-layout] .form-sc-group > .center > div {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
@@ -1895,57 +1917,57 @@ select.chained-select {
     margin-top: 0 !important;
 }
 
-.md-wizard-layout .form-sc-group #nextMsg {
+.md-wizard[data-md-wizard-layout] .form-sc-group #nextMsg {
     order: -3;
     flex: 1 0 100%;
     margin-bottom: .25rem;
 }
 
-.md-wizard-layout .form-sc-group #div_save_draft {
+.md-wizard[data-md-wizard-layout] .form-sc-group #div_save_draft {
     order: -2;
     float: none !important;
     margin: 0 !important;
 }
 
-.md-wizard-layout .form-sc-group #button_save_draft {
+.md-wizard[data-md-wizard-layout] .form-sc-group #button_save_draft {
     background: transparent;
     border-color: transparent;
     color: var(--tblr-secondary);
     box-shadow: none;
 }
 
-.md-wizard-layout .form-sc-group #button_save_draft:hover {
+.md-wizard[data-md-wizard-layout] .form-sc-group #button_save_draft:hover {
     background: var(--tblr-bg-surface-secondary);
     color: var(--tblr-body-color);
 }
 
-.md-wizard-layout .form-sc-group .md-footer-state {
+.md-wizard[data-md-wizard-layout] .form-sc-group .md-footer-state {
     order: -1;
     margin-right: auto;
     color: var(--tblr-secondary);
     font-size: .875rem;
 }
 
-.md-wizard-layout .form-sc-group #prevBtn {
+.md-wizard[data-md-wizard-layout] .form-sc-group #prevBtn {
     margin-right: 0 !important;
     background: var(--tblr-bg-surface);
     border-color: var(--tblr-border-color-dark, #dadfe5);
     color: var(--tblr-body-color);
 }
 
-.md-wizard-layout .form-sc-group #nextBtn,
-.md-wizard-layout .form-sc-group #nextBtn2 {
+.md-wizard[data-md-wizard-layout] .form-sc-group #nextBtn,
+.md-wizard[data-md-wizard-layout] .form-sc-group #nextBtn2 {
     margin-right: 0 !important;
 }
 
 /* Step by step form whose steps filled already break the conditions: no "Next" */
-.md-wizard-layout.md-conditions-blocked .form-sc-group #nextBtn,
-.md-wizard-layout.md-conditions-blocked .form-sc-group #nextBtn2 {
+.md-wizard[data-md-wizard-layout].md-conditions-blocked .form-sc-group #nextBtn,
+.md-wizard[data-md-wizard-layout].md-conditions-blocked .form-sc-group #nextBtn2 {
     display: none !important;
 }
 
 /* In place of the send button, while the request does not meet the conditions */
-.md-wizard-layout .form-sc-group .md-conditions-message {
+.md-wizard[data-md-wizard-layout] .form-sc-group .md-conditions-message {
     display: inline-flex;
     align-items: center;
     gap: .4rem;
@@ -1959,16 +1981,16 @@ select.chained-select {
 }
 
 /* With mandatory fields left, the message leads to the first of them */
-.md-wizard-layout .form-sc-group .md-conditions-message.is-actionable {
+.md-wizard[data-md-wizard-layout] .form-sc-group .md-conditions-message.is-actionable {
     cursor: pointer;
 }
 
-.md-wizard-layout .form-sc-group .md-conditions-message.is-actionable:hover {
+.md-wizard[data-md-wizard-layout] .form-sc-group .md-conditions-message.is-actionable:hover {
     color: var(--tblr-body-color);
 }
 
 /* The last step sends the request */
-.md-wizard-layout .form-sc-group #nextBtn[data-md-title-kind="submit"] {
+.md-wizard[data-md-wizard-layout] .form-sc-group #nextBtn[data-md-title-kind="submit"] {
     background: var(--tblr-success);
     border-color: var(--tblr-success);
     color: var(--tblr-success-fg, #fff);
