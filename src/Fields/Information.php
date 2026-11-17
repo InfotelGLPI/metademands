@@ -143,7 +143,9 @@ class Information extends CommonDBTM
 
     public static function displayFieldItems(&$result, $formatAsTable, $title_style, $label, $field, $return_value, $lang, $is_order = false)
     {
-        $result[$field['rank']]['display'] = false;
+        // Shows no block on its own, but does not hide one another field of the block already
+        // shows: a title placed after the fields of its block left them out of the ticket (#373)
+        $result[$field['rank']]['display'] ??= false;
         return $result;
     }
 }
