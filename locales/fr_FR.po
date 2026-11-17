@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 12:42+0000\n"
+"POT-Creation-Date: 2026-11-17 10:18+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/"
@@ -152,7 +152,7 @@ msgstr "Activer la validation du responsable"
 msgid "Active"
 msgstr "Active"
 
-#: src/Task.php:613 src/MetademandTask.php:285
+#: src/Task.php:621 src/MetademandTask.php:285
 msgid "Active entity"
 msgstr "Entité active"
 
@@ -397,8 +397,8 @@ msgstr[0] "Bloc"
 msgstr[1] "Blocs"
 msgstr[2] "Blocs"
 
-#: src/Step.php:387 src/Step.php:599 src/Step.php:613 src/Task.php:673
-#: src/Task.php:1134 src/FieldOption.php:1620 src/TicketTask.php:223
+#: src/Step.php:387 src/Step.php:599 src/Step.php:613 src/Task.php:681
+#: src/Task.php:1142 src/FieldOption.php:1620 src/TicketTask.php:223
 #: src/MailTask.php:170 ⁨standard input⁩:196 ⁨standard input⁩:42
 #, php-format
 msgid "Block %s"
@@ -1068,7 +1068,7 @@ msgstr "Editer la tâche de ticket"
 msgid "Edit translation"
 msgstr "Editer la traduction"
 
-#: src/MailTask.php:241 tests/MailTaskTest.php:371
+#: src/MailTask.php:241 tests/MailTaskTest.php:370
 msgid "Email sent"
 msgstr "Email envoyé"
 
@@ -1158,8 +1158,8 @@ msgstr ""
 msgid "Export the metademand to XML format for use on another GLPI"
 msgstr "Exporter la métademande en XML pour l'utiliser sur un autre GLPI"
 
-#: src/MailTask.php:210 src/MailTask.php:235 tests/MailTaskTest.php:247
-#: tests/MailTaskTest.php:372
+#: src/MailTask.php:210 src/MailTask.php:235 tests/MailTaskTest.php:246
+#: tests/MailTaskTest.php:371
 msgid "Fail to send email"
 msgstr "Echec de l'envoi du courriel"
 
@@ -2278,7 +2278,7 @@ msgstr "Raison: %s"
 msgid "Recipient"
 msgstr "Rédacteur"
 
-#: src/Task.php:649
+#: src/Task.php:657
 msgid "Recipients"
 msgstr "Destinataires"
 
@@ -2389,7 +2389,7 @@ msgstr[2] "Gestion des droits"
 msgid "Right to update a meta-demand form from the ticket"
 msgstr "Droit de mettre à jour un formulaire de méta-demande depuis le ticket"
 
-#: src/Task.php:661 src/Task.php:665
+#: src/Task.php:669 src/Task.php:673
 msgid "Root"
 msgstr "Racine"
 
@@ -2743,7 +2743,7 @@ msgstr "Zone de commentaire"
 msgid "Thanks to fill mandatory fields"
 msgstr "Merci de remplir les champs requis"
 
-#: src/Metademand.php:1436 src/Metademand.php:1546 src/Task.php:976
+#: src/Metademand.php:1436 src/Metademand.php:1546 src/Task.php:984
 #: src/TicketTask.php:523
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
@@ -3182,7 +3182,7 @@ msgctxt "button"
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: src/Task.php:1111
+#: src/Task.php:1119
 msgctxt "button"
 msgid "Update block to use"
 msgstr "Mettre à jour le bloc à utiliser"
@@ -3451,7 +3451,7 @@ msgstr ""
 msgid "You don't have the right to update tickets"
 msgstr "Vous n'avez pas le droit de mettre à jour les tickets"
 
-#: src/Task.php:440
+#: src/Task.php:448
 msgid "You don't have the ticket creation right"
 msgstr "Vous n'avez pas le droit de créer des tickets"
 

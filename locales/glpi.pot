@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 12:42+0000\n"
+"POT-Creation-Date: 2026-11-17 10:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,7 +132,7 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-#: src/Task.php:613 src/MetademandTask.php:285
+#: src/Task.php:621 src/MetademandTask.php:285
 msgid "Active entity"
 msgstr ""
 
@@ -371,8 +371,8 @@ msgid_plural "Blocks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Step.php:387 src/Step.php:599 src/Step.php:613 src/Task.php:673
-#: src/Task.php:1134 src/FieldOption.php:1620 src/TicketTask.php:223
+#: src/Step.php:387 src/Step.php:599 src/Step.php:613 src/Task.php:681
+#: src/Task.php:1142 src/FieldOption.php:1620 src/TicketTask.php:223
 #: src/MailTask.php:170 ⁨standard input⁩:196 ⁨standard input⁩:42
 #, php-format
 msgid "Block %s"
@@ -1026,7 +1026,7 @@ msgstr ""
 msgid "Edit translation"
 msgstr ""
 
-#: src/MailTask.php:241 tests/MailTaskTest.php:371
+#: src/MailTask.php:241 tests/MailTaskTest.php:370
 msgid "Email sent"
 msgstr ""
 
@@ -1114,8 +1114,8 @@ msgstr ""
 msgid "Export the metademand to XML format for use on another GLPI"
 msgstr ""
 
-#: src/MailTask.php:210 src/MailTask.php:235 tests/MailTaskTest.php:247
-#: tests/MailTaskTest.php:372
+#: src/MailTask.php:210 src/MailTask.php:235 tests/MailTaskTest.php:246
+#: tests/MailTaskTest.php:371
 msgid "Fail to send email"
 msgstr ""
 
@@ -2189,7 +2189,7 @@ msgstr ""
 msgid "Recipient"
 msgstr ""
 
-#: src/Task.php:649
+#: src/Task.php:657
 msgid "Recipients"
 msgstr ""
 
@@ -2296,7 +2296,7 @@ msgstr[1] ""
 msgid "Right to update a meta-demand form from the ticket"
 msgstr ""
 
-#: src/Task.php:661 src/Task.php:665
+#: src/Task.php:669 src/Task.php:673
 msgid "Root"
 msgstr ""
 
@@ -2644,7 +2644,7 @@ msgstr ""
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: src/Metademand.php:1436 src/Metademand.php:1546 src/Task.php:976
+#: src/Metademand.php:1436 src/Metademand.php:1546 src/Task.php:984
 #: src/TicketTask.php:523
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
@@ -3045,7 +3045,7 @@ msgctxt "button"
 msgid "Update"
 msgstr ""
 
-#: src/Task.php:1111
+#: src/Task.php:1119
 msgctxt "button"
 msgid "Update block to use"
 msgstr ""
@@ -3299,7 +3299,7 @@ msgstr ""
 msgid "You don't have the right to update tickets"
 msgstr ""
 
-#: src/Task.php:440
+#: src/Task.php:448
 msgid "You don't have the ticket creation right"
 msgstr ""
 
