@@ -883,7 +883,7 @@ class FieldOption extends CommonDBChild
             'hidden_link' => $this->fields['hidden_link'] ?? 0,
             'hidden_block' => $this->fields['hidden_block'] ?? 0,
             'hidden_block_same_block' => $this->fields['hidden_block_same_block'] ?? 0,
-            'custom_values' => $custom_values ?? 0,
+            'custom_values' => $custom_values,
             'use_richtext' => $metademand_params->fields['use_richtext'] ?? 0,
             'display_type' => ($item->fields['type'] == 'dropdown_multiple') ?? $metademand_params->fields['display_type'] ?? 0,
             'check_value' => $this->fields['check_value'] ?? 0,
