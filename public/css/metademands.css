@@ -2405,3 +2405,18 @@ select.md-yesno-buttons[data-md-yesno]:not(.select2-hidden-accessible) {
 .md-rule-none .md-rule-arrow {
     opacity: .6;
 }
+
+/* A type not offered: a second title in a block (field_type_picker.js) */
+.md-type-card:disabled {
+    cursor: not-allowed;
+    opacity: .6;
+}
+
+.md-type-card:disabled:hover {
+    border-color: var(--tblr-border-color);
+    box-shadow: none;
+}
+
+.md-type-desc.md-type-taken {
+    color: var(--tblr-orange);
+}

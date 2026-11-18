@@ -829,6 +829,8 @@ async function openAddModal(button) {
                 select.add(new Option(rank, rank));
             }
             select.value = rank;
+            // Read by field_type_picker.js: a block title is not offered in a titled block
+            select.dataset.mdRankLocked = '1';
             select.dispatchEvent(new Event('change', {bubbles: true}));
 
             // The block was chosen by the button: read only. Not disabled, a disabled select
