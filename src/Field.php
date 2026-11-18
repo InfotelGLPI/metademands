@@ -579,6 +579,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
         $this->restoreSavedInput((int) $ID);
 
+        $blocks = self::getBlockChoices((int) $this->fields['plugin_metademands_metademands_id']);
+
         TemplateRenderer::getInstance()->display('@metademands/field_existing_form.html.twig', [
             'action'         => Toolbox::getItemTypeFormURL(Field::class),
             'metademand_id'  => $this->fields['plugin_metademands_metademands_id'],
@@ -590,8 +592,10 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             ),
             'type_rand'      => mt_rand(),
             'rank'           => $this->fields["rank"],
+            'rank_choices'   => $blocks['choices'],
             'rank_rand'      => mt_rand(),
-            'max_fields'     => self::MAX_FIELDS,
+            // An existing block title is not added to a block that already has one
+            'titled_blocks'  => $blocks['titled'],
             'order'          => $this->getOrderDropdownData($this->fields),
             'is_title_block' => ($this->fields['type'] ?? '') === 'title-block',
             'plugin_web_dir' => PLUGIN_METADEMANDS_WEBDIR,
@@ -776,18 +780,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             $is_recursive = $this->fields["is_recursive"] ?? 0;
         }
 
-        // The blocks, named by their title; a new field cannot be a second title of a block
-        $block_titles  = FieldOption::getBlockTitles((int) $this->fields['plugin_metademands_metademands_id']);
-        $rank_choices  = [];
-        for ($block_rank = 1; $block_rank <= self::MAX_FIELDS; $block_rank++) {
-            $rank_choices[$block_rank] = FieldOption::getBlockLabel($block_rank, $block_titles);
-        }
-        $titled_blocks = [];
-        if ($ID < 1) {
-            foreach ($block_titles as $block_rank => $block_title) {
-                $titled_blocks[] = ['rank' => $block_rank, 'title' => $block_title];
-            }
-        }
+        $blocks = self::getBlockChoices((int) $this->fields['plugin_metademands_metademands_id']);
 
         TemplateRenderer::getInstance()->display('@metademands/field_form.html.twig', [
             'action'                 => Toolbox::getItemTypeFormURL(Field::class),
@@ -827,14 +820,15 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'params_type'            => $params_type,
             'basket_warning'         => $basket_warning,
             'rank'                   => $this->fields["rank"],
-            'rank_choices'           => $rank_choices,
+            'rank_choices'           => $blocks['choices'],
             'rank_rand'              => mt_rand(),
             'item_selector'          => $item_selector,
             'item_fixed'             => $item_fixed,
             'item_fixed_name'        => $item_fixed === null ? '' : self::getFieldItemsName($this->fields['type'], $item_fixed),
             'params_item'            => $params_item,
             'is_title_block'         => ($this->fields['type'] ?? '') === 'title-block',
-            'titled_blocks'          => $titled_blocks,
+            // The blocks that already have a title: a new field cannot be a second one
+            'titled_blocks'          => $ID < 1 ? $blocks['titled'] : [],
             'text_hints'             => self::getTextHints(),
             'order'                  => $this->getOrderDropdownData($this->fields),
             'customvalues_warning'   => $customvalues_warning,
@@ -1169,6 +1163,31 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'to_complete' => $to_complete,
             'type_filter' => $type_filter,
         ]);
+    }
+
+    /**
+     * The "Block" dropdown of the field forms: every block of the page, named by its title,
+     * and the blocks that already have an active one (a new block title is not offered them,
+     * see field_type_picker.js and prepareInputForAdd(); an inactive title does not count,
+     * its block has no title in the wizard).
+     *
+     * @param int $metademands_id
+     *
+     * @return array{choices: array<int, string>, titled: list<array{rank: int, title: string}>}
+     */
+    private static function getBlockChoices(int $metademands_id): array
+    {
+        $titles  = FieldOption::getBlockTitles($metademands_id);
+        $choices = [];
+        for ($rank = 1; $rank <= self::MAX_FIELDS; $rank++) {
+            $choices[$rank] = FieldOption::getBlockLabel($rank, $titles);
+        }
+        $titled = [];
+        foreach (FieldOption::getBlockTitles($metademands_id, true) as $rank => $title) {
+            $titled[] = ['rank' => $rank, 'title' => $title];
+        }
+
+        return ['choices' => $choices, 'titled' => $titled];
     }
 
     /**
@@ -2967,11 +2986,14 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             return false;
         }
 
-        // One title per block, from the new field form (_unique_block_title, warned beforehand by
-        // field_type_picker.js); the duplication and the import copy the fields as they are
-        if (!empty($input['_unique_block_title']) && ($input['type'] ?? '') === 'title-block') {
+        // One active title per block, from the new and existing field forms (_unique_block_title,
+        // whose block lists leave out the titled blocks, see field_type_picker.js); an inactive
+        // title is not in the wizard. The duplication and the import copy the fields as they are.
+        if (!empty($input['_unique_block_title'])
+            && ($input['type'] ?? '') === 'title-block'
+            && (int) ($input['is_active'] ?? 1) === 1) {
             $rank   = (int) ($input['rank'] ?? 0);
-            $titles = FieldOption::getBlockTitles((int) ($input['plugin_metademands_metademands_id'] ?? 0));
+            $titles = FieldOption::getBlockTitles((int) ($input['plugin_metademands_metademands_id'] ?? 0), true);
             if (isset($titles[$rank])) {
                 // Given back to the form displayed after the redirect (restoreSavedInput())
                 $_SESSION['glpi_plugin_metademands_fields'][0] = $input;
@@ -3596,6 +3618,14 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
         }
 
+        // A new field goes after the last field of its block by default, a field taken to
+        // another block too (its previous field stayed in the former one)
+        if ((empty($params['id']) && empty($previous_fields_id))
+            || (!empty($previous_fields_id) && !isset($select[$previous_fields_id]))) {
+            $fields_ids = array_keys($select);
+            $previous_fields_id = end($fields_ids) ?: 0;
+        }
+
         return ['select' => $select, 'value' => $previous_fields_id];
     }
 
@@ -3606,6 +3636,12 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
     {
         $previousfield = new self();
         $new_order = [];
+
+        // The wizard shows the title of a block only when it is its first field
+        // (Wizard::displayBlockContent()): a block title saved by a form always goes first
+        if (($input['type'] ?? '') === 'title-block') {
+            $input['plugin_metademands_fields_id'] = 0;
+        }
 
         // Set current field after selected field
         if (!empty($input['plugin_metademands_fields_id'])) {

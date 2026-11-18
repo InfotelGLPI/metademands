@@ -928,7 +928,8 @@ document.addEventListener('click', (event) => {
         return;
     }
 
-    const mandatory = target.closest('[data-md-field-mandatory]');
+    // The badges of the rows only: the forms of the modals are inside the list too
+    const mandatory = target.closest('button[data-md-field-mandatory]');
     if (mandatory !== null) {
         event.preventDefault();
         if (!mandatory.disabled) {
