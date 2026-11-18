@@ -27,6 +27,24 @@
 
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
 
+{#- A row of the custom values typed in the new field form -#}
+{% macro new_value_row(index, value) %}
+    <div class="input-group mb-1 md-new-value" data-md-new-value>
+        <input type="text" class="form-control" name="_custom_values[{{ index }}][name]"
+               value="{{ value.name ?? '' }}" data-md-new-value-name
+               placeholder="{{ __('Value', 'metademands') }}" aria-label="{{ __('Value', 'metademands') }}">
+        <label class="input-group-text gap-2" title="{{ __('Default value', 'metademands') }}">
+            <input type="checkbox" class="form-check-input m-0" name="_custom_values[{{ index }}][is_default]"
+                   value="1" data-md-new-value-default{{ (value.is_default ?? false) ? ' checked' }}>
+            <span class="d-none d-md-inline">{{ __('Default value', 'metademands') }}</span>
+        </label>
+        <button type="button" class="btn btn-icon" data-md-new-value-remove
+                title="{{ _x('button', 'Delete permanently') }}" aria-label="{{ _x('button', 'Delete permanently') }}">
+            <i class="ti ti-x"></i>
+        </button>
+    </div>
+{% endmacro %}
+
 {#-
  # Form of a field of a metademand (Field::showForm()).
  #
@@ -43,7 +61,11 @@
 
 {% do call('Html::requireJs', ['tinymce']) %}
 
-<form name="form" method="post" action="{{ action }}">
+{#- A new field is added in two steps: its type is chosen among cards grouped by family, then
+ # its settings are shown (public/scripts/field_type_picker.js). The cards drive the "type"
+ # dropdown, kept hidden, whose change still reloads the object selector. -#}
+{% set picking_type = is_new and type is empty %}
+<form name="form" method="post" action="{{ action }}" data-md-field-form>
     {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
     {% if not is_new %}{{ inputs.hidden('id', field_id) }}{% endif %}
     {{ inputs.hidden('entities_id', entities_id) }}
@@ -59,6 +81,63 @@
     <div class="card mt-2">
         <div class="card-body">
 
+            {% if is_new %}
+                {# Step 1: the type #}
+                <div class="md-type-picker" data-md-type-picker{{ picking_type ? '' : ' hidden' }}>
+                    <div class="input-icon mb-3">
+                        <span class="input-icon-addon"><i class="ti ti-search"></i></span>
+                        <input type="search" class="form-control" data-md-type-search
+                               placeholder="{{ __('Search a type (text, date, list…)', 'metademands') }}"
+                               aria-label="{{ __('Search a type (text, date, list…)', 'metademands') }}">
+                    </div>
+                    {% for group in type_groups %}
+                        <div class="md-type-group md-type-family-{{ group.key }}" data-md-type-group>
+                            <div class="md-type-group-title">{{ group.label }}</div>
+                            <div class="md-type-grid">
+                                {% for type_card in group.types %}
+                                    <button type="button" class="md-type-card"
+                                            data-md-type-card="{{ type_card.type }}"
+                                            data-md-type-family="{{ group.key }}"
+                                            data-md-type-icon="{{ type_card.icon }}"
+                                            data-md-type-name="{{ type_card.name }}">
+                                        <span class="md-type-icon"><i class="ti {{ type_card.icon }}"></i></span>
+                                        <span class="md-type-text">
+                                            <span class="md-type-name">{{ type_card.name }}</span>
+                                            {% if type_card.description is not empty %}
+                                                <span class="md-type-desc">{{ type_card.description }}</span>
+                                            {% endif %}
+                                        </span>
+                                    </button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="text-muted text-center py-3" data-md-type-none hidden>{{ __('No type matches the search', 'metademands') }}</div>
+                </div>
+            {% endif %}
+
+            {# Step 2 of a new field, or the form of an existing one #}
+            <div data-md-field-settings{{ picking_type ? ' hidden' : '' }}>
+
+            {% if is_new %}
+                <div class="md-type-chosen md-type-family-{{ type_family }}">
+                    <span class="md-type-icon" data-md-type-chosen-icon><i class="ti {{ type_icon }}"></i></span>
+                    <div class="flex-fill">
+                        <div class="text-muted small">{{ __('Type') }}</div>
+                        <b data-md-type-chosen-name>{{ type_chosen_name }}</b>
+                    </div>
+                    <button type="button" class="btn btn-ghost-primary btn-sm" data-md-type-change>
+                        <i class="ti ti-arrow-left me-1"></i>{{ __('Change the type', 'metademands') }}
+                    </button>
+                    {# The type the cards set: its change reloads the object selector #}
+                    <span class="d-none">
+                        {% do call('Dropdown::showFromArray', ['type', type_options, {'value': type, 'rand': type_rand}]) %}
+                        {% do call('Ajax::updateItemOnSelectEvent', ['dropdown_type' ~ type_rand, 'show_values', ajax_url, params_type]) %}
+                    </span>
+                </div>
+                {# A new field is active #}
+                {{ inputs.hidden('is_active', 1) }}
+            {% else %}
             {# Active / inactive, saved with the form: an inactive field is left out of the
                wizard, the ticket and the PDF (the indicator follows the switch, see
                .md-active-switch in metademands.css) #}
@@ -81,6 +160,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
 
             {# Libellé #}
             <div class="row mb-3">
@@ -92,8 +172,11 @@
                 </div>
             </div>
 
-            {# Libellé 2 + Commentaire #}
-            <div class="row mb-3">
+            {# Libellé 2 + Commentaire: folded for a new field, unfolded by
+               field_type_picker.js for the intervals, whose additional label is mandatory #}
+            {% if is_new %}<details class="md-field-more mb-3" data-md-field-more{{ show_label2_required or label2 is not empty or comment is not empty ? ' open' : '' }}>
+                <summary class="fw-bold">{{ __('Additional label and comments', 'metademands') }}</summary>{% endif %}
+            <div class="row mb-3{{ is_new ? ' mt-2' : '' }}">
                 <div class="col-6">
                     <label class="form-label fw-bold">
                         {{ __('Additional label', 'metademands') }}
@@ -111,9 +194,28 @@
                         'enable_images': true, 'cols': 50, 'rows': 3}]) %}
                 </div>
             </div>
+            {% if is_new %}</details>{% endif %}
 
-            {# Type + Bloc #}
+            {# Type + Bloc; for a new field, whose type is shown above: Bloc + Mandatory #}
             <div class="row mb-3">
+                {% if is_new %}
+                    {# Not for the titles and the informations, which are never mandatory #}
+                    <div class="col-6 order-2" data-md-field-mandatory>
+                        <label class="form-label fw-bold" for="md-field-mandatory">{{ __('Mandatory field') }}</label>
+                        <label class="form-check form-switch mt-1 mb-0">
+                            <input type="hidden" name="_is_mandatory" value="0">
+                            <input type="checkbox" class="form-check-input" id="md-field-mandatory"
+                                   name="_is_mandatory" value="1"{{ is_mandatory_new ? ' checked' }}>
+                        </label>
+                    </div>
+                    {% if basket_warning %}
+                        <div class="col-12 order-3">
+                            <div class="alert alert-warning d-flex mt-1">
+                                <span>{{ __("Remember to activate basket mode on your metademand !", 'metademands') }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
                 <div class="col-6">
                     <label class="form-label fw-bold">
                         {{ __('Type') }} <span class="text-danger">*</span>
@@ -131,7 +233,8 @@
                         </div>
                     {% endif %}
                 </div>
-                <div class="col-6">
+                {% endif %}
+                <div class="col-6{{ is_new ? ' order-1' : '' }}">
                     <label class="form-label fw-bold">{{ __('Block', 'metademands') }}</label>
                     {% do call('Dropdown::showNumber', ['rank', {'value': rank, 'min': 1, 'max': max_fields, 'rand': rank_rand}]) %}
                     {% do call('Ajax::updateItemOnSelectEvent', [
@@ -179,10 +282,35 @@
                 </div>
             {% endif %}
 
+            {% if is_new %}
+                {#- The custom values of a checkbox, a radio button or a specific dropdown, typed
+                 # at once (FieldCustomvalue::addInitialValues()); disabled, so not posted, for
+                 # the other types (public/scripts/field_type_picker.js) -#}
+                {% set initial_values = new_custom_values is not empty ? new_custom_values : [{}] %}
+                <fieldset class="md-new-values mb-3" data-md-new-values
+                          data-md-new-values-next="{{ initial_values|length }}"{{ new_values_shown ? '' : ' hidden disabled' }}>
+                    <legend class="form-label fw-bold mb-1">{{ __('Custom values', 'metademands') }}</legend>
+                    <div class="form-text mt-0 mb-2">
+                        {{ __('Enter adds a value, a pasted list gives one value per line. They can be changed afterwards.', 'metademands') }}
+                    </div>
+                    <div data-md-new-values-list>
+                        {% for value in initial_values %}
+                            {{ _self.new_value_row(loop.index0, value) }}
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary mt-1" data-md-new-value-add>
+                        <i class="ti ti-plus me-1"></i>{{ __('Add a value', 'metademands') }}
+                    </button>
+                    <template data-md-new-value-template>{{ _self.new_value_row('__INDEX__', {}) }}</template>
+                </fieldset>
+            {% endif %}
+
             <div id="show_values"></div>
 
+            </div>{# data-md-field-settings #}
+
         </div>
-        <div class="card-footer d-flex justify-content-end gap-2">
+        <div class="card-footer md-field-footer" data-md-field-settings{{ picking_type ? ' hidden' : '' }}>
             {% if is_new %}
                 <button class="btn btn-secondary" type="submit" name="add_another" value="1">
                     <i class="ti ti-plus"></i>

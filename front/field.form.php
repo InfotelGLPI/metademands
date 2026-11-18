@@ -95,7 +95,14 @@ if (isset($_POST["add_another"])) {
             $inputp['plugin_metademands_fields_id'] = $_POST['id'];
             $fieldparameter->add($inputp);
         } else {
-            $fieldparameter->add(["plugin_metademands_fields_id" => $_POST['id']]);
+            // "Mandatory" switch of the new field form (never for the titles and the informations)
+            $fieldparameter->add([
+                "plugin_metademands_fields_id" => $_POST['id'],
+                "is_mandatory"                 => !in_array($_POST['type'] ?? '', Field::$field_title_types, true)
+                    && !empty($_POST['_is_mandatory']) ? 1 : 0,
+            ]);
+            // Custom values typed in the new field form (checkbox, radio, specific dropdowns)
+            FieldCustomvalue::addInitialValues((int) $_POST['id'], $_POST['_custom_values'] ?? []);
         }
 
         if (isset($_POST['existing_field_id'])
@@ -138,7 +145,14 @@ if (isset($_POST["add_another"])) {
             $inputp['plugin_metademands_fields_id'] = $_POST['id'];
             $fieldparameter->add($inputp);
         } else {
-            $fieldparameter->add(["plugin_metademands_fields_id" => $_POST['id']]);
+            // "Mandatory" switch of the new field form (never for the titles and the informations)
+            $fieldparameter->add([
+                "plugin_metademands_fields_id" => $_POST['id'],
+                "is_mandatory"                 => !in_array($_POST['type'] ?? '', Field::$field_title_types, true)
+                    && !empty($_POST['_is_mandatory']) ? 1 : 0,
+            ]);
+            // Custom values typed in the new field form (checkbox, radio, specific dropdowns)
+            FieldCustomvalue::addInitialValues((int) $_POST['id'], $_POST['_custom_values'] ?? []);
         }
 
         if (isset($_POST['existing_field_id'])

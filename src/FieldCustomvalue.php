@@ -79,6 +79,66 @@ class FieldCustomvalue extends CommonDBChild
     private static array $rows_cache = [];
 
     /**
+     * Whether a field of this type and object takes its choices from custom values: the
+     * values the new field form offers to type at once (addInitialValues()). A specific or
+     * multiple dropdown only once "custom values" (other) is chosen as its object.
+     *
+     * @param string $type
+     * @param string|null $item
+     *
+     * @return bool
+     */
+    public static function hasInitialValues(string $type, ?string $item): bool
+    {
+        return in_array($type, ['checkbox', 'radio'], true)
+            || (in_array($type, ['dropdown_meta', 'dropdown_multiple'], true) && $item === 'other');
+    }
+
+    /**
+     * Custom values typed in the new field form, added with the field: the empty ones are
+     * skipped, the ranks follow the order typed. A radio button or a specific dropdown keeps
+     * one default value, the first one.
+     *
+     * @param int $fields_id the field just added
+     * @param mixed $values  posted _custom_values: list of {name, is_default}
+     *
+     * @return int number of values added
+     */
+    public static function addInitialValues(int $fields_id, $values): int
+    {
+        $field = new Field();
+        if (!is_array($values) || !$field->getFromDB($fields_id)
+            || !self::hasInitialValues((string) $field->fields['type'], $field->fields['item'])) {
+            return 0;
+        }
+
+        $single_default = in_array($field->fields['type'], ['radio', 'dropdown_meta'], true);
+        $has_default = false;
+        $rank = 0;
+        foreach ($values as $value) {
+            $name = is_array($value) ? trim((string) ($value['name'] ?? '')) : '';
+            if ($name === '') {
+                continue;
+            }
+            $is_default = !empty($value['is_default']) && !($single_default && $has_default);
+            $has_default = $has_default || $is_default;
+
+            $customvalue = new self();
+            if ($customvalue->add([
+                'plugin_metademands_fields_id' => $fields_id,
+                'name'                         => $name,
+                'rank'                         => $rank,
+                'is_default'                   => $is_default ? 1 : 0,
+                'comment'                      => '',
+            ])) {
+                $rank++;
+            }
+        }
+
+        return $rank;
+    }
+
+    /**
      * Batch-load FieldCustomvalue rows for the given field IDs into the static cache.
      */
     public static function preloadForFields(array $field_ids): void

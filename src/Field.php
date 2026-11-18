@@ -793,6 +793,22 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'type'                   => $this->fields['type'] ?? '',
             'type_options'           => $type_options,
             'type_name'              => $type_options === null ? self::getFieldTypesName($this->fields['type'] ?? '') : '',
+            // Type picker of a new field (the type is chosen first, then the settings)
+            'type_groups'            => $ID < 1 && $type_options !== null ? self::getFieldTypePickerGroups($type_options) : [],
+            'type_icon'              => self::getFieldTypeIcon((string) ($this->fields['type'] ?? '')),
+            'type_family'            => self::getFieldTypeFamily((string) ($this->fields['type'] ?? '')),
+            'type_chosen_name'       => ($this->fields['type'] ?? '') !== '' ? self::getFieldTypesName($this->fields['type']) : '',
+            // "Mandatory" of a new field, given back after a refused add (restoreSavedInput())
+            'is_mandatory_new'       => !empty($this->fields['_is_mandatory']),
+            // Custom values typed in the new field form, given back the same way
+            'new_custom_values'      => array_values(array_filter(
+                is_array($this->fields['_custom_values'] ?? null) ? $this->fields['_custom_values'] : [],
+                'is_array',
+            )),
+            'new_values_shown'       => $ID < 1 && FieldCustomvalue::hasInitialValues(
+                (string) ($this->fields['type'] ?? ''),
+                $this->fields['item'] ?? '',
+            ),
             'type_rand'              => $type_rand,
             'ajax_url'               => $ajax_url,
             'params_type'            => $params_type,
@@ -1141,7 +1157,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
     }
 
     /**
-     * Tabler icon of a field type, for the field list of the "Wizard creation" tab
+     * Tabler icon of a field type, for the field list of the "Wizard creation" tab and the
+     * type picker of the new field form
      */
     public static function getFieldTypeIcon(string $type): string
     {
@@ -1149,6 +1166,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'title' => 'ti-heading',
             'title-block' => 'ti-layout-navbar',
             'informations' => 'ti-info-circle',
+            'text' => 'ti-cursor-text',
             'tel' => 'ti-phone',
             'email' => 'ti-mail',
             'url', 'link' => 'ti-link',
@@ -1173,6 +1191,122 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'parent_field' => 'ti-arrow-back-up',
             default => 'ti-forms',
         };
+    }
+
+    /**
+     * Families of the type picker of the new field form, in display order: the types of
+     * other plugins go to the last one
+     */
+    private const FIELD_TYPE_FAMILIES = [
+        'layout'   => ['title-block', 'title', 'informations'],
+        'text'     => ['text', 'textarea', 'email', 'tel', 'url', 'signature'],
+        'choice'   => ['yesno', 'radio', 'checkbox', 'dropdown_meta', 'dropdown_multiple'],
+        'glpi'     => ['dropdown', 'dropdown_object', 'dropdown_ldap'],
+        'date'     => ['number', 'range', 'date', 'time', 'datetime', 'date_interval', 'datetime_interval'],
+        'advanced' => ['upload', 'link', 'freetable', 'basket', 'parent_field'],
+    ];
+
+    /**
+     * Family of a field type in the type picker
+     */
+    public static function getFieldTypeFamily(string $type): string
+    {
+        foreach (self::FIELD_TYPE_FAMILIES as $family => $types) {
+            if (in_array($type, $types, true)) {
+                return $family;
+            }
+        }
+
+        return 'advanced';
+    }
+
+    /**
+     * One line explaining a field type, in the type picker of the new field form
+     */
+    public static function getFieldTypeDescription(string $type): string
+    {
+        return match ($type) {
+            'title-block'       => __('Starts a new block of the form', 'metademands'),
+            'title'             => __('Heading of a section in a block', 'metademands'),
+            'informations'      => __('Help or warning shown to the requester', 'metademands'),
+            'text'              => __('Short answer on one line', 'metademands'),
+            'textarea'          => __('Long answer, rich text possible', 'metademands'),
+            'email'             => __('Checked email address', 'metademands'),
+            'tel'               => __('Checked phone number', 'metademands'),
+            'url'               => __('Address of a web page', 'metademands'),
+            'signature'         => __('Signature drawn with the mouse or a finger', 'metademands'),
+            'yesno'             => __('Two-way choice, buttons or switch', 'metademands'),
+            'radio'             => __('One choice among your values', 'metademands'),
+            'checkbox'          => __('Several choices among your values', 'metademands'),
+            'dropdown_meta'     => __('Your values, or urgency, impact, priority…', 'metademands'),
+            'dropdown_multiple' => __('Several choices in a list', 'metademands'),
+            'dropdown'          => __('A GLPI dropdown: location, category…', 'metademands'),
+            'dropdown_object'   => __('User, group, asset, ticket…', 'metademands'),
+            'dropdown_ldap'     => __('Value read from an LDAP directory', 'metademands'),
+            'number'            => __('Numeric value, with bounds', 'metademands'),
+            'range'             => __('Slider between two bounds', 'metademands'),
+            'date'              => __('A day', 'metademands'),
+            'time'              => __('A time', 'metademands'),
+            'datetime'          => __('A day and a time', 'metademands'),
+            'date_interval'     => __('From… to…', 'metademands'),
+            'datetime_interval' => __('From… to…, with the times', 'metademands'),
+            'upload'            => __('Files attached to the ticket', 'metademands'),
+            'link'              => __('Button or link to a page', 'metademands'),
+            'freetable'         => __('Lines typed by the requester', 'metademands'),
+            'basket'            => __('Items with quantities', 'metademands'),
+            'parent_field'      => __('Value of a field of the parent form', 'metademands'),
+            default             => '',
+        };
+    }
+
+    /**
+     * Types offered by the type picker of the new field form, grouped by family
+     *
+     * @param array<string, string> $type_options type => name, see getFieldTypesOptions()
+     *
+     * @return list<array{key: string, label: string, types: list<array{type: string, name: string, icon: string, description: string}>}>
+     */
+    public static function getFieldTypePickerGroups(array $type_options): array
+    {
+        $labels = [
+            'layout'   => __('Layout', 'metademands'),
+            'text'     => __('Text input', 'metademands'),
+            'choice'   => __('Choices', 'metademands'),
+            'glpi'     => __('GLPI data', 'metademands'),
+            'date'     => __('Numbers and dates', 'metademands'),
+            'advanced' => __('Files and advanced', 'metademands'),
+        ];
+
+        $types_by_family = array_fill_keys(array_keys($labels), []);
+        // Known types in the order of their family, then the types of other plugins
+        $ordered = array_merge(...array_values(self::FIELD_TYPE_FAMILIES));
+        $keys = array_keys($type_options);
+        usort($keys, static function ($a, $b) use ($ordered) {
+            $rank_a = array_search($a, $ordered, true);
+            $rank_b = array_search($b, $ordered, true);
+            return ($rank_a === false ? PHP_INT_MAX : $rank_a) <=> ($rank_b === false ? PHP_INT_MAX : $rank_b);
+        });
+        foreach ($keys as $type) {
+            $type = (string) $type;
+            if ($type === '' || $type === '0') {
+                continue;
+            }
+            $types_by_family[self::getFieldTypeFamily($type)][] = [
+                'type'        => $type,
+                'name'        => (string) $type_options[$type],
+                'icon'        => self::getFieldTypeIcon($type),
+                'description' => self::getFieldTypeDescription($type),
+            ];
+        }
+
+        $groups = [];
+        foreach ($types_by_family as $key => $types) {
+            if ($types !== []) {
+                $groups[] = ['key' => $key, 'label' => $labels[$key], 'types' => $types];
+            }
+        }
+
+        return $groups;
     }
 
     /**

@@ -67,6 +67,7 @@
         <file>tests/FieldSavedInputTest.php</file>
         <file>tests/HiddenBlockTicketTest.php</file>
         <file>tests/AutoSolveParentTest.php</file>
+        <file>tests/FieldInitialValuesTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>
