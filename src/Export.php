@@ -2116,6 +2116,15 @@ class Export extends CommonDBTM
             if ($users_id_validate != 0) {
                 $toUpdate["users_id_validate"] = $users_id_validate;
             }
+            // Any value but the value to check; the validation template when it exists here
+            if (!empty($old["is_negated"])) {
+                $toUpdate["is_negated"] = 1;
+            }
+            $validation_template = new \ITILValidationTemplate();
+            if ((int) ($old["itilvalidationtemplates_id"] ?? 0) > 0
+                && $validation_template->getFromDB((int) $old["itilvalidationtemplates_id"])) {
+                $toUpdate["itilvalidationtemplates_id"] = $validation_template->getID();
+            }
             $validation_fields_ids = array_values(array_filter(array_map(
                 static fn(int $id) => $mapTableField[$id] ?? 0,
                 $validation_fields_ids,

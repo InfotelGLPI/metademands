@@ -299,6 +299,7 @@ class Ldapdropdown extends CommonDBTM
                 'regex_html'        => '',
                 'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
+                'negation'          => FieldOption::getNegationContext($params),
             ],
         );
     }

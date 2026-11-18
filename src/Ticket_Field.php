@@ -217,6 +217,7 @@ class Ticket_Field extends CommonDBTM
         $iterator = $DB->request([
             'SELECT'    => [
                 'glpi_plugin_metademands_fieldoptions.check_value',
+                'glpi_plugin_metademands_fieldoptions.is_negated',
                 'glpi_plugin_metademands_fields.type',
                 'glpi_plugin_metademands_fieldoptions.plugin_metademands_fields_id AS option_fields_id',
                 'glpi_plugin_metademands_fieldoptions.plugin_metademands_tasks_id',
@@ -254,16 +255,22 @@ class Ticket_Field extends CommonDBTM
 
                 $plugin_metademands_tasks_id = $data['plugin_metademands_tasks_id'];
                 $check_values = $data['check_value'];
+                // An option on any value but one is met by the other values
+                $option = [
+                    'plugin_metademands_fields_id' => (int) $data['option_fields_id'],
+                    'check_value'                  => $check_values,
+                    'is_negated'                   => (int) ($data['is_negated'] ?? 0),
+                ];
                 $is_active = !isset($inactive_fields[(int) $data['option_fields_id']]);
                 if (is_array($tasks_id)) {
                     foreach ($tasks_id as $task) {
                         if ($task == $plugin_metademands_tasks_id) {
-                            $test = $is_active && self::isCheckValueOKFieldsLinks(FieldParameter::_unserialize($data['field_value']) ?? $data['field_value'], $check_values, $data['type']);
+                            $test = $is_active && FieldOption::isMetBy(FieldParameter::_unserialize($data['field_value']) ?? $data['field_value'], $option, (string) $data['type']);
                             $check[] = ($test == false) ? 0 : 1;
                         }
                     }
                 } elseif ($tasks_id == $plugin_metademands_tasks_id) {
-                    $test = $is_active && self::isCheckValueOKFieldsLinks(FieldParameter::_unserialize($data['field_value']) ?? $data['field_value'], $check_values, $data['type']);
+                    $test = $is_active && FieldOption::isMetBy(FieldParameter::_unserialize($data['field_value']) ?? $data['field_value'], $option, (string) $data['type']);
                     $check[] = ($test == false) ? 0 : 1;
                 }
             }

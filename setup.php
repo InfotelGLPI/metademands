@@ -133,7 +133,8 @@ function plugin_init_metademands()
         if (isset($_SESSION['glpiactiveprofile']['interface'])
             && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = "scripts/plugin_metademands_sortable.js";
-            $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['metademands'][] = "scripts/fieldoption_valuetocheck.js";
+            // ES module: the option list of a field and the option form of its modal
+            $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = "scripts/fieldoption_valuetocheck.js";
             // ES modules: the "Wizard creation" tab (Field::listFields()) and the "save all"
             // button of the custom values of a field
             $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = "scripts/field_list.js";

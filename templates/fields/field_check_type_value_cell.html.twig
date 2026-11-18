@@ -26,7 +26,7 @@
  #}
 
 {#
- # "Type of value to check" cell, next to the value cell it drives.
+ # "Type of value to check" selector, next to the value widget it drives.
  #
  # Expected context (include it with `only`):
  #  - option_id: id of the option being edited
@@ -34,9 +34,9 @@
  #  - value:     selected choice
  #}
 
-<td style="text-align: right"
+<div class="md-option-check-type"
     data-md-option-id="{{ option_id }}"
     data-md-check-type="1"
     data-md-tech-group="1">
     {% do call('Dropdown::showFromArray', ['check_type_value', choices, {'value': value}]) %}
-</td>
+</div>

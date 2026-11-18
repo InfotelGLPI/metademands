@@ -26,46 +26,92 @@
  #}
 
 {#-
- # Emits <tr> rows only: the caller renders this inside an already open <table>.
+ # Actions of an option (FieldOption::showLinkHtml()), chosen as cards: an action switched
+ # on shows its settings; switched off, its settings are disabled, so not posted, and its
+ # "resets" are posted instead to empty it. See public/scripts/fieldoption_valuetocheck.js.
  #
  # Expected context:
- #  - blocks: rows built by FieldOption::showLinkHtml(), of three kinds:
- #     - row:    label, comment, alert_lines, widget_alert, widgets and widget_span;
- #               each widget is a GLPI helper printing itself, {callable, args}
+ #  - blocks: built by FieldOption::showLinkHtml(), of three kinds:
+ #     - row:    an action: key, icon, color, active, resets (name => value posted when off),
+ #               label, comment, alert_lines, widget_alert, widgets and widget_span; each
+ #               widget is a GLPI helper printing itself, {callable, args, label}
  #     - hidden: name and value of a hidden input
- #     - raw:    html, the options a plugin prints (showOptions() hook)
+ #     - raw:    html, the <tr> rows a plugin prints (showOptions() hook)
 -#}
-{% for block in blocks %}
-    {% if block.kind == 'hidden' %}
-        <input type="hidden" name="{{ block.name }}" value="{{ block.value }}">
-    {% elseif block.kind == 'raw' %}
-        {# raw: markup returned by the showOptions() hook of a third-party plugin, not ours to escape (§3.2) #}
-        {{ block.html|raw }}
-    {% else %}
-        <tr>
-            <td colspan="2">
-                {{ block.label }}
-                <br>
-                <span class="alert alert-danger metademands_wizard_comments">{{ block.comment }}</span>
-                {% if block.alert_lines is not empty %}
-                    <div class="alert alert-danger">
-                        {%- for line in block.alert_lines -%}
-                            {{ line }}{% if not loop.last %}<br>{% endif %}
-                        {%- endfor -%}
-                    </div>
-                {% endif %}
-            </td>
-            <td>
-                {% if block.widget_alert %}
-                    <span class="alert alert-warning d-flex">{{ block.widget_alert }}</span>
-                {% endif %}
-                {% for widget in block.widgets %}
-                    {% do call(widget.callable, widget.args) %}
-                {% endfor %}
-                {% if block.widget_span is not null %}
-                    <span id="{{ block.widget_span.id }}">{% do call(block.widget_span.widget.callable, block.widget_span.widget.args) %}</span>
-                {% endif %}
-            </td>
-        </tr>
-    {% endif %}
+{% set actions = blocks|filter(block => block.kind == 'row') %}
+{% set others = blocks|filter(block => block.kind == 'raw') %}
+
+{% for block in blocks|filter(block => block.kind == 'hidden') %}
+    <input type="hidden" name="{{ block.name }}" value="{{ block.value }}">
 {% endfor %}
+
+{% if actions is not empty or others is not empty %}
+    <div class="md-option-step-title">
+        <span class="md-option-step-number">2</span>{{ _n('Action', 'Actions', 2) }}
+    </div>
+{% endif %}
+
+{% if actions is not empty %}
+    <div class="md-action-grid">
+        {% for block in actions %}
+            <button type="button" class="md-action-card md-action-{{ block.color }}{{ block.active ? ' active' }}"
+                    data-md-action="{{ block.key }}" aria-pressed="{{ block.active ? 'true' : 'false' }}"
+                    title="{{ block.comment }}">
+                <span class="md-action-icon"><i class="ti {{ block.icon }}"></i></span>
+                <span class="md-action-name">{{ block.label }}</span>
+                <i class="ti ti-check md-action-check"></i>
+            </button>
+        {% endfor %}
+    </div>
+
+    {% for block in actions %}
+        <fieldset class="md-action-panel md-action-{{ block.color }}" data-md-action-panel="{{ block.key }}"
+                  {{ block.active ? '' : 'disabled hidden' }}>
+            <legend class="md-action-panel-title">
+                <span class="md-action-icon"><i class="ti {{ block.icon }}"></i></span>{{ block.label }}
+            </legend>
+            <div class="form-text mt-0 mb-2">{{ block.comment }}</div>
+            {% if block.alert_lines is not empty %}
+                <div class="alert alert-warning py-2">
+                    {%- for line in block.alert_lines -%}
+                        {{ line }}{% if not loop.last %}<br>{% endif %}
+                    {%- endfor -%}
+                </div>
+            {% endif %}
+            {% if block.widget_alert %}
+                <div class="alert alert-warning py-2">{{ block.widget_alert }}</div>
+            {% endif %}
+            {% for widget in block.widgets %}
+                {% if widget.label is not empty %}
+                    <div class="md-action-row">
+                        <span class="md-action-row-label">{{ widget.label }}</span>
+                        <div class="md-action-row-widget">{% do call(widget.callable, widget.args) %}</div>
+                    </div>
+                {% else %}
+                    <div class="md-action-row-widget">{% do call(widget.callable, widget.args) %}</div>
+                {% endif %}
+            {% endfor %}
+            {% if block.widget_span is not null %}
+                <div class="md-action-row-widget mt-2" id="{{ block.widget_span.id }}">{% do call(block.widget_span.widget.callable, block.widget_span.widget.args) %}</div>
+            {% endif %}
+        </fieldset>
+        {% if block.resets is not empty %}
+            <fieldset data-md-action-reset="{{ block.key }}" hidden {{ block.active ? 'disabled' : '' }}>
+                {% for name, value in block.resets %}
+                    <input type="hidden" name="{{ name }}" value="{{ value }}">
+                {% endfor %}
+            </fieldset>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% if others is not empty %}
+    <table class="tab_cadre w-100 mt-3">
+        <tbody>
+        {% for block in others %}
+            {# raw: markup returned by the showOptions() hook of a third-party plugin, not ours to escape (§3.2) #}
+            {{ block.html|raw }}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

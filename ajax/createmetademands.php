@@ -295,8 +295,8 @@ if ($nofreetable == false) {
                         }
 
                         foreach ($data as $idf => $form_data_fields) {
-                            $fieldopt = new FieldOption();
-                            if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $idf])) {
+                            // An option on any value but one applies to each other value
+                            if ($opts = FieldOption::findApplied(["plugin_metademands_fields_id" => $idf])) {
                                 foreach ($opts as $opt) {
                                     $check_value = $opt["check_value"];
 

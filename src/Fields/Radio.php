@@ -127,9 +127,10 @@ class Radio extends CommonDBTM
                 }
 
                 $childs_blocks = [];
-                $fieldopt = new FieldOption();
-                if ($opts = $fieldopt->find(
-                    ["plugin_metademands_fields_id" => $data['id'], "check_value" => $key],
+                // An option on any value but one applies to each other value
+                if ($opts = array_filter(
+                    FieldOption::findApplied(["plugin_metademands_fields_id" => $data['id']]),
+                    static fn($opt) => (string) $opt['check_value'] === (string) $key,
                 )) {
                     foreach ($opts as $opt) {
                         if (!empty($opt['childs_blocks'])) {
@@ -226,6 +227,7 @@ class Radio extends CommonDBTM
                 'regex_html'        => '',
                 'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
+                'negation'          => FieldOption::getNegationContext($params),
             ],
         );
     }

@@ -34,6 +34,7 @@ use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldCustomvalue;
 use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\Metademand;
+use ITILValidationTemplate;
 
 /**
  * Option list of a field (field_option_options.html.twig): the values are escaped by
@@ -116,8 +117,8 @@ class FieldOptionListTest extends DbTestCase
         $_SESSION['glpiactiveprofile'][Field::$rightname] = ALLSTANDARDRIGHT;
         $html = $this->renderOptions($field);
 
-        // The value to check is shown escaped, in the badge of its rule
-        $this->assertMatchesRegularExpression('/<span class="badge bg-purple-lt[^"]*"[^>]*>&lt;b&gt;Option&lt;\/b&gt;<\/span>/', $html);
+        // The value to check is shown escaped, in its rule
+        $this->assertMatchesRegularExpression('/<span class="md-rule-value"[^>]*>&lt;b&gt;Option&lt;\/b&gt;<\/span>/', $html);
         $this->assertStringNotContainsString(self::LABEL, $html);
         // The only scripts left are the ones of the core massive actions
         foreach (['showFieldOptionModal', 'addOption', 'reloadviewOption', 'viewEditOption'] as $generated) {
@@ -145,5 +146,143 @@ class FieldOptionListTest extends DbTestCase
         $this->assertStringContainsString('&lt;b&gt;Option&lt;/b&gt;', $html);
         $this->assertStringNotContainsString('data-md-option-', $html);
         $this->assertStringNotContainsString('_glpi_csrf_token', $html);
+    }
+    /**
+     * A radio field (ACCIDENT, INCIDENT, SUGGESTION) of block 1, a block 2 titled
+     * "Second block" and a text field.
+     *
+     * @return array{Field, array<string, int>, Field}
+     */
+    private function createRadioForm(): array
+    {
+        $metademand = $this->createItem(Metademand::class, [
+            'name'             => 'Rules',
+            'entities_id'      => $this->getTestRootEntity(true),
+            'object_to_create' => 'Ticket',
+            'type'             => 0,
+        ]);
+        $field = fn(string $name, string $type, int $rank) => $this->createItem(Field::class, [
+            'plugin_metademands_metademands_id' => $metademand->getID(),
+            'type'                              => $type,
+            'item'                              => $type === 'radio' ? 'radio' : '',
+            'name'                              => $name,
+            'rank'                              => $rank,
+            'order'                             => 1,
+            'entities_id'                       => $this->getTestRootEntity(true),
+        ], ['item']);
+
+        $radio  = $field('Kind', 'radio', 1);
+        $values = [];
+        foreach (['ACCIDENT', 'INCIDENT', 'SUGGESTION'] as $rank => $name) {
+            $values[$name] = $this->createItem(FieldCustomvalue::class, [
+                'plugin_metademands_fields_id' => $radio->getID(),
+                'name'                         => $name,
+                'rank'                         => $rank,
+                'is_default'                   => 0,
+            ])->getID();
+        }
+        $field('Second block', 'title-block', 2);
+        $text = $field('Comment', 'text', 2);
+
+        return [$radio, $values, $text];
+    }
+
+    /**
+     * Option form of a field, as the modal loads it.
+     */
+    private function renderForm(Field $field, int $options_id = -1): string
+    {
+        ob_start();
+        (new FieldOption())->showForm($options_id, ['parent' => $field]);
+
+        return (string) ob_get_clean();
+    }
+
+    public function testRulesNameTheirBlocksAndListTheValuesWithoutOption(): void
+    {
+        $this->login();
+        [$radio, $values] = $this->createRadioForm();
+        $this->createItem(FieldOption::class, [
+            'plugin_metademands_fields_id' => $radio->getID(),
+            'check_value'                  => $values['ACCIDENT'],
+            'is_negated'                   => 1,
+            'hidden_block'                 => 2,
+        ], ['check_value']);
+
+        $_SESSION['glpiactiveprofile'][Field::$rightname] = ALLSTANDARDRIGHT;
+        $html = $this->renderOptions($radio);
+
+        // "≠ ACCIDENT → Block 2 · Second block"
+        $this->assertMatchesRegularExpression('/<span class="badge bg-orange-lt md-rule-op"[^>]*>≠<\/span>/', $html);
+        $this->assertMatchesRegularExpression('/<span class="md-rule-value"[^>]*>ACCIDENT<\/span>/', $html);
+        $this->assertStringContainsString('Block 2 · Second block', $html);
+        // The option applies to INCIDENT and SUGGESTION: only ACCIDENT is left without option
+        $this->assertSame(1, preg_match_all('/data-md-option-value="(\d+)"/', $html, $matches));
+        $this->assertSame((string) $values['ACCIDENT'], $matches[1][0]);
+    }
+
+    public function testFormOffersTheNegationAndTheValidationTemplate(): void
+    {
+        $this->login();
+        [$radio, $values, $text] = $this->createRadioForm();
+        $_SESSION['glpiactiveprofile'][Field::$rightname] = ALLSTANDARDRIGHT;
+
+        $html = $this->renderForm($radio);
+        $this->assertMatchesRegularExpression('/<input type="radio" class="btn-check" name="is_negated" value="0"[^>]*checked>/', $html);
+        $this->assertMatchesRegularExpression('/<input type="radio" class="btn-check" name="is_negated" value="1"/', $html);
+        // The validation: its approver and its template, switched off on a new option
+        $this->assertMatchesRegularExpression('/data-md-action="validation" aria-pressed="false"/', $html);
+        $this->assertMatchesRegularExpression('/<fieldset[^>]*data-md-action-panel="validation"\s+disabled hidden>/', $html);
+        $this->assertStringContainsString('name="itilvalidationtemplates_id"', $html);
+        $this->assertMatchesRegularExpression(
+            '/<fieldset data-md-action-reset="validation" hidden >\s*<input type="hidden" name="users_id_validate" value="0">\s*<input type="hidden" name="itilvalidationtemplates_id" value="0">/',
+            $html,
+        );
+        // The settings of the two block actions are one card
+        $this->assertStringNotContainsString('data-md-action="same_block"', $html);
+        $this->assertStringContainsString('Block 2 · Second block', $html);
+
+        // A text field has no values to exclude
+        $html = $this->renderForm($text);
+        $this->assertStringContainsString('<input type="hidden" name="is_negated" value="0">', $html);
+        $this->assertStringNotContainsString('btn-check', $html);
+    }
+
+    public function testFormShowsTheActionsOfTheOptionSwitchedOn(): void
+    {
+        $this->login();
+        [$radio, $values] = $this->createRadioForm();
+        $_SESSION['glpiactiveprofile'][Field::$rightname] = ALLSTANDARDRIGHT;
+        $template = $this->createItem(ITILValidationTemplate::class, [
+            'name'        => 'Template',
+            'entities_id' => $this->getTestRootEntity(true),
+        ]);
+        $option = $this->createItem(FieldOption::class, [
+            'plugin_metademands_fields_id' => $radio->getID(),
+            'check_value'                  => $values['INCIDENT'],
+            'is_negated'                   => 1,
+            'itilvalidationtemplates_id'   => $template->getID(),
+        ], ['check_value']);
+
+        $html = $this->renderForm($radio, $option->getID());
+        $this->assertMatchesRegularExpression('/name="is_negated" value="1"[^>]*checked>/', $html);
+        $this->assertMatchesRegularExpression('/data-md-action="validation" aria-pressed="true"/', $html);
+        $this->assertMatchesRegularExpression('/<fieldset[^>]*data-md-action-panel="validation"\s+>/', $html);
+        $this->assertStringContainsString('<fieldset data-md-action-reset="validation" hidden disabled>', $html);
+        $this->assertMatchesRegularExpression('/data-md-action="task" aria-pressed="false"/', $html);
+
+        // Reloaded after a change of the value: the actions switched on stay on
+        $_POST = [
+            'check_value'    => (string) $values['SUGGESTION'],
+            'is_negated'     => '0',
+            'active_actions' => '["task"]',
+        ];
+        try {
+            $html = $this->renderForm($radio);
+        } finally {
+            $_POST = [];
+        }
+        $this->assertMatchesRegularExpression('/data-md-action="task" aria-pressed="true"/', $html);
+        $this->assertMatchesRegularExpression('/name="is_negated" value="0"[^>]*checked>/', $html);
     }
 }
