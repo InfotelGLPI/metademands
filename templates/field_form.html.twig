@@ -53,7 +53,9 @@
  #                     (type_name is then displayed instead)
  #  - type_rand:       rand of the "Type" dropdown, listened to by the object selector
  #  - ajax_url, params_type, params_item: Ajax reloads driven by the "Type" dropdown
- #  - rank, rank_rand, max_fields: "Block" dropdown
+ #  - rank, rank_choices, rank_rand: "Block" dropdown, its blocks named by their title
+ #  - titled_blocks:   [{rank, title}] of the blocks that already have a title (new field)
+ #  - text_hints:      Field::getTextHints(), what the additional label and the comments become
  #  - item_selector:   options of the object selector, or null
  #  - item_fixed:      fixed object (item_fixed_name is displayed), or null
  #  - order:           {select, value} of the "Display field after" dropdown
@@ -65,9 +67,18 @@
  # its settings are shown (public/scripts/field_type_picker.js). The cards drive the "type"
  # dropdown, kept hidden, whose change still reloads the object selector. -#}
 {% set picking_type = is_new and type is empty %}
-<form name="form" method="post" action="{{ action }}" data-md-field-form>
+{#- data-md-text-hints: what the additional label and the comments become, by type;
+ # data-md-titled-blocks: the blocks that already have a title (field_type_picker.js) -#}
+<form name="form" method="post" action="{{ action }}" data-md-field-form
+      data-md-text-hints="{{ text_hints|json_encode }}"
+      {% if is_new %}
+          data-md-titled-blocks="{{ titled_blocks|json_encode }}"
+          data-md-titled-message="{{ __('Block %1$s already has a block title: %2$s', 'metademands') }}"
+      {% endif %}>
     {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
     {% if not is_new %}{{ inputs.hidden('id', field_id) }}{% endif %}
+    {#- One title per block (Field::prepareInputForAdd()) #}
+    {% if is_new %}{{ inputs.hidden('_unique_block_title', 1) }}{% endif %}
     {{ inputs.hidden('entities_id', entities_id) }}
     {{ inputs.hidden('is_recursive', is_recursive) }}
     {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
@@ -106,6 +117,11 @@
                                             <span class="md-type-name">{{ type_card.name }}</span>
                                             {% if type_card.description is not empty %}
                                                 <span class="md-type-desc">{{ type_card.description }}</span>
+                                            {% endif %}
+                                            {% if type_card.type == 'title-block' %}
+                                                <span class="md-type-desc md-type-taken" data-md-type-taken hidden>
+                                                    <i class="ti ti-alert-triangle me-1"></i>{{ __('This block already has a title', 'metademands') }}
+                                                </span>
                                             {% endif %}
                                         </span>
                                     </button>
@@ -179,17 +195,19 @@
                 <summary class="fw-bold">{{ __('Additional label and comments', 'metademands') }}</summary>{% endif %}
             <div class="row mb-3{{ is_new ? ' mt-2' : '' }}">
                 <div class="col-6">
-                    <label class="form-label fw-bold">
+                    <label class="form-label fw-bold mb-0">
                         {{ __('Additional label', 'metademands') }}
                         <span id="show_label2"
                               class="text-danger"{{ not show_label2_required ? ' style="display:none;"' }}>*</span>
                     </label>
+                    <div class="form-text mt-0 mb-1" data-md-text-hint="label2">{{ (text_hints[type] ?? text_hints['']).label2 }}</div>
                     {% do call('Html::textarea', [{'name': 'label2', 'value': label2,
                         'enable_richtext': true, 'enable_fileupload': false,
                         'enable_images': true, 'cols': 50, 'rows': 3}]) %}
                 </div>
                 <div class="col-6">
-                    <label class="form-label fw-bold">{{ __('Comments') }}</label>
+                    <label class="form-label fw-bold mb-0">{{ __('Comments') }}</label>
+                    <div class="form-text mt-0 mb-1" data-md-text-hint="comment">{{ (text_hints[type] ?? text_hints['']).comment }}</div>
                     {% do call('Html::textarea', [{'name': 'comment', 'value': comment,
                         'enable_richtext': true, 'enable_fileupload': false,
                         'enable_images': true, 'cols': 50, 'rows': 3}]) %}
@@ -237,7 +255,9 @@
                 {% endif %}
                 <div class="col-6{{ is_new ? ' order-1' : '' }}">
                     <label class="form-label fw-bold">{{ __('Block', 'metademands') }}</label>
-                    {% do call('Dropdown::showNumber', ['rank', {'value': rank, 'min': 1, 'max': max_fields, 'rand': rank_rand}]) %}
+                    {#- Every block in the page, named by its title: field_type_picker.js leaves
+                     # out the titled ones for a new block title -#}
+                    {% do call('Dropdown::showFromArray', ['rank', rank_choices, {'value': rank, 'rand': rank_rand}]) %}
                     {% do call('Ajax::updateItemOnSelectEvent', [
                         'dropdown_rank' ~ rank_rand,
                         'show_order',
@@ -245,6 +265,12 @@
                         {'rank': '__VALUE__', 'step': 'order', 'fields_id': field_id,
                             'metademands_id': metademand_id, 'previous_fields_id': prev_fields_id}
                     ]) %}
+                    {% if is_new %}
+                        {# A block title in a block that already has one (field_type_picker.js) #}
+                        <div class="alert alert-warning d-flex align-items-start gap-2 py-2 mt-2 mb-0" data-md-titled-warning hidden>
+                            <i class="ti ti-alert-triangle mt-1"></i><span data-md-titled-warning-text></span>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
 

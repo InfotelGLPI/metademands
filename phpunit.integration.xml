@@ -68,6 +68,7 @@
         <file>tests/AutoSolveParentTest.php</file>
         <file>tests/FieldInitialValuesTest.php</file>
         <file>tests/FieldOptionNegationTest.php</file>
+        <file>tests/FieldBlockTitleTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

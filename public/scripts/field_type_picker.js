@@ -104,6 +104,107 @@ function addValueRow(fieldset, after = null, name = '') {
 }
 
 /**
+ * What the additional label and the comments become for the type (Field::getTextHints())
+ *
+ * @param {Element} form
+ */
+function refreshTextHints(form) {
+    let hints = {};
+    try {
+        hints = JSON.parse(form.dataset.mdTextHints || '{}');
+    } catch {
+        return;
+    }
+    const type = form.querySelector('select[name="type"], input[name="type"]')?.value ?? '';
+    const hint = hints[type] ?? hints[''] ?? {};
+    form.querySelectorAll('[data-md-text-hint]').forEach((element) => {
+        element.textContent = hint[element.dataset.mdTextHint] ?? '';
+    });
+}
+
+/** All the blocks of a "Block" dropdown, before any of them is left out */
+const ALL_BLOCKS = new WeakMap();
+
+/**
+ * Leave the given blocks out of a "Block" dropdown (its select2 reads the options each
+ * time it opens), the others back in their order; the first block left is chosen when the
+ * chosen one goes. Nothing is left out when no block would remain.
+ *
+ * @param {HTMLSelectElement} select
+ * @param {string[]} left_out
+ */
+function filterTitledBlocks(select, left_out) {
+    if (!ALL_BLOCKS.has(select)) {
+        ALL_BLOCKS.set(select, Array.from(select.options));
+    }
+    let wanted = ALL_BLOCKS.get(select).filter((option) => !left_out.includes(option.value));
+    if (wanted.length === 0) {
+        wanted = ALL_BLOCKS.get(select);
+    }
+    const value = select.value;
+    if (wanted.length !== select.options.length || wanted.some((option, index) => select.options[index] !== option)) {
+        select.replaceChildren(...wanted);
+    }
+    if (wanted.some((option) => option.value === value)) {
+        select.value = value;
+    } else {
+        select.value = wanted[0].value;
+        // The "Display field after" list and the select2 follow the block
+        select.dispatchEvent(new Event('change', {bubbles: true}));
+    }
+}
+
+/**
+ * One title per block: the "Block title" card is not offered when the block was chosen by
+ * its button and already has a title; otherwise the "Block" dropdown of a block title only
+ * offers the blocks without one. Should a titled block still be chosen, it is warned about
+ * and the field cannot be added (Field::prepareInputForAdd() refuses it too).
+ *
+ * @param {Element} form
+ */
+function refreshBlockTitle(form) {
+    if (!form.hasAttribute('data-md-titled-blocks')) {
+        return;
+    }
+    let titled = [];
+    try {
+        titled = JSON.parse(form.dataset.mdTitledBlocks || '[]');
+    } catch {
+        return;
+    }
+    const rank_select = form.querySelector('select[name="rank"]');
+    const type = form.querySelector('select[name="type"]')?.value ?? '';
+    if (rank_select instanceof HTMLSelectElement && rank_select.dataset.mdRankLocked !== '1') {
+        filterTitledBlocks(rank_select, type === 'title-block' ? titled.map((block) => String(block.rank)) : []);
+    }
+    const rank = rank_select?.value ?? '';
+    const existing = titled.find((block) => String(block.rank) === rank);
+
+    const card = form.querySelector('[data-md-type-card="title-block"]');
+    if (card instanceof HTMLButtonElement) {
+        const taken = rank_select?.dataset.mdRankLocked === '1' && existing !== undefined;
+        card.disabled = taken;
+        card.querySelector('[data-md-type-taken]')?.toggleAttribute('hidden', !taken);
+    }
+
+    const clash = type === 'title-block' && existing !== undefined;
+    const warning = form.querySelector('[data-md-titled-warning]');
+    if (warning !== null) {
+        warning.hidden = !clash;
+        const text = warning.querySelector('[data-md-titled-warning-text]');
+        if (text !== null && existing !== undefined) {
+            text.textContent = (form.dataset.mdTitledMessage ?? '')
+                .replace('%1$s', String(existing.rank))
+                .replace('%2$s', String(existing.title));
+        }
+    }
+    form.querySelectorAll('button[type="submit"][name="add"], button[type="submit"][name="add_another"]')
+        .forEach((button) => {
+            button.disabled = clash;
+        });
+}
+
+/**
  * @param {Element} form
  * @param {1|2} step 1: the type, 2: the settings
  */
@@ -125,6 +226,9 @@ function normalize(text) {
  * @param {HTMLElement} card
  */
 function chooseType(form, card) {
+    if (card instanceof HTMLButtonElement && card.disabled) {
+        return;
+    }
     const type = card.dataset.mdTypeCard;
 
     const chosen = form.querySelector('.md-type-chosen');
@@ -142,7 +246,8 @@ function chooseType(form, card) {
     }
 
     form.querySelector('[data-md-field-mandatory]')?.toggleAttribute('hidden', TITLE_TYPES.includes(type));
-    if (INTERVAL_TYPES.includes(type)) {
+    // The additional label of an interval is mandatory, the comments of an information are its content
+    if (INTERVAL_TYPES.includes(type) || type === 'informations') {
         form.querySelector('[data-md-field-more]')?.setAttribute('open', '');
     }
 
@@ -153,6 +258,8 @@ function chooseType(form, card) {
     }
     // The object selector reloads with its empty choice
     refreshValues(form, '');
+    refreshTextHints(form);
+    refreshBlockTitle(form);
 
     showStep(form, 2);
     form.querySelector('input[name="name"]')?.focus();
@@ -286,7 +393,25 @@ if (typeof window.jQuery === 'function') {
     window.jQuery(document).on('change', '[data-md-field-form] select[name="item"]', function () {
         refreshValues(this.closest('[data-md-field-form]'));
     });
+    // The block (also set by the "Add a field in this block" button, natively) and the type
+    // of an existing field
+    window.jQuery(document).on('change', '[data-md-field-form] select[name="rank"]', function () {
+        refreshBlockTitle(this.closest('[data-md-field-form]'));
+    });
+    window.jQuery(document).on('change', '[data-md-field-form] select[name="type"]', function () {
+        refreshTextHints(this.closest('[data-md-field-form]'));
+    });
 }
+
+// A form given back after a refused add opens on its settings: its block is checked at once
+document.addEventListener('shown.bs.modal', (event) => {
+    if (event.target instanceof Element) {
+        event.target.querySelectorAll('[data-md-field-form]').forEach((form) => {
+            refreshTextHints(form);
+            refreshBlockTitle(form);
+        });
+    }
+});
 
 document.addEventListener('input', (event) => {
     if (event.target instanceof HTMLInputElement && event.target.matches('[data-md-type-search]')) {
@@ -313,7 +438,8 @@ document.addEventListener('keydown', (event) => {
         return;
     }
     event.preventDefault();
-    const shown = filterTypes(event.target.closest('[data-md-type-picker]'), event.target.value);
+    const shown = filterTypes(event.target.closest('[data-md-type-picker]'), event.target.value)
+        .filter((card) => !(card instanceof HTMLButtonElement && card.disabled));
     if (shown.length === 1) {
         chooseType(event.target.closest('[data-md-field-form]'), shown[0]);
     }

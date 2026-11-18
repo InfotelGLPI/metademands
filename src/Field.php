@@ -776,6 +776,19 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             $is_recursive = $this->fields["is_recursive"] ?? 0;
         }
 
+        // The blocks, named by their title; a new field cannot be a second title of a block
+        $block_titles  = FieldOption::getBlockTitles((int) $this->fields['plugin_metademands_metademands_id']);
+        $rank_choices  = [];
+        for ($block_rank = 1; $block_rank <= self::MAX_FIELDS; $block_rank++) {
+            $rank_choices[$block_rank] = FieldOption::getBlockLabel($block_rank, $block_titles);
+        }
+        $titled_blocks = [];
+        if ($ID < 1) {
+            foreach ($block_titles as $block_rank => $block_title) {
+                $titled_blocks[] = ['rank' => $block_rank, 'title' => $block_title];
+            }
+        }
+
         TemplateRenderer::getInstance()->display('@metademands/field_form.html.twig', [
             'action'                 => Toolbox::getItemTypeFormURL(Field::class),
             'metademand_id'          => $this->fields['plugin_metademands_metademands_id'],
@@ -814,13 +827,15 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'params_type'            => $params_type,
             'basket_warning'         => $basket_warning,
             'rank'                   => $this->fields["rank"],
+            'rank_choices'           => $rank_choices,
             'rank_rand'              => mt_rand(),
-            'max_fields'             => self::MAX_FIELDS,
             'item_selector'          => $item_selector,
             'item_fixed'             => $item_fixed,
             'item_fixed_name'        => $item_fixed === null ? '' : self::getFieldItemsName($this->fields['type'], $item_fixed),
             'params_item'            => $params_item,
             'is_title_block'         => ($this->fields['type'] ?? '') === 'title-block',
+            'titled_blocks'          => $titled_blocks,
+            'text_hints'             => self::getTextHints(),
             'order'                  => $this->getOrderDropdownData($this->fields),
             'customvalues_warning'   => $customvalues_warning,
             'prev_fields_id'         => $this->fields['plugin_metademands_fields_id'] ?? 0,
@@ -1154,6 +1169,48 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'to_complete' => $to_complete,
             'type_filter' => $type_filter,
         ]);
+    }
+
+    /**
+     * What the additional label and the comments of a field become in the wizard, by type,
+     * shown under them in the field form ('' for the other types). See displayFieldByType(),
+     * Information::showWizardField(), Link::showWizardField(), the intervals and the titles.
+     *
+     * @return array<string, array{label2: string, comment: string}>
+     */
+    public static function getTextHints(): array
+    {
+        $default = [
+            'label2'  => __('Shown under the field, as a help text', 'metademands'),
+            'comment' => __('Shown in a tooltip next to the label', 'metademands'),
+        ];
+        $placeholder = __('Placeholder: the text shown in the field while it is empty', 'metademands');
+        $title = [
+            'label2'  => __('Shown in a tooltip next to the title', 'metademands'),
+            'comment' => __('Shown under the title', 'metademands'),
+        ];
+        $interval = [
+            'label2'  => __('Label of the end date', 'metademands'),
+            'comment' => $default['comment'],
+        ];
+
+        return [
+            ''                  => $default,
+            'text'              => ['comment' => $placeholder] + $default,
+            'tel'               => ['comment' => $placeholder] + $default,
+            'email'             => ['comment' => $placeholder] + $default,
+            'url'               => ['comment' => $placeholder] + $default,
+            'textarea'          => ['comment' => $placeholder] + $default,
+            'informations'      => [
+                'label2'  => __('Content of the information block, after the comments', 'metademands'),
+                'comment' => __('Content of the information block', 'metademands'),
+            ],
+            'date_interval'     => $interval,
+            'datetime_interval' => $interval,
+            'link'              => ['label2' => __('Text of the button, when the link is shown as a button', 'metademands')] + $default,
+            'title'             => $title,
+            'title-block'       => $title,
+        ];
     }
 
     /**
@@ -2904,6 +2961,23 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
         if (!$this->checkMandatoryFields($input)) {
             return false;
+        }
+
+        // One title per block, from the new field form (_unique_block_title, warned beforehand by
+        // field_type_picker.js); the duplication and the import copy the fields as they are
+        if (!empty($input['_unique_block_title']) && ($input['type'] ?? '') === 'title-block') {
+            $rank   = (int) ($input['rank'] ?? 0);
+            $titles = FieldOption::getBlockTitles((int) ($input['plugin_metademands_metademands_id'] ?? 0));
+            if (isset($titles[$rank])) {
+                // Given back to the form displayed after the redirect (restoreSavedInput())
+                $_SESSION['glpi_plugin_metademands_fields'][0] = $input;
+                Session::addMessageAfterRedirect(
+                    sprintf(__('Block %1$s already has a block title: %2$s', 'metademands'), $rank, $titles[$rank]),
+                    false,
+                    ERROR,
+                );
+                return false;
+            }
         }
 
         //      $meta = new Metademand();
