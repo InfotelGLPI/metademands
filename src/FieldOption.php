@@ -1913,19 +1913,27 @@ class FieldOption extends CommonDBChild
     }
 
     /**
-     * Titles of the blocks of a metademand, from their "title-block" fields.
+     * Titles of the blocks of a metademand, from their "title-block" fields: the active one
+     * of a block first.
      *
-     * @param int $metademands_id
+     * @param int  $metademands_id
+     * @param bool $active_only    only the active titles: an inactive field is left out of
+     *                             the wizard, its block has no title there (one title per
+     *                             block, see Field::prepareInputForAdd())
      *
      * @return array<int, string> block number => title
      */
-    public static function getBlockTitles(int $metademands_id): array
+    public static function getBlockTitles(int $metademands_id, bool $active_only = false): array
     {
-        $titles = [];
-        foreach ((new Field())->find([
+        $criteria = [
             'plugin_metademands_metademands_id' => $metademands_id,
             'type'                              => 'title-block',
-        ], ['rank', 'order']) as $block_field) {
+        ];
+        if ($active_only) {
+            $criteria['is_active'] = 1;
+        }
+        $titles = [];
+        foreach ((new Field())->find($criteria, ['is_active DESC', 'rank', 'order']) as $block_field) {
             $titles[(int) $block_field['rank']] ??= (string) $block_field['name'];
         }
 

@@ -87,6 +87,34 @@ class FieldBlockTitleTest extends DbTestCase
         $this->assertGreaterThan(0, (new Field())->add($this->blockTitleInput($metademand, 3) + ['_unique_block_title' => 1]));
     }
 
+    public function testAnInactiveTitleLeavesItsBlockWithoutTitle(): void
+    {
+        $metademand = $this->createMetademand();
+        $this->createItem(Field::class, [
+            'plugin_metademands_metademands_id' => $metademand->getID(),
+            'type'                              => 'title-block',
+            'name'                              => 'Former title',
+            'rank'                              => 3,
+            'order'                             => 1,
+            'is_active'                         => 0,
+            'entities_id'                       => $this->getTestRootEntity(true),
+        ], ['order']);
+
+        ob_start();
+        (new Field())->showForm(-1, ['parent' => $metademand]);
+        $html = (string) ob_get_clean();
+        // Only block 2 is titled; block 3 keeps the name of its inactive title in the list
+        $this->assertStringContainsString('data-md-titled-blocks="[{&quot;rank&quot;:2,&quot;title&quot;:&quot;Accident&quot;}]"', $html);
+        $this->assertMatchesRegularExpression('/<option value=.3.[^>]*>Block 3 · Former title<\/option>/', $html);
+
+        $this->assertGreaterThan(0, (new Field())->add($this->blockTitleInput($metademand, 3) + ['_unique_block_title' => 1]));
+
+        // An inactive title copied into a titled block is not a second title in the wizard
+        $this->assertGreaterThan(0, (new Field())->add(
+            $this->blockTitleInput($metademand, 2) + ['_unique_block_title' => 1, 'is_active' => 0],
+        ));
+    }
+
     public function testCopiesKeepTheirTitlesAsTheyAre(): void
     {
         $metademand = $this->createMetademand();
@@ -110,12 +138,13 @@ class FieldBlockTitleTest extends DbTestCase
 
         $this->assertMatchesRegularExpression('/<input[^>]*name="_unique_block_title"[^>]*value="1"/', $html);
         $this->assertStringContainsString('data-md-titled-blocks="[{&quot;rank&quot;:2,&quot;title&quot;:&quot;Accident&quot;}]"', $html);
-        $this->assertStringContainsString('data-md-titled-message="Block %1$s already has a block title: %2$s"', $html);
         // The "Block" dropdown names its blocks by their title, every block in the page
         $this->assertMatchesRegularExpression('/<option value=.2.[^>]*>Block 2 · Accident<\/option>/', $html);
         $this->assertMatchesRegularExpression('/<option value=.40.[^>]*>Block 40<\/option>/', $html);
         $this->assertStringContainsString('data-md-type-taken hidden', $html);
-        $this->assertStringContainsString('data-md-titled-warning hidden', $html);
+        // The "Mandatory" switch of the form is not taken for the badge of a row of the list
+        $this->assertStringContainsString('data-md-new-mandatory', $html);
+        $this->assertStringNotContainsString('data-md-field-mandatory', $html);
         // What the additional label and the comments become, for every type
         $this->assertStringContainsString('data-md-text-hints="', $html);
         $this->assertStringContainsString('Placeholder: the text shown in the field while it is empty', $html);
@@ -123,6 +152,19 @@ class FieldBlockTitleTest extends DbTestCase
             '/data-md-text-hint="label2">Shown under the field, as a help text<\/div>/',
             $html,
         );
+    }
+
+    public function testTheExistingFieldFormKnowsTheTitledBlocks(): void
+    {
+        $metademand = $this->createMetademand();
+
+        ob_start();
+        (new Field())->showExistingForm(-1, ['parent' => $metademand]);
+        $html = (string) ob_get_clean();
+
+        $this->assertMatchesRegularExpression('/<input[^>]*name="_unique_block_title"[^>]*value="1"/', $html);
+        $this->assertStringContainsString('data-md-titled-blocks="[{&quot;rank&quot;:2,&quot;title&quot;:&quot;Accident&quot;}]"', $html);
+        $this->assertMatchesRegularExpression('/<option value=.2.[^>]*>Block 2 · Accident<\/option>/', $html);
     }
 
     public function testAnExistingFieldShowsTheHintsOfItsType(): void

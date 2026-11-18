@@ -71,10 +71,7 @@
  # data-md-titled-blocks: the blocks that already have a title (field_type_picker.js) -#}
 <form name="form" method="post" action="{{ action }}" data-md-field-form
       data-md-text-hints="{{ text_hints|json_encode }}"
-      {% if is_new %}
-          data-md-titled-blocks="{{ titled_blocks|json_encode }}"
-          data-md-titled-message="{{ __('Block %1$s already has a block title: %2$s', 'metademands') }}"
-      {% endif %}>
+      {% if is_new %}data-md-titled-blocks="{{ titled_blocks|json_encode }}"{% endif %}>
     {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
     {% if not is_new %}{{ inputs.hidden('id', field_id) }}{% endif %}
     {#- One title per block (Field::prepareInputForAdd()) #}
@@ -219,7 +216,7 @@
             <div class="row mb-3">
                 {% if is_new %}
                     {# Not for the titles and the informations, which are never mandatory #}
-                    <div class="col-6 order-2" data-md-field-mandatory>
+                    <div class="col-6 order-2" data-md-new-mandatory>
                         <label class="form-label fw-bold" for="md-field-mandatory">{{ __('Mandatory field') }}</label>
                         <label class="form-check form-switch mt-1 mb-0">
                             <input type="hidden" name="_is_mandatory" value="0">
@@ -265,12 +262,6 @@
                         {'rank': '__VALUE__', 'step': 'order', 'fields_id': field_id,
                             'metademands_id': metademand_id, 'previous_fields_id': prev_fields_id}
                     ]) %}
-                    {% if is_new %}
-                        {# A block title in a block that already has one (field_type_picker.js) #}
-                        <div class="alert alert-warning d-flex align-items-start gap-2 py-2 mt-2 mb-0" data-md-titled-warning hidden>
-                            <i class="ti ti-alert-triangle mt-1"></i><span data-md-titled-warning-text></span>
-                        </div>
-                    {% endif %}
                 </div>
             </div>
 
@@ -295,8 +286,10 @@
                         <input type="hidden" name="item" value="{{ item_fixed }}">
                     {% endif %}
                 </div>
+                {#- Not for a block title, always the first field of its block (Field::recalculateOrder()),
+                 # hidden as well once chosen in the new field form (field_type_picker.js) -#}
                 {% if not is_title_block %}
-                    <div class="col-6">
+                    <div class="col-6" data-md-field-order>
                         <label class="form-label fw-bold">{{ __('Display field after', 'metademands') }}</label>
                         <span id="show_order">{% do call('Dropdown::showFromArray', ['plugin_metademands_fields_id', order.select, {'value': order.value}]) %}</span>
                     </div>

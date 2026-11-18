@@ -155,12 +155,12 @@ function filterTitledBlocks(select, left_out) {
 }
 
 /**
- * One title per block: the "Block title" card is not offered when the block was chosen by
- * its button and already has a title; otherwise the "Block" dropdown of a block title only
- * offers the blocks without one. Should a titled block still be chosen, it is warned about
- * and the field cannot be added (Field::prepareInputForAdd() refuses it too).
+ * One title per block, in the new field form and the existing field form: the "Block title"
+ * card is not offered when the block was chosen by its button and already has a title;
+ * otherwise the "Block" dropdown of a block title only offers the blocks without one
+ * (Field::prepareInputForAdd() refuses a second title too).
  *
- * @param {Element} form
+ * @param {Element} form a form carrying data-md-titled-blocks
  */
 function refreshBlockTitle(form) {
     if (!form.hasAttribute('data-md-titled-blocks')) {
@@ -174,34 +174,20 @@ function refreshBlockTitle(form) {
     }
     const rank_select = form.querySelector('select[name="rank"]');
     const type = form.querySelector('select[name="type"]')?.value ?? '';
-    if (rank_select instanceof HTMLSelectElement && rank_select.dataset.mdRankLocked !== '1') {
+    const locked = rank_select?.dataset.mdRankLocked === '1';
+    // A block title always goes first in its block (Field::recalculateOrder())
+    form.querySelector('[data-md-field-order]')?.toggleAttribute('hidden', type === 'title-block');
+    if (rank_select instanceof HTMLSelectElement && !locked) {
         filterTitledBlocks(rank_select, type === 'title-block' ? titled.map((block) => String(block.rank)) : []);
     }
-    const rank = rank_select?.value ?? '';
-    const existing = titled.find((block) => String(block.rank) === rank);
 
     const card = form.querySelector('[data-md-type-card="title-block"]');
     if (card instanceof HTMLButtonElement) {
-        const taken = rank_select?.dataset.mdRankLocked === '1' && existing !== undefined;
+        const rank = rank_select?.value ?? '';
+        const taken = locked && titled.some((block) => String(block.rank) === rank);
         card.disabled = taken;
         card.querySelector('[data-md-type-taken]')?.toggleAttribute('hidden', !taken);
     }
-
-    const clash = type === 'title-block' && existing !== undefined;
-    const warning = form.querySelector('[data-md-titled-warning]');
-    if (warning !== null) {
-        warning.hidden = !clash;
-        const text = warning.querySelector('[data-md-titled-warning-text]');
-        if (text !== null && existing !== undefined) {
-            text.textContent = (form.dataset.mdTitledMessage ?? '')
-                .replace('%1$s', String(existing.rank))
-                .replace('%2$s', String(existing.title));
-        }
-    }
-    form.querySelectorAll('button[type="submit"][name="add"], button[type="submit"][name="add_another"]')
-        .forEach((button) => {
-            button.disabled = clash;
-        });
 }
 
 /**
@@ -245,7 +231,7 @@ function chooseType(form, card) {
         }
     }
 
-    form.querySelector('[data-md-field-mandatory]')?.toggleAttribute('hidden', TITLE_TYPES.includes(type));
+    form.querySelector('[data-md-new-mandatory]')?.toggleAttribute('hidden', TITLE_TYPES.includes(type));
     // The additional label of an interval is mandatory, the comments of an information are its content
     if (INTERVAL_TYPES.includes(type) || type === 'informations') {
         form.querySelector('[data-md-field-more]')?.setAttribute('open', '');
@@ -393,11 +379,16 @@ if (typeof window.jQuery === 'function') {
     window.jQuery(document).on('change', '[data-md-field-form] select[name="item"]', function () {
         refreshValues(this.closest('[data-md-field-form]'));
     });
-    // The block (also set by the "Add a field in this block" button, natively) and the type
-    // of an existing field
-    window.jQuery(document).on('change', '[data-md-field-form] select[name="rank"]', function () {
-        refreshBlockTitle(this.closest('[data-md-field-form]'));
-    });
+    // The block (also set by the "Add a field in this block" button, natively), and the type
+    // of the existing field form: one title per block
+    window.jQuery(document).on(
+        'change',
+        'form[data-md-titled-blocks] select[name="rank"], form[data-md-titled-blocks] select[name="type"]',
+        function () {
+            refreshBlockTitle(this.closest('form'));
+        },
+    );
+    // The type of an existing field: what its texts become
     window.jQuery(document).on('change', '[data-md-field-form] select[name="type"]', function () {
         refreshTextHints(this.closest('[data-md-field-form]'));
     });

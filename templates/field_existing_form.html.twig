@@ -32,14 +32,18 @@
  #
  # Expected context, besides the plain values of the field:
  #  - type_options, type_rand: "Field" dropdown, listing the field types
- #  - rank, rank_rand, max_fields: "Block" dropdown
+ #  - rank, rank_choices, rank_rand: "Block" dropdown, its blocks named by their title
+ #  - titled_blocks: [{rank, title}] of the blocks that already have a title: the "Block"
+ #    dropdown of a block title leaves them out (field_type_picker.js)
  #  - order: {select, value} of the "Display field after" dropdown
 -#}
 
-<form name="form" method="post" action="{{ action }}">
+<form name="form" method="post" action="{{ action }}" data-md-titled-blocks="{{ titled_blocks|json_encode }}">
     {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
     {{ inputs.hidden('plugin_metademands_metademands_id', metademand_id) }}
     {{ inputs.hidden('id', field_id) }}
+    {#- One title per block (Field::prepareInputForAdd()) #}
+    {{ inputs.hidden('_unique_block_title', 1) }}
 
     <div class="card mt-2">
         <div class="card-body">
@@ -62,7 +66,7 @@
             <div class="row mb-3">
                 <label class="col-4 col-form-label fw-bold">{{ __('Block', 'metademands') }}</label>
                 <div class="col-8">
-                    {% do call('Dropdown::showNumber', ['rank', {'value': rank, 'min': 1, 'max': max_fields, 'rand': rank_rand}]) %}
+                    {% do call('Dropdown::showFromArray', ['rank', rank_choices, {'value': rank, 'rand': rank_rand}]) %}
                     {% do call('Ajax::updateItemOnSelectEvent', [
                         'dropdown_rank' ~ rank_rand,
                         'show_order',
@@ -73,8 +77,9 @@
                 </div>
             </div>
 
+            {#- Not for a block title, always the first field of its block (Field::recalculateOrder()) -#}
             {% if not is_title_block %}
-                <div class="row mb-3">
+                <div class="row mb-3" data-md-field-order>
                     <label class="col-4 col-form-label fw-bold">{{ __('Display field after', 'metademands') }}</label>
                     <div class="col-8">
                         <span id="show_order">{% do call('Dropdown::showFromArray', ['plugin_metademands_fields_id', order.select, {'value': order.value}]) %}</span>

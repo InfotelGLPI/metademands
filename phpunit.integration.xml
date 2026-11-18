@@ -69,6 +69,7 @@
         <file>tests/FieldInitialValuesTest.php</file>
         <file>tests/FieldOptionNegationTest.php</file>
         <file>tests/FieldBlockTitleTest.php</file>
+        <file>tests/FieldOrderTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>
