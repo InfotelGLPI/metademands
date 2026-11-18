@@ -2048,3 +2048,115 @@ select.md-yesno-buttons[data-md-yesno]:not(.select2-hidden-accessible) {
 .md-active-switch input:not(:checked) ~ .md-active-on {
     display: none;
 }
+
+/* Type picker of the new field form (templates/field_form.html.twig,
+   public/scripts/field_type_picker.js): the types by family, as cards */
+.md-type-group {
+    margin-bottom: 1rem;
+}
+
+.md-type-group-title {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-bottom: .5rem;
+    color: var(--tblr-secondary);
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.md-type-group-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--tblr-border-color);
+}
+
+.md-type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: .5rem;
+}
+
+.md-type-card {
+    display: flex;
+    align-items: flex-start;
+    gap: .625rem;
+    padding: .625rem;
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius-lg, 8px);
+    background: var(--tblr-bg-surface);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .12s, box-shadow .12s;
+}
+
+.md-type-card:hover,
+.md-type-card:focus-visible {
+    border-color: var(--tblr-primary);
+    box-shadow: 0 0 0 .2rem var(--tblr-primary-lt);
+    outline: 0;
+}
+
+.md-type-icon {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 2.125rem;
+    height: 2.125rem;
+    border-radius: var(--tblr-border-radius-lg, 8px);
+    font-size: 1.15rem;
+    background: var(--tblr-bg-surface-secondary);
+    color: var(--tblr-secondary);
+}
+
+.md-type-name {
+    display: block;
+    font-weight: 600;
+}
+
+.md-type-desc {
+    display: block;
+    margin-top: .0625rem;
+    color: var(--tblr-secondary);
+    font-size: .8rem;
+}
+
+.md-type-family-text .md-type-icon { background: var(--tblr-blue-lt); color: var(--tblr-blue); }
+.md-type-family-choice .md-type-icon { background: var(--tblr-purple-lt); color: var(--tblr-purple); }
+.md-type-family-glpi .md-type-icon { background: var(--tblr-teal-lt); color: var(--tblr-teal); }
+.md-type-family-date .md-type-icon { background: var(--tblr-orange-lt); color: var(--tblr-orange); }
+.md-type-family-advanced .md-type-icon { background: var(--tblr-pink-lt); color: var(--tblr-pink); }
+
+/* The type chosen, above the settings of the new field */
+.md-type-chosen {
+    display: flex;
+    align-items: center;
+    gap: .625rem;
+    margin-bottom: 1rem;
+    padding: .625rem .75rem;
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius-lg, 8px);
+    background: var(--tblr-bg-surface-secondary);
+}
+
+.md-field-more {
+    padding: .5rem .75rem;
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius-lg, 8px);
+}
+
+.md-field-more > summary {
+    cursor: pointer;
+}
+
+/* Buttons of the field form: no display utility, which would beat the hidden attribute set
+   while the type of a new field is chosen */
+.md-field-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+}

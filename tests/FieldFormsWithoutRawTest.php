@@ -117,7 +117,52 @@ class FieldFormsWithoutRawTest extends DbTestCase
         }
         $this->assertMatchesRegularExpression('/id=[\'"]dropdown_type\d+[\'"]/', $html);
         // A new field is active
-        $this->assertMatchesRegularExpression('/name="is_active" value="1" checked/', $html);
+        $this->assertMatchesRegularExpression('/type="hidden"[^>]*name="is_active"[^>]*value="1"/', $html);
+
+        // Its type is chosen first among cards, by family, with the icon of the field list;
+        // the settings and the buttons wait for it
+        $this->assertMatchesRegularExpression('/<div class="md-type-picker" data-md-type-picker>/', $html);
+        $this->assertMatchesRegularExpression('/data-md-type-card="text"[^>]*data-md-type-family="text"[^>]*data-md-type-icon="ti-cursor-text"/', $html);
+        $this->assertMatchesRegularExpression('/data-md-type-card="title-block"[^>]*data-md-type-family="layout"/', $html);
+        $this->assertMatchesRegularExpression('/data-md-type-card="dropdown_meta"[^>]*data-md-type-family="choice"/', $html);
+        $this->assertStringNotContainsString('data-md-type-card=""', $html);
+        $this->assertSame(2, preg_match_all('/data-md-field-settings hidden/', $html));
+        $this->assertHasName('_is_mandatory', $html);
+        // The type dropdown, hidden, still drives the object selector
+        $this->assertMatchesRegularExpression('/<span class="d-none">\s*<select[^>]*name=[\'"]type[\'"]/', $html);
+
+        // Its type known (input given back after a refused add): the settings at once
+        $metademand_id = $metademand->getID();
+        $_SESSION['glpi_plugin_metademands_fields'][0] = [
+            'plugin_metademands_metademands_id' => $metademand_id,
+            'type'                              => 'date_interval',
+            'name'                              => 'KEPT',
+            '_is_mandatory'                     => '1',
+        ];
+        $html = $this->capture(fn() => (new Field())->showForm(-1, ['parent' => $metademand]));
+        $this->assertStringContainsString('data-md-type-picker hidden', $html);
+        $this->assertStringNotContainsString('data-md-field-settings hidden', $html);
+        $this->assertMatchesRegularExpression('/md-type-chosen md-type-family-date/', $html);
+        $this->assertMatchesRegularExpression('/id="md-field-mandatory"[^>]*checked/', $html);
+        // No custom values for an interval: disabled, so not posted
+        $this->assertMatchesRegularExpression('/data-md-new-values-next="1" hidden disabled>/', $html);
+
+        // A radio button given back with the values typed: the values shown, filled
+        $_SESSION['glpi_plugin_metademands_fields'][0] = [
+            'plugin_metademands_metademands_id' => $metademand_id,
+            'type'                              => 'radio',
+            'name'                              => 'KEPT',
+            '_custom_values'                    => [
+                ['name' => 'FIRSTVALUE'],
+                ['name' => 'SECONDVALUE', 'is_default' => '1'],
+            ],
+        ];
+        $html = $this->capture(fn() => (new Field())->showForm(-1, ['parent' => $metademand]));
+        $this->assertMatchesRegularExpression('/data-md-new-values-next="2">/', $html);
+        $this->assertMatchesRegularExpression('/name="_custom_values\[0\]\[name\]"\s+value="FIRSTVALUE"/', $html);
+        $this->assertMatchesRegularExpression('/name="_custom_values\[1\]\[is_default\]"\s+value="1" data-md-new-value-default checked/', $html);
+        // The row of a value added in the browser
+        $this->assertStringContainsString('name="_custom_values[__INDEX__][name]"', $html);
 
         $html = $this->capture(fn() => (new Field())->showExistingForm(-1, ['parent' => $metademand]));
         foreach (['type', 'rank', 'plugin_metademands_fields_id'] as $name) {

@@ -138,6 +138,8 @@ function plugin_init_metademands()
             // button of the custom values of a field
             $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = "scripts/field_list.js";
             $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = "scripts/field_customvalue_list.js";
+            // Type picker of the new field form
+            $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = "scripts/field_type_picker.js";
             // Display order of the references, in the options of a basket field
             $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT_MODULE]['metademands'][] = "scripts/basket_order.js";
         }
