@@ -26,21 +26,41 @@
  #}
 
 {#-
- # Shared "value to check" editing row of a field's condition configuration.
+ # Shared "value to check" part of the option form (field_option_form.html.twig): the
+ # condition, then the actions of FieldOption::showLinkHtml().
  #
  # Expected context:
- #  - row_class, label, label_colspan: the row and its label
- #  - regex_html: "type of value to check" cell of FieldOption::showRegexDropdown(), or ''
+ #  - label: label of the value to check
+ #  - row_class, label_colspan: no longer used, kept for the callers
+ #  - regex_html: "type of value to check" selector of FieldOption::showRegexDropdown(), or ''
  #  - valuetocheck: context of field_value_to_check_cell.html.twig
- #  - link_html: linked task / field rows of FieldOption::showLinkHtml()
- #
- # The opening <tr> is intentionally left unclosed: it is closed by the first
- # <tr> emitted inside link_html (FieldOption::showLinkHtml), matching legacy.
+ #  - negation: FieldOption::getNegationContext(), "is / is not" choice
+ #  - link_html: the actions of FieldOption::showLinkHtml()
 -#}
-<tr{% if row_class %} class="{{ row_class }}"{% endif %}>
-   <td colspan="{{ label_colspan }}">{{ label }}</td>
-   {#- raw: rendered cell of FieldOption::showRegexDropdown(), core dropdown inside (§3.2) #}
-   {{- regex_html|raw }}
-   {%- include '@metademands/fields/field_value_to_check_cell.html.twig' with valuetocheck only %}
-{# raw: rows of FieldOption::showLinkHtml(), core widgets inside (§3.2) #}
+{% set negation = negation ?? {'available': false, 'value': 0} %}
+{% set operator_id = 'md_option_operator_' ~ random() %}
+<div class="md-option-condition">
+    <span class="md-option-condition-label">{{ label }}</span>
+    {#- raw: rendered selector of FieldOption::showRegexDropdown(), core dropdown inside (§3.2) #}
+    {{- regex_html|raw }}
+    {%- if negation.available %}
+        <div class="btn-group md-option-operator" role="group" aria-label="{{ __('Condition') }}">
+            <input type="radio" class="btn-check" name="is_negated" value="0" id="{{ operator_id }}_is"
+                   {{ negation.value ? '' : 'checked' }}>
+            <label class="btn btn-sm btn-outline-secondary" for="{{ operator_id }}_is">{{ __('is') }}</label>
+            <input type="radio" class="btn-check" name="is_negated" value="1" id="{{ operator_id }}_not"
+                   {{ negation.value ? 'checked' : '' }}>
+            <label class="btn btn-sm btn-outline-orange" for="{{ operator_id }}_not">{{ __('is not') }}</label>
+        </div>
+    {%- else %}
+        <input type="hidden" name="is_negated" value="0">
+    {%- endif %}
+    {%- include '@metademands/fields/field_value_to_check_cell.html.twig' with valuetocheck only %}
+</div>
+{% if negation.available %}
+    <div class="form-text md-option-negation-help">
+        <i class="ti ti-info-circle me-1"></i>{{ __('Is not: the actions apply when the answer is any other value. An empty answer triggers nothing.', 'metademands') }}
+    </div>
+{% endif %}
+{# raw: actions of FieldOption::showLinkHtml(), core widgets inside (§3.2) #}
 {{ link_html|raw }}

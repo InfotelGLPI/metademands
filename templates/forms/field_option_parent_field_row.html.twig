@@ -26,16 +26,16 @@
  #}
 
 {#-
- # The "parent field" row of the condition editor, rendered INSIDE the table of
- # field_option_options.html.twig, so this template emits a <tr> only.
+ # Condition of an option of a "parent field" (field_option_form.html.twig): the field of
+ # the parent metademand to copy.
  #
  # Expected context:
  #  - parent_fields: fields of the parent metademands, id => label
 -#}
-<tr>
-    <td>{{ __('Field') }}</td>
-    <td>
+<div class="md-option-condition">
+    <span class="md-option-condition-label">{{ __('Field') }}</span>
+    <div>
         {% do call('Dropdown::showFromArray', ['parent_field_id', parent_fields]) %}
         <input type="hidden" name="check_value" value="0">
-    </td>
-</tr>
+    </div>
+</div>

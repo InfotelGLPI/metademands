@@ -800,6 +800,7 @@ class Dropdown extends CommonDBTM
                 'regex_html'        => $regex_html,
                 'valuetocheck'      => $valuetocheck,
                 'link_html'         => $link_html,
+                'negation'          => FieldOption::getNegationContext($params),
             ],
         );
     }

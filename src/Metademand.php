@@ -54,6 +54,8 @@ use Group_Ticket;
 use Group_User;
 use Html;
 use ITILCategory;
+use ITILValidationTemplate;
+use ITILValidationTemplate_Target;
 use Log;
 use MassiveAction;
 use Glpi\Application\View\TemplateRenderer;
@@ -71,6 +73,7 @@ use TicketTemplate;
 use Toolbox;
 use User;
 use UserEmail;
+use ValidationStep;
 
 /**
  * Class Metademand
@@ -2616,8 +2619,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         }
                     }
 
-                    $fieldopt = new FieldOption();
-                    if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $id])) {
+                    // An option on any value but one applies to each other value
+                    if ($opts = FieldOption::findApplied(["plugin_metademands_fields_id" => $id])) {
                         foreach ($opts as $opt) {
                             $check_value = $opt["check_value"];
                             if ($opt["check_type_value"] == 2) {
@@ -2991,22 +2994,28 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                 $fieldopt = new FieldOption();
                                 $opts = $fieldopt->find(["plugin_metademands_fields_id" => $id]) ?: [];
                             }
+                            // An option on any value but one applies to each other value
+                            $opts = FieldOption::expandNegated($opts);
                             foreach ($opts as $opt) {
-                                if (isset($opt['users_id_validate'])
-                                    && !empty($opt['users_id_validate'])) {
+                                // A validation launched by the option: by a user, and / or by
+                                // the validators of a validation template, with its step and
+                                // its comment
+                                if (!empty($opt['users_id_validate'])
+                                    || !empty($opt['itilvalidationtemplates_id'])) {
                                     if (!is_array($datav)) {
                                         $datav = [$datav];
                                     }
 
                                     if (isset($opt['check_value'])
                                         && is_array($datav)
-                                        && $opt['users_id_validate'] > 0) {
-                                        $checkValue = $opt['check_value'];
-                                        $usersValidate = $opt['users_id_validate'];
-                                        if (in_array($checkValue, $datav)) {
-                                            $add_validation = '0';
-                                            $validatortype = 'user';
-                                            $users_id_validate[] = $usersValidate;
+                                        && in_array($opt['check_value'], $datav)) {
+                                        $add_validation = '0';
+                                        $validatortype = 'user';
+                                        if ($opt['users_id_validate'] > 0) {
+                                            $users_id_validate[] = $opt['users_id_validate'];
+                                        }
+                                        if (($opt['itilvalidationtemplates_id'] ?? 0) > 0) {
+                                            $validation_templates_id[] = (int) $opt['itilvalidationtemplates_id'];
                                         }
                                     }
                                 }
@@ -3286,15 +3295,35 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     //               }
                     //END TODO Add options
 
-                    if (isset($users_id_validate)) {
+                    if (isset($users_id_validate) || isset($validation_templates_id)) {
                         $parent_fields["_add_validation"] = $add_validation;
                         $parent_ticketfields["_add_validation"] = $add_validation;
                         $parent_fields["validatortype"] = $validatortype;
                         $parent_ticketfields["validatortype"] = $validatortype;
                         $validation_targets = array_map(
                             fn($uid) => ['itemtype_target' => User::class, 'items_id_target' => (int) $uid],
-                            $users_id_validate,
+                            $users_id_validate ?? [],
                         );
+                        // The validators, step and comment of a template, read by the core
+                        // (CommonITILObject: "_template_id" of a validation target)
+                        foreach (array_unique($validation_templates_id ?? []) as $templates_id) {
+                            $template = ITILValidationTemplate::getById($templates_id);
+                            if (!$template) {
+                                continue;
+                            }
+                            if ((new ValidationStep())->getFromDB($template->fields['validationsteps_id'])) {
+                                $validation_targets[] = ['_template_id' => $templates_id];
+                                continue;
+                            }
+                            // A template saved without approval step makes the core throw:
+                            // ask its validators with the default step instead
+                            foreach (ITILValidationTemplate_Target::getTargets($templates_id) as $target) {
+                                $validation_targets[] = [
+                                    'itemtype_target' => $target['itemtype'],
+                                    'items_id_target' => (int) $target['items_id'],
+                                ];
+                            }
+                        }
                         if (!isset($parent_fields["_validation_targets"])) {
                             $parent_fields["_validation_targets"] = [];
                             $parent_ticketfields["_validation_targets"] = [];
@@ -6114,6 +6143,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         $inputo['hidden_link'] = $associated_oldfields[$oldOption['hidden_link']] ?? 0;
                         $inputo['hidden_block'] = $oldOption['hidden_block'];
                         $inputo['users_id_validate'] = $oldOption['users_id_validate'];
+                        $inputo['itilvalidationtemplates_id'] = $oldOption['itilvalidationtemplates_id'] ?? 0;
+                        // Any value but the value to check, mapped like it below
+                        $inputo['is_negated'] = $oldOption['is_negated'] ?? 0;
                         $inputo['validation_fields_ids'] = json_encode(array_values(array_filter(array_map(
                             static fn(int $id) => $associated_oldfields[$id] ?? 0,
                             FieldOption::getValidationFieldsIds($oldOption),

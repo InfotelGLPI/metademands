@@ -26,133 +26,261 @@
  */
 
 /**
- * Option row of a field link: reload the option form whenever the "value to check"
- * cell changes.
+ * Options of a field: the modal of the option list and the option form loaded into it.
  *
- * The parameters that used to be interpolated into a per-cell inline <script> now
- * travel as data-* attributes on the wrapping <td> (see the shared
- * field_value_to_check_cell.html.twig template). Field types differ on the last two
- * entries of the payload, hence the two independent flags:
- *  - data-md-check-type: the type also exposes a check_type_value dropdown
- *  - data-md-tech-group: the type also exposes an assign_tech_group selector
+ * The option list (field_option_options.html.twig) carries the modal: data-md-option-url /
+ * -params / -reload-params on the modal, data-md-option-open / -id / -title on the add
+ * button and on each rule, plus data-md-option-value on the "Add" shortcut of a value
+ * without option, which preselects that value.
  *
- * Handlers are delegated on the document, so a single registration covers every cell,
- * including the ones injected later by the AJAX option modal - the inline version
- * re-attached one handler per rendered cell, which made the reload fire once per
- * past render.
+ * The option form (field_option_form.html.twig) is reloaded whenever its value to check
+ * changes, with the values currently chosen: the widget of the value carries
+ * data-md-option-id / -check-type / -tech-group (field_value_to_check_cell.html.twig).
  *
- * The option list (field_option_options.html.twig) carries the modal the option form
- * is loaded into: data-md-option-url / -params / -reload-params on the modal, and
- * data-md-option-open / -id / -title on the add button and on each option row.
+ * Its actions are cards (field_option_link.html.twig): a card switched on enables the
+ * fieldset of its settings; switched off, the settings are disabled, so not posted, and
+ * the fieldset of its resets, which empty the action, is enabled instead.
+ *
+ * Every listener is delegated on the document, so it also covers the forms loaded later.
  */
-(function () {
-    'use strict';
 
-    /**
-     * Show the option modal and load the option form into its body.
-     * jQuery load() runs the scripts of the returned form.
-     *
-     * @param {HTMLElement} modal
-     * @param {Object} params
-     */
-    function loadOptionForm(modal, params) {
-        bootstrap.Modal.getOrCreateInstance(modal).show();
-        $(modal.querySelector('.modal-body')).load(modal.dataset.mdOptionUrl, params);
+/**
+ * Show the option modal and load the option form into its body.
+ * jQuery load() runs the scripts of the returned form (core dropdowns).
+ *
+ * @param {HTMLElement} modal
+ * @param {Object} params
+ */
+function loadOptionForm(modal, params) {
+    bootstrap.Modal.getOrCreateInstance(modal).show();
+    $(modal.querySelector('.modal-body')).load(modal.dataset.mdOptionUrl, params, () => {
+        const form = modal.querySelector('[data-md-option-form]');
+        if (form !== null) {
+            updateSummary(form);
+        }
+    });
+}
+
+/**
+ * Value of a named control of the option form, or '' when it is disabled: the settings of
+ * an action switched off are not kept.
+ *
+ * @param {ParentNode} root
+ * @param {string} selector
+ * @returns {string|string[]}
+ */
+function enabledValue(root, selector) {
+    const control = root.querySelector(selector);
+    if (control === null || control.matches(':disabled')) {
+        return '';
+    }
+    if (control.multiple) {
+        return Array.from(control.selectedOptions, (option) => option.value);
+    }
+    return control.value;
+}
+
+/**
+ * Switch an action of the option form on or off.
+ *
+ * @param {HTMLElement} card
+ * @param {boolean} active
+ */
+function toggleAction(card, active) {
+    const form = card.closest('[data-md-option-form]') ?? document;
+    const key  = CSS.escape(card.dataset.mdAction);
+
+    card.classList.toggle('active', active);
+    card.setAttribute('aria-pressed', active ? 'true' : 'false');
+    form.querySelectorAll(`[data-md-action-panel="${key}"]`).forEach((panel) => {
+        panel.disabled = !active;
+        panel.hidden   = !active;
+    });
+    form.querySelectorAll(`[data-md-action-reset="${key}"]`).forEach((reset) => {
+        reset.disabled = active;
+    });
+}
+
+/**
+ * Text of the value to check currently chosen in the option form.
+ *
+ * @param {HTMLElement} form
+ * @returns {string}
+ */
+function chosenValue(form) {
+    const widget = form.querySelector('.dropdown-valuetocheck');
+    if (widget === null) {
+        return '';
+    }
+    const select = widget.querySelector('select');
+    if (select !== null) {
+        return Array.from(select.selectedOptions, (option) => option.textContent.trim()).join(', ');
+    }
+    return widget.querySelector('input[name="check_value"]')?.value ?? '';
+}
+
+/**
+ * Write the rule as it will apply, below the form: "« field » is not value → actions".
+ *
+ * @param {HTMLElement} form
+ */
+function updateSummary(form) {
+    // "is not" a special value (not null value…) means nothing: FieldOption ignores it
+    const not_radio    = form.querySelector('input[name="is_negated"][value="1"]');
+    const value_select = form.querySelector('.dropdown-valuetocheck select[name="check_value"]');
+    if (not_radio !== null && value_select !== null) {
+        const special = parseInt(value_select.value, 10) <= 0;
+        not_radio.disabled = special;
+        if (special && not_radio.checked) {
+            form.querySelector('input[name="is_negated"][value="0"]').checked = true;
+        }
     }
 
-    // Add button and option rows: open the option form, blank (id -1) or existing.
-    document.addEventListener('click', function (event) {
-        const opener = event.target.closest('[data-md-option-open]');
-        if (opener === null || event.target.closest('[data-md-option-noopen]') !== null) {
-            return;
-        }
-        const modal = document.getElementById(opener.dataset.mdOptionOpen);
-        if (modal === null) {
-            return;
-        }
-
-        modal.querySelector('.modal-title').textContent = opener.dataset.mdOptionTitle;
-        loadOptionForm(modal, Object.assign(
-            JSON.parse(modal.dataset.mdOptionParams),
-            {id: parseInt(opener.dataset.mdOptionId, 10)}
-        ));
-    });
-
-    function buildOption(cell, value) {
-        var with_check_type = cell.attr('data-md-check-type') === '1';
-        var with_tech_group = cell.attr('data-md-tech-group') === '1';
-
-        return [
-            parseInt(cell.attr('data-md-option-id'), 10),
-            value,
-            $('select[name="plugin_metademands_tasks_id"]').val(),
-            $('select[name="fields_link"]').val(),
-            $('select[name="hidden_link"]').val(),
-            $('select[name="hidden_block"]').val(),
-            JSON.stringify($('select[name="childs_blocks[][]"]').val()),
-            $('select[name="users_id_validate"]').val(),
-            $('select[name="checkbox_id"]').val(),
-            with_check_type ? $('select[name="check_type_value"]').val() : 0,
-            with_tech_group
-                ? JSON.stringify($('select[name="assign_tech_group[]"], select[name="assign_tech_group"]').val())
-                : 0,
-            // Validator fields: a multiple select, kept as a JSON list
-            JSON.stringify(Array.from(
-                document.querySelector('select[name="validation_fields_ids[]"]')?.selectedOptions ?? [],
-                (option) => option.value
-            ))
-        ];
+    const summary = form.querySelector('[data-md-option-summary]');
+    const operator = form.querySelector('input[name="is_negated"]:checked');
+    form.classList.toggle('md-option-negated', operator !== null && operator.value === '1');
+    if (summary === null) {
+        return;
     }
 
-    // Reload the option form, displayed in the modal of the option list, with the
-    // values currently selected.
-    function reload(cell, value) {
-        const modal = cell.closest('[data-md-option-modal]').get(0);
-        if (modal === undefined) {
-            return;
-        }
-        const option = buildOption(cell, value);
+    const actions = Array.from(
+        form.querySelectorAll('.md-action-card.active .md-action-name'),
+        (name) => name.textContent.trim()
+    );
 
-        loadOptionForm(modal, Object.assign(JSON.parse(modal.dataset.mdOptionReloadParams), {
-            id: option[0],
-            check_value: option[1],
-            plugin_metademands_tasks_id: option[2],
-            fields_link: option[3],
-            hidden_link: option[4],
-            hidden_block: option[5],
-            childs_blocks: option[6],
-            users_id_validate: option[7],
-            checkbox_id: option[8],
-            check_type_value: option[9],
-            assign_tech_group: option[10],
-            validation_fields_ids: option[11]
-        }));
+    const field = document.createElement('strong');
+    field.textContent = `« ${form.dataset.mdFieldName ?? ''} »`;
+    const rule = operator !== null
+        ? form.querySelector(`label[for="${CSS.escape(operator.id)}"]`)?.textContent.trim() ?? ''
+        : `· ${form.querySelector('.md-option-condition-label')?.textContent.trim() ?? ''} :`;
+    const value = document.createElement('strong');
+    value.textContent = chosenValue(form);
+    const arrow = document.createElement('i');
+    arrow.className = 'ti ti-arrow-right';
+    arrow.setAttribute('aria-hidden', 'true');
+    const then = document.createElement('span');
+    if (actions.length > 0) {
+        then.textContent = actions.join(', ');
+    } else {
+        then.className = 'text-secondary fst-italic';
+        then.textContent = summary.dataset.mdNoAction ?? '';
+    }
+    summary.replaceChildren(field, ` ${rule} `, value, ' ', arrow, ' ', then);
+}
+
+// Add button, rules and "Add" shortcuts of the list: open the option form, blank (id -1)
+// or existing; a shortcut preselects its value.
+document.addEventListener('click', (event) => {
+    const opener = event.target.closest('[data-md-option-open]');
+    if (opener === null || event.target.closest('[data-md-option-noopen]') !== null) {
+        return;
+    }
+    const modal = document.getElementById(opener.dataset.mdOptionOpen);
+    if (modal === null) {
+        return;
     }
 
-    // Plain value: the cell holds a dropdown, its own value is the one to check.
-    $(document).on('change', 'td.dropdown-valuetocheck select', function () {
-        var cell = $(this).closest('td.dropdown-valuetocheck');
-        reload(cell, $(this).val());
-    });
+    const params = Object.assign(
+        JSON.parse(modal.dataset.mdOptionParams),
+        {id: parseInt(opener.dataset.mdOptionId, 10)}
+    );
+    if (opener.dataset.mdOptionValue !== undefined) {
+        params.check_value = opener.dataset.mdOptionValue;
+    }
+    modal.querySelector('.modal-title').textContent = opener.dataset.mdOptionTitle;
+    loadOptionForm(modal, params);
+});
 
-    // Regex value: the cell holds a text input validated by its own button.
-    $(document).on('click', 'td.dropdown-valuetocheck button.btn-success', function () {
-        var cell = $(this).closest('td.dropdown-valuetocheck');
-        reload(cell, cell.find('input[name=check_value]').val());
-    });
+// Action cards
+document.addEventListener('click', (event) => {
+    const card = event.target.closest('[data-md-action]');
+    if (card === null) {
+        return;
+    }
+    toggleAction(card, !card.classList.contains('active'));
+    const form = card.closest('[data-md-option-form]');
+    if (form !== null) {
+        updateSummary(form);
+    }
+});
 
-    // Switching between plain value and regex: the value is read from whichever
-    // widget the sibling cell currently shows.
-    $(document).on('change', 'td select[name=check_type_value]', function () {
-        var sibling = $('td.dropdown-valuetocheck').first();
-        var value   = 0;
+// "is / is not"
+document.addEventListener('change', (event) => {
+    const form = event.target.closest('[data-md-option-form]');
+    if (form !== null && event.target.matches('input[name="is_negated"]')) {
+        updateSummary(form);
+    }
+});
 
-        if (sibling.find('select[name=check_value]').length > 0) {
-            value = sibling.find('select[name=check_value]').val();
-        } else if (sibling.find('input[name=check_value]').length > 0) {
-            value = sibling.find('input[name=check_value]').val();
-        }
+/**
+ * Reload the option form, displayed in the modal of the option list, with the values
+ * currently chosen.
+ *
+ * @param {HTMLElement} widget element carrying data-md-option-id / -check-type / -tech-group
+ * @param {string|string[]} value value to check
+ */
+function reload(widget, value) {
+    const modal = widget.closest('[data-md-option-modal]');
+    const form  = widget.closest('[data-md-option-form]');
+    if (modal === null || form === null) {
+        return;
+    }
+    const with_check_type = widget.dataset.mdCheckType === '1';
+    const with_tech_group = widget.dataset.mdTechGroup === '1';
+    const list = (selector) => {
+        const values = enabledValue(form, selector);
+        return JSON.stringify(Array.isArray(values) ? values : []);
+    };
 
-        reload($(this).closest('td'), value);
-    });
-})();
+    loadOptionForm(modal, Object.assign(JSON.parse(modal.dataset.mdOptionReloadParams), {
+        id: parseInt(widget.dataset.mdOptionId, 10),
+        check_value: value,
+        is_negated: form.querySelector('input[name="is_negated"]:checked')?.value ?? 0,
+        plugin_metademands_tasks_id: enabledValue(form, 'select[name="plugin_metademands_tasks_id"]'),
+        fields_link: enabledValue(form, 'select[name="fields_link"]'),
+        hidden_link: enabledValue(form, 'select[name="hidden_link"]'),
+        hidden_block: enabledValue(form, 'select[name="hidden_block"]'),
+        hidden_block_same_block: enabledValue(form, 'select[name="hidden_block_same_block"]'),
+        childs_blocks: list('select[name="childs_blocks[][]"]'),
+        users_id_validate: enabledValue(form, 'select[name="users_id_validate"]'),
+        itilvalidationtemplates_id: enabledValue(form, 'select[name="itilvalidationtemplates_id"]'),
+        checkbox_id: enabledValue(form, 'select[name="checkbox_id"]'),
+        check_type_value: with_check_type
+            ? form.querySelector('select[name="check_type_value"]')?.value ?? 0
+            : 0,
+        assign_tech_group: with_tech_group
+            ? list('select[name="assign_tech_group[]"], select[name="assign_tech_group"]')
+            : 0,
+        // Validator fields: a multiple select, kept as a JSON list
+        validation_fields_ids: list('select[name="validation_fields_ids[]"]'),
+        // Actions switched on, kept on even without a value yet
+        active_actions: JSON.stringify(Array.from(
+            form.querySelectorAll('.md-action-card.active'),
+            (card) => card.dataset.mdAction
+        ))
+    }));
+}
+
+// Plain value: the widget holds a dropdown, its own value is the one to check.
+// select2 only triggers jQuery events.
+$(document).on('change', '.dropdown-valuetocheck select', function () {
+    reload(this.closest('.dropdown-valuetocheck'), $(this).val());
+});
+
+// Regex value: the widget holds a text input validated by its own button.
+document.addEventListener('click', (event) => {
+    const button = event.target.closest('.dropdown-valuetocheck button.btn-success');
+    if (button === null) {
+        return;
+    }
+    const widget = button.closest('.dropdown-valuetocheck');
+    reload(widget, widget.querySelector('input[name="check_value"]')?.value ?? '');
+});
+
+// Switching between plain value and regex: the value is read from whichever widget the
+// value to check currently shows.
+$(document).on('change', '.md-option-check-type select[name="check_type_value"]', function () {
+    const form  = this.closest('[data-md-option-form]') ?? document;
+    const value = form.querySelector('.dropdown-valuetocheck [name="check_value"]')?.value ?? 0;
+    reload(this.closest('.md-option-check-type'), value);
+});

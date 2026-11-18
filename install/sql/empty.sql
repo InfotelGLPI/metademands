@@ -245,12 +245,14 @@ CREATE TABLE `glpi_plugin_metademands_fieldoptions`
     `id`                           int unsigned NOT NULL AUTO_INCREMENT,
     `plugin_metademands_fields_id` int unsigned NOT NULL DEFAULT '0',
     `check_value`                  int          NOT NULL DEFAULT '0',
+    `is_negated`                   tinyint      NOT NULL DEFAULT '0',
     `plugin_metademands_tasks_id`  int unsigned NOT NULL DEFAULT '0',
     `fields_link`                  int unsigned NOT NULL DEFAULT '0',
     `hidden_link`                  int unsigned NOT NULL DEFAULT '0',
     `hidden_block`                 int unsigned NOT NULL DEFAULT '0',
     `hidden_block_same_block`      tinyint      NOT NULL DEFAULT '0',
     `users_id_validate`            int unsigned NOT NULL DEFAULT '0',
+    `itilvalidationtemplates_id`   int unsigned NOT NULL DEFAULT '0',
     `validation_fields_ids`        varchar(255) NOT NULL DEFAULT '[]',
     `childs_blocks`                varchar(255) NOT NULL DEFAULT '[]',
     `checkbox_value`               int unsigned NOT NULL DEFAULT '0',
@@ -261,7 +263,8 @@ CREATE TABLE `glpi_plugin_metademands_fieldoptions`
     `assign_tech_group`            varchar(255) NOT NULL DEFAULT '[]',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
-    KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`)
+    KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),
+    KEY `itilvalidationtemplates_id` (`itilvalidationtemplates_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci

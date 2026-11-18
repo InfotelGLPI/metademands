@@ -155,7 +155,6 @@ class Ticket_Metademand extends CommonDBTM
     public static function post_add_ticket($datas)
     {
         $fields = new Field();
-        $fieldOption = new FieldOption();
         $groupticket = new \Group_Ticket();
         $ticketuser = new \Ticket_User();
 
@@ -165,7 +164,8 @@ class Ticket_Metademand extends CommonDBTM
 
         // The options of an inactive field assign no group
         foreach ($fields->find(['plugin_metademands_metademands_id' => $datas->input['plugin_metademands_metademands_id'], 'is_active' => 1]) as $idField => $valueField) {
-            foreach ($fieldOption->find(['plugin_metademands_fields_id' => $idField]) as $idOption => $valueOption) {
+            // An option on any value but one applies to each other value
+            foreach (FieldOption::findApplied(['plugin_metademands_fields_id' => $idField]) as $idOption => $valueOption) {
                 // Only keep actual arrays of group ids: a malformed or scalar
                 // json_decode result would break the foreach loops below.
                 $decoded = json_decode($valueOption['assign_tech_group'] ?? '[]', true);

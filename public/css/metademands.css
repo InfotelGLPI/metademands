@@ -2160,3 +2160,248 @@ select.md-yesno-buttons[data-md-yesno]:not(.select2-hidden-accessible) {
     justify-content: flex-end;
     gap: .5rem;
 }
+
+/* Option form of a field (templates/field_option_form.html.twig, field_option_link.html.twig,
+   public/scripts/fieldoption_valuetocheck.js): its condition, then its actions as cards */
+.md-option-form .md-action-green { --md-action: var(--tblr-green); --md-action-lt: var(--tblr-green-lt); }
+.md-option-form .md-action-red { --md-action: var(--tblr-red); --md-action-lt: var(--tblr-red-lt); }
+.md-option-form .md-action-blue { --md-action: var(--tblr-blue); --md-action-lt: var(--tblr-blue-lt); }
+.md-option-form .md-action-azure { --md-action: var(--tblr-azure); --md-action-lt: var(--tblr-azure-lt); }
+.md-option-form .md-action-purple { --md-action: var(--tblr-purple); --md-action-lt: var(--tblr-purple-lt); }
+.md-option-form .md-action-indigo { --md-action: var(--tblr-indigo); --md-action-lt: var(--tblr-indigo-lt); }
+.md-option-form .md-action-orange { --md-action: var(--tblr-orange); --md-action-lt: var(--tblr-orange-lt); }
+.md-option-form .md-action-teal { --md-action: var(--tblr-teal); --md-action-lt: var(--tblr-teal-lt); }
+.md-option-form .md-action-secondary { --md-action: var(--tblr-secondary); --md-action-lt: var(--tblr-secondary-lt); }
+
+.md-option-step-title {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 1.25rem 0 .625rem;
+    font-weight: 600;
+}
+
+.md-option-form > .md-option-step-title:first-of-type {
+    margin-top: 0;
+}
+
+.md-option-step-number {
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--tblr-primary);
+    color: var(--tblr-primary-fg, #fff);
+    font-size: .8rem;
+}
+
+.md-option-condition {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem .75rem;
+}
+
+.md-option-condition-label {
+    color: var(--tblr-secondary);
+}
+
+.md-option-condition .dropdown-valuetocheck {
+    flex: 1 1 16rem;
+    min-width: 16rem;
+}
+
+.md-option-condition .select2-container {
+    max-width: 100%;
+}
+
+.md-option-negation-help {
+    display: none;
+}
+
+.md-option-negated .md-option-negation-help {
+    display: block;
+}
+
+.md-action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: .5rem;
+}
+
+.md-action-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .625rem;
+    padding: .5rem 2rem .5rem .625rem;
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius-lg, 8px);
+    background: var(--tblr-bg-surface);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .12s, box-shadow .12s, background-color .12s;
+}
+
+.md-action-card:hover,
+.md-action-card:focus-visible {
+    border-color: var(--md-action);
+    outline: 0;
+}
+
+.md-action-card.active {
+    border-color: var(--md-action);
+    background: var(--md-action-lt);
+    box-shadow: 0 0 0 1px var(--md-action) inset;
+}
+
+.md-action-icon {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--tblr-border-radius-lg, 8px);
+    background: var(--md-action-lt);
+    color: var(--md-action);
+    font-size: 1.1rem;
+}
+
+.md-action-card.active .md-action-icon {
+    background: var(--md-action);
+    color: #fff;
+}
+
+.md-action-name {
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.md-action-check {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    color: var(--md-action);
+    visibility: hidden;
+}
+
+.md-action-card.active .md-action-check {
+    visibility: visible;
+}
+
+.md-action-panel {
+    margin-top: .75rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--tblr-border-color);
+    border-left: 3px solid var(--md-action);
+    border-radius: var(--tblr-border-radius-lg, 8px);
+}
+
+.md-action-panel-title {
+    display: flex;
+    float: none;
+    align-items: center;
+    gap: .5rem;
+    width: auto;
+    margin: 0 0 .25rem;
+    padding: 0;
+    font-size: .95rem;
+    font-weight: 600;
+}
+
+.md-action-panel-title .md-action-icon {
+    width: 1.625rem;
+    height: 1.625rem;
+    font-size: .95rem;
+}
+
+.md-action-row {
+    display: grid;
+    grid-template-columns: minmax(10rem, 14rem) 1fr;
+    align-items: center;
+    gap: .75rem;
+    margin-top: .5rem;
+}
+
+.md-action-row-label {
+    color: var(--tblr-secondary);
+}
+
+.md-action-panel .select2-container {
+    width: 100% !important;
+}
+
+.md-option-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .75rem;
+    margin-top: 1.25rem;
+    padding-top: .75rem;
+    border-top: 1px solid var(--tblr-border-color);
+}
+
+.md-option-summary {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Options of a field (templates/field_option_options.html.twig): one rule per option */
+.md-rule {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+.md-rule-check {
+    flex: 0 0 1.25rem;
+}
+
+.md-rule-cond {
+    display: flex;
+    flex: 0 1 16rem;
+    align-items: center;
+    gap: .5rem;
+    min-width: 10rem;
+}
+
+.md-rule-op {
+    min-width: 1.75rem;
+    font-size: .9rem;
+}
+
+.md-rule-value {
+    font-weight: 600;
+}
+
+.md-rule-actions {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: .25rem;
+}
+
+.md-rule-action {
+    white-space: normal;
+    text-align: left;
+}
+
+.md-rule-edit {
+    opacity: 0;
+    transition: opacity .12s;
+}
+
+.md-rule:hover .md-rule-edit {
+    opacity: 1;
+}
+
+.md-rule-none {
+    background: var(--tblr-bg-surface-secondary);
+}
+
+.md-rule-none .md-rule-cond,
+.md-rule-none .md-rule-arrow {
+    opacity: .6;
+}

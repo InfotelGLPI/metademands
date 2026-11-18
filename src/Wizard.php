@@ -2297,6 +2297,8 @@ class Wizard extends CommonDBTM
                     'hidden_block_same_block'      => 1,
                 ]) ?: [];
             }
+            // An option on any value but one applies to each other value
+            $fo_cached = FieldOption::expandNegated($fo_cached);
 
             $has_subblock = false;
             foreach ($fo_cached as $opt) {

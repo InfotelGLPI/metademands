@@ -39,6 +39,7 @@ use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Fields\Dropdownmultiple;
 use Html;
+use ITILValidationTemplate;
 use Migration;
 use Plugin;
 use Session;
@@ -225,6 +226,142 @@ class FieldOption extends CommonDBChild
             $migration->dropField($table, "validation_fields_id");
             $migration->migrationOneTable($table);
         }
+
+        // An option on any value but its value to check (unfolded by expandNegated()), and the
+        // validation template of the validation it launches
+        if (!$DB->fieldExists($table, "is_negated")) {
+            $migration->addField($table, "is_negated", "tinyint NOT NULL DEFAULT '0'", ['after' => 'check_value']);
+        }
+        if (!$DB->fieldExists($table, "itilvalidationtemplates_id")) {
+            $migration->addField(
+                $table,
+                "itilvalidationtemplates_id",
+                sprintf("int %s NOT NULL DEFAULT '0'", $default_key_sign),
+                ['after' => 'users_id_validate'],
+            );
+            $migration->addKey($table, "itilvalidationtemplates_id");
+        }
+        $migration->migrationOneTable($table);
+    }
+
+    /**
+     * Values a field may take, for the options on "any value but this one" (is_negated): its
+     * custom values, yes / no, or the levels of urgency, impact, priority. Empty when they are
+     * not known in advance (GLPI objects, texts…): such a field offers no negation.
+     *
+     * @param int $fields_id
+     *
+     * @return list<int>
+     */
+    public static function getFieldValues(int $fields_id): array
+    {
+        $field = Field::getCachedField($fields_id);
+        if ($field === null) {
+            return [];
+        }
+        $type = (string) $field->fields['type'];
+        $item = (string) ($field->fields['item'] ?? '');
+
+        if (in_array($type, ['radio', 'checkbox'], true)
+            || (in_array($type, ['dropdown_meta', 'dropdown_multiple'], true) && $item === 'other')) {
+            $values = FieldCustomvalue::getFromStaticCache($fields_id);
+            if ($values === false) {
+                $values = (new FieldCustomvalue())->find(['plugin_metademands_fields_id' => $fields_id]);
+            }
+            return array_values(array_map(static fn($row) => (int) $row['id'], $values));
+        }
+        if ($type === 'yesno') {
+            return [1, 2];
+        }
+        if ($type === 'dropdown_meta' && in_array($item, ['urgency', 'impact', 'priority'], true)) {
+            return [1, 2, 3, 4, 5];
+        }
+
+        return [];
+    }
+
+    /**
+     * Options as the wizard and the objects created apply them: an option on "any value but
+     * X" becomes one option per other value of its field, so that every rule (tasks, fields
+     * and blocks shown, mandatory fields, validations…) keeps comparing a single value. On a
+     * checkbox, it is met as soon as another value is checked. The settings screens read the
+     * options as saved.
+     *
+     * @param array<array-key, array<string, mixed>> $rows options of fields, as found
+     *
+     * @return array<array-key, array<string, mixed>>
+     */
+    public static function expandNegated(array $rows): array
+    {
+        $expanded = [];
+        foreach ($rows as $key => $row) {
+            if (empty($row['is_negated'])) {
+                $expanded[$key] = $row;
+                continue;
+            }
+            foreach (self::getFieldValues((int) $row['plugin_metademands_fields_id']) as $value) {
+                if ($value === (int) $row['check_value']) {
+                    continue;
+                }
+                $row_for_value = $row;
+                $row_for_value['check_value'] = $value;
+                $row_for_value['is_negated'] = 0;
+                $row_for_value['_negated_option'] = (int) ($row['id'] ?? 0);
+                $expanded[$key . '_' . $value] = $row_for_value;
+            }
+        }
+
+        return $expanded;
+    }
+
+    /**
+     * Options of fields as the wizard and the objects created apply them (expandNegated())
+     *
+     * @param array<string, mixed> $criteria of FieldOption::find()
+     *
+     * @return array<array-key, array<string, mixed>>
+     */
+    public static function findApplied(array $criteria): array
+    {
+        return self::expandNegated((new self())->find($criteria));
+    }
+
+    /**
+     * "is / is not" choice of the option form (fields/field_params_value_to_check.html.twig):
+     * offered on a plain value of a field whose values are known (getFieldValues())
+     *
+     * @param array<string, mixed> $params option values, as built by showForm()
+     *
+     * @return array{available: bool, value: int}
+     */
+    public static function getNegationContext(array $params): array
+    {
+        return [
+            'available' => (int) ($params['check_type_value'] ?? 1) !== 2
+                && self::getFieldValues((int) ($params['plugin_metademands_fields_id'] ?? 0)) !== [],
+            'value'     => (int) ($params['is_negated'] ?? 0),
+        ];
+    }
+
+    /**
+     * Whether the value saved for a field meets an option read as saved (an option on any
+     * value but one is met by the other values)
+     *
+     * @param mixed $field_value
+     * @param array{plugin_metademands_fields_id: int, check_value: mixed, is_negated?: int} $option
+     * @param string $type type of the field
+     *
+     * @return bool
+     */
+    public static function isMetBy($field_value, array $option, string $type): bool
+    {
+        foreach (self::expandNegated([$option]) as $applied) {
+            if (Ticket_Field::isCheckValueOKFieldsLinks($field_value, $applied['check_value'], $type)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -450,9 +587,10 @@ class FieldOption extends CommonDBChild
         // The add / edit links and the reload of the option form are handled by
         // public/scripts/fieldoption_valuetocheck.js from the data-md-option-* attributes
         // of the template.
-        $entries       = [];
-        $load_params   = [];
-        $reload_params = [];
+        $entries        = [];
+        $missing_values = [];
+        $load_params    = [];
+        $reload_params  = [];
 
         if ($allowed && !$link_to_user) {
             if ($canedit) {
@@ -466,45 +604,61 @@ class FieldOption extends CommonDBChild
             }
 
             $self    = new self();
-            $options = $self->find(['plugin_metademands_fields_id' => $item->getID()]);
+            $options = $self->find(['plugin_metademands_fields_id' => $item->getID()], ['check_value', 'id']);
+
+            // The values of the field, as the options name them
+            $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
+            $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
+            if (isset($item->fields['type'])
+                && (in_array($item->fields['type'], $allowed_customvalues_types)
+                    || in_array($item->fields['item'], $allowed_customvalues_items))
+                && $item->fields['item'] != "urgency"
+                && $item->fields['item'] != "priority"
+                && $item->fields['item'] != "impact") {
+                $custom_values = (new FieldCustomvalue())->find(
+                    ["plugin_metademands_fields_id" => $item->getID()],
+                    "rank",
+                );
+            } else {
+                $metademand_params = new FieldParameter();
+                $metademand_params->getFromDBByCrit(
+                    ["plugin_metademands_fields_id" => $item->getID()],
+                );
+                $custom_values = $metademand_params->fields['custom'] ?? [];
+            }
+            $value_params = [
+                'item'          => $item->fields['item'],
+                'type'          => $item->fields['type'],
+                'custom_values' => $custom_values,
+            ];
+            $block_titles = self::getBlockTitles((int) $item->fields['plugin_metademands_metademands_id']);
+
+            $fields = new Field();
+            $field_name = static function ($fields_id) use ($fields): string {
+                if ($fields_id > 0 && $fields->getFromDB($fields_id)) {
+                    return trim((string) $fields->fields['name']) !== ''
+                        ? (string) $fields->fields['name']
+                        : (string) $fields_id;
+                }
+                return '';
+            };
+            $action = static fn(string $icon, string $color, string $title, string $text): array => [
+                'icon'  => $icon,
+                'color' => $color,
+                'title' => $title,
+                'text'  => $text,
+            ];
 
             foreach ($options as $data) {
+                $data += $value_params;
                 $data['item'] = $item->fields['item'];
                 $data['type'] = $item->fields['type'];
 
-                $metademand_custom          = new FieldCustomvalue();
-                $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
-                $allowed_customvalues_items = FieldCustomvalue::$allowed_customvalues_items;
+                $actions = [];
 
-                if (isset($item->fields['type'])
-                    && (in_array($item->fields['type'], $allowed_customvalues_types)
-                        || in_array($item->fields['item'], $allowed_customvalues_items))
-                    && $item->fields['item'] != "urgency"
-                    && $item->fields['item'] != "priority"
-                    && $item->fields['item'] != "impact") {
-                    $custom_values = [];
-                    if ($customs = $metademand_custom->find(
-                        ["plugin_metademands_fields_id" => $item->getID()],
-                        "rank",
-                    )) {
-                        if (count($customs) > 0) {
-                            $custom_values = $customs;
-                        }
-                    }
-                } else {
-                    $metademand_params = new FieldParameter();
-                    $metademand_params->getFromDBByCrit(
-                        ["plugin_metademands_fields_id" => $item->getID()],
-                    );
-                    $custom_values = $metademand_params->fields['custom'];
-                }
-                $data['custom_values'] = $custom_values;
-
-                $value_to_check = self::getValueToCheck($data);
-
-                $task_name = "";
-                $tasks     = new Task();
+                $tasks = new Task();
                 if ($tasks->getFromDB($data['plugin_metademands_tasks_id'])) {
+                    $task_name = $tasks->getName();
                     if ($tasks->fields['type'] == Task::METADEMAND_TYPE) {
                         $metatask = new MetademandTask();
                         if ($metatask->getFromDBByCrit(
@@ -515,84 +669,136 @@ class FieldOption extends CommonDBChild
                                 $metatask->fields['plugin_metademands_metademands_id'],
                             );
                         }
-                    } else {
-                        $task_name = $tasks->getName();
                     }
+                    $actions[] = $action('ti-subtask', 'green', __('Launch a task with the field', 'metademands'), $task_name);
                 }
 
                 $assign_tech_groups = [];
-                $assigntechgroups   = json_decode($data["assign_tech_group"], true);
+                $assigntechgroups   = json_decode($data["assign_tech_group"] ?? '', true);
                 if (is_array($assigntechgroups)) {
                     foreach ($assigntechgroups as $assigntechgroup) {
                         $assign_tech_groups[] = Dropdown::getDropdownName('glpi_groups', $assigntechgroup);
                     }
                 }
-
-                $fields      = new Field();
-                $fields_link = "";
-                foreach ($fields->find(['id' => $data['fields_link']]) as $value) {
-                    $fields_link = $value['rank'] . " - " . $value['name'];
+                if ($assign_tech_groups !== []) {
+                    $actions[] = $action(
+                        'ti-users-group',
+                        'blue',
+                        __('Assign the ticket to these technicians groups', 'metademands'),
+                        implode(', ', $assign_tech_groups),
+                    );
                 }
 
-                $hidden_link = "";
-                foreach ($fields->find(['id' => $data['hidden_link']]) as $id => $value) {
-                    $name = $id;
-                    if (isset($value['name'])) {
-                        $name = $value['name'];
-                    }
-                    $hidden_link = $value['rank'] . " - " . $name;
+                if (($name = $field_name($data['fields_link'])) !== '') {
+                    $actions[] = $action('ti-asterisk', 'red', __('Make this field mandatory', 'metademands'), $name);
+                }
+                if (($name = $field_name($data['hidden_link'])) !== '') {
+                    $actions[] = $action('ti-eye', 'azure', __('Display this hidden field', 'metademands'), $name);
+                }
+
+                if ($data['hidden_block'] > 0) {
+                    $same_block = $data['hidden_block_same_block'] == 1;
+                    $actions[] = $action(
+                        $same_block ? 'ti-arrows-minimize' : 'ti-layout-rows',
+                        'purple',
+                        __('Display this hidden block', 'metademands')
+                            . ($same_block ? ' — ' . __('Display this hidden block in the same block', 'metademands') : ''),
+                        self::getBlockLabel((int) $data['hidden_block'], $block_titles),
+                    );
                 }
 
                 $childs_blocks = [];
-                $blocks        = json_decode($data["childs_blocks"], true);
+                $blocks        = json_decode($data["childs_blocks"] ?? '', true);
                 if (is_array($blocks)) {
                     foreach ($blocks as $block) {
                         if (is_array($block)) {
                             foreach ($block as $block_number) {
-                                $childs_blocks[] = $block_number;
+                                $childs_blocks[] = self::getBlockLabel((int) $block_number, $block_titles);
                             }
                         }
                     }
+                }
+                if ($childs_blocks !== []) {
+                    $actions[] = $action('ti-hierarchy', 'indigo', __('Childs blocks', 'metademands'), implode(', ', $childs_blocks));
+                }
+
+                if ($data['users_id_validate'] > 0) {
+                    $actions[] = $action(
+                        'ti-user-check',
+                        'orange',
+                        __('Launch a validation', 'metademands'),
+                        getUserName((int) $data["users_id_validate"]),
+                    );
+                }
+                if (($data['itilvalidationtemplates_id'] ?? 0) > 0) {
+                    $actions[] = $action(
+                        'ti-checklist',
+                        'orange',
+                        __('Launch a validation', 'metademands') . ' — ' . ITILValidationTemplate::getTypeName(1),
+                        Dropdown::getDropdownName(
+                            ITILValidationTemplate::getTable(),
+                            (int) $data['itilvalidationtemplates_id'],
+                        ),
+                    );
                 }
 
                 // Validator fields of the held child tickets, each of their users validates
                 $validation_names = [];
                 foreach (self::getValidationFieldsIds($data) as $validation_fields_id) {
-                    if ($fields->getFromDB($validation_fields_id)) {
-                        $validation_names[] = $fields->fields['rank'] . " - " . $fields->fields['name'];
+                    if (($name = $field_name($validation_fields_id)) !== '') {
+                        $validation_names[] = $name;
                     }
                 }
-                $validation_field = implode(', ', $validation_names);
+                if ($validation_names !== []) {
+                    $actions[] = $action(
+                        'ti-user-question',
+                        'orange',
+                        __('Validation of the child tickets by the user of a field', 'metademands'),
+                        implode(', ', $validation_names),
+                    );
+                }
 
-                $checkbox_name  = "";
-                $checkbox_value = "";
                 $checkbox_field = new Field();
                 if ($checkbox_field->getFromDB($data['checkbox_id'])) {
-                    $checkbox_name = $checkbox_field->getName();
+                    $checkbox_text = $checkbox_field->getName();
                     $field_custom  = new FieldCustomvalue();
                     if ($field_custom->getFromDB($data['checkbox_value'])) {
-                        $checkbox_value = $field_custom->getName();
+                        $checkbox_text .= ' : ' . $field_custom->getName();
                     }
+                    $actions[] = $action('ti-checkbox', 'teal', __('Bind to the value of this checkbox', 'metademands'), $checkbox_text);
                 }
 
                 $entries[] = [
-                    'id'                      => $data['id'],
-                    'type_of_value'           => self::getTypeOValueToCheck($data),
-                    'value_to_check'          => $value_to_check,
-                    'task_name'               => $task_name,
-                    'assign_tech_groups'      => $assign_tech_groups,
-                    'fields_link'             => $fields_link,
-                    'hidden_link'             => $hidden_link,
-                    'hidden_block'            => ($data['hidden_block'] > 0) ? $data['hidden_block'] : "",
-                    'hidden_block_same_block' => Dropdown::getYesNo($data['hidden_block_same_block']),
-                    // Only meaningful with a block to show
-                    'same_block'              => $data['hidden_block'] > 0 && $data['hidden_block_same_block'] == 1,
-                    'childs_blocks'           => $childs_blocks,
-                    'users_id_validate'       => getUserName((int) $data["users_id_validate"]),
-                    'validation_field'        => $validation_field,
-                    'checkbox_name'           => $checkbox_name,
-                    'checkbox_value'          => $checkbox_value,
+                    'id'             => $data['id'],
+                    'is_regex'       => $data['check_type_value'] == 2,
+                    'is_negated'     => !empty($data['is_negated']),
+                    'type_of_value'  => self::getTypeOValueToCheck($data),
+                    'value_to_check' => self::getValueToCheck($data),
+                    'actions'        => $actions,
                 ];
+            }
+
+            // The values no option applies to, offered to receive one
+            if (!$is_parent_field) {
+                $applied = array_map(
+                    static fn($row) => (string) $row['check_value'],
+                    array_filter(
+                        self::expandNegated($options),
+                        static fn($row) => $row['check_type_value'] != 2,
+                    ),
+                );
+                foreach (self::getFieldValues($item->getID()) as $value) {
+                    if (!in_array((string) $value, $applied, true)) {
+                        $missing_values[(string) $value] = self::getValueToCheck(
+                            ['check_value' => $value, 'check_type_value' => 1] + $value_params,
+                        );
+                    }
+                }
+                // In the order of the values of the field
+                $order = is_array($custom_values) ? array_map('strval', array_keys($custom_values)) : [];
+                if ($order !== []) {
+                    uksort($missing_values, static fn($a, $b) => array_search((string) $a, $order, true) <=> array_search((string) $b, $order, true));
+                }
             }
         }
 
@@ -610,6 +816,8 @@ class FieldOption extends CommonDBChild
             'reload_params'   => $reload_params,
             'is_parent_field' => $is_parent_field,
             'entries'         => $entries,
+            'missing_values'  => $missing_values,
+            'add_title'       => __('Add a new option', 'metademands'),
         ]);
         return true;
     }
@@ -662,7 +870,7 @@ class FieldOption extends CommonDBChild
             $metademand_params->getFromDBByCrit(
                 ["plugin_metademands_fields_id" => $item->getID()],
             );
-            $custom_values = $metademand_params->fields['custom'];
+            $custom_values = $metademand_params->fields['custom'] ?? [];
         }
 
         $params = [
@@ -679,7 +887,9 @@ class FieldOption extends CommonDBChild
             'use_richtext' => $metademand_params->fields['use_richtext'] ?? 0,
             'display_type' => ($item->fields['type'] == 'dropdown_multiple') ?? $metademand_params->fields['display_type'] ?? 0,
             'check_value' => $this->fields['check_value'] ?? 0,
+            'is_negated' => $this->fields['is_negated'] ?? 0,
             'users_id_validate' => $this->fields['users_id_validate'] ?? 0,
+            'itilvalidationtemplates_id' => $this->fields['itilvalidationtemplates_id'] ?? 0,
             'validation_fields_ids' => self::getValidationFieldsIds($this->fields),
             'checkbox_id' => $this->fields['checkbox_id'] ?? 0,
             'checkbox_value' => $this->fields['checkbox_value'] ?? 0,
@@ -720,7 +930,16 @@ class FieldOption extends CommonDBChild
 
         if (isset($_POST['check_value'])) {
             $params['check_value'] = $_POST['check_value'];
-            $params['check_type_value'] = $_POST['check_type_value'];
+            // Not posted by the "Add" shortcut of a value without option
+            $params['check_type_value'] = $_POST['check_type_value'] ?? $params['check_type_value'];
+            if (isset($_POST['is_negated'])) {
+                $params['is_negated'] = (int) $_POST['is_negated'];
+            }
+            // Actions switched on before the reload, even without a value yet (JSON list)
+            $active_actions = json_decode((string) ($_POST['active_actions'] ?? ''), true);
+            $params['active_actions'] = is_array($active_actions)
+                ? array_values(array_filter($active_actions, 'is_string'))
+                : [];
 
             if ($ID == -1) {
                 if (isset($_POST['plugin_metademands_tasks_id']) && empty($params['plugin_metademands_tasks_id'])) {
@@ -740,6 +959,12 @@ class FieldOption extends CommonDBChild
                 }
                 if (isset($_POST['users_id_validate']) && empty($params['users_id_validate'])) {
                     $params['users_id_validate'] = $_POST['users_id_validate'];
+                }
+                if (isset($_POST['itilvalidationtemplates_id']) && empty($params['itilvalidationtemplates_id'])) {
+                    $params['itilvalidationtemplates_id'] = (int) $_POST['itilvalidationtemplates_id'];
+                }
+                if (isset($_POST['hidden_block_same_block']) && empty($params['hidden_block_same_block'])) {
+                    $params['hidden_block_same_block'] = (int) $_POST['hidden_block_same_block'];
                 }
                 // JSON list posted by fieldoption_valuetocheck.js when the value to check changes
                 if (isset($_POST['validation_fields_ids']) && empty($params['validation_fields_ids'])) {
@@ -835,8 +1060,17 @@ class FieldOption extends CommonDBChild
                 break;
             default:
                 if (isset($PLUGIN_HOOKS['metademands'])) {
+                    // The plugins print table rows
+                    ob_start();
                     foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                         self::getPluginParamsValueToCheck($plug, $this, $item->getID(), $params);
+                    }
+                    $rows = (string) ob_get_clean();
+                    if (trim($rows) !== '') {
+                        TemplateRenderer::getInstance()->display(
+                            '@metademands/forms/field_option_plugin_rows.html.twig',
+                            ['rows' => $rows],
+                        );
                     }
                 }
                 break;
@@ -1204,6 +1438,13 @@ class FieldOption extends CommonDBChild
                     true,
                     $tasksusedarray,
                 ])],
+                [
+                    'key'    => 'task',
+                    'icon'   => 'ti-subtask',
+                    'color'  => 'green',
+                    'active' => self::isActionActive($params, 'task', !empty($params['plugin_metademands_tasks_id'])),
+                    'resets' => ['plugin_metademands_tasks_id' => 0],
+                ],
             );
         }
 
@@ -1227,6 +1468,13 @@ class FieldOption extends CommonDBChild
                 __('Make this field mandatory', 'metademands'),
                 __('If the value selected equals the value to check, the field becomes mandatory', 'metademands'),
                 [self::linkWidget('Dropdown::showFromArray', ['fields_link', $data, ['value' => $params['fields_link']]])],
+                [
+                    'key'    => 'mandatory',
+                    'icon'   => 'ti-asterisk',
+                    'color'  => 'red',
+                    'active' => self::isActionActive($params, 'mandatory', !empty($params['fields_link'])),
+                    'resets' => ['fields_link' => 0],
+                ],
             );
         }
 
@@ -1252,7 +1500,14 @@ class FieldOption extends CommonDBChild
                     'multiple' => true,
                     'values' => $params['assign_tech_group'],
                 ]])],
-                ['alert_lines' => $alert_lines],
+                [
+                    'alert_lines' => $alert_lines,
+                    'key'         => 'groups',
+                    'icon'        => 'ti-users-group',
+                    'color'       => 'blue',
+                    // Not posted when switched off: fieldoption.form.php then saves no group
+                    'active'      => self::isActionActive($params, 'groups', !empty($params['assign_tech_group'])),
+                ],
             );
         }
 
@@ -1273,6 +1528,13 @@ class FieldOption extends CommonDBChild
                 __('Display this hidden field', 'metademands'),
                 __('If the value selected equals the value to check, the field becomes visible', 'metademands'),
                 [self::linkWidget('Dropdown::showFromArray', ['hidden_link', $data, ['value' => $params['hidden_link']]])],
+                [
+                    'key'    => 'field',
+                    'icon'   => 'ti-eye',
+                    'color'  => 'azure',
+                    'active' => self::isActionActive($params, 'field', !empty($params['hidden_link'])),
+                    'resets' => ['hidden_link' => 0],
+                ],
             );
 
             $hiddenblockarray = [];
@@ -1314,33 +1576,38 @@ class FieldOption extends CommonDBChild
 
             $hiddenblockarray[] = $field_class->getField('rank');
 
-            $blocks[] = self::getLinkBlock(
-                __('Display this hidden block', 'metademands'),
-                __('If the value selected equals the value to check, the block becomes visible', 'metademands'),
-                [self::linkWidget('Dropdown::showNumber', ['hidden_block', [
-                    'value' => $params['hidden_block'],
-                    'used' => $hiddenblockarray,
-                    'min' => 1,
-                    'max' => Field::MAX_FIELDS,
-                    'toadd' => [0 => Dropdown::EMPTY_VALUE],
-                ]])],
-                ['widget_alert' => $block_warning],
-            );
-
             if (empty($params['hidden_block_same_block'])) {
                 $params['hidden_block_same_block'] = 0;
             }
 
+            // The blocks by number, named by their title
+            $block_titles  = self::getBlockTitles((int) $metademands_id);
+            $block_choices = [0 => Dropdown::EMPTY_VALUE];
+            for ($number = 1; $number <= Field::MAX_FIELDS; $number++) {
+                $block_choices[$number] = self::getBlockLabel($number, $block_titles);
+            }
+
             $blocks[] = self::getLinkBlock(
-                __('Display this hidden block in the same block', 'metademands'),
-                __(
-                    'If the value selected equals the value to check, the block becomes visible on the same block',
-                    'metademands',
-                ),
-                [self::linkWidget('Dropdown::showYesNo', [
-                    'hidden_block_same_block',
-                    $params['hidden_block_same_block'],
-                ])],
+                __('Display this hidden block', 'metademands'),
+                __('If the value selected equals the value to check, the block becomes visible', 'metademands'),
+                [
+                    self::linkWidget('Dropdown::showFromArray', ['hidden_block', $block_choices, [
+                        'value' => $params['hidden_block'],
+                        'used'  => array_diff($hiddenblockarray, [(int) $params['hidden_block']]),
+                    ]], __('Block', 'metademands')),
+                    self::linkWidget('Dropdown::showYesNo', [
+                        'hidden_block_same_block',
+                        $params['hidden_block_same_block'],
+                    ], __('Display this hidden block in the same block', 'metademands')),
+                ],
+                [
+                    'widget_alert' => $block_warning,
+                    'key'          => 'block',
+                    'icon'         => 'ti-layout-rows',
+                    'color'        => 'purple',
+                    'active'       => self::isActionActive($params, 'block', !empty($params['hidden_block'])),
+                    'resets'       => ['hidden_block' => 0, 'hidden_block_same_block' => 0],
+                ],
             );
 
             $childsblockarray = [];
@@ -1378,6 +1645,17 @@ class FieldOption extends CommonDBChild
                         $params['childs_blocks'],
                         true,
                     ])],
+                    [
+                        'key'    => 'childs',
+                        'icon'   => 'ti-hierarchy',
+                        'color'  => 'indigo',
+                        // Not posted when switched off: fieldoption.form.php then saves no block
+                        'active' => self::isActionActive(
+                            $params,
+                            'childs',
+                            self::normalizeChildsBlocks($params['childs_blocks'] ?? []) !== '[]',
+                        ),
+                    ],
                 );
             }
 
@@ -1415,14 +1693,34 @@ class FieldOption extends CommonDBChild
                 $blocks[] = self::getLinkBlock(
                     __('Launch a validation', 'metademands'),
                     __('If the value selected equals the value to check, the validation is sent to the user', 'metademands'),
-                    [self::linkWidget([User::class, 'dropdown'], [[
-                        'name' => 'users_id_validate',
-                        'value' => $params['users_id_validate'],
-                        'right' => $right,
-                    ]])],
+                    [
+                        self::linkWidget([User::class, 'dropdown'], [[
+                            'name' => 'users_id_validate',
+                            'value' => $params['users_id_validate'],
+                            'right' => $right,
+                        ]], __('Approver')),
+                        // Its validators, approval step and comment (CommonITILObject "_template_id")
+                        self::linkWidget([ITILValidationTemplate::class, 'dropdown'], [[
+                            'name'   => 'itilvalidationtemplates_id',
+                            'value'  => $params['itilvalidationtemplates_id'] ?? 0,
+                            'entity' => $metademand->getEntityID(),
+                        ]], ITILValidationTemplate::getTypeName(1)),
+                    ],
+                    [
+                        'key'    => 'validation',
+                        'icon'   => 'ti-user-check',
+                        'color'  => 'orange',
+                        'active' => self::isActionActive(
+                            $params,
+                            'validation',
+                            !empty($params['users_id_validate']) || !empty($params['itilvalidationtemplates_id']),
+                        ),
+                        'resets' => ['users_id_validate' => 0, 'itilvalidationtemplates_id' => 0],
+                    ],
                 );
             } else {
                 $blocks[] = ['kind' => 'hidden', 'name' => 'users_id_validate', 'value' => 0];
+                $blocks[] = ['kind' => 'hidden', 'name' => 'itilvalidationtemplates_id', 'value' => 0];
             }
 
             // Validators chosen in the form: the child tickets of the tasks of this value wait
@@ -1446,6 +1744,17 @@ class FieldOption extends CommonDBChild
                             'width'    => '100%',
                         ],
                     ])],
+                    [
+                        'key'    => 'childvalidation',
+                        'icon'   => 'ti-user-question',
+                        'color'  => 'orange',
+                        // Switched off, the select is not posted: the hidden input above empties the list
+                        'active' => self::isActionActive(
+                            $params,
+                            'childvalidation',
+                            !empty($params['validation_fields_ids']),
+                        ),
+                    ],
                 );
             }
 
@@ -1505,12 +1814,19 @@ class FieldOption extends CommonDBChild
                     __('Bind to the value of this checkbox', 'metademands'),
                     __('If the selected value is equal to the value to check, the checkbox value is set', 'metademands'),
                     $checkbox_widgets,
-                    ['widget_span' => ['id' => 'checkbox_value',
-                        'widget' => self::linkWidget('Dropdown::showFromArray', ['checkbox_value', $arrayValues, [
-                            'display_emptychoice' => false,
-                            'value' => $params['checkbox_value'],
-                        ]]),
-                    ]],
+                    [
+                        'widget_span' => ['id' => 'checkbox_value',
+                            'widget' => self::linkWidget('Dropdown::showFromArray', ['checkbox_value', $arrayValues, [
+                                'display_emptychoice' => false,
+                                'value' => $params['checkbox_value'],
+                            ]]),
+                        ],
+                        'key'    => 'checkbox',
+                        'icon'   => 'ti-checkbox',
+                        'color'  => 'teal',
+                        'active' => self::isActionActive($params, 'checkbox', !empty($params['checkbox_id'])),
+                        'resets' => ['checkbox_id' => 0, 'checkbox_value' => 0],
+                    ],
                 );
             }
         }
@@ -1553,6 +1869,11 @@ class FieldOption extends CommonDBChild
     private static function getLinkBlock($label, $comment, $widgets, $options = [])
     {
         return ['kind' => 'row',
+            'key' => $options['key'] ?? '',
+            'icon' => $options['icon'] ?? 'ti-bolt',
+            'color' => $options['color'] ?? 'secondary',
+            'active' => (bool) ($options['active'] ?? false),
+            'resets' => $options['resets'] ?? [],
             'label' => $label,
             'comment' => $comment,
             'widgets' => $widgets,
@@ -1567,12 +1888,66 @@ class FieldOption extends CommonDBChild
      *
      * @param callable-string|array{class-string, string} $callable GLPI helper printing the widget
      * @param array                                        $args     its arguments
+     * @param string                                       $label    shown next to it when the action has several
      *
-     * @return array{callable: callable-string|array{class-string, string}, args: array}
+     * @return array{callable: callable-string|array{class-string, string}, args: array, label: string}
      */
-    private static function linkWidget($callable, array $args): array
+    private static function linkWidget($callable, array $args, string $label = ''): array
     {
-        return ['callable' => $callable, 'args' => $args];
+        return ['callable' => $callable, 'args' => $args, 'label' => $label];
+    }
+
+    /**
+     * Whether an action of the option form starts switched on: it holds a value, or it was
+     * switched on before the form was reloaded (fieldoption_valuetocheck.js, "active_actions").
+     *
+     * @param array  $params option values, as built by showForm()
+     * @param string $key    key of the action
+     * @param bool   $filled the action holds a value
+     *
+     * @return bool
+     */
+    private static function isActionActive(array $params, string $key, bool $filled): bool
+    {
+        return $filled || in_array($key, $params['active_actions'] ?? [], true);
+    }
+
+    /**
+     * Titles of the blocks of a metademand, from their "title-block" fields.
+     *
+     * @param int $metademands_id
+     *
+     * @return array<int, string> block number => title
+     */
+    public static function getBlockTitles(int $metademands_id): array
+    {
+        $titles = [];
+        foreach ((new Field())->find([
+            'plugin_metademands_metademands_id' => $metademands_id,
+            'type'                              => 'title-block',
+        ], ['rank', 'order']) as $block_field) {
+            $titles[(int) $block_field['rank']] ??= (string) $block_field['name'];
+        }
+
+        return $titles;
+    }
+
+    /**
+     * Name of a block: its number, followed by its title when it has one.
+     *
+     * @param int                $number
+     * @param array<int, string> $titles  see getBlockTitles()
+     *
+     * @return string
+     */
+    public static function getBlockLabel(int $number, array $titles): string
+    {
+        $label = sprintf(__('Block %s', 'metademands'), $number);
+        if (!empty($titles[$number])) {
+            $label .= ' · ' . $titles[$number];
+        }
+
+        return $label;
     }
 
 
@@ -2377,6 +2752,7 @@ class FieldOption extends CommonDBChild
             $input['childs_blocks'] = self::normalizeChildsBlocks($input['childs_blocks']);
         }
         $input = $this->filterValidationField($input);
+        $input = $this->filterNegation($input);
 
         // CommonDBChild resolves the parent and the entity here, and may refuse the input.
         return parent::prepareInputForAdd($input);
@@ -2388,8 +2764,27 @@ class FieldOption extends CommonDBChild
             $input['childs_blocks'] = self::normalizeChildsBlocks($input['childs_blocks']);
         }
         $input = $this->filterValidationField($input);
+        $input = $this->filterNegation($input);
 
         return parent::prepareInputForUpdate($input);
+    }
+
+    /**
+     * "Any value but this one" (is_negated) only for a real value of a field whose values are
+     * known (getFieldValues()): not for "not null" and the like, nor for a GLPI object
+     */
+    private function filterNegation(array $input): array
+    {
+        if (empty($input['is_negated'])) {
+            return $input;
+        }
+        $fields_id   = (int) ($input['plugin_metademands_fields_id'] ?? $this->fields['plugin_metademands_fields_id'] ?? 0);
+        $check_value = (int) ($input['check_value'] ?? $this->fields['check_value'] ?? 0);
+        $input['is_negated'] = $check_value > 0
+            && (int) ($input['check_type_value'] ?? $this->fields['check_type_value'] ?? 1) !== 2
+            && in_array($check_value, self::getFieldValues($fields_id), true) ? 1 : 0;
+
+        return $input;
     }
 
     /**

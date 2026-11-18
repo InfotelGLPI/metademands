@@ -28,27 +28,31 @@
 {% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
 
 {#-
- # Form of a condition of a field (FieldOption::showForm()).
+ # Form of an option of a field (FieldOption::showForm()): its condition, then its actions.
  #
  # Expected context:
- #  - option, field, params: the option, its field and the option values; the rows
- #    depend on the field type and are printed by FieldOption::showOptionRows()
- #    (the field classes and the plugins print their own rows)
+ #  - option, field, params: the option, its field and the option values; the condition and
+ #    the actions depend on the field type and are printed by FieldOption::showOptionRows()
+ #    (the field classes and the plugins print their own)
  #  - show_submit: false when the field saves its options itself
+ #
+ # The summary of the rule is written by public/scripts/fieldoption_valuetocheck.js.
 -#}
 
-<form name="form" method="post" action="{{ form_action }}">
+<form name="form" method="post" action="{{ form_action }}" class="md-option-form"
+      data-md-option-form data-md-field-name="{{ field.fields.name }}">
     {{ inputs.hidden('plugin_metademands_fields_id', field_parent_id) }}
     {% if not is_new %}{{ inputs.hidden('id', field_id) }}{% endif %}
 
-    <table class="tab_cadre w-100">
-        <tbody>
-        {% do call([option, 'showOptionRows'], [field, params]) %}
-        </tbody>
-    </table>
+    <div class="md-option-step-title">
+        <span class="md-option-step-number">1</span>{{ __('Condition') }}
+    </div>
+    {% do call([option, 'showOptionRows'], [field, params]) %}
 
     {% if show_submit %}
-        <div class="d-flex justify-content-end mt-2">
+        <div class="md-option-footer">
+            <div class="md-option-summary" data-md-option-summary
+                 data-md-no-action="{{ __('No action', 'metademands') }}"></div>
             <button class="btn btn-primary" type="submit"
                     name="{{ is_new ? 'add' : 'update' }}" value="1">
                 <i class="ti ti-device-floppy"></i>

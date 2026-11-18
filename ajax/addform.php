@@ -218,8 +218,8 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                                 );
 
                                 if (!empty($meta_field_ids_for_block)) {
-                                    $fieldopt_for_block = new FieldOption();
-                                    $ctrl_opts = $fieldopt_for_block->find([
+                                    // An option on any value but one applies to each other value
+                                    $ctrl_opts = FieldOption::findApplied([
                                         'plugin_metademands_fields_id' => $meta_field_ids_for_block,
                                         'hidden_block' => $block_rank,
                                     ]);

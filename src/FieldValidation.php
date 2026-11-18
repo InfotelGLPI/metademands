@@ -182,8 +182,8 @@ class FieldValidation extends CommonDBTM
             return [];
         }
 
-        $option  = new FieldOption();
-        $options = $option->find(['plugin_metademands_fields_id' => array_keys($fields)]);
+        // An option on any value but one applies to each other value
+        $options = FieldOption::findApplied(['plugin_metademands_fields_id' => array_keys($fields)]);
         // A validator field made inactive since: nobody chosen, nothing held
         $validator_fields = self::getValidatorFieldChoices($metademands_id);
 
