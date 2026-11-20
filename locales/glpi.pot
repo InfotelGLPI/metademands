@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-18 19:19+0000\n"
+"POT-Creation-Date: 2026-11-20 07:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -110,6 +110,10 @@ msgstr ""
 msgid "A GLPI dropdown: location, category…"
 msgstr ""
 
+#: ⁨standard input⁩:46
+msgid "A click inserts the tag into:"
+msgstr ""
+
 #: src/Field.php:1324
 msgid "A day"
 msgstr ""
@@ -161,13 +165,15 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-#: src/Task.php:621 src/MetademandTask.php:285
+#: src/Task.php:629 src/MetademandTask.php:285
 msgid "Active entity"
 msgstr ""
 
-#: ⁨standard input⁩:57 ⁨standard input⁩:71
-msgid "Actors"
-msgstr ""
+#: ⁨standard input⁩:123
+msgid "Actor"
+msgid_plural "Actors"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ⁨standard input⁩:144
 msgid "Add"
@@ -182,7 +188,7 @@ msgctxt "button"
 msgid "Add"
 msgstr ""
 
-#: ⁨standard input⁩:33
+#: ⁨standard input⁩:47
 msgid "Add a child object"
 msgstr ""
 
@@ -363,7 +369,7 @@ msgid "Assign the ticket to these technicians groups"
 msgstr ""
 
 #: ⁨standard input⁩:187 ⁨standard input⁩:55 ⁨standard input⁩:103 ⁨standard input⁩:169
-#: ⁨standard input⁩:171 ⁨standard input⁩:185
+#: ⁨standard input⁩:182
 msgid "Assigned to"
 msgstr ""
 
@@ -421,10 +427,9 @@ msgstr[1] ""
 msgid "Block %1$s already has a block title: %2$s"
 msgstr ""
 
-#: src/Step.php:387 src/Step.php:599 src/Step.php:613 src/Task.php:681
-#: src/Task.php:1142 src/FieldOption.php:1953 src/FieldOption.php:2003
-#: src/TicketTask.php:223 src/MailTask.php:170 ⁨standard input⁩:196
-#: ⁨standard input⁩:42
+#: src/Step.php:387 src/Step.php:599 src/Step.php:613 src/Task.php:689
+#: src/Task.php:1276 src/FieldOption.php:1953 src/FieldOption.php:2003
+#: ⁨standard input⁩:196 ⁨standard input⁩:42
 #, php-format
 msgid "Block %s"
 msgstr ""
@@ -438,7 +443,7 @@ msgstr ""
 msgid "Block overview"
 msgstr ""
 
-#: ⁨standard input⁩:206 ⁨standard input⁩:64
+#: ⁨standard input⁩:206 ⁨standard input⁩:213 ⁨standard input⁩:238
 msgid "Block parent ticket resolution"
 msgstr ""
 
@@ -446,7 +451,7 @@ msgstr ""
 msgid "Block title"
 msgstr ""
 
-#: ⁨standard input⁩:42 ⁨standard input⁩:193 ⁨standard input⁩:196 ⁨standard input⁩:49
+#: ⁨standard input⁩:102 ⁨standard input⁩:193 ⁨standard input⁩:196 ⁨standard input⁩:222
 msgid "Block to use"
 msgstr ""
 
@@ -489,7 +494,7 @@ msgid ""
 msgstr ""
 
 #: ⁨standard input⁩:165 ⁨standard input⁩:184 ⁨standard input⁩:54 ⁨standard input⁩:93
-#: ⁨standard input⁩:88 ⁨standard input⁩:46 ⁨standard input⁩:48
+#: ⁨standard input⁩:82 ⁨standard input⁩:46 ⁨standard input⁩:48
 msgid "Category"
 msgid_plural "Categories"
 msgstr[0] ""
@@ -497,6 +502,10 @@ msgstr[1] ""
 
 #: src/Field.php:1936 tests/AjaxTemplatesTest.php:132
 msgid "Category of the metademand"
+msgstr ""
+
+#: ⁨standard input⁩:110
+msgid "Change the object"
 msgstr ""
 
 #: ⁨standard input⁩:143
@@ -569,6 +578,10 @@ msgstr ""
 msgid "Classic display"
 msgstr ""
 
+#: ⁨standard input⁩:71
+msgid "Classification"
+msgstr ""
+
 #: ⁨standard input⁩:63 ⁨standard input⁩:65 ⁨standard input⁩:49 ⁨standard input⁩:51
 msgctxt "button"
 msgid "Clean form"
@@ -596,7 +609,7 @@ msgstr ""
 msgid "Click to make the field mandatory or optional"
 msgstr ""
 
-#: ⁨standard input⁩:39 ⁨standard input⁩:59 ⁨standard input⁩:36 ⁨standard input⁩:38
+#: ⁨standard input⁩:39 ⁨standard input⁩:59 ⁨standard input⁩:50 ⁨standard input⁩:38
 #: ⁨standard input⁩:124 ⁨standard input⁩:96 ⁨standard input⁩:134 ⁨standard input⁩:52
 #: ⁨standard input⁩:40
 msgid "Close"
@@ -696,6 +709,10 @@ msgstr ""
 msgid "Confirmation"
 msgstr ""
 
+#: ⁨standard input⁩:41 ⁨standard input⁩:48
+msgid "Content"
+msgstr ""
+
 #: ⁨standard input⁩:140
 msgid ""
 "Content and type of the solution added to the parent ticket. Without "
@@ -718,6 +735,14 @@ msgstr ""
 msgid "ContractType"
 msgstr ""
 
+#: ⁨standard input⁩:42
+msgid "Copied"
+msgstr ""
+
+#: ⁨standard input⁩:65
+msgid "Copy"
+msgstr ""
+
 #: ⁨standard input⁩:53
 msgid "Create PDF"
 msgstr ""
@@ -734,7 +759,7 @@ msgstr ""
 msgid "Create a metademand"
 msgstr ""
 
-#: ⁨standard input⁩:71
+#: ⁨standard input⁩:92
 msgid "Create after the task"
 msgstr ""
 
@@ -750,7 +775,7 @@ msgstr ""
 msgid "Create tasks"
 msgstr ""
 
-#: ⁨standard input⁩:220
+#: src/Task.php:860 ⁨standard input⁩:220
 msgid "Create tasks (not child tickets)"
 msgstr ""
 
@@ -928,8 +953,8 @@ msgstr ""
 msgid "Departure date"
 msgstr ""
 
-#: ⁨standard input⁩:47 ⁨standard input⁩:93 ⁨standard input⁩:53 ⁨standard input⁩:232
-#: ⁨standard input⁩:82
+#: ⁨standard input⁩:47 ⁨standard input⁩:50 ⁨standard input⁩:41 ⁨standard input⁩:53
+#: ⁨standard input⁩:59 ⁨standard input⁩:82
 msgid "Description"
 msgstr ""
 
@@ -1102,7 +1127,7 @@ msgstr ""
 msgid "Edit by"
 msgstr ""
 
-#: ⁨standard input⁩:33
+#: ⁨standard input⁩:47
 msgid "Edit child object"
 msgstr ""
 
@@ -1118,7 +1143,7 @@ msgstr ""
 msgid "Edit translation"
 msgstr ""
 
-#: src/MailTask.php:241 tests/MailTaskTest.php:370
+#: src/MailTask.php:250 tests/MailTaskTest.php:370
 msgid "Email sent"
 msgstr ""
 
@@ -1155,7 +1180,7 @@ msgid "Enter translation"
 msgstr ""
 
 #: ⁨standard input⁩:62 ⁨standard input⁩:93 ⁨standard input⁩:126 ⁨standard input⁩:182
-#: ⁨standard input⁩:58 ⁨standard input⁩:100 ⁨standard input⁩:82 ⁨standard input⁩:64
+#: ⁨standard input⁩:58 ⁨standard input⁩:100 ⁨standard input⁩:74 ⁨standard input⁩:64
 msgid "Entity"
 msgstr ""
 
@@ -1212,7 +1237,7 @@ msgstr ""
 msgid "Export the metademand to XML format for use on another GLPI"
 msgstr ""
 
-#: src/MailTask.php:210 src/MailTask.php:235 tests/MailTaskTest.php:246
+#: src/MailTask.php:219 src/MailTask.php:244 tests/MailTaskTest.php:246
 #: tests/MailTaskTest.php:371
 msgid "Fail to send email"
 msgstr ""
@@ -1321,7 +1346,7 @@ msgstr ""
 msgid "Form requester"
 msgstr ""
 
-#: ⁨standard input⁩:203 ⁨standard input⁩:60
+#: ⁨standard input⁩:203 ⁨standard input⁩:212 ⁨standard input⁩:232
 msgid "Format the description of the childs ticket as a table"
 msgstr ""
 
@@ -1378,8 +1403,7 @@ msgstr ""
 msgid "Grand total (TTC)"
 msgstr ""
 
-#: ⁨standard input⁩:50 ⁨standard input⁩:71 ⁨standard input⁩:121 ⁨standard input⁩:154
-#: ⁨standard input⁩:185 ⁨standard input⁩:49
+#: ⁨standard input⁩:50 ⁨standard input⁩:75 ⁨standard input⁩:128 ⁨standard input⁩:49
 msgid "Group"
 msgstr ""
 
@@ -1711,6 +1735,10 @@ msgstr ""
 msgid "Linked tickets"
 msgstr ""
 
+#: ⁨standard input⁩:37 ⁨standard input⁩:44
+msgid "List of available tags"
+msgstr ""
+
 #: ⁨standard input⁩:56
 msgid "List of conditions"
 msgstr ""
@@ -1796,7 +1824,11 @@ msgstr ""
 msgid "Message displayed before sending to the next supervisor or user"
 msgstr ""
 
-#: setup.php:320 src/Config.php:75 src/Profile.php:153 src/Metademand.php:133
+#: src/Task.php:885
+msgid "Message sent to a user or a group"
+msgstr ""
+
+#: setup.php:322 src/Config.php:75 src/Profile.php:153 src/Metademand.php:133
 #: src/Menu.php:47 ⁨standard input⁩:73 ⁨standard input⁩:109 ⁨standard input⁩:146
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
@@ -2026,8 +2058,8 @@ msgid "No reference of this type"
 msgstr ""
 
 #: ⁨standard input⁩:95 ⁨standard input⁩:32 ⁨standard input⁩:137 ⁨standard input⁩:192
-#: ⁨standard input⁩:233 ⁨standard input⁩:58 ⁨standard input⁩:73 ⁨standard input⁩:99
-#: ⁨standard input⁩:83 ⁨standard input⁩:91 ⁨standard input⁩:37
+#: ⁨standard input⁩:233 ⁨standard input⁩:72 ⁨standard input⁩:58 ⁨standard input⁩:73
+#: ⁨standard input⁩:99 ⁨standard input⁩:83 ⁨standard input⁩:91 ⁨standard input⁩:37
 msgid "No results found"
 msgstr ""
 
@@ -2045,6 +2077,11 @@ msgstr ""
 
 #: src/Fields/Textarea.php:149
 msgid "Not available with Rich text option"
+msgstr ""
+
+#: src/Task.php:865
+#, php-format
+msgid "Not available with « %s »"
 msgstr ""
 
 #: src/Condition.php:309 src/Condition.php:317 src/Condition.php:328
@@ -2102,8 +2139,8 @@ msgstr ""
 msgid "OR"
 msgstr ""
 
-#: src/Field.php:3145 tests/AjaxTemplatesTest.php:130 ⁨standard input⁩:272
-#: ⁨standard input⁩:37 ⁨standard input⁩:52
+#: src/Field.php:3145 tests/AjaxTemplatesTest.php:130 ⁨standard input⁩:106
+#: ⁨standard input⁩:272 ⁨standard input⁩:37 ⁨standard input⁩:52
 msgid "Object"
 msgstr ""
 
@@ -2121,7 +2158,7 @@ msgid_plural "Object types"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ⁨standard input⁩:139 ⁨standard input⁩:154
+#: ⁨standard input⁩:157
 msgid "Observer"
 msgstr ""
 
@@ -2151,6 +2188,14 @@ msgstr ""
 msgid "Only by supervisor"
 msgstr ""
 
+#: src/Task.php:871
+msgid "Only for a metademand creating tickets"
+msgstr ""
+
+#: src/Task.php:870
+msgid "Only one child metademand per metademand"
+msgstr ""
+
 #: src/Group.php:237
 msgid "Only these groups"
 msgstr ""
@@ -2168,6 +2213,11 @@ msgid "Only visible for this group"
 msgid_plural "Only visible for these groups"
 msgstr[0] ""
 msgstr[1] ""
+
+#: src/Task.php:867
+#, php-format
+msgid "Only with « %s »"
+msgstr ""
 
 #: ⁨standard input⁩:122
 msgid "Open the form as the requesters fill it, in a new tab"
@@ -2189,6 +2239,10 @@ msgstr[1] ""
 
 #: src/Field.php:3357 ⁨standard input⁩:50 ⁨standard input⁩:299 ⁨standard input⁩:302
 msgid "Optional"
+msgstr ""
+
+#: ⁨standard input⁩:91 ⁨standard input⁩:209
+msgid "Options"
 msgstr ""
 
 #: ⁨standard input⁩:45
@@ -2355,11 +2409,13 @@ msgstr ""
 msgid "Reason: %s"
 msgstr ""
 
-#: ⁨standard input⁩:57 ⁨standard input⁩:71
+#: ⁨standard input⁩:61
 msgid "Recipient"
-msgstr ""
+msgid_plural "Recipients"
+msgstr[0] ""
+msgstr[1] ""
 
-#: src/Task.php:657
+#: src/Task.php:665
 msgid "Recipients"
 msgstr ""
 
@@ -2418,19 +2474,23 @@ msgstr ""
 msgid "Request date"
 msgstr ""
 
-#: ⁨standard input⁩:211
+#: ⁨standard input⁩:113
 msgid "Request source"
 msgstr ""
 
-#: ⁨standard input⁩:92 ⁨standard input⁩:106 ⁨standard input⁩:121
+#: ⁨standard input⁩:92 ⁨standard input⁩:131
 msgid "Requester"
 msgstr ""
 
-#: ⁨standard input⁩:60
+#: src/Task.php:810
+msgid "Requester and entity"
+msgstr ""
+
+#: src/Task.php:815 ⁨standard input⁩:60
 msgid "Requester email"
 msgstr ""
 
-#: ⁨standard input⁩:56
+#: src/Task.php:814 ⁨standard input⁩:56
 msgid "Requester firstname"
 msgstr ""
 
@@ -2440,11 +2500,11 @@ msgid_plural "Requester groups"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ⁨standard input⁩:48
+#: src/Task.php:812 ⁨standard input⁩:48
 msgid "Requester login"
 msgstr ""
 
-#: ⁨standard input⁩:52
+#: src/Task.php:813 ⁨standard input⁩:52
 msgid "Requester name"
 msgstr ""
 
@@ -2466,7 +2526,7 @@ msgstr[1] ""
 msgid "Right to update a meta-demand form from the ticket"
 msgstr ""
 
-#: src/Task.php:669 src/Task.php:673
+#: src/Task.php:677 src/Task.php:681
 msgid "Root"
 msgstr ""
 
@@ -2560,7 +2620,7 @@ msgstr ""
 msgid "Schema check"
 msgstr ""
 
-#: ⁨standard input⁩:30
+#: ⁨standard input⁩:30 ⁨standard input⁩:52
 msgid "Search"
 msgstr ""
 
@@ -2739,8 +2799,12 @@ msgstr ""
 msgid "Starts a new block of the form"
 msgstr ""
 
+#: src/Task.php:886
+msgid "Starts another metademand after this one"
+msgstr ""
+
 #: ⁨standard input⁩:45 ⁨standard input⁩:105 ⁨standard input⁩:108 ⁨standard input⁩:171
-#: ⁨standard input⁩:174 ⁨standard input⁩:203
+#: ⁨standard input⁩:174
 msgid "Status"
 msgstr ""
 
@@ -2821,13 +2885,13 @@ msgstr ""
 msgid "Target ticket(s)"
 msgstr ""
 
+#: src/Task.php:884
+msgid "Task added to the ticket of the request"
+msgstr ""
+
 #: src/Ticket_Task.php:60 src/MetademandTask.php:60
 #: src/Ticket_Metademand.php:69 src/TicketTask.php:61 src/MailTask.php:65
 msgid "Task creation"
-msgstr ""
-
-#: ⁨standard input⁩:48
-msgid "Task type"
 msgstr ""
 
 #: ⁨standard input⁩:97
@@ -2884,8 +2948,8 @@ msgstr ""
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: src/Metademand.php:1439 src/Metademand.php:1549 src/Task.php:984
-#: src/TicketTask.php:523
+#: src/Metademand.php:1439 src/Metademand.php:1549 src/Task.php:1118
+#: src/TicketTask.php:532
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
@@ -3153,6 +3217,11 @@ msgstr[1] ""
 msgid "Ticket group technician of target tickets"
 msgstr ""
 
+#: src/Task.php:883
+msgid ""
+"Ticket linked to the ticket of the request, with its actors and its category"
+msgstr ""
+
 #: src/NotificationTargetInterticketfollowup.php:136
 msgid "Ticket technician of target tickets"
 msgstr ""
@@ -3161,7 +3230,7 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
-#: ⁨standard input⁩:86 ⁨standard input⁩:224
+#: ⁨standard input⁩:44 ⁨standard input⁩:40 ⁨standard input⁩:52
 msgid "Title"
 msgstr ""
 
@@ -3284,6 +3353,10 @@ msgid_plural "Unknown tags"
 msgstr[0] ""
 msgstr[1] ""
 
+#: ⁨standard input⁩:122
+msgid "Unknown tags, left as they are in the created object:"
+msgstr ""
+
 #: src/Fields/Dropdownmultiple.php:437
 msgid "Unselect all"
 msgstr ""
@@ -3293,7 +3366,7 @@ msgctxt "button"
 msgid "Update"
 msgstr ""
 
-#: src/Task.php:1119
+#: src/Task.php:1253
 msgctxt "button"
 msgid "Update block to use"
 msgstr ""
@@ -3315,7 +3388,8 @@ msgstr ""
 msgid "Use as basket"
 msgstr ""
 
-#: ⁨standard input⁩:37 ⁨standard input⁩:200 ⁨standard input⁩:47
+#: ⁨standard input⁩:93 ⁨standard input⁩:98 ⁨standard input⁩:200 ⁨standard input⁩:211
+#: ⁨standard input⁩:218
 msgid "Use block"
 msgstr ""
 
@@ -3351,8 +3425,7 @@ msgstr ""
 msgid "Used blocks are mandatory"
 msgstr ""
 
-#: ⁨standard input⁩:57 ⁨standard input⁩:36 ⁨standard input⁩:106 ⁨standard input⁩:139
-#: ⁨standard input⁩:171
+#: ⁨standard input⁩:64 ⁨standard input⁩:36 ⁨standard input⁩:127
 msgid "User"
 msgstr ""
 
@@ -3528,7 +3601,7 @@ msgstr ""
 msgid "You can't create a new line when there is an existing one"
 msgstr ""
 
-#: ⁨standard input⁩:43
+#: ⁨standard input⁩:57
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 
@@ -3559,7 +3632,7 @@ msgstr ""
 msgid "You don't have the right to update tickets"
 msgstr ""
 
-#: src/Task.php:448
+#: src/Task.php:463 src/Task.php:861
 msgid "You don't have the ticket creation right"
 msgstr ""
 
