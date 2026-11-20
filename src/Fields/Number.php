@@ -146,6 +146,19 @@ class Number extends CommonDBTM
         return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
+    /**
+     * Whether the 0 held by a number field is an answer rather than the untouched default
+     * value. A mandatory number can only be submitted once its value reaches its minimal
+     * mandatory value: when it holds 0, the minimum allowed it and 0 was chosen.
+     */
+    public static function isZeroAnswered(int $fields_id): bool
+    {
+        FieldParameter::preloadForFields([$fields_id]);
+        $params = FieldParameter::getFromStaticCache($fields_id);
+
+        return is_array($params) && (int) $params['is_mandatory'] === 1;
+    }
+
     public static function fieldsMandatoryScript($data) {}
 
     public static function fieldsHiddenScript($data) {}

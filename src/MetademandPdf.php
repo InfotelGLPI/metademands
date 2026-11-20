@@ -38,6 +38,7 @@ use Glpi\RichText\RichText;
 use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Fields\Dropdown as FieldDropdown;
 use GlpiPlugin\Metademands\Fields\Freetable;
+use GlpiPlugin\Metademands\Fields\Number;
 use GlpiPlugin\Metademands\Fields\Signature;
 use Html;
 use Location;
@@ -808,9 +809,11 @@ class MetademandPdf extends \TCPDF
                     ) {
                         continue;
                     }
+                    // 0 is the default value of a number, unless a mandatory number accepted it
                     if ($elt['type'] == 'number'
                         && isset($fields[$elt['id']])
-                        && $fields[$elt['id']] == "0") {
+                        && $fields[$elt['id']] == "0"
+                        && !Number::isZeroAnswered((int) $elt['id'])) {
                         continue;
                     }
                     if ($elt['type'] == 'range'
@@ -841,7 +844,7 @@ class MetademandPdf extends \TCPDF
                     }
                     if ($elt['type'] == 'number'
                         && isset($fields[$elt['id']])
-                        && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
+                        && $fields[$elt['id']] == "") {
                         continue;
                     }
                     if ($elt['type'] == 'text'

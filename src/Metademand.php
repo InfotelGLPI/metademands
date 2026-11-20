@@ -46,6 +46,7 @@ use Glpi\ItemTranslation\Context\TranslationHandler;
 use Glpi\RichText\RichText;
 use Glpi\UI\IllustrationManager;
 use GlpiPlugin\Metademands\Fields\Dropdownmeta;
+use GlpiPlugin\Metademands\Fields\Number;
 use GlpiPlugin\Orderfollowup\Metademand as OrderMetademand;
 use GlpiPlugin\Resources\Resource;
 use GlpiPlugin\Servicecatalog\Category as ServicecatalogCategory;
@@ -4416,8 +4417,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     ) {
                         continue;
                     }
+                    // 0 is the default value of a number, unless a mandatory number accepted it
                     if ($field['type'] == 'number'
-                        && $field['value'] == "0") {
+                        && $field['value'] == "0"
+                        && !Number::isZeroAnswered((int) $fields_id)) {
                         continue;
                     }
                     if ($field['type'] == 'range'
@@ -4446,7 +4449,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                         continue;
                     }
                     if ($field['type'] == 'number'
-                        && ($field['value'] == "" || $field['value'] == "0")) {
+                        && $field['value'] == "") {
                         continue;
                     }
                     if ($field['type'] == 'text'
