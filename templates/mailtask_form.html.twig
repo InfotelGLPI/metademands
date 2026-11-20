@@ -33,67 +33,81 @@
 {{ inputs.hidden('formatastable', 1) }}
 {{ inputs.hidden('mailtask_id', mailtask_id) }}
 
-<div class="row mb-3">
-    <label class="col-4 col-form-label fw-bold">{{ __('Use block', 'metademands') }}</label>
-    <div class="col-8">{% do call('Dropdown::showYesNo', ['useBlock', use_block]) %}</div>
-</div>
 
-<div class="row mb-3">
-    <label class="col-4 col-form-label fw-bold">{{ __('Block to use', 'metademands') }}</label>
-    <div class="col-8">
-        {% do call('Dropdown::showFromArray', ['block_use', blocks, {
-            'values': block_use,
-            'width': '100%',
-            'multiple': true,
-            'entity': active_entities
-        }]) %}
+{#- Sections of the child object form (task_form.html.twig, tags of the metademand beside
+ # them): the texts first, the recipients, then the options, folded. -#}
+
+<section class="md-child-section">
+    <h4 class="md-child-section-title"><i class="ti ti-file-text"></i>{{ __('Content') }}</h4>
+    <div class="md-child-section-body">
+        <div class="row mb-3">
+            <label class="col-3 col-form-label fw-bold">{{ __('Title') }}</label>
+            <div class="col-9">
+                <input type="text" class="form-control" name="name" value="{{ name }}" data-md-tag-target="name">
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-3 col-form-label fw-bold">{{ __('Description') }}</label>
+            <div class="col-9" data-md-tag-target="content">
+                {% do call('Html::textarea', [{'name': 'content', 'value': content,
+                    'enable_richtext': true, 'enable_fileupload': false,
+                    'enable_images': false, 'rows': 3}]) %}
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
-<hr class="my-3">
-
-<div class="row mb-3">
-    <label class="col-4 col-form-label fw-bold">
-        {{ __('Actors', 'metademands') }} — {{ __('Recipient') }} ({{ __('User') }})
-    </label>
-    <div class="col-8">
-        {% do call('User::dropdown', [{
-            'name': 'users_id_recipient',
-            'value': users_id_recipient,
-            'entity': entities_id,
-            'right': user_right
-        }]) %}
+<section class="md-child-section">
+    <h4 class="md-child-section-title"><i class="ti ti-mail-forward"></i>{{ _n('Recipient', 'Recipients', 2) }}</h4>
+    <div class="md-child-section-body">
+        <div class="row mb-3">
+            <label class="col-3 col-form-label fw-bold">{{ __('User') }}</label>
+            <div class="col-9">
+                {% do call('User::dropdown', [{
+                    'name': 'users_id_recipient',
+                    'value': users_id_recipient,
+                    'entity': entities_id,
+                    'right': user_right
+                }]) %}
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-3 col-form-label fw-bold">{{ __('Group') }}</label>
+            <div class="col-9">
+                {% do call('Dropdown::show', ['Group', {
+                    'name': 'groups_id_recipient',
+                    'value': groups_id_recipient,
+                    'entity': entities_id,
+                    'condition': {'is_requester': 1}
+                }]) %}
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
-<div class="row mb-3">
-    <label class="col-4 col-form-label fw-bold">
-        {{ __('Actors', 'metademands') }} — {{ __('Recipient') }} ({{ __('Group') }})
-    </label>
-    <div class="col-8">
-        {% do call('Dropdown::show', ['Group', {
-            'name': 'groups_id_recipient',
-            'value': groups_id_recipient,
-            'entity': entities_id,
-            'condition': {'is_requester': 1}
-        }]) %}
+{#- Folded: its value is summed up next to the title -#}
+<details class="md-child-section md-child-options">
+    <summary class="md-child-section-title">
+        <i class="ti ti-adjustments"></i>{{ __('Options', 'metademands') }}
+        <span class="md-child-summary">
+            {% if use_block %}<span class="badge bg-blue-lt">{{ __('Use block', 'metademands') }}</span>{% endif %}
+        </span>
+    </summary>
+    <div class="md-child-section-body">
+        <div class="row mb-3">
+            <label class="col-5 col-form-label fw-bold">{{ __('Use block', 'metademands') }}</label>
+            <div class="col-7">{% do call('Dropdown::showYesNo', ['useBlock', use_block]) %}</div>
+        </div>
+        <div class="row">
+            <label class="col-5 col-form-label fw-bold">{{ __('Block to use', 'metademands') }}</label>
+            <div class="col-7">
+                {% do call('Dropdown::showFromArray', ['block_use', blocks, {
+                    'values': block_use,
+                    'width': '100%',
+                    'multiple': true,
+                    'entity': active_entities
+                }]) %}
+            </div>
+        </div>
     </div>
-</div>
-
-<hr class="my-3">
-
-<div class="row mb-3">
-    <label class="col-4 col-form-label fw-bold">{{ __('Title') }}</label>
-    <div class="col-8">
-        <input type="text" class="form-control" name="name" value="{{ name }}">
-    </div>
-</div>
-
-<div class="row mb-3">
-    <label class="col-4 col-form-label fw-bold">{{ __('Description') }}</label>
-    <div class="col-8">
-        {% do call('Html::textarea', [{'name': 'content', 'value': content,
-            'enable_richtext': true, 'enable_fileupload': false,
-            'enable_images': false, 'rows': 3}]) %}
-    </div>
-</div>
+</details>

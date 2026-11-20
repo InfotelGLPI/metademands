@@ -25,9 +25,23 @@
  # --------------------------------------------------------------------------
  #}
 
+{#-
+ # Child object of a metademand (Task::showForm()), in a modal. A new child is added in two
+ # steps: the object to create is chosen among cards, then its settings are shown, with the
+ # tags of the metademand beside them (public/scripts/child_object_form.js). A card sets
+ # the "taskType" dropdown, kept hidden, whose change reloads the settings of that object.
+ #
+ # Expected context, besides the legacy form ones (item, parent, form_id, options...):
+ #  - cards:      Task::getChildObjectCards(), empty for an existing child
+ #  - shown_type: type of the settings printed first by Task::showTypeForm()
+ #  - with_tags:  the settings take tags (not for a child metademand)
+ #  - tag_groups: Task::getTagGroups(); known_tags: Task::getKnownTags()
+-#}
+{% set picking = cards is not empty %}
+
 <div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
+    <div class="modal-dialog modal-xl md-child-dialog">
+        <div class="modal-content{{ picking ? ' md-child-picking' : '' }}" data-md-child>
             <div class="modal-header">
                 <h5 class="modal-title">
                     {{ is_new ? __('Add a child object', 'metademands') : __('Edit child object', 'metademands') }}
@@ -36,7 +50,7 @@
                         aria-label="{{ __('Close') }}"></button>
             </div>
 
-            <div class="modal-body" style="overflow-y:auto; max-height:75vh;">
+            <div class="modal-body" style="overflow-y:auto; max-height:80vh;">
                 {% if not_solved %}
                     <div class="alert alert-warning d-flex align-items-center" role="alert">
                         <i class="ti ti-alert-triangle me-2" style="font-size:2em;color:orange;"></i>
@@ -44,20 +58,79 @@
                     </div>
                 {% else %}
                     {% do item.showFormHeader(options) %}
-                    {% if form_id <= 0 %}
-                        {% embed '@metademands/forms/task_form_row.html.twig' with {'label': __('Task type', 'metademands')} %}
-                            {% block content %}
-                                {% do call('Dropdown::showFromArray', ['taskType', task_types, {'value': 0, 'rand': type_rand}]) %}
-                                {% do call('Ajax::updateItemOnSelectEvent', ['dropdown_taskType' ~ type_rand, 'show_add_task_form', type_url, {
-                                    'taskType': '__VALUE__',
-                                    'plugin_metademands_metademands_id': parent.getID()
-                                }]) %}
-                            {% endblock %}
-                        {% endembed %}
-                    {% endif %}
-                    {% embed '@metademands/forms/task_form_row.html.twig' with {'label': '', 'span_id': 'show_add_task_form'} %}
+                    {% embed '@metademands/forms/task_form_row.html.twig' with {'label': ''} %}
                         {% block content %}
-                            {% do item.showTypeForm(parent, form_id, true) %}
+                            <div class="md-child-form text-start">
+                                {% if picking %}
+                                    {# Step 1: the object to create #}
+                                    <div data-md-child-picker>
+                                        <div class="md-type-grid">
+                                            {% for card in cards %}
+                                                <button type="button"
+                                                        class="md-type-card md-child-family-{{ card.family }}"
+                                                        data-md-child-card="{{ card.type }}"
+                                                        data-md-child-tags="{{ card.tags ? '1' : '0' }}"
+                                                        data-md-child-name="{{ card.name }}"
+                                                        data-md-child-icon="{{ card.icon }}"
+                                                        {{ card.reason is not empty ? 'disabled' : '' }}>
+                                                    <span class="md-type-icon"><i class="ti {{ card.icon }}"></i></span>
+                                                    <span class="md-type-text">
+                                                        <span class="md-type-name">{{ card.name }}</span>
+                                                        <span class="md-type-desc">{{ card.description }}</span>
+                                                        {% if card.reason is not empty %}
+                                                            <span class="md-type-desc md-type-taken">
+                                                                <i class="ti ti-info-circle me-1"></i>{{ card.reason }}
+                                                            </span>
+                                                        {% endif %}
+                                                    </span>
+                                                </button>
+                                            {% endfor %}
+                                        </div>
+                                        {# The object the cards set: its change reloads the settings #}
+                                        <span class="d-none">
+                                            {% do call('Dropdown::showFromArray', ['taskType', task_types, {'value': shown_type, 'rand': type_rand}]) %}
+                                            {% do call('Ajax::updateItemOnSelectEvent', ['dropdown_taskType' ~ type_rand, 'show_add_task_form', type_url, {
+                                                'taskType': '__VALUE__',
+                                                'plugin_metademands_metademands_id': parent.getID()
+                                            }]) %}
+                                        </span>
+                                    </div>
+                                {% endif %}
+
+                                {# Step 2 of a new child, or the settings of an existing one #}
+                                <div data-md-child-settings{{ picking ? ' hidden' : '' }}>
+                                    {% if picking %}
+                                        <div class="md-type-chosen">
+                                            <span class="md-type-icon" data-md-child-chosen-icon><i class="ti"></i></span>
+                                            <div class="flex-fill">
+                                                <div class="text-muted small">{{ __('Object', 'metademands') }}</div>
+                                                <b data-md-child-chosen-name></b>
+                                            </div>
+                                            <button type="button" class="btn btn-ghost-primary btn-sm" data-md-child-change>
+                                                <i class="ti ti-arrow-left me-1"></i>{{ __('Change the object', 'metademands') }}
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                    <div class="md-child-layout{{ with_tags ? '' : ' md-child-no-tags' }}" data-md-child-layout>
+                                        <div class="md-child-main">
+                                            <span id="show_add_task_form">
+                                                {% do item.showTypeForm(parent, form_id, true) %}
+                                            </span>
+                                            <div class="alert alert-danger d-flex align-items-start gap-2 py-2 mt-2" data-md-tag-unknown hidden>
+                                                <i class="ti ti-alert-triangle mt-1"></i>
+                                                <div>
+                                                    {{ __('Unknown tags, left as they are in the created object:', 'metademands') }}
+                                                    <b data-md-tag-unknown-list></b>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{ include('@metademands/forms/child_tags_panel.html.twig', {
+                                            'tag_groups': tag_groups,
+                                            'known_tags': known_tags,
+                                        }, with_context = false) }}
+                                    </div>
+                                </div>
+                            </div>
                         {% endblock %}
                     {% endembed %}
                     <input type="hidden" name="plugin_metademands_metademands_id" value="{{ parent.getID() }}">
