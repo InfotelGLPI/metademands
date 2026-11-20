@@ -71,6 +71,8 @@
         <file>tests/FieldBlockTitleTest.php</file>
         <file>tests/FieldOrderTest.php</file>
         <file>tests/ChildObjectFormTest.php</file>
+        <file>tests/NumberZeroValueTest.php</file>
+        <file>tests/LocationLinkedUserTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

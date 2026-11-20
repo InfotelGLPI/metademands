@@ -2632,3 +2632,10 @@ details.md-child-section:not([open]) > summary {
         max-height: 22rem;
     }
 }
+
+/* Unknown tags of a child object: no display utility, which would beat its hidden attribute */
+.md-child-unknown {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+}

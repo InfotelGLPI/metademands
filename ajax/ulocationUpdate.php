@@ -105,6 +105,22 @@ if (isset($_POST["locations_id"]) && $_POST["locations_id"] > 0) {
     $val = $_POST['locations_id'];
 }
 
+// Root location and maximum depth of the location field, as Dropdown::showWizardField()
+// applies them when the field is not linked to a user
+$root_items_id  = 0;
+$location_depth = 0;
+$locationparameter = new FieldParameter();
+if (isset($_POST['fields_id'])
+    && $locationparameter->getFromDBByCrit(['plugin_metademands_fields_id' => (int) $_POST['fields_id']])) {
+    $root_items_id  = (int) $locationparameter->fields['root_items_id'];
+    $location_depth = (int) $locationparameter->fields['location_depth'];
+}
+$allowed_ids = Dropdown::getAllowedLocationIds($root_items_id, $location_depth);
+// The location of the user is only preselected when the field offers it
+if ($allowed_ids !== null && !in_array((int) $val, $allowed_ids, true)) {
+    $val = 0;
+}
+
 // [S3] Normalize the reflected form field name: it is echoed back as the name attribute
 // of the dropdown rendered below (shared rule for the whole u*Update.php family).
 $_POST['field'] = Config::normalizePostedFieldName($_POST['field'] ?? '');
@@ -118,10 +134,15 @@ if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
 }
 
 if ($_POST['display_type'] == Dropdown::CLASSIC_DISPLAY) {
+    if ($allowed_ids !== null) {
+        $opt['condition'] = ['id' => $allowed_ids];
+    }
     Location::dropdown($opt);
 } else {
     $opt['fields_id'] = $_POST['fields_id'];
     $opt['required'] = (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1 ? "required" : "");
+    $opt['root_items_id']  = $root_items_id;
+    $opt['location_depth'] = $location_depth;
     // Returns its markup (Twig migration): printed here, the endpoint outputs the field
     echo Dropdown::locationDropdown($opt);
 }

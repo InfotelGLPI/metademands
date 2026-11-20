@@ -364,6 +364,49 @@ class Dropdown extends CommonDBTM
     }
 
     /**
+     * Locations offered by a location field with a root location and/or a maximum depth:
+     * the locations below the root (the root itself excluded), down to the maximum depth.
+     *
+     * @return int[]|null null when the field restricts nothing
+     */
+    public static function getAllowedLocationIds(int $root_items_id, int $location_depth): ?array
+    {
+        /** @var \DBmysql $DB */
+        global $DB;
+
+        $allowed_ids = null;
+        if ($root_items_id > 0) {
+            $sons = (new DbUtils())->getSonsOf(Location::getTable(), $root_items_id);
+            unset($sons[$root_items_id]);
+            $allowed_ids = array_map('intval', array_keys($sons));
+        }
+        if ($location_depth > 0) {
+            $root_level = 0;
+            if ($root_items_id > 0) {
+                $row = $DB->request([
+                    'SELECT' => ['level'],
+                    'FROM'   => Location::getTable(),
+                    'WHERE'  => ['id' => $root_items_id],
+                ])->current();
+                $root_level = (int) ($row['level'] ?? 0);
+            }
+            $depth_ids = [];
+            foreach ($DB->request([
+                'SELECT' => ['id'],
+                'FROM'   => Location::getTable(),
+                'WHERE'  => ['level' => ['<=', $root_level + $location_depth]],
+            ]) as $row) {
+                $depth_ids[] = (int) $row['id'];
+            }
+            $allowed_ids = ($allowed_ids !== null)
+                ? array_values(array_intersect($allowed_ids, $depth_ids))
+                : $depth_ids;
+        }
+
+        return $allowed_ids;
+    }
+
+    /**
      * Cascading location selector. Returns its markup instead of printing it: the only
      * caller concatenates the result into the field it is building, so the legacy `echo`
      * pushed the selector out of that field and ahead of it.
@@ -475,39 +518,10 @@ class Dropdown extends CommonDBTM
 
                     if ($data["display_type"] == self::CLASSIC_DISPLAY) {
                         $card_value     = $options['value'];
-                        $root_items_id  = (int) ($data['root_items_id'] ?? 0);
-                        $location_depth = (int) ($data['location_depth'] ?? 0);
-                        $allowed_ids = null;
-                        if ($root_items_id > 0) {
-                            $dbu = new DbUtils();
-                            $sons = $dbu->getSonsOf(Location::getTable(), $root_items_id);
-                            unset($sons[$root_items_id]);
-                            $allowed_ids = array_keys($sons);
-                        }
-                        if ($location_depth > 0) {
-                            global $DB;
-                            $root_level = 0;
-                            if ($root_items_id > 0) {
-                                $row = $DB->request([
-                                    'SELECT' => ['level'],
-                                    'FROM'   => Location::getTable(),
-                                    'WHERE'  => ['id' => $root_items_id],
-                                ])->current();
-                                $root_level = (int) ($row['level'] ?? 0);
-                            }
-                            $max_level = $root_level + $location_depth;
-                            $depth_ids = [];
-                            foreach ($DB->request([
-                                'SELECT' => ['id'],
-                                'FROM'   => Location::getTable(),
-                                'WHERE'  => ['level' => ['<=', $max_level]],
-                            ]) as $row) {
-                                $depth_ids[] = $row['id'];
-                            }
-                            $allowed_ids = ($allowed_ids !== null)
-                                ? array_values(array_intersect($allowed_ids, $depth_ids))
-                                : $depth_ids;
-                        }
+                        $allowed_ids    = self::getAllowedLocationIds(
+                            (int) ($data['root_items_id'] ?? 0),
+                            (int) ($data['location_depth'] ?? 0),
+                        );
                         if ($allowed_ids !== null) {
                             $options['condition'] = ['id' => $allowed_ids];
                         }
