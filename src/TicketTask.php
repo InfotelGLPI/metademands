@@ -181,6 +181,10 @@ class TicketTask extends CommonDBChild
 
         $ticket = new \Ticket();
 
+        // No block chosen yet: neither an existing child nor an input given back after a refusal
+        $every_block = !array_key_exists('block_use', $input)
+            && !isset($_SESSION["metademandsHelpdeskSaved"]['block_use']);
+
         if (isset($_SESSION["metademandsHelpdeskSaved"])) {
             foreach ($_SESSION["metademandsHelpdeskSaved"] as $name => $value) {
                 $values[$name] = $value;
@@ -218,14 +222,19 @@ class TicketTask extends CommonDBChild
         if ($is_ticket_type) {
             $field = new Field();
             $fields = $field->find(["plugin_metademands_metademands_id" => $metademands_id]);
+            $block_titles = FieldOption::getBlockTitles((int) $metademands_id);
             foreach ($fields as $f) {
                 if (!isset($blocks[$f['rank']])) {
-                    $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
+                    $blocks[intval($f['rank'])] = FieldOption::getBlockLabel((int) $f['rank'], $block_titles);
                 }
             }
             ksort($blocks);
             if (!is_array($values['block_use'])) {
                 $values['block_use'] = [$values['block_use']];
+            }
+            // A new child uses every block by default
+            if ($every_block) {
+                $values['block_use'] = array_keys($blocks);
             }
 
             // Changing the entity reloads the category and the actor dropdowns scoped to it,

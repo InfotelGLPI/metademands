@@ -2420,3 +2420,215 @@ select.md-yesno-buttons[data-md-yesno]:not(.select2-hidden-accessible) {
 .md-type-desc.md-type-taken {
     color: var(--tblr-orange);
 }
+
+/* Child object of a metademand (templates/task_form.html.twig, forms/child_tags_panel.html.twig,
+   public/scripts/child_object_form.js): the object as a card, then its settings beside the tags */
+.md-child-form .md-type-grid {
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
+
+.md-child-family-ticket .md-type-icon { background: var(--tblr-blue-lt); color: var(--tblr-blue); }
+.md-child-family-task .md-type-icon { background: var(--tblr-teal-lt); color: var(--tblr-teal); }
+.md-child-family-mail .md-type-icon { background: var(--tblr-orange-lt); color: var(--tblr-orange); }
+.md-child-family-meta .md-type-icon { background: var(--tblr-purple-lt); color: var(--tblr-purple); }
+
+/* Step 1: the buttons of the form wait for the object */
+.md-child-picking .form-button-separator {
+    display: none !important;
+}
+
+.md-child-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    gap: 1rem;
+    align-items: start;
+}
+
+.md-child-layout.md-child-no-tags {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.md-child-layout.md-child-no-tags .md-child-tags,
+.md-child-layout.md-child-no-tags [data-md-tag-unknown] {
+    display: none !important;
+}
+
+.md-child-section {
+    margin-bottom: .75rem;
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius-lg, 8px);
+}
+
+.md-child-section-title {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 0;
+    padding: .5rem .75rem;
+    border-bottom: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius-lg, 8px) var(--tblr-border-radius-lg, 8px) 0 0;
+    background: var(--tblr-bg-surface-secondary);
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+details.md-child-section > summary {
+    cursor: pointer;
+    list-style: none;
+}
+
+details.md-child-section:not([open]) > summary {
+    border-bottom: 0;
+    border-radius: var(--tblr-border-radius-lg, 8px);
+}
+
+.md-child-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem;
+    margin-left: auto;
+    font-weight: 400;
+}
+
+.md-child-section-body {
+    padding: .75rem;
+}
+
+.md-child-options .select2-container,
+.md-child-actors .select2-container {
+    width: 100% !important;
+}
+
+.md-child-actors {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr) minmax(0, 1fr);
+    gap: .5rem .75rem;
+    align-items: center;
+}
+
+.md-child-actors-head {
+    color: var(--tblr-secondary);
+    font-size: .7rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.md-child-actors-label {
+    font-weight: 600;
+}
+
+.md-child-actors > div {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    min-width: 0;
+}
+
+.md-child-actors > div > span {
+    flex: 1;
+    min-width: 0;
+}
+
+.md-child-tags {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    max-height: 70vh;
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius-lg, 8px);
+    background: var(--tblr-bg-surface);
+}
+
+.md-child-tags-head {
+    padding: .625rem .75rem;
+    border-bottom: 1px solid var(--tblr-border-color);
+}
+
+.md-child-tags-title {
+    display: flex;
+    align-items: center;
+    gap: .375rem;
+    font-weight: 600;
+}
+
+.md-child-tags-into {
+    margin-top: .125rem;
+    color: var(--tblr-secondary);
+    font-size: .75rem;
+}
+
+.md-child-tags-into b {
+    color: var(--tblr-primary);
+}
+
+.md-child-tags-list {
+    overflow: auto;
+    padding: .25rem 0;
+}
+
+.md-child-tags-group-title {
+    margin: .5rem .75rem .25rem;
+    color: var(--tblr-secondary);
+    font-size: .7rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.md-child-tag {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .125rem .75rem;
+    cursor: pointer;
+}
+
+.md-child-tag:hover,
+.md-child-tag:focus-visible {
+    background: var(--tblr-primary-lt);
+    outline: 0;
+}
+
+.md-child-tag code {
+    flex: 0 0 auto;
+    font-size: .75rem;
+}
+
+.md-child-tag-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: .8125rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.md-child-tag-copy {
+    visibility: hidden;
+}
+
+.md-child-tag:hover .md-child-tag-copy,
+.md-child-tag:focus-within .md-child-tag-copy {
+    visibility: visible;
+}
+
+.md-child-tag-sub {
+    padding-left: 1.75rem;
+}
+
+/* The text the tags go into */
+.md-child-target {
+    border-radius: var(--tblr-border-radius, 6px);
+    box-shadow: 0 0 0 .2rem var(--tblr-primary-lt);
+}
+
+@media (max-width: 991px) {
+    .md-child-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .md-child-tags {
+        position: static;
+        max-height: 22rem;
+    }
+}

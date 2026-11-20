@@ -343,17 +343,32 @@ class Task extends CommonDBChild
             }
         }
 
+        // Type of the form showTypeForm() prints first: an existing child's, or the default one
+        // of a new child (the ticket, the task when the metademand creates tasks)
+        if ($ID > 0) {
+            $shown_type = (int) $this->fields['type'];
+        } else {
+            $shown_type = (int) ($item->fields['force_create_tasks'] ?? 0) === 1 ? self::TASK_TYPE : self::TICKET_TYPE;
+        }
+
         TemplateRenderer::getInstance()->display('@metademands/task_form.html.twig', [
-            'modal_id'   => 'modal_task_' . $item->getID() . $modal_rand,
-            'is_new'     => $ID <= 0,
-            'not_solved' => !$solved,
-            'item'       => $this,
-            'parent'     => $item,
-            'form_id'    => $ID,
-            'options'    => $options,
-            'task_types' => $task_types,
-            'type_rand'  => $type_rand,
-            'type_url'   => PLUGIN_METADEMANDS_WEBDIR . "/ajax/showAddTaskForm.php",
+            'modal_id'    => 'modal_task_' . $item->getID() . $modal_rand,
+            'is_new'      => $ID <= 0,
+            'not_solved'  => !$solved,
+            'item'        => $this,
+            'parent'      => $item,
+            'form_id'     => $ID,
+            'options'     => $options + ['no_header' => true],
+            'task_types'  => $task_types,
+            'type_rand'   => $type_rand,
+            'type_url'    => PLUGIN_METADEMANDS_WEBDIR . "/ajax/showAddTaskForm.php",
+            // The object chosen as a card (public/scripts/child_object_form.js), then its
+            // settings with the tags of the metademand beside them
+            'cards'       => $ID <= 0 ? self::getChildObjectCards($item) : [],
+            'shown_type'  => $shown_type,
+            'with_tags'   => $shown_type !== self::METADEMAND_TYPE,
+            'tag_groups'  => self::getTagGroups($item->getID()),
+            'known_tags'  => self::getKnownTags($item->getID()),
         ]);
 
         return true;
@@ -525,14 +540,7 @@ class Task extends CommonDBChild
             'solved' => $solved,
         ];
 
-        // Tags a child may use (front/tags.php): those of the fields of the metademand,
-        // and those of the requester resolved by Metademand::getContentForUser()
-        $known_tags = array_map('strval', array_keys((new TicketField())->getTags($item->getID())));
-        foreach (['login', 'name', 'firstname', 'email'] as $user_tag) {
-            $known_tags[] = $user_tag;
-            $known_tags[] = 'requester.' . $user_tag;
-        }
-        $known_tags[] = 'entity';
+        $known_tags = self::getKnownTags($item->getID());
 
         $field_names = [];
         $field_url = Toolbox::getItemTypeFormURL(Field::class);
@@ -767,6 +775,132 @@ class Task extends CommonDBChild
      *
      * @return string[] The unknown tags, with their # delimiters, once each
      */
+    /**
+     * Tags a child may use (front/tags.php), without their #: those of the fields of the
+     * metademand, and those of the requester resolved by Metademand::getContentForUser()
+     *
+     * @param int $metademands_id
+     *
+     * @return string[]
+     */
+    public static function getKnownTags(int $metademands_id): array
+    {
+        $known_tags = array_map('strval', array_keys((new TicketField())->getTags($metademands_id)));
+        foreach (['login', 'name', 'firstname', 'email'] as $user_tag) {
+            $known_tags[] = $user_tag;
+            $known_tags[] = 'requester.' . $user_tag;
+        }
+        $known_tags[] = 'entity';
+
+        return $known_tags;
+    }
+
+    /**
+     * Tags of the child object form, by group: the requester and the entity, then the fields
+     * of each block, named by its title (the same tags as getKnownTags(), with labels)
+     *
+     * @param int $metademands_id
+     *
+     * @return list<array{title: string, tags: list<array{tag: string, label: string, sub: bool}>}>
+     */
+    public static function getTagGroups(int $metademands_id): array
+    {
+        $groups = [[
+            'title' => __('Requester and entity', 'metademands'),
+            'tags'  => [
+                ['tag' => 'requester.login', 'label' => __('Requester login', 'metademands'), 'sub' => false],
+                ['tag' => 'requester.name', 'label' => __('Requester name', 'metademands'), 'sub' => false],
+                ['tag' => 'requester.firstname', 'label' => __('Requester firstname', 'metademands'), 'sub' => false],
+                ['tag' => 'requester.email', 'label' => __('Requester email', 'metademands'), 'sub' => false],
+                ['tag' => 'entity', 'label' => __('Entity'), 'sub' => false],
+            ],
+        ]];
+
+        // The fields giving a value, as TicketField::getTags() lists them
+        $tags = (new TicketField())->getTags($metademands_id);
+        $block_titles = FieldOption::getBlockTitles($metademands_id);
+        $by_block = [];
+        foreach ((new Field())->find(
+            ['plugin_metademands_metademands_id' => $metademands_id],
+            ['rank', 'order'],
+        ) as $field) {
+            $id = (string) $field['id'];
+            if (!isset($tags[$id])) {
+                continue;
+            }
+            $rank = (int) $field['rank'];
+            $by_block[$rank][] = ['tag' => $id, 'label' => (string) $tags[$id], 'sub' => false];
+            foreach (['login' => __('Login'), 'name' => __('Name'), 'firstname' => __('First name'), 'email' => _n('Email', 'Emails', 1)] as $attribute => $label) {
+                if (isset($tags[$id . '.' . $attribute])) {
+                    $by_block[$rank][] = ['tag' => $id . '.' . $attribute, 'label' => $label, 'sub' => true];
+                }
+            }
+        }
+        ksort($by_block);
+        foreach ($by_block as $rank => $block_tags) {
+            $groups[] = ['title' => FieldOption::getBlockLabel($rank, $block_titles), 'tags' => $block_tags];
+        }
+
+        return $groups;
+    }
+
+    /**
+     * Cards of the child object form: the objects a metademand may create, the unavailable
+     * ones greyed with the reason (getTaskTypes() lists the available ones)
+     *
+     * @param Metademand $metademand
+     *
+     * @return list<array{type: int, name: string, description: string, icon: string, family: string, reason: string, tags: bool}>
+     */
+    public static function getChildObjectCards(Metademand $metademand): array
+    {
+        $available = self::getTaskTypes($metademand->getID());
+        $tasks_mode = (int) ($metademand->fields['force_create_tasks'] ?? 0) === 1;
+        $tasks_option = __('Create tasks (not child tickets)', 'metademands');
+        $no_ticket_right = __("You don't have the ticket creation right", 'metademands');
+
+        $reasons = [
+            self::TICKET_TYPE => $tasks_mode
+                ? sprintf(__('Not available with « %s »', 'metademands'), $tasks_option)
+                : $no_ticket_right,
+            self::TASK_TYPE => sprintf(__('Only with « %s »', 'metademands'), $tasks_option),
+            self::MAIL_TYPE => $no_ticket_right,
+            self::METADEMAND_TYPE => ($metademand->fields['object_to_create'] ?? '') === 'Ticket'
+                ? __('Only one child metademand per metademand', 'metademands')
+                : __('Only for a metademand creating tickets', 'metademands'),
+        ];
+        // Only one metademand can be selected
+        if (isset($available[self::METADEMAND_TYPE])
+            && countElementsInTable(self::getTable(), [
+                'plugin_metademands_metademands_id' => $metademand->getID(),
+                'type'                              => self::METADEMAND_TYPE,
+            ]) > 0) {
+            unset($available[self::METADEMAND_TYPE]);
+        }
+
+        $cards = [
+            [self::TICKET_TYPE, __('Ticket'), __('Ticket linked to the ticket of the request, with its actors and its category', 'metademands'), 'ti-ticket', 'ticket'],
+            [self::TASK_TYPE, __('Task'), __('Task added to the ticket of the request', 'metademands'), 'ti-subtask', 'task'],
+            [self::MAIL_TYPE, __('Mail'), __('Message sent to a user or a group', 'metademands'), 'ti-mail', 'mail'],
+            [self::METADEMAND_TYPE, Metademand::getTypeName(1), __('Starts another metademand after this one', 'metademands'), 'ti-forms', 'meta'],
+        ];
+        $list = [];
+        foreach ($cards as [$type, $name, $description, $icon, $family]) {
+            $list[] = [
+                'type'        => $type,
+                'name'        => $name,
+                'description' => $description,
+                'icon'        => $icon,
+                'family'      => $family,
+                'reason'      => isset($available[$type]) ? '' : $reasons[$type],
+                // A child metademand has no title nor description
+                'tags'        => $type !== self::METADEMAND_TYPE,
+            ];
+        }
+
+        return $list;
+    }
+
     public static function getUnknownTags(array $texts, array $known_tags): array
     {
         $unknown = [];

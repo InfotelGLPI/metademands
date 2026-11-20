@@ -1,0 +1,74 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#-
+ # Tags of the metademand beside the settings of a child object (task_form.html.twig): a click
+ # inserts a tag in the title or the description, where the cursor was; the copy button copies
+ # it. See public/scripts/child_object_form.js.
+ #
+ # Expected context:
+ #  - tag_groups: Task::getTagGroups(), the tags by group, without their #
+ #  - known_tags: Task::getKnownTags(), the tags the created objects resolve
+-#}
+<aside class="md-child-tags" aria-label="{{ __('List of available tags') }}"
+       data-md-child-tags-panel
+       data-md-known-tags="{{ known_tags|json_encode }}"
+       data-md-label-name="{{ __('Title') }}"
+       data-md-label-content="{{ __('Description') }}"
+       data-md-copied="{{ __('Copied') }}">
+    <div class="md-child-tags-head">
+        <div class="md-child-tags-title"><i class="ti ti-tags"></i>{{ __('List of available tags') }}</div>
+        <div class="md-child-tags-into">
+            {{ __('A click inserts the tag into:', 'metademands') }}
+            <b data-md-tag-into>{{ __('Description') }}</b>
+        </div>
+        <div class="input-icon mt-2">
+            <span class="input-icon-addon"><i class="ti ti-search"></i></span>
+            <input type="search" class="form-control form-control-sm" data-md-tag-search
+                   placeholder="{{ __('Search') }}" aria-label="{{ __('Search') }}">
+        </div>
+    </div>
+    <div class="md-child-tags-list">
+        {% for group in tag_groups %}
+            <div class="md-child-tags-group" data-md-tag-group>
+                <div class="md-child-tags-group-title">{{ group.title }}</div>
+                {% for row in group.tags %}
+                    <div class="md-child-tag{{ row.sub ? ' md-child-tag-sub' : '' }}" role="button" tabindex="0"
+                         data-md-tag="#{{ row.tag }}#" title="#{{ row.tag }}#">
+                        <code>{{ row.sub ? '.' ~ row.tag|split('.')|last : '#' ~ row.tag ~ '#' }}</code>
+                        <span class="md-child-tag-label">{{ row.label }}</span>
+                        <button type="button" class="btn btn-sm btn-ghost-secondary btn-icon md-child-tag-copy"
+                                data-md-tag-copy title="{{ __('Copy') }}" aria-label="{{ __('Copy') }}">
+                            <i class="ti ti-copy"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <div class="text-muted text-center small py-3" data-md-tag-none hidden>{{ __('No results found') }}</div>
+    </div>
+</aside>
