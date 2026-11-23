@@ -69,6 +69,8 @@ class MetademandPdf extends \TCPDF
     // turn this string into an array and make SetBackgroundColor() fall through to white.
     public $default_bgcolor = 'grey';
     public $value_width = 45;
+    /** @var int width of the fields taking the whole line (the printable width) */
+    public $title_width = 190;
     public $pol_def = 'Helvetica'; // Police par défaut;
     public $title_size = 13;      // Taille du titre.
     public $subtitle_size = 12;      // Taille du titre de bloc.
@@ -580,62 +582,148 @@ class MetademandPdf extends \TCPDF
         }
     }
 
-    public function BasicTableFreeTable($header, $data, $color = "")
+    /**
+     * Free table of the ticket PDF, as wide as the other fields (title_width).
+     *
+     * The columns are sized after their content and a text longer than its column wraps inside
+     * its cell: evenly spread single-line cells used to run over the next column. The grand
+     * totals of an orderfollowup metademand (Freetable::displayFieldPDF()) come under the table,
+     * aligned on its last column, the total of each line.
+     *
+     * @param string[]              $header
+     * @param array<int, string[]>  $data
+     * @param string                $color  background of the cells
+     * @param array<string, string> $totals label => formatted amount
+     */
+    public function BasicTableFreeTable($header, $data, $color = "", array $totals = [])
     {
+        $header = array_values($header);
         $nb = count($header);
-
-        // Spread the columns evenly across the printable width (190 mm). Falls back to a
-        // computed width when there are more than 6 columns so $w is never undefined.
-        $w = $nb > 0 ? 190 / $nb : 190;
-        if ($nb == 1) {
-            $w = 190;
-        }
-        if ($nb == 2) {
-            $w = 95;
-        }
-        if ($nb == 3) {
-            $w = 63.3;
-        }
-        if ($nb == 4) {
-            $w = 47.5;
-        }
-        if ($nb == 5) {
-            $w = 38;
-        }
-        if ($nb == 6) {
-            $w = 31.6;
+        if ($nb === 0) {
+            return;
         }
 
-        $draw_header = function () use ($header, $w, $nb) {
-            $this->SetBackgroundColor($this->default_bgcolor);
+        $width = (float) $this->title_width;
+        $w = $this->getFreeTableWidths($header, $data, $width);
+        // The last column holds the amounts when there are totals
+        $amount_column = $totals !== [] ? $nb - 1 : -1;
+
+        $row_height = function (array $cells) use ($w, $nb): float {
+            $lines = 1;
             for ($i = 0; $i < $nb; $i++) {
-                $this->Cell($w, 7, $header[$i], 1, 0, 'C', true);
+                $lines = max($lines, $this->getNumLines((string) ($cells[$i] ?? ''), $w[$i]));
             }
-            $this->Ln();
+            return $lines * 5 + 1;
+        };
+        $draw_row = function (array $cells, float $height, bool $is_header) use ($w, $nb, $amount_column): void {
+            for ($i = 0; $i < $nb; $i++) {
+                $align = $is_header ? 'C' : ($i === $amount_column ? 'R' : 'L');
+                $this->MultiCell($w[$i], $height, (string) ($cells[$i] ?? ''), 1, $align, $is_header, 0, null, null, true, 0, false, true, $height, 'M');
+            }
+            $this->Ln($height);
         };
 
-        // Automatic page breaks are disabled, so every row has to be checked: whatever
-        // is drawn below the page bottom is silently dropped. The header (7 mm) and a
-        // first row (6 mm) must fit together, otherwise the table starts on a new page.
-        $this->checkPageBreakFor(13);
+        $header_height = $row_height($header);
+        $draw_header = function () use ($header, $header_height, $draw_row, $color): void {
+            $this->SetBackgroundColor($this->default_bgcolor);
+            $draw_row($header, $header_height, true);
+            $this->SetBackgroundColor($color);
+        };
+
+        // Automatic page breaks are disabled, so every row has to be checked: whatever is
+        // drawn below the page bottom is silently dropped. The header and a first row must
+        // fit together, otherwise the table starts on a new page.
+        $first_row = $data !== [] ? $row_height(reset($data)) : 0;
+        $this->checkPageBreakFor($header_height + $first_row);
         $draw_header();
 
-        // Color and font restoration
-        $this->SetBackgroundColor($color);
-        // Data
-        foreach ($data as $field => $line) {
-            if ($this->checkPageBreakFor(6)) {
+        foreach ($data as $cells) {
+            $height = $row_height($cells);
+            if ($this->checkPageBreakFor($height)) {
                 $draw_header();
-                $this->SetBackgroundColor($color);
             }
-            foreach ($line as $row) {
-                $this->Cell($w, 6, $row, 'LR', 0, 'L', false);
-            }
-            $this->Ln();
+            $draw_row($cells, $height, false);
         }
-        // Closing line
-        $this->Cell($w * $nb, 0, '', 'T');
-        $this->Ln();
+
+        // Grand totals: the label over every column but the last one, the amount under the
+        // totals of the lines
+        $label_width = $width - ($amount_column >= 0 ? $w[$amount_column] : 0);
+        foreach ($totals as $total_label => $amount) {
+            $this->checkPageBreakFor(7);
+            $this->SetBackgroundColor($this->default_bgcolor);
+            $this->Cell($label_width, 7, $total_label, 1, 0, 'R', true);
+            $this->SetBackgroundColor($color);
+            $this->Cell($width - $label_width, 7, $amount, 1, 1, 'R', false);
+        }
+    }
+
+    /**
+     * Widths of the columns of a free table within $width: shared out after the length of
+     * their content (title and cells, each capped at half the table so that one long text
+     * wraps rather than starving the other columns), every column keeping at least the
+     * longest word of its title.
+     *
+     * @param string[]             $header
+     * @param array<int, string[]> $data
+     *
+     * @return float[]
+     */
+    private function getFreeTableWidths(array $header, array $data, float $width): array
+    {
+        $nb = count($header);
+        // Cell paddings (1 mm on each side) and some air
+        $padding = 3;
+
+        $natural = [];
+        $minimal = [];
+        for ($i = 0; $i < $nb; $i++) {
+            $longest = $this->getTextWidth((string) $header[$i]);
+            foreach ($data as $cells) {
+                $longest = max($longest, $this->getTextWidth((string) ($cells[$i] ?? '')));
+            }
+            $natural[$i] = min($longest, $width / 2) + $padding;
+
+            $word = 0.0;
+            foreach (explode(' ', (string) $header[$i]) as $part) {
+                $word = max($word, $this->getTextWidth($part));
+            }
+            $minimal[$i] = min($word + $padding, $width / $nb);
+        }
+
+        // Proportional share, then the columns below their minimum are raised to it, the
+        // others giving up the difference in proportion of their surplus
+        $sum = array_sum($natural);
+        $w = array_map(static fn($value) => $value * $width / $sum, $natural);
+        $deficit = 0;
+        $surplus = 0;
+        foreach ($w as $i => $value) {
+            if ($value < $minimal[$i]) {
+                $deficit += $minimal[$i] - $value;
+                $w[$i] = $minimal[$i];
+            } else {
+                $surplus += $value - $minimal[$i];
+            }
+        }
+        if ($deficit > 0 && $surplus > 0) {
+            foreach ($w as $i => $value) {
+                if ($value > $minimal[$i]) {
+                    $w[$i] = $value - ($value - $minimal[$i]) * $deficit / $surplus;
+                }
+            }
+        }
+
+        return $w;
+    }
+
+    /**
+     * Width of a text in the current font, in mm (GetStringWidth() returns the width of each
+     * character instead when asked to)
+     */
+    private function getTextWidth(string $text): float
+    {
+        $width = $this->GetStringWidth($text);
+
+        return is_array($width) ? array_sum($width) : $width;
     }
 
     public function BasicTableFreeInputs($header, $data, $color = '')
@@ -1386,7 +1474,9 @@ class MetademandPdf extends \TCPDF
 
                                 if (count($header) && count($data)) {
                                     $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, "", 'LRBT', 'L', '', 0, '', 'black');
-                                    $this->BasicTableFreeTable($header, $data, $label);
+                                    // With the grand totals of an orderfollowup metademand,
+                                    // as in the ticket content
+                                    $this->BasicTableFreeTable($header, $data, '', $result['totals'] ?? []);
                                 }
                             }
 

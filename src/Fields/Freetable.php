@@ -412,10 +412,18 @@ class Freetable extends CommonDBTM
      * keys) and the column titles fell out of the PDF table. Sourcing the header from the
      * column definitions makes it independent of the submitted values.
      *
-     * @return array{header: string[], rows: array<int, string[]>}
+     * For a metademand of the orderfollowup plugin, as in the ticket content
+     * (displayFieldItems()): a "Total (TTC)" column and the grand totals, in 'totals'.
+     *
+     * @param bool|null $orderfollowup prices and totals; null: whether the metademand is one
+     *                                 of the orderfollowup plugin (usesOrderfollowup())
+     *
+     * @return array{header: string[], rows: array<int, string[]>, totals: array<string, string>}
      */
-    public static function displayFieldPDF($elt, $fields, $label)
+    public static function displayFieldPDF($elt, $fields, $label, ?bool $orderfollowup = null)
     {
+        $orderfollowup ??= self::usesOrderfollowup((int) ($elt['plugin_metademands_metademands_id'] ?? 0));
+
         // Authoritative column list (internal_name => label), ordered by rank.
         $columns = [];
         $field_custom = new MetaFreetablefield();
@@ -430,10 +438,11 @@ class Freetable extends CommonDBTM
         }
 
         if (count($columns) === 0) {
-            return ['header' => [], 'rows' => []];
+            return ['header' => [], 'rows' => [], 'totals' => []];
         }
 
         $rows = [];
+        $total = 0.0;
         $values_elt = $fields[$elt['id']] ?? [];
         if (is_array($values_elt)) {
             foreach ($values_elt as $value_elt) {
@@ -446,11 +455,59 @@ class Freetable extends CommonDBTM
                 foreach ($columns as $internal_name => $col_label) {
                     $row[] = $value_elt[$internal_name] ?? '';
                 }
+                if ($orderfollowup) {
+                    $row_total = self::getRowTotal($value_elt);
+                    $row[] = Html::formatNumber($row_total, false, 2) . " €";
+                    $total += $row_total;
+                }
                 $rows[] = $row;
             }
         }
 
-        return ['header' => array_values($columns), 'rows' => $rows];
+        $header = array_values($columns);
+        $totals = [];
+        if ($orderfollowup) {
+            $header[] = __('Total (TTC)', 'orderfollowup');
+            foreach (self::getGrandTotals($total) as $total_label => $amount) {
+                $totals[$total_label] = Html::formatNumber($amount, false, 2) . " €";
+            }
+        }
+
+        return ['header' => $header, 'rows' => $rows, 'totals' => $totals];
+    }
+
+    /**
+     * Total (TTC) of a line of the free table of an orderfollowup metademand
+     *
+     * @param array<string, mixed> $row submitted line, by internal column name
+     */
+    private static function getRowTotal(array $row): float
+    {
+        return floatval($row['quantity'] ?? 0) * floatval($row['unit_price'] ?? 0);
+    }
+
+    /**
+     * Grand totals of the free table of an orderfollowup metademand: TTC, and HT with the VAT
+     * rate of the orderfollowup configuration (20% when it is not set)
+     *
+     * @return array<string, float> label => amount
+     */
+    private static function getGrandTotals(float $total): array
+    {
+        global $DB;
+
+        $vat = 20.0;
+        if (class_exists(Config::class) && $DB->tableExists(Config::getTable())) {
+            $conf = new Config();
+            if ($conf->getFromDB(1) && is_numeric($conf->fields['use_tva'] ?? null)) {
+                $vat = (float) $conf->fields['use_tva'];
+            }
+        }
+
+        return [
+            __('Grand total (TTC)', 'orderfollowup') => $total,
+            __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup') => $total / (1 + ($vat / 100)),
+        ];
     }
 
     /**
@@ -554,7 +611,7 @@ class Freetable extends CommonDBTM
                         $row[] = ['text' => self::getCellText($fi[$k] ?? '', $types[$k] ?? null), 'colspan' => $colspan];
                     }
                     if ($orderfollowup) {
-                        $totalrow = floatval($fi['quantity']) * floatval($fi['unit_price']);
+                        $totalrow = self::getRowTotal($fi);
                         $row[] = ['text' => Html::formatNumber($totalrow, false, 2) . " €"];
                         $total += $totalrow;
                     }
@@ -564,18 +621,12 @@ class Freetable extends CommonDBTM
         }
 
         if ($orderfollowup) {
-            $conf = new Config();
-            $conf->getFromDB(1);
-            $tva = $conf->fields['use_tva'] ?? "20";
-            $totalHT = $total / (1 + ($tva / 100));
-            $rows[] = [
-                ['text' => __('Grand total (TTC)', 'orderfollowup'), 'heading' => true, 'colspan' => 10],
-                ['text' => Html::formatNumber($total, false, 2) . " €"],
-            ];
-            $rows[] = [
-                ['text' => __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup'), 'heading' => true, 'colspan' => 10],
-                ['text' => Html::formatNumber($totalHT, false, 2) . " €"],
-            ];
+            foreach (self::getGrandTotals($total) as $total_label => $amount) {
+                $rows[] = [
+                    ['text' => $total_label, 'heading' => true, 'colspan' => 10],
+                    ['text' => Html::formatNumber($amount, false, 2) . " €"],
+                ];
+            }
         }
 
         $result[$field['rank']]['content'] .= Field::renderContentRows(

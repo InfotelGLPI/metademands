@@ -21,6 +21,7 @@
         <file>tests/FieldMassiveActionTest.php</file>
         <file>tests/TicketFieldListTest.php</file>
         <file>tests/FreetableFieldsTest.php</file>
+        <file>tests/FreetablePdfTest.php</file>
         <file>tests/BasketlineSummaryTest.php</file>
         <file>tests/ConditionListTest.php</file>
         <file>tests/ConditionTriggerTest.php</file>
