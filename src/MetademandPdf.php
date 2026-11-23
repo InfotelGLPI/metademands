@@ -30,6 +30,7 @@
 namespace GlpiPlugin\Metademands;
 
 use AllowDynamicProperties;
+use CommonDBTM;
 use DbUtils;
 use Document;
 use Document_Item;
@@ -726,79 +727,38 @@ class MetademandPdf extends \TCPDF
         return is_array($width) ? array_sum($width) : $width;
     }
 
-    public function BasicTableFreeInputs($header, $data, $color = '')
+    /**
+     * Table of the order lines kept by orderfollowup (Freeinput::displayFieldPDF(): one row per
+     * line, column title => formatted value), drawn as the free table it comes from. The amounts
+     * get their currency; the grand totals are summed from the stored lines, the formatted
+     * amounts not being numbers (thousands separator), with the VAT rate of the configuration.
+     *
+     * @param array<int, array<string, mixed>> $items
+     * @param array<int, array<string, mixed>> $lines order lines of the ticket (glpi_plugin_orderfollowup_freeinputs)
+     *
+     * @return array{string[], array<int, string[]>, array<string, string>}
+     */
+    private function getOrderLinesTable(array $items, array $lines): array
     {
-        // Sums to 275 mm: this table only fits the landscape page that drawPdf() adds
-        // when orderfollowup is active, which is the sole case where it is drawn.
-        $w = [30, 80, 100, 15, 30, 20]; //275
+        $header = array_map('strval', array_keys((array) reset($items)));
+        $amounts = [__('Unit price (TTC)', 'orderfollowup'), __('Total (TTC)', 'orderfollowup')];
 
-        // Data rows only ever use the six widths above, so a longer header is capped
-        // rather than reading past the end of $w.
-        $nb = min(count($header), count($w));
-
-        $draw_header = function () use ($header, $w, $nb) {
-            $this->SetBackgroundColor($this->default_bgcolor);
-            for ($i = 0; $i < $nb; $i++) {
-                $this->Cell($w[$i], 7, $header[$i], 1, 0, 'C', true);
+        $data = [];
+        foreach ($items as $values) {
+            $row = [];
+            foreach ($values as $column => $value) {
+                $value = (string) $value;
+                $row[] = in_array($column, $amounts, true) && $value !== '' ? $value . " " . EURO : $value;
             }
-            $this->Ln();
-        };
-
-        // Automatic page breaks are disabled, so every row has to be checked: whatever
-        // is drawn below the page bottom is silently dropped. The header (7 mm) and a
-        // first row (6 mm) must fit together, otherwise the table starts on a new page.
-        $this->checkPageBreakFor(13);
-        $draw_header();
-
-        // Color and font restoration
-        $this->SetBackgroundColor($color);
-        // Data
-        $fill = false;
-        $total = 0;
-        foreach ($data as $row) {
-            if ($this->checkPageBreakFor(6)) {
-                $draw_header();
-                $this->SetBackgroundColor($color);
-            }
-            $row[0] = Toolbox::substr($row[0], 0, 15);
-            $this->Cell($w[0], 6, $row[0], 'LR', 0, 'L', $fill);
-            $r1 = Toolbox::substr($row[1], 0, 40);
-            $r2 = Toolbox::substr($row[2], 0, 50);
-            $this->Cell($w[1], 6, $r1, 'LR', 0, 'L', $fill);
-            $this->Cell($w[2], 6, $r2, 'LR', 0, 'L', $fill);
-            $this->Cell($w[3], 6, $row[3], 'LR', 0, 'L', $fill);
-            $row[4] = Toolbox::substr($row[4], 0, 20);
-            $this->Cell($w[4], 6, $row[4] . " " . EURO, 'LR', 0, 'L', $fill);
-            $this->Cell($w[5], 6, $row[5] . " " . EURO, 'LR', 0, 'L', $fill);
-            $this->Ln();
-            $fill = !$fill;
-
-            $total += $row[5];
+            $data[] = $row;
         }
-        // Closing line
-        $this->Cell(array_sum($w), 0, '', 'T');
-        $this->Ln();
 
-        // The two grand total rows are the last thing drawn, right where the table is
-        // most likely to have reached the bottom of the page: break for both of them
-        // (6 mm each) so they are never the part that gets dropped.
-        $this->checkPageBreakFor(12);
+        $total = 0.0;
+        foreach ($lines as $line) {
+            $total += (float) $line['unit_price'] * (float) $line['quantity'];
+        }
 
-        $this->Cell(195, 6, "", 0, 0, 'C', true);
-        $grandtotal = __('Grand total (TTC)', 'orderfollowup');
-        $this->SetBackgroundColor($this->default_bgcolor);
-        $this->Cell(60, 6, $grandtotal, 1, 0, 'C', true);
-        $this->SetBackgroundColor($color);
-        $this->Cell(20, 6, Html::formatNumber($total, false, 2) . " " . EURO, 1, 0, 'L', $fill);
-
-        $this->Ln();
-        $this->Cell(195, 6, "", 0, 0, 'C', true);
-        $grandtotalHT = __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup');
-        $this->SetBackgroundColor($this->default_bgcolor);
-        $this->Cell(60, 6, $grandtotalHT, 1, 0, 'C', true);
-        $this->SetBackgroundColor($color);
-        $totalHT = $total / 1.2;
-        $this->Cell(20, 6, Html::formatNumber($totalHT, false, 2) . " " . EURO, 1, 0, 'L', $fill);
+        return [$header, $data, Freetable::getGrandTotals($total)];
     }
 
     /**
@@ -1447,14 +1407,17 @@ class MetademandPdf extends \TCPDF
                                 if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $elt['plugin_metademands_metademands_id']])) {
                                     $items = Freeinput::displayFieldPDF($elt, $fields, $label);
                                     if (count($items)) {
-                                        foreach ($items as $id => $values) {
-                                            foreach ($values as $label => $value) {
-                                                $header[$id][] = $label;
-                                                $data[$id][] = $value;
-                                            }
-                                        }
-                                        $header = end($header);
-                                        $this->BasicTableFreeInputs($header, $data, '');
+                                        // The order lines kept by orderfollowup once the ticket is
+                                        // created: same table as the submitted lines below
+                                        $freeinput = getItemForItemtype(Freeinput::class);
+                                        [$header, $data, $totals] = $this->getOrderLinesTable(
+                                            $items,
+                                            $freeinput instanceof CommonDBTM
+                                                ? $freeinput->find(['tickets_id' => (int) ($fields['tickets_id'] ?? 0)])
+                                                : [],
+                                        );
+                                        $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, "", 'LRBT', 'L', '', false, $this->font_size, 'black');
+                                        $this->BasicTableFreeTable($header, $data, '', $totals);
                                         $rendered = true;
                                     }
                                 }

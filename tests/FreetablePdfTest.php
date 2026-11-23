@@ -154,4 +154,49 @@ class FreetablePdfTest extends DbTestCase
         $pdf->Close();
         $this->assertStringStartsWith('%PDF', $pdf->Output('', 'S'));
     }
+
+    /**
+     * Once the ticket is created, the PDF draws the order lines kept by orderfollowup, whose
+     * amounts come formatted (Freeinput::displayFieldPDF()): the grand totals are summed from the
+     * stored lines, a formatted amount with a thousands separator not being a number
+     */
+    public function testOrderLinesOfOrderfollowupAreDrawnAsTheFreeTable(): void
+    {
+        $this->login();
+        $unit_price = __('Unit price (TTC)', 'orderfollowup');
+        $line_total = __('Total (TTC)', 'orderfollowup');
+        $items = [
+            12 => [
+                'Reference'   => '65 443171',
+                'Designation' => 'My first octoplay polydrop',
+                'Description' => 'jeu de construction',
+                'Quantity'    => 2,
+                $unit_price   => Html::formatNumber(617.25, false, 2),
+                $line_total   => Html::formatNumber(1234.5, false, 2),
+            ],
+        ];
+        $lines = [12 => ['unit_price' => '617.25', 'quantity' => '2']];
+
+        $pdf = new MetademandPdf('Title', 'Subtitle', 1);
+        $pdf->AddPage();
+        [$header, $data, $totals] = (new ReflectionMethod(MetademandPdf::class, 'getOrderLinesTable'))
+            ->invoke($pdf, $items, $lines);
+
+        $this->assertSame(['Reference', 'Designation', 'Description', 'Quantity', $unit_price, $line_total], $header);
+        $this->assertSame(
+            ['65 443171', 'My first octoplay polydrop', 'jeu de construction', '2', Html::formatNumber(617.25, false, 2) . ' €', Html::formatNumber(1234.5, false, 2) . ' €'],
+            $data[0],
+        );
+        $this->assertSame(
+            [
+                __('Grand total (TTC)', 'orderfollowup') => Html::formatNumber(1234.5, false, 2) . ' €',
+                __('Grand total (HT)', 'orderfollowup') . ' ' . __('(if VAT 20%)', 'orderfollowup') => Html::formatNumber(1028.75, false, 2) . ' €',
+            ],
+            $totals,
+        );
+
+        $pdf->BasicTableFreeTable($header, $data, '', $totals);
+        $pdf->Close();
+        $this->assertStringStartsWith('%PDF', $pdf->Output('', 'S'));
+    }
 }

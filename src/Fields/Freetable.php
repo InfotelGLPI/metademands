@@ -468,9 +468,7 @@ class Freetable extends CommonDBTM
         $totals = [];
         if ($orderfollowup) {
             $header[] = __('Total (TTC)', 'orderfollowup');
-            foreach (self::getGrandTotals($total) as $total_label => $amount) {
-                $totals[$total_label] = Html::formatNumber($amount, false, 2) . " €";
-            }
+            $totals = self::getGrandTotals($total);
         }
 
         return ['header' => $header, 'rows' => $rows, 'totals' => $totals];
@@ -487,12 +485,15 @@ class Freetable extends CommonDBTM
     }
 
     /**
-     * Grand totals of the free table of an orderfollowup metademand: TTC, and HT with the VAT
-     * rate of the orderfollowup configuration (20% when it is not set)
+     * Grand totals of the free table of an orderfollowup metademand, as shown under it in the
+     * ticket and in its PDF: TTC, and HT with the VAT rate of the orderfollowup configuration
+     * (20% when it is not set)
      *
-     * @return array<string, float> label => amount
+     * @param float $total sum of the totals (TTC) of the lines
+     *
+     * @return array<string, string> label => formatted amount
      */
-    private static function getGrandTotals(float $total): array
+    public static function getGrandTotals(float $total): array
     {
         global $DB;
 
@@ -505,8 +506,9 @@ class Freetable extends CommonDBTM
         }
 
         return [
-            __('Grand total (TTC)', 'orderfollowup') => $total,
-            __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup') => $total / (1 + ($vat / 100)),
+            __('Grand total (TTC)', 'orderfollowup') => Html::formatNumber($total, false, 2) . " €",
+            __('Grand total (HT)', 'orderfollowup') . " " . __('(if VAT 20%)', 'orderfollowup')
+                => Html::formatNumber($total / (1 + ($vat / 100)), false, 2) . " €",
         ];
     }
 
@@ -624,7 +626,7 @@ class Freetable extends CommonDBTM
             foreach (self::getGrandTotals($total) as $total_label => $amount) {
                 $rows[] = [
                     ['text' => $total_label, 'heading' => true, 'colspan' => 10],
-                    ['text' => Html::formatNumber($amount, false, 2) . " €"],
+                    ['text' => $amount],
                 ];
             }
         }

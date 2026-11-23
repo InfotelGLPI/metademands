@@ -2156,6 +2156,12 @@ parameters:
 			path: src/Metademand.php
 
 		-
+			message: '#^Class GlpiPlugin\\Orderfollowup\\Freeinput not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/MetademandPdf.php
+
+		-
 			message: '#^Access to an undefined property GlpiPlugin\\Metademands\\MetademandPdf\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 2
