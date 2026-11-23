@@ -1,0 +1,148 @@
+{#
+ # -------------------------------------------------------------------------
+ # metademands plugin for GLPI
+ # Copyright (C) 2018-2026 by the metademands Development Team.
+ #
+ # https://github.com/InfotelGLPI/metademands
+ # -------------------------------------------------------------------------
+ #
+ # LICENSE
+ #
+ # This file is part of metademands.
+ #
+ # metademands is free software; you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation; either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # metademands is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with metademands. If not, see <http://www.gnu.org/licenses/>.
+ # --------------------------------------------------------------------------
+ #}
+
+{#
+ # Metademand XML import, second step: summary of the uploaded file before its import, which
+ # the errors prevent.
+ #
+ # Expected context:
+ #  - target: form action URL
+ #  - token: token of the file waiting for its import
+ #  - filename: name of the uploaded file
+ #  - summary: Export::analyzeImportData() (name, object_to_create, type, version, entity,
+ #    counts, errors, warnings, infos)
+ #}
+
+<form name="import_summary_form" id="import_summary_form" method="post" action="{{ target }}">
+    <input type="hidden" name="import_token" value="{{ token }}">
+    <div class="card mt-2">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="ti ti-file-search me-1"></i>
+                {{ __('Import', 'metademands') }} - {{ __('Summary', 'metademands') }}
+            </h5>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-3">
+                <dt class="col-sm-4">{{ __('File') }}</dt>
+                <dd class="col-sm-8">{{ filename }}</dd>
+                {% if summary.name is not empty %}
+                    <dt class="col-sm-4">{{ __('Name') }}</dt>
+                    <dd class="col-sm-8">{{ summary.name }}</dd>
+                {% endif %}
+                {% if summary.object_to_create is not empty %}
+                    <dt class="col-sm-4">{{ __('Object to create', 'metademands') }}</dt>
+                    <dd class="col-sm-8">
+                        {{ summary.object_to_create }}{% if summary.type is not empty %} - {{ summary.type }}{% endif %}
+                    </dd>
+                {% endif %}
+                <dt class="col-sm-4">{{ _n('Entity', 'Entities', 1) }}</dt>
+                <dd class="col-sm-8">{{ summary.entity }}</dd>
+                {% if summary.version is not empty %}
+                    <dt class="col-sm-4">{{ __('Version') }}</dt>
+                    <dd class="col-sm-8">{{ summary.version }}</dd>
+                {% endif %}
+            </dl>
+
+            {% if summary.counts is not empty %}
+                <div class="d-flex flex-wrap column-gap-3 row-gap-1 mb-3" data-testid="import-counts">
+                    {% for count in summary.counts %}
+                        <span class="d-inline-flex align-items-center gap-1">
+                            {{ count.label }}
+                            <span class="badge bg-blue-lt">{{ count.count }}</span>
+                        </span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if summary.errors is not empty %}
+                <div class="alert alert-danger" role="alert" data-testid="import-errors">
+                    <h4 class="alert-title">
+                        <i class="ti ti-circle-x me-1"></i>
+                        {{ _n('%d error: the file cannot be imported', '%d errors: the file cannot be imported', summary.errors|length, 'metademands')|format(summary.errors|length) }}
+                    </h4>
+                    <ul class="mb-0">
+                        {% for error in summary.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if summary.warnings is not empty %}
+                <div class="alert alert-warning" role="alert" data-testid="import-warnings">
+                    <h4 class="alert-title">
+                        <i class="ti ti-alert-triangle me-1"></i>
+                        {{ _n('%d warning: the import is possible, with this limit', '%d warnings: the import is possible, with these limits', summary.warnings|length, 'metademands')|format(summary.warnings|length) }}
+                    </h4>
+                    <ul class="mb-0">
+                        {% for warning in summary.warnings %}
+                            <li>{{ warning }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if summary.errors is empty and summary.warnings is empty %}
+                <div class="alert alert-success" role="alert" data-testid="import-no-error">
+                    <i class="ti ti-circle-check me-1"></i>
+                    {{ __('No error found: the file can be imported', 'metademands') }}
+                </div>
+            {% endif %}
+
+            {% if summary.infos is not empty %}
+                <div class="alert alert-info mb-0" role="alert" data-testid="import-infos">
+                    <ul class="mb-0">
+                        {% for info in summary.infos %}
+                            <li>{{ info }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+        <div class="card-footer d-flex justify-content-center gap-2">
+            <button type="submit" name="cancel_import" value="1" class="btn btn-outline-secondary">
+                <i class="ti ti-x"></i>
+                <span>{{ __('Choose another file', 'metademands') }}</span>
+            </button>
+            {% if summary.errors is not empty or summary.warnings is not empty %}
+                {# The summary is computed again on each display: once the missing objects are
+                 # created (groups, contract types…), the same file is checked again #}
+                <a href="{{ target }}?import_form=1" class="btn btn-outline-primary"
+                   title="{{ __('Once the missing objects are created, check the file again', 'metademands') }}">
+                    <i class="ti ti-refresh"></i>
+                    <span>{{ __('Check the file again', 'metademands') }}</span>
+                </a>
+            {% endif %}
+            <button type="submit" name="import_file" value="1" class="btn btn-primary"
+                    {% if summary.errors is not empty %}disabled{% endif %}>
+                <i class="ti ti-file-import"></i>
+                <span>{{ __('Import', 'metademands') }}</span>
+            </button>
+        </div>
+    </div>
+</form>

@@ -85,8 +85,9 @@ class TemplatesWithoutRawTest extends DbTestCase
         $this->assertStringContainsString('name="exportMetademandsJSON"', $html);
         $this->assertStringContainsString('</form>', $html);
 
+        // The file is checked first, its summary confirming the import (ExportImportSummaryTest)
         $html = $this->capture(fn() => Export::showImportForm());
-        $this->assertStringContainsString('name="import_file"', $html);
+        $this->assertStringContainsString('name="analyze_file"', $html);
     }
 
     public function testConditionFormsRenderTheirDropdowns(): void

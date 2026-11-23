@@ -421,12 +421,6 @@ parameters:
 			path: setup.php
 
 		-
-			message: '#^Class GlpiPlugin\\Resources\\ContractType not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: setup.php
-
-		-
 			message: '#^Class GlpiPlugin\\Resources\\Resource not found\.$#'
 			identifier: class.notFound
 			count: 1
@@ -2378,19 +2372,7 @@ parameters:
 			path: src/Metademand_Resource.php
 
 		-
-			message: '#^Call to method getField\(\) on an unknown class GlpiPlugin\\Resources\\ContractType\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Metademand_Resource.php
-
-		-
 			message: '#^Call to method getField\(\) on an unknown class GlpiPlugin\\Resources\\Service\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Metademand_Resource.php
-
-		-
-			message: '#^Call to method getFromDB\(\) on an unknown class GlpiPlugin\\Resources\\ContractType\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Metademand_Resource.php
@@ -2420,12 +2402,6 @@ parameters:
 			path: src/Metademand_Resource.php
 
 		-
-			message: '#^Class GlpiPlugin\\Resources\\ContractType not found\.$#'
-			identifier: class.notFound
-			count: 2
-			path: src/Metademand_Resource.php
-
-		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 1
@@ -2433,12 +2409,6 @@ parameters:
 
 		-
 			message: '#^Instantiated class GlpiPlugin\\Resources\\Config not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Metademand_Resource.php
-
-		-
-			message: '#^Instantiated class GlpiPlugin\\Resources\\ContractType not found\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Metademand_Resource.php
