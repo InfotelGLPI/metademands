@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-23 09:18+0000\n"
+"POT-Creation-Date: 2026-11-23 09:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -93,8 +93,8 @@ msgstr[1] ""
 msgid "(6 fields maximum)"
 msgstr ""
 
-#: tests/FreetablePdfTest.php:112 src/Fields/Freetable.php:295
-#: src/Fields/Freetable.php:509 src/MetademandPdf.php:796
+#: tests/FreetablePdfTest.php:112 tests/FreetablePdfTest.php:193
+#: src/Fields/Freetable.php:295 src/Fields/Freetable.php:510
 msgid "(if VAT 20%)"
 msgstr ""
 
@@ -783,7 +783,7 @@ msgstr ""
 msgid "Created by"
 msgstr ""
 
-#: src/MetademandPdf.php:367
+#: src/MetademandPdf.php:368
 msgid "Created on"
 msgstr ""
 
@@ -964,7 +964,7 @@ msgstr ""
 
 #: src/Fields/Basket.php:156 src/Fields/Basket.php:1031
 #: src/Fields/Basket.php:1294 src/Fields/Basket.php:1489
-#: src/MetademandPdf.php:501 src/Basketobject.php:220 src/Basketobject.php:354
+#: src/MetademandPdf.php:502 src/Basketobject.php:220 src/Basketobject.php:354
 #: ⁨standard input⁩:38 ⁨standard input⁩:69
 msgid "Designation"
 msgstr ""
@@ -1392,15 +1392,15 @@ msgstr ""
 msgid "Grand total"
 msgstr ""
 
-#: tests/FreetablePdfTest.php:112 src/Fields/Basket.php:1106
-#: src/Fields/Basket.php:1408 src/Fields/Freetable.php:295
-#: src/Fields/Freetable.php:509 src/MetademandPdf.php:577
-#: src/MetademandPdf.php:796
+#: tests/FreetablePdfTest.php:112 tests/FreetablePdfTest.php:193
+#: src/Fields/Basket.php:1106 src/Fields/Basket.php:1408
+#: src/Fields/Freetable.php:295 src/Fields/Freetable.php:510
+#: src/MetademandPdf.php:578
 msgid "Grand total (HT)"
 msgstr ""
 
-#: tests/FreetablePdfTest.php:111 src/Fields/Freetable.php:294
-#: src/Fields/Freetable.php:508 src/MetademandPdf.php:788
+#: tests/FreetablePdfTest.php:111 tests/FreetablePdfTest.php:192
+#: src/Fields/Freetable.php:294 src/Fields/Freetable.php:509
 msgid "Grand total (TTC)"
 msgstr ""
 
@@ -2373,7 +2373,7 @@ msgstr ""
 
 #: src/Fields/Basket.php:187 src/Fields/Basket.php:1049
 #: src/Fields/Basket.php:1307 src/Fields/Basket.php:1495
-#: src/Fields/Basket.php:1547 src/MetademandPdf.php:510
+#: src/Fields/Basket.php:1547 src/MetademandPdf.php:511
 msgid "Quantity"
 msgstr ""
 
@@ -2426,7 +2426,7 @@ msgstr ""
 
 #: src/Fields/Basket.php:154 src/Fields/Basket.php:1029
 #: src/Fields/Basket.php:1292 src/Fields/Basket.php:1487
-#: src/MetademandPdf.php:507 src/Basketobject.php:237 ⁨standard input⁩:56
+#: src/MetademandPdf.php:508 src/Basketobject.php:237 ⁨standard input⁩:56
 #: ⁨standard input⁩:68
 msgid "Reference"
 msgstr ""
@@ -3278,12 +3278,13 @@ msgstr ""
 
 #: src/Fields/Basket.php:200 src/Fields/Basket.php:1054
 #: src/Fields/Basket.php:1314 src/Fields/Basket.php:1511
-#: src/Fields/Basket.php:1524 src/MetademandPdf.php:505
+#: src/Fields/Basket.php:1524 src/MetademandPdf.php:506
 msgid "Total (HT)"
 msgstr ""
 
-#: tests/FreetablePdfTest.php:97 src/Fields/Freetable.php:161
-#: src/Fields/Freetable.php:470 src/Fields/Freetable.php:604
+#: tests/FreetablePdfTest.php:97 tests/FreetablePdfTest.php:167
+#: src/Fields/Freetable.php:161 src/Fields/Freetable.php:470
+#: src/Fields/Freetable.php:606 src/MetademandPdf.php:744
 msgid "Total (TTC)"
 msgstr ""
 
@@ -3336,14 +3337,18 @@ msgstr ""
 
 #: src/Fields/Basket.php:177 src/Fields/Basket.php:1040
 #: src/Fields/Basket.php:1304 src/Fields/Basket.php:1503
-#: src/Fields/Basket.php:1520 src/MetademandPdf.php:503
+#: src/Fields/Basket.php:1520 src/MetademandPdf.php:504
 msgid "Unit"
 msgstr ""
 
 #: src/Fields/Basket.php:181 src/Fields/Basket.php:1043
 #: src/Fields/Basket.php:1313 src/Fields/Basket.php:1507
-#: src/Fields/Basket.php:1523 src/MetademandPdf.php:504
+#: src/Fields/Basket.php:1523 src/MetademandPdf.php:505
 msgid "Unit price (HT)"
+msgstr ""
+
+#: tests/FreetablePdfTest.php:166 src/MetademandPdf.php:744
+msgid "Unit price (TTC)"
 msgstr ""
 
 #: ⁨standard input⁩:31
