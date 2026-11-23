@@ -2168,12 +2168,6 @@ parameters:
 			path: src/MetademandPdf.php
 
 		-
-			message: '#^Access to an undefined property GlpiPlugin\\Metademands\\MetademandPdf\:\:\$title_width\.$#'
-			identifier: property.notFound
-			count: 9
-			path: src/MetademandPdf.php
-
-		-
 			message: '#^Call to method getFromDBByCrit\(\) on an unknown class GlpiPlugin\\Orderfollowup\\Metademand\.$#'
 			identifier: class.notFound
 			count: 2
