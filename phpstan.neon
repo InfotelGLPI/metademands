@@ -18,6 +18,8 @@ parameters:
         # Local stub for the optional datainjection plugin (see the stub header).
         # Keeps analysis independent of where datainjection lives, or if absent.
         - tools/phpstan-stubs/datainjection.php
+        # Same for the contract types of the optional resources plugin
+        - tools/phpstan-stubs/resources.php
     bootstrapFiles:
         - ../../stubs/glpi_constants.php
         - ../../vendor/autoload.php

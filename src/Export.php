@@ -53,6 +53,7 @@ use Glpi\Form\QuestionType\QuestionTypeRequestType;
 use Glpi\Form\QuestionType\QuestionTypeShortText;
 use Glpi\Form\QuestionType\QuestionTypeUrgency;
 use Glpi\Form\Section;
+use GlpiPlugin\Resources\ContractType;
 use Html;
 use Session;
 use SimpleXMLElement;
@@ -68,6 +69,18 @@ class Export extends CommonDBTM
 
     /** Upper bound accepted for an imported meta-demand XML document, in bytes. */
     private const MAX_IMPORT_XML_BYTES = 5 * 1024 * 1024;
+
+    /** Session entry of the uploaded file waiting for the confirmation of its import */
+    private const PENDING_IMPORT_SESSION_KEY = 'plugin_metademands_pending_import';
+
+    /** Name of the working copy of an uploaded file (moveImportedXmlFile()) */
+    private const IMPORT_FILE_PATTERN = '/^import_[0-9a-f]+\.[0-9]+\.xml$/';
+
+    /** Field tags of a text, #id# and #id.attr# (Metademand::resolvePlaceholders()) */
+    private const FIELD_TAG_PATTERN = '/#([1-9][0-9]*)(?=(?:\.[A-Za-z0-9_]+)?#)/';
+
+    /** Values of the item of a dropdown field which are not a class (Field::$field_specificobjects too) */
+    private const FIELD_PSEUDO_ITEMS = ['other', 'ITILCategory_Metademands'];
 
     public static function getTable($classname = null)
     {
@@ -292,9 +305,15 @@ class Export extends CommonDBTM
                 $fields['metafields'][$id]['fieldtranslations']['translation' . $k] = $v;
             }
         }
-        $resourceMeta = new Metademand_Resource();
-        $resourceMeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands->getID()]);
-        $fields['resource'] = $resourceMeta->fields;
+        // Contract types of the Resources plugin leading to the meta-demand, several of them
+        // maybe: their names as well, their ids differing on another GLPI
+        $fields['resource_links'] = [];
+        $resource_links = (new Metademand_Resource())->find(['plugin_metademands_metademands_id' => $metademands->getID()]);
+        foreach ($resource_links as $id => $resource_link) {
+            $fields['resource_links']['resource_link' . $id] = $resource_link + [
+                'contracttype_name' => self::getContractTypeName((int) $resource_link['plugin_resources_contracttypes_id']),
+            ];
+        }
         $meta_Task = new Task();
         $tasks = $meta_Task->find(['plugin_metademands_metademands_id' => $metademands->getID()]);
         $fields['tasks'] = [];
@@ -1402,22 +1421,811 @@ class Export extends CommonDBTM
     }
 
 
-    public static function importXml()
+    /**
+     * First step of the import: keep the uploaded file until its import is confirmed on its
+     * summary (showImportSummary()), in place of the file of a previous upload.
+     */
+    public static function prepareImport(): bool
     {
         $file = self::moveImportedXmlFile();
         if ($file === false) {
             return false;
         }
 
+        self::cancelPendingImport();
+        self::purgeStaleImportFiles();
+        $_SESSION[self::PENDING_IMPORT_SESSION_KEY] = [
+            // Proves on the confirmation that the summary of this very file was displayed
+            'token'    => bin2hex(random_bytes(16)),
+            'file'     => basename($file),
+            'filename' => (string) ($_FILES['meta_file']['name'] ?? ''),
+        ];
+
+        return true;
+    }
+
+    /**
+     * Summary of the file waiting for its import: what the import creates, the errors
+     * preventing it and what it cannot carry over to this GLPI, with the buttons confirming or
+     * cancelling the import.
+     *
+     * @return bool false when no file is waiting for its import
+     */
+    public static function showImportSummary(): bool
+    {
+        $pending = self::getPendingImport();
+        if ($pending === null) {
+            return false;
+        }
+
+        $entities_id = (int) $_SESSION['glpiactive_entity'];
+        $error       = null;
+        $datas       = self::readImportFile($pending['path'], $error);
+        if ($datas === null) {
+            $summary             = self::newImportSummary($entities_id);
+            $summary['errors'][] = (string) $error;
+        } else {
+            $summary = self::analyzeImportData($datas, $entities_id);
+        }
+
+        TemplateRenderer::getInstance()->display('@metademands/export_import_summary.html.twig', [
+            'target'   => self::getFormURL(),
+            'token'    => $pending['token'],
+            'filename' => $pending['filename'],
+            'summary'  => $summary,
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Second step of the import: import the file waiting for it, once its summary was seen
+     * (its token) and if it has no error. The file is dropped whatever the outcome.
+     *
+     * @return int|false id of the new meta-demand
+     */
+    public static function importPendingFile(string $token)
+    {
+        $pending = self::getPendingImport();
+        if ($pending === null || $token === '' || !hash_equals($pending['token'], $token)) {
+            Session::addMessageAfterRedirect(
+                __('No file is waiting for its import, please select it again', 'metademands'),
+                false,
+                ERROR,
+            );
+            return false;
+        }
+
         try {
-            return self::importXmlFile($file);
+            $datas = self::readImportFile($pending['path']);
+            // The button is disabled on errors, which is checked again here
+            if ($datas === null
+                || self::analyzeImportData($datas, (int) $_SESSION['glpiactive_entity'])['errors'] !== []) {
+                Session::addMessageAfterRedirect(
+                    __('The file cannot be imported, see the errors of its summary', 'metademands'),
+                    false,
+                    ERROR,
+                );
+                return false;
+            }
+
+            return self::importXmlFile($pending['path']);
         } finally {
             // The uploaded copy lives in the plugin document directory: drop it whatever the
             // import did, including when it threw, so no readable XML is left behind.
-            if (file_exists($file)) {
-                @unlink($file);
+            self::cancelPendingImport();
+        }
+    }
+
+    /**
+     * Drop the file waiting for its import, if any.
+     */
+    public static function cancelPendingImport(): void
+    {
+        $pending = self::getPendingImport();
+        if ($pending !== null) {
+            @unlink($pending['path']);
+        }
+        unset($_SESSION[self::PENDING_IMPORT_SESSION_KEY]);
+    }
+
+    /**
+     * File waiting for its import, kept by prepareImport().
+     *
+     * @return array{token: string, path: string, filename: string}|null
+     */
+    private static function getPendingImport(): ?array
+    {
+        $pending = $_SESSION[self::PENDING_IMPORT_SESSION_KEY] ?? null;
+        if (!is_array($pending)
+            || !is_string($pending['token'] ?? null)
+            || !is_string($pending['file'] ?? null)
+            || preg_match(self::IMPORT_FILE_PATTERN, $pending['file']) !== 1) {
+            return null;
+        }
+
+        $path = GLPI_PLUGIN_DOC_DIR . '/metademands/' . $pending['file'];
+        if (!is_file($path)) {
+            return null;
+        }
+
+        $filename = $pending['filename'] ?? '';
+
+        return [
+            'token'    => $pending['token'],
+            'path'     => $path,
+            'filename' => is_string($filename) && $filename !== '' ? $filename : $pending['file'],
+        ];
+    }
+
+    /**
+     * Drop the files of the imports left without confirmation nor cancellation (session
+     * expired, page closed), a day after their upload.
+     */
+    private static function purgeStaleImportFiles(): void
+    {
+        foreach (glob(GLPI_PLUGIN_DOC_DIR . '/metademands/import_*.xml') ?: [] as $path) {
+            if (preg_match(self::IMPORT_FILE_PATTERN, basename($path)) === 1
+                && (int) @filemtime($path) < time() - DAY_TIMESTAMP) {
+                @unlink($path);
             }
         }
+    }
+
+    /**
+     * Content of a meta-demand file, as the import reads it.
+     *
+     * @param string|null $error why the file cannot be read, when it cannot
+     *
+     * @return array<mixed>|null null when the file is not a meta-demand export
+     */
+    public static function readImportFile(string $file, ?string &$error = null): ?array
+    {
+        // LIBXML_NONET keeps the parser off the network whatever the document declares. A
+        // malformed document is reported by the summary rather than by PHP warnings.
+        $use_errors = libxml_use_internal_errors(true);
+        try {
+            $xml = simplexml_load_file($file, SimpleXMLElement::class, LIBXML_NONET);
+        } finally {
+            libxml_clear_errors();
+            libxml_use_internal_errors($use_errors);
+        }
+        if ($xml === false) {
+            $error = __('The file is not an XML file', 'metademands');
+            return null;
+        }
+
+        $datas = self::normalizeXmlData(json_decode((string) json_encode($xml), true));
+        if ($xml->getName() !== 'metademand' || !is_array($datas)) {
+            $error = __('The file is not a meta-demand export', 'metademands');
+            return null;
+        }
+
+        return $datas;
+    }
+
+    /**
+     * Summary of the import of a meta-demand file, without writing anything: what the import
+     * creates, the errors preventing it, and what it cannot carry over to this GLPI, read as
+     * importXmlFile() reads the file.
+     *
+     * @param array<mixed> $datas       content of the file (readImportFile())
+     * @param int          $entities_id entity the meta-demand is imported into
+     *
+     * @return array{
+     *     name: string,
+     *     object_to_create: string,
+     *     type: string,
+     *     version: string,
+     *     entity: string,
+     *     counts: list<array{label: string, count: int}>,
+     *     errors: list<string>,
+     *     warnings: list<string>,
+     *     infos: list<string>,
+     * }
+     */
+    public static function analyzeImportData(array $datas, int $entities_id): array
+    {
+        $summary = self::newImportSummary($entities_id);
+
+        $name             = is_string($datas['name'] ?? null) ? trim($datas['name']) : '';
+        $object_to_create = is_string($datas['object_to_create'] ?? null) ? $datas['object_to_create'] : '';
+        $version          = $datas['version'] ?? 0;
+        // Read as importXmlFile() reads it: the options, parameters and custom values changed
+        // of format in 3.3.11, the columns of the free tables are imported from 3.3.20
+        $new_format         = $version >= "3.3.11";
+        $with_table_columns = $version >= "3.3.20";
+        $known_object       = in_array($object_to_create, Metademand::$types, true);
+
+        $summary['name']    = $name;
+        $summary['version'] = is_scalar($version) ? (string) $version : '';
+
+        $fields       = self::getImportRows($datas, 'metafields');
+        $options      = self::getImportRows($datas, 'metafieldoptions');
+        $parameters   = self::getImportRows($datas, 'metafieldparameters');
+        $customvalues = self::getImportRows($datas, 'metafieldcustoms');
+        $columns      = self::getImportRows($datas, 'metafieldfreetablefields');
+        $tasks        = self::getImportRows($datas, 'tasks');
+        $metatasks    = self::getImportRows($datas, 'metatasks');
+        $steps        = self::getImportRows($datas, 'step');
+        $ticketfields = self::getImportRows($datas, 'ticketfields');
+        $translations = self::getImportRows($datas, 'translations');
+
+        // The meta-demand itself cannot be created
+        if (!$known_object) {
+            $summary['errors'][] = $object_to_create === ''
+                ? __('The file does not give the object the meta-demand creates', 'metademands')
+                : sprintf(__('The meta-demand creates an unknown object: %s', 'metademands'), $object_to_create);
+            $summary['object_to_create'] = $object_to_create;
+        } else {
+            $summary['object_to_create'] = $object_to_create::getTypeName(1);
+            if ($object_to_create === 'Ticket') {
+                $summary['type'] = (string) \Ticket::getTicketTypeName((int) ($datas['type'] ?? 0));
+            }
+        }
+
+        if ($name === '') {
+            $summary['warnings'][] = __('The meta-demand of the file has no name', 'metademands');
+        } elseif (countElementsInTable(
+            Metademand::getTable(),
+            [
+                'name'        => $name,
+                'is_deleted'  => 0,
+                'is_template' => 0,
+            ] + getEntitiesRestrictCriteria(Metademand::getTable(), '', $entities_id, true),
+        ) > 0) {
+            $summary['warnings'][] = sprintf(
+                __('A meta-demand named "%s" already exists: the import creates another one', 'metademands'),
+                $name,
+            );
+        }
+
+        if (is_string($version) && version_compare($version, PLUGIN_METADEMANDS_VERSION, '>')) {
+            $summary['warnings'][] = sprintf(
+                __('The file comes from a more recent version of the plugin (%1$s) than this one (%2$s): the settings unknown here are not imported', 'metademands'),
+                $version,
+                PLUGIN_METADEMANDS_VERSION,
+            );
+        }
+
+        if ($fields === []) {
+            $summary['warnings'][] = __('The meta-demand of the file has no field', 'metademands');
+        }
+
+        /** @var array<int, true> $fields_ids ids of the fields of the file */
+        $fields_ids = [];
+        /** @var array<int, true> $tasks_ids ids of the child objects of the file */
+        $tasks_ids = [];
+        $blocks    = [];
+        foreach ($fields as $field) {
+            $fields_ids[(int) ($field['id'] ?? 0)] = true;
+            $blocks[(int) ($field['rank'] ?? 0)]   = true;
+        }
+        foreach ($tasks as $task) {
+            $tasks_ids[(int) ($task['id'] ?? 0)] = true;
+        }
+        unset($fields_ids[0], $tasks_ids[0]);
+
+        $conditions         = 0;
+        $field_translations = 0;
+        $unknown_types      = [];
+        $unknown_items      = [];
+        // References to fields and child objects missing from the file: the import drops them
+        $lost_field_links = 0;
+        $lost_task_links  = 0;
+        /** @var array<string, int> $detached elements of fields missing from the file, not imported */
+        $detached = [];
+        /** @var array<string, array<int, int>> $missing_items GLPI objects referenced by their id, missing here */
+        $missing_items = [];
+        // GLPI objects referenced by their id, found here (maybe other objects than on the source GLPI)
+        $found_items = 0;
+
+        $pseudo_items = array_merge(self::FIELD_PSEUDO_ITEMS, Field::$field_specificobjects);
+        foreach ($fields as $field) {
+            foreach (array_keys($field) as $key) {
+                // As importXmlFile() finds them
+                if (str_contains((string) $key, 'condition')) {
+                    $conditions++;
+                }
+            }
+            $field_translations += count(self::getImportRows($field, 'fieldtranslations'));
+
+            $type = is_string($field['type'] ?? null) ? $field['type'] : '';
+            $item = is_string($field['item'] ?? null) ? $field['item'] : '';
+            if (!in_array($type, Field::$field_types, true)
+                && Field::getFieldTypesName($type) === \Dropdown::EMPTY_VALUE) {
+                // A type added by a plugin missing here
+                $unknown_types[$type] = $type;
+            } elseif (in_array($type, ['dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple'], true)
+                && $item !== ''
+                && !in_array($item, $pseudo_items, true)
+                // Only a class name is handed to the autoloader
+                && (preg_match('/^[A-Za-z_][A-Za-z0-9_]*(\\\\[A-Za-z_][A-Za-z0-9_]*)*$/', $item) !== 1
+                    || !is_a($item, CommonDBTM::class, true))) {
+                $unknown_items[$item] = $item;
+            }
+
+            // "Display field after"
+            if (!self::isKeptReference($field['plugin_metademands_fields_id'] ?? 0, $fields_ids)) {
+                $lost_field_links++;
+            }
+        }
+
+        foreach ($options as $option) {
+            if (!isset($fields_ids[(int) ($option['plugin_metademands_fields_id'] ?? 0)])) {
+                $label            = FieldOption::getTypeName(2);
+                $detached[$label] = ($detached[$label] ?? 0) + 1;
+                continue;
+            }
+            foreach (['fields_link', 'hidden_link', 'checkbox_id'] as $key) {
+                if (!self::isKeptReference($option[$key] ?? 0, $fields_ids)) {
+                    $lost_field_links++;
+                }
+            }
+            $validation_fields_ids = isset($option['validation_fields_ids'])
+                ? FieldOption::getValidationFieldsIds($option)
+                : array_filter([(int) ($option['validation_fields_id'] ?? 0)]);
+            foreach ($validation_fields_ids as $validation_fields_id) {
+                if (!isset($fields_ids[(int) $validation_fields_id])) {
+                    $lost_field_links++;
+                }
+            }
+            if (!self::isKeptReference($option['plugin_metademands_tasks_id'] ?? 0, $tasks_ids)) {
+                $lost_task_links++;
+            }
+            self::collectReferencedItems($option, ['users_id_validate', 'itilvalidationtemplates_id'], $missing_items, $found_items);
+        }
+
+        $groups_not_found = [];
+        if ($new_format) {
+            foreach ($parameters as $parameter) {
+                if (!isset($fields_ids[(int) ($parameter['plugin_metademands_fields_id'] ?? 0)])) {
+                    $label            = FieldParameter::getTypeName(2);
+                    $detached[$label] = ($detached[$label] ?? 0) + 1;
+                    continue;
+                }
+                // "Link this field to a user field"
+                if (!self::isKeptReference($parameter['link_to_user'] ?? 0, $fields_ids)) {
+                    $lost_field_links++;
+                }
+                $custom = FieldParameter::_unserialize($parameter['custom'] ?? FieldParameter::_serialize([]));
+                if (is_array($custom) && FieldParameter::getMemberGroupsIds($custom) !== []) {
+                    array_push($groups_not_found, ...self::findMemberGroups($parameter, $entities_id)[1]);
+                }
+                self::collectReferencedItems($parameter, ['authldaps_id'], $missing_items, $found_items);
+            }
+            foreach ($customvalues as $customvalue) {
+                if (!isset($fields_ids[(int) ($customvalue['plugin_metademands_fields_id'] ?? 0)])) {
+                    $label            = FieldCustomvalue::getTypeName(2);
+                    $detached[$label] = ($detached[$label] ?? 0) + 1;
+                }
+            }
+        }
+        if ($with_table_columns) {
+            foreach ($columns as $column) {
+                if (!isset($fields_ids[(int) ($column['plugin_metademands_fields_id'] ?? 0)])) {
+                    $label            = Freetablefield::getTypeName(2);
+                    $detached[$label] = ($detached[$label] ?? 0) + 1;
+                }
+            }
+        }
+
+        // Texts whose tags point at fields: the import points them at the new fields
+        $texts       = [];
+        $task_counts = [];
+        foreach ($tasks as $task) {
+            $label               = sprintf('%1$s (%2$s)', __('Child creation', 'metademands'), Task::getTaskTypeName((int) ($task['type'] ?? 0)));
+            $task_counts[$label] = ($task_counts[$label] ?? 0) + 1;
+            if (!self::isKeptReference($task['plugin_metademands_tasks_id'] ?? 0, $tasks_ids)) {
+                $lost_task_links++;
+            }
+            $texts[] = $task['name'] ?? null;
+            $texts[] = $task['completename'] ?? null;
+
+            $tickettask = is_array($task['tickettask'] ?? null) ? $task['tickettask'] : [];
+            $texts[]    = $tickettask['content'] ?? null;
+            self::collectReferencedItems($tickettask, [
+                'itilcategories_id',
+                'requesttypes_id',
+                'groups_id_assign',
+                'users_id_assign',
+                'groups_id_requester',
+                'users_id_requester',
+                'groups_id_observer',
+                'users_id_observer',
+            ], $missing_items, $found_items);
+
+            $mailtask = is_array($task['mailtask'] ?? null) ? $task['mailtask'] : [];
+            $texts[]  = $mailtask['content'] ?? null;
+            self::collectReferencedItems($mailtask, [
+                'users_id_recipient',
+                'groups_id_recipient',
+                'itilcategories_id',
+            ], $missing_items, $found_items);
+        }
+        foreach ($metatasks as $metatask) {
+            if (!isset($tasks_ids[(int) ($metatask['plugin_metademands_tasks_id'] ?? 0)])) {
+                $lost_task_links++;
+            }
+        }
+        foreach ($steps as $step) {
+            self::collectReferencedItems($step, ['groups_id'], $missing_items, $found_items);
+        }
+        self::collectReferencedItems($datas, ['forms_categories_id'], $missing_items, $found_items);
+
+        $ticketfields_not_found = [];
+        foreach ($ticketfields as $ticketfield) {
+            if (!isset($ticketfield['num'])) {
+                continue;
+            }
+            $texts[] = $ticketfield['value'] ?? null;
+            $item    = $known_object
+                ? self::findTicketFieldItem($object_to_create, $ticketfield, $entities_id)
+                : null;
+            if ($item !== null && $item['id'] === 0) {
+                $ticketfields_not_found[] = $item['label'];
+            }
+        }
+
+        $unknown_tags = [];
+        foreach ($texts as $text) {
+            if (is_string($text) && preg_match_all(self::FIELD_TAG_PATTERN, $text, $matches) > 0) {
+                foreach ($matches[1] as $tag_id) {
+                    if (!isset($fields_ids[(int) $tag_id])) {
+                        $unknown_tags[(int) $tag_id] = '#' . $tag_id . '#';
+                    }
+                }
+            }
+        }
+
+        if ($unknown_types !== []) {
+            $summary['warnings'][] = sprintf(
+                __('Fields of a type unknown here, a plugin may be missing: %s', 'metademands'),
+                implode(', ', $unknown_types),
+            );
+        }
+        if ($unknown_items !== []) {
+            $summary['warnings'][] = sprintf(
+                __('Fields on objects unknown here, a plugin may be missing: %s', 'metademands'),
+                implode(', ', $unknown_items),
+            );
+        }
+        foreach ($detached as $label => $count) {
+            $summary['warnings'][] = sprintf(
+                __('%1$s attached to no field of the file, not imported: %2$d', 'metademands'),
+                $label,
+                $count,
+            );
+        }
+        if ($lost_field_links > 0) {
+            $summary['warnings'][] = sprintf(
+                _n(
+                    '%d link to a field missing from the file is dropped',
+                    '%d links to fields missing from the file are dropped',
+                    $lost_field_links,
+                    'metademands',
+                ),
+                $lost_field_links,
+            );
+        }
+        if ($lost_task_links > 0) {
+            $summary['warnings'][] = sprintf(
+                _n(
+                    '%d link to a child object missing from the file is dropped',
+                    '%d links to child objects missing from the file are dropped',
+                    $lost_task_links,
+                    'metademands',
+                ),
+                $lost_task_links,
+            );
+        }
+        if ($unknown_tags !== []) {
+            ksort($unknown_tags);
+            $summary['warnings'][] = sprintf(
+                __('Tags pointing at fields missing from the file: %s', 'metademands'),
+                implode(', ', $unknown_tags),
+            );
+        }
+        foreach ($missing_items as $itemtype => $ids) {
+            $summary['warnings'][] = sprintf(
+                __('%1$s not found on this GLPI, to set again after the import: %2$s', 'metademands'),
+                $itemtype::getTypeName(count($ids)),
+                implode(', ', array_map(static fn(int $id): string => '#' . $id, $ids)),
+            );
+        }
+        if ($ticketfields_not_found !== []) {
+            $summary['warnings'][] = sprintf(
+                __('Fields of the ticket not imported, no item of that name here: %s', 'metademands'),
+                implode(', ', $ticketfields_not_found),
+            );
+        }
+        if ($groups_not_found !== []) {
+            $summary['warnings'][] = sprintf(
+                __('Groups left out of "Members of these groups", no group of that name here: %s', 'metademands'),
+                implode(', ', array_unique($groups_not_found)),
+            );
+        }
+
+        if ($found_items > 0) {
+            $summary['infos'][] = __('The users, groups and categories of the child objects, the validators and the step groups are kept by their id: check them after the import if the file comes from another GLPI', 'metademands');
+        }
+        $categories = is_string($datas['itilcategories_id'] ?? null) ? json_decode($datas['itilcategories_id'], true) : null;
+        if (is_array($categories) && $categories !== []) {
+            $summary['infos'][] = __('The categories of the meta-demand are not imported: choose them after the import', 'metademands');
+        }
+
+        // Contract types of the Resources plugin leading to the meta-demand
+        $resource_links = self::getImportedResourceLinks($datas);
+        if ($resource_links !== [] && !getItemForItemtype(ContractType::class) instanceof CommonDBTM) {
+            $summary['warnings'][] = __('The Resources plugin is not active here: the links to its contract types are not imported', 'metademands');
+        } elseif ($resource_links !== []) {
+            $contracttypes_not_found = [];
+            $contracttypes_by_id     = [];
+            $contracttypes_linked    = [];
+            foreach ($resource_links as $resource_link) {
+                $contracttype = self::findContractType($resource_link, $entities_id);
+                if ($contracttype['id'] === 0) {
+                    $contracttypes_not_found[] = $contracttype['label'];
+                    continue;
+                }
+                if ($contracttype['by_id']) {
+                    $contracttypes_by_id[] = $contracttype['label'] . ' (' . \Dropdown::getDropdownName(ContractType::getTable(), $contracttype['id']) . ')';
+                }
+                // A new resource of that contract type goes on leading to the first meta-demand
+                if (countElementsInTable(Metademand_Resource::getTable(), [
+                    'plugin_resources_contracttypes_id' => $contracttype['id'],
+                    'entities_id'                       => $entities_id,
+                ]) > 0) {
+                    $contracttypes_linked[] = $contracttype['label'];
+                }
+            }
+            if ($contracttypes_not_found !== []) {
+                $summary['warnings'][] = sprintf(
+                    __('Contract types of the Resources plugin not found here, their links are not imported: %s', 'metademands'),
+                    implode(', ', $contracttypes_not_found),
+                );
+            }
+            if ($contracttypes_linked !== []) {
+                $summary['warnings'][] = sprintf(
+                    __('Contract types of the Resources plugin already leading to another meta-demand here, which they keep leading to: %s', 'metademands'),
+                    implode(', ', $contracttypes_linked),
+                );
+            }
+            if ($contracttypes_by_id !== []) {
+                $summary['infos'][] = sprintf(
+                    __('Contract types of the Resources plugin found by their id, the file coming from a previous version of the plugin: %s', 'metademands'),
+                    implode(', ', $contracttypes_by_id),
+                );
+            }
+        }
+
+        $counts = [
+            ['label' => _n('Block', 'Blocks', count($blocks), 'metademands'), 'count' => count($blocks)],
+            ['label' => _n('Field', 'Fields', count($fields), 'metademands'), 'count' => count($fields)],
+            ['label' => FieldCustomvalue::getTypeName(count($customvalues)), 'count' => count($customvalues)],
+            ['label' => FieldOption::getTypeName(count($options)), 'count' => count($options)],
+            ['label' => Condition::getTypeName($conditions), 'count' => $conditions],
+            ['label' => Freetablefield::getTypeName(count($columns)), 'count' => count($columns)],
+        ];
+        foreach ($task_counts as $label => $count) {
+            $counts[] = ['label' => $label, 'count' => $count];
+        }
+        $counts[] = ['label' => Step::getTypeName(count($steps)), 'count' => count($steps)];
+        $counts[] = ['label' => TicketField::getTypeName(count($ticketfields)), 'count' => count($ticketfields)];
+        $counts[] = [
+            'label' => _n('Contract type of the Resources plugin', 'Contract types of the Resources plugin', count($resource_links), 'metademands'),
+            'count' => count($resource_links),
+        ];
+        $nb_translations = count($translations) + $field_translations;
+        $counts[] = ['label' => _n('Translation', 'Translations', $nb_translations, 'metademands'), 'count' => $nb_translations];
+        $summary['counts'] = array_values(array_filter($counts, static fn(array $count): bool => $count['count'] > 0));
+
+        return $summary;
+    }
+
+    /**
+     * Empty summary of an import (analyzeImportData()).
+     *
+     * @return array{
+     *     name: string,
+     *     object_to_create: string,
+     *     type: string,
+     *     version: string,
+     *     entity: string,
+     *     counts: list<array{label: string, count: int}>,
+     *     errors: list<string>,
+     *     warnings: list<string>,
+     *     infos: list<string>,
+     * }
+     */
+    private static function newImportSummary(int $entities_id): array
+    {
+        return [
+            'name'             => '',
+            'object_to_create' => '',
+            'type'             => '',
+            'version'          => '',
+            'entity'           => (string) \Dropdown::getDropdownName(Entity::getTable(), $entities_id),
+            'counts'           => [],
+            'errors'           => [],
+            'warnings'         => [],
+            'infos'            => [],
+        ];
+    }
+
+    /**
+     * Rows of a collection of the file (fields, options…), named after their ids in the XML
+     * document (field12…).
+     *
+     * @param array<mixed> $datas
+     *
+     * @return array<array<mixed>>
+     */
+    private static function getImportRows(array $datas, string $key): array
+    {
+        $rows = $datas[$key] ?? null;
+
+        return is_array($rows) ? array_filter($rows, 'is_array') : [];
+    }
+
+    /**
+     * Whether the import keeps a reference of the file to one of its elements: no reference,
+     * or a reference to an element of the file.
+     *
+     * @param array<int, true> $ids ids of the elements of the file
+     */
+    private static function isKeptReference(mixed $id, array $ids): bool
+    {
+        return !is_numeric($id) || (int) $id <= 0 || isset($ids[(int) $id]);
+    }
+
+    /**
+     * GLPI objects a row of the file points at by their id, kept as such by the import: the
+     * ones missing from this GLPI are added to $missing, the others counted in $found.
+     *
+     * @param array<mixed>                   $row
+     * @param string[]                       $keys    foreign keys of the row
+     * @param array<string, array<int, int>> $missing itemtype => ids
+     */
+    private static function collectReferencedItems(array $row, array $keys, array &$missing, int &$found): void
+    {
+        foreach ($keys as $key) {
+            $id = is_numeric($row[$key] ?? null) ? (int) $row[$key] : 0;
+            if ($id <= 0) {
+                continue;
+            }
+            $itemtype = getItemtypeForForeignKeyField($key);
+            $item     = getItemForItemtype($itemtype);
+            if (!$item instanceof CommonDBTM) {
+                continue;
+            }
+            if ($item->getFromDB($id)) {
+                $found++;
+            } else {
+                $missing[$itemtype][$id] = $id;
+            }
+        }
+    }
+
+    /**
+     * Groups of "Members of these groups" of a parameter of the file, found by their names,
+     * their ids differing on another GLPI.
+     *
+     * @param array<mixed> $parameter
+     *
+     * @return array{0: list<int>, 1: list<string>} ids of the groups found, names of the others
+     */
+    private static function findMemberGroups(array $parameter, int $entities_id): array
+    {
+        $found   = [];
+        $missing = [];
+        foreach ((array) ($parameter['member_groups_names'] ?? []) as $group_name) {
+            if (!is_string($group_name) || $group_name === '') {
+                continue;
+            }
+            $groups_id = TicketField::findValueItem(\Group::class, $group_name, $entities_id);
+            if ($groups_id > 0) {
+                $found[] = $groups_id;
+            } else {
+                $missing[] = '"' . $group_name . '"';
+            }
+        }
+
+        return [$found, $missing];
+    }
+
+    /**
+     * Object of this GLPI a field of the ticket of the file points at, found by its name, its
+     * id differing on another GLPI.
+     *
+     * @param array<mixed> $ticketfield
+     *
+     * @return array{id: int, label: string}|null null when the value is not an object (a text…),
+     *                                            id 0 when there is no object of that name here
+     */
+    private static function findTicketFieldItem(string $object_to_create, array $ticketfield, int $entities_id): ?array
+    {
+        $value    = $ticketfield['value'] ?? '';
+        $itemtype = TicketField::getValueItemtype($object_to_create, (int) ($ticketfield['num'] ?? 0));
+        if ($itemtype === null || !is_numeric($value) || (int) $value <= 0) {
+            return null;
+        }
+        $name = is_string($ticketfield['value_name'] ?? null) ? $ticketfield['value_name'] : '';
+
+        return [
+            'id'    => TicketField::findValueItem($itemtype, $name, $entities_id),
+            'label' => $itemtype::getTypeName(1) . ' "' . ($name !== '' ? $name : $value) . '"',
+        ];
+    }
+
+    /**
+     * Name of a contract type of the Resources plugin, exported with the links to the
+     * meta-demand; empty when the plugin is not active.
+     */
+    private static function getContractTypeName(int $contracttypes_id): string
+    {
+        $contracttype = getItemForItemtype(ContractType::class);
+        if (!$contracttype instanceof CommonDBTM
+            || $contracttypes_id <= 0
+            || !$contracttype->getFromDB($contracttypes_id)) {
+            return '';
+        }
+
+        return (string) ($contracttype->fields['name'] ?? '');
+    }
+
+    /**
+     * Links of the file to contract types of the Resources plugin: several of them, with their
+     * names (resource_links), or the single link of the exports of the previous versions, which
+     * carry no name (resource).
+     *
+     * @param array<mixed> $datas
+     *
+     * @return list<array<mixed>>
+     */
+    private static function getImportedResourceLinks(array $datas): array
+    {
+        $resource_links = array_values(self::getImportRows($datas, 'resource_links'));
+        if ($resource_links === [] && is_array($datas['resource'] ?? null)) {
+            $resource_links[] = $datas['resource'];
+        }
+
+        return array_values(array_filter(
+            $resource_links,
+            static fn(array $resource_link): bool => (int) ($resource_link['plugin_resources_contracttypes_id'] ?? 0) > 0,
+        ));
+    }
+
+    /**
+     * Contract type of the Resources plugin a link of the file points at: the one of the same
+     * name here, or of the same id for a link exported by a previous version (no name).
+     *
+     * @param array<mixed> $resource_link
+     *
+     * @return array{id: int, label: string, by_id: bool} id 0 when there is none, or when the
+     *                                                    plugin is not active
+     */
+    private static function findContractType(array $resource_link, int $entities_id): array
+    {
+        $id    = (int) ($resource_link['plugin_resources_contracttypes_id'] ?? 0);
+        $name  = is_string($resource_link['contracttype_name'] ?? null) ? $resource_link['contracttype_name'] : '';
+        $found = [
+            'id'    => 0,
+            'label' => $name !== '' ? '"' . $name . '"' : '#' . $id,
+            'by_id' => $name === '',
+        ];
+
+        $contracttype = getItemForItemtype(ContractType::class);
+        if (!$contracttype instanceof CommonDBTM) {
+            return $found;
+        }
+        if ($name !== '') {
+            $found['id'] = TicketField::findValueItem(ContractType::class, $name, $entities_id);
+        } elseif ($contracttype->getFromDB($id)) {
+            $found['id'] = $id;
+        }
+
+        return $found;
     }
 
     /**
@@ -1496,22 +2304,15 @@ class Export extends CommonDBTM
      */
     private static function importXmlFile($file)
     {
-        // LIBXML_NONET keeps the parser off the network whatever the document declares, and a
-        // rejected document must stop the import instead of flowing into json_encode(false).
-        $xml = simplexml_load_file($file, \SimpleXMLElement::class, LIBXML_NONET);
-        if ($xml === false) {
-            Session::addMessageAfterRedirect(
-                __('The file is not an XML file', 'metademands'),
-                false,
-                ERROR,
-            );
+        // A rejected document must stop the import instead of flowing into json_encode(false)
+        $error = null;
+        $datas = self::readImportFile($file, $error);
+        if ($datas === null) {
+            Session::addMessageAfterRedirect((string) $error, false, ERROR);
             return false;
         }
-        $json = json_encode($xml);
-        $datas = json_decode($json, true);
-        $datas = self::normalizeXmlData($datas) ?? [];
         $metademand = new Metademand();
-        $oldId = $datas['id'];
+        $oldId = $datas['id'] ?? 0;
         unset($datas['id']);
         unset($datas['date_creation']);
         unset($datas['date_mod']);
@@ -1574,10 +2375,7 @@ class Export extends CommonDBTM
             $tasks = $datas['tasks'];
         }
 
-        $resource = [];
-        if (isset($datas['resources'])) {
-            $resource = $datas['resources'];
-        }
+        $resource_links = self::getImportedResourceLinks($datas);
 
         $metatasks = [];
         if (isset($datas['metatasks'])) {
@@ -1603,6 +2401,10 @@ class Export extends CommonDBTM
         }
 
         $newIDMeta = $metademand->add($datas);
+        if (!$newIDMeta) {
+            // Nothing to attach the fields, options and child objects to
+            return false;
+        }
         //      $translations = [];
 
         $allowed_customvalues_types = FieldCustomvalue::$allowed_customvalues_types;
@@ -1836,26 +2638,21 @@ class Export extends CommonDBTM
         if ($version >= "3.3.11") {
             foreach ($fieldparameters as $new => $old) {
                 $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
+                // Attached to no field of the file (analyzeImportData() reports it)
+                if (!isset($mapTableField[$plugin_metademands_fields_id])) {
+                    continue;
+                }
                 $empty_values = FieldParameter::_serialize([]);
-                ;
+                // Nothing of the previous parameter is carried over
+                $toUpdate = [];
 
                 $toUpdate["custom"] = $old["custom"] ?? $empty_values;
                 // "Members of these groups": the groups of the same names here, the others
                 // left out (rather than the groups holding their old ids)
                 $custom = FieldParameter::_unserialize($toUpdate["custom"]);
                 if (is_array($custom) && FieldParameter::getMemberGroupsIds($custom) !== []) {
-                    $member_groups = [];
-                    foreach ((array) ($old['member_groups_names'] ?? []) as $group_name) {
-                        if (!is_string($group_name) || $group_name === '') {
-                            continue;
-                        }
-                        $groups_id = TicketField::findValueItem(\Group::class, $group_name, (int) $_SESSION['glpiactive_entity']);
-                        if ($groups_id > 0) {
-                            $member_groups[] = $groups_id;
-                        } else {
-                            $groups_not_found[] = '"' . $group_name . '"';
-                        }
-                    }
+                    [$member_groups, $missing_groups] = self::findMemberGroups($old, (int) $_SESSION['glpiactive_entity']);
+                    array_push($groups_not_found, ...$missing_groups);
                     $custom['member_groups'] = FieldParameter::formatMemberGroups($member_groups);
                     $toUpdate["custom"] = FieldParameter::_serialize($custom);
                 }
@@ -1946,6 +2743,10 @@ class Export extends CommonDBTM
         if ($version >= "3.3.11") {
             foreach ($fieldcustoms as $new => $old) {
                 $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
+                // Attached to no field of the file (analyzeImportData() reports it)
+                if (!isset($mapTableField[$plugin_metademands_fields_id])) {
+                    continue;
+                }
                 $name = $old["name"] ?? "";
                 $is_default = $old["is_default"] ?? 0;
                 $comment = $old["comment"] ?? "";
@@ -1987,6 +2788,10 @@ class Export extends CommonDBTM
         if ($version >= "3.3.20") {
             foreach ($fieldfreetablefields as $new => $old) {
                 $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
+                // Attached to no field of the file (analyzeImportData() reports it)
+                if (!isset($mapTableField[$plugin_metademands_fields_id])) {
+                    continue;
+                }
                 $name = $old["name"] ?? "";
                 $internal_name = $old["internal_name"] ?? "";
                 $type = $old["type"] ?? "text";
@@ -2060,6 +2865,10 @@ class Export extends CommonDBTM
             //            ) {
             $check_value = $old["check_value"] ?? 0;
             $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
+            // Attached to no field of the file (analyzeImportData() reports it)
+            if (!isset($mapTableField[$plugin_metademands_fields_id])) {
+                continue;
+            }
             $plugin_metademands_tasks_id = $old["plugin_metademands_tasks_id"] ?? 0;
             $fields_link = $old["fields_link"] ?? 0;
             $hidden_link = $old["hidden_link"] ?? 0;
@@ -2190,16 +2999,41 @@ class Export extends CommonDBTM
             $meta_task->getFromDB($new);
             $toUpdate = [];
             $toUpdate['id'] = $new;
-            if (isset($mapTableTask[$meta_task->fields["plugin_metademands_tasks_id"]])) {
-                $toUpdate["plugin_metademands_tasks_id"] = $mapTableTask[$meta_task->fields["plugin_metademands_tasks_id"]];
+            $parent_tasks_id = (int) ($meta_task->fields["plugin_metademands_tasks_id"] ?? 0);
+            if ($parent_tasks_id > 0) {
+                // A parent missing from the file is dropped, rather than kept as the old id
+                // of an unrelated child object of this GLPI
+                $toUpdate["plugin_metademands_tasks_id"] = $mapTableTask[$parent_tasks_id] ?? 0;
             }
             $meta_task->update($toUpdate);
         }
 
-        if (!empty($resource)) {
-            $resource['plugin_metademands_metademands_id'] = $newIDMeta;
-            $resource_meta = new Metademand_Resource();
-            $resource_meta->add($resource);
+        // Contract types of the Resources plugin leading to the meta-demand: the ones of the
+        // same names here, in the entity of the meta-demand
+        $contracttypes_not_found = [];
+        foreach ($resource_links as $resource_link) {
+            $contracttype = self::findContractType($resource_link, (int) $_SESSION['glpiactive_entity']);
+            if ($contracttype['id'] === 0) {
+                $contracttypes_not_found[] = $contracttype['label'];
+                continue;
+            }
+            (new Metademand_Resource())->add([
+                'plugin_resources_contracttypes_id' => $contracttype['id'],
+                'plugin_metademands_metademands_id' => $newIDMeta,
+                'entities_id'                       => $_SESSION['glpiactive_entity'],
+            ]);
+        }
+        if ($contracttypes_not_found !== []) {
+            Session::addMessageAfterRedirect(
+                getItemForItemtype(ContractType::class) instanceof CommonDBTM
+                    ? sprintf(
+                        __('Contract types of the Resources plugin not found here, their links are not imported: %s', 'metademands'),
+                        implode(', ', $contracttypes_not_found),
+                    )
+                    : __('The Resources plugin is not active here: the links to its contract types are not imported', 'metademands'),
+                false,
+                WARNING,
+            );
         }
 
         if (!empty($stepconfig)) {
@@ -2232,6 +3066,10 @@ class Export extends CommonDBTM
 
         if (!empty($metatasks)) {
             foreach ($metatasks as $key => $metatask) {
+                // Its child object is missing from the file (analyzeImportData() reports it)
+                if (!isset($mapTableTask[$metatask['plugin_metademands_tasks_id'] ?? 0])) {
+                    continue;
+                }
                 $meta_metatask = new MetademandTask();
                 $metat = [];
                 $metat['plugin_metademands_metademands_id'] = $newIDMeta;
@@ -2251,14 +3089,13 @@ class Export extends CommonDBTM
             }
             $num   = (int) $ticketfield['num'];
             $value = $ticketfield['value'] ?? '';
-            $itemtype = TicketField::getValueItemtype($object_to_create, $num);
-            if ($itemtype !== null && is_numeric($value) && (int) $value > 0) {
-                $name  = is_string($ticketfield['value_name'] ?? null) ? $ticketfield['value_name'] : '';
-                $value = TicketField::findValueItem($itemtype, $name, (int) $_SESSION['glpiactive_entity']);
-                if ($value === 0) {
-                    $not_found[] = $itemtype::getTypeName(1) . ' "' . ($name !== '' ? $name : $ticketfield['value']) . '"';
+            $item  = self::findTicketFieldItem($object_to_create, $ticketfield, (int) $_SESSION['glpiactive_entity']);
+            if ($item !== null) {
+                if ($item['id'] === 0) {
+                    $not_found[] = $item['label'];
                     continue;
                 }
+                $value = $item['id'];
             } elseif (is_string($value)) {
                 $value = self::remapFieldTags($value, $mapTableField);
             }
@@ -2331,7 +3168,7 @@ class Export extends CommonDBTM
         }
 
         return preg_replace_callback(
-            '/#([1-9][0-9]*)(?=(?:\.[A-Za-z0-9_]+)?#)/',
+            self::FIELD_TAG_PATTERN,
             static fn(array $matches): string => '#' . ($map_fields[$matches[1]] ?? $matches[1]),
             $text,
         ) ?? $text;

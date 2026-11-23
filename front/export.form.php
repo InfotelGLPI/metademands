@@ -66,16 +66,27 @@ if (Session::haveRight("plugin_metademands", CREATE)) {
     } elseif (isset($_GET["import_form"])) {
 
         Html::header(Metademand::getTypeName(2), '', "helpdesk", Menu::class);
-        Export::showImportForm();
+        // The summary of the uploaded file, before its import, or the upload form
+        if (!Export::showImportSummary()) {
+            Export::showImportForm();
+        }
         Html::footer();
 
+    } elseif (isset($_POST["analyze_file"])) {
+        Export::prepareImport();
+        Html::redirect(Export::getFormURL() . "?import_form=1");
+
+    } elseif (isset($_POST["cancel_import"])) {
+        Export::cancelPendingImport();
+        Html::redirect(Export::getFormURL() . "?import_form=1");
+
     } elseif (isset($_POST["import_file"])) {
-        $id = Export::importXml();
+        $id = Export::importPendingFile((string) ($_POST["import_token"] ?? ''));
         if ($id) {
             $meta = new Metademand();
             Html::redirect($meta->getFormURL() . "?id=" . $id);
         } else {
-            Html::back();
+            Html::redirect(Export::getFormURL() . "?import_form=1");
         }
     }
 } else {

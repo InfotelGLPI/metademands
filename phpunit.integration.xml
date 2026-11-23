@@ -74,6 +74,7 @@
         <file>tests/ChildObjectFormTest.php</file>
         <file>tests/NumberZeroValueTest.php</file>
         <file>tests/LocationLinkedUserTest.php</file>
+        <file>tests/ExportImportSummaryTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

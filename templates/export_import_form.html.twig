@@ -26,7 +26,8 @@
  #}
 
 {#
- # Metademand XML/JSON import form.
+ # Metademand XML import form, first step: the file is checked and its summary displayed
+ # (export_import_summary.html.twig) before it is imported.
  #
  # Expected context:
  #  - target: form action URL
@@ -49,8 +50,9 @@
             </div>
         </div>
         <div class="card-footer text-center">
-            <button type="submit" name="import_file" value="{{ __('Import', 'metademands') }}" class="btn btn-primary">
-                <span>{{ __('Import', 'metademands') }}</span>
+            <button type="submit" name="analyze_file" value="1" class="btn btn-primary">
+                <i class="ti ti-file-search"></i>
+                <span>{{ __('Check the file', 'metademands') }}</span>
             </button>
         </div>
     </div>
