@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.7.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-23 09:55+0000\n"
+"POT-Creation-Date: 2026-11-23 12:31+0000\n"
 "PO-Revision-Date: 2020-10-12 18:05+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -28,10 +28,28 @@ msgstr ""
 msgid "%1$s / %2$s mandatory fields filled"
 msgstr ""
 
+#: tests/ExportImportSummaryTest.php:291 src/Export.php:1895
+#, php-format
+msgid "%1$s attached to no field of the file, not imported: %2$d"
+msgstr ""
+
+#: tests/ExportImportSummaryTest.php:297 tests/ExportImportSummaryTest.php:298
+#: tests/ExportImportSummaryTest.php:299 src/Export.php:1931
+#, php-format
+msgid "%1$s not found on this GLPI, to set again after the import: %2$s"
+msgstr ""
+
 #: src/Field.php:3517
 #, php-format
 msgid "%1$s: %2$s"
 msgstr ""
+
+#: ⁨standard input⁩:86
+#, php-format
+msgid "%d error: the file cannot be imported"
+msgid_plural "%d errors: the file cannot be imported"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ⁨standard input⁩:143
 #, php-format
@@ -47,6 +65,20 @@ msgid_plural "%d levels"
 msgstr[0] ""
 msgstr[1] ""
 
+#: tests/ExportImportSummaryTest.php:295 src/Export.php:1914
+#, php-format
+msgid "%d link to a child object missing from the file is dropped"
+msgid_plural "%d links to child objects missing from the file are dropped"
+msgstr[0] ""
+msgstr[1] ""
+
+#: tests/ExportImportSummaryTest.php:293 src/Export.php:1903
+#, php-format
+msgid "%d link to a field missing from the file is dropped"
+msgid_plural "%d links to fields missing from the file are dropped"
+msgstr[0] ""
+msgstr[1] ""
+
 #: src/Metademand.php:7802
 #, php-format
 msgid "%d parent ticket solved"
@@ -58,6 +90,13 @@ msgstr[1] ""
 #, php-format
 msgid "%d to complete"
 msgid_plural "%d to complete"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ⁨standard input⁩:100
+#, php-format
+msgid "%d warning: the import is possible, with this limit"
+msgid_plural "%d warnings: the import is possible, with these limits"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -128,6 +167,12 @@ msgstr ""
 
 #: src/NotificationTargetStepform.php:56
 msgid "A form has been completed"
+msgstr ""
+
+#: tests/ExportImportSummaryTest.php:233 src/Export.php:1678
+#, php-format
+msgid ""
+"A meta-demand named \"%s\" already exists: the import creates another one"
 msgstr ""
 
 #: src/NotificationTargetStepform.php:55
@@ -413,10 +458,11 @@ msgstr ""
 msgid "Blank Template"
 msgstr ""
 
-#: src/FieldOption.php:1597 src/Field.php:925 src/Field.php:1113
-#: src/Field.php:3213 src/Wizard.php:1916 src/Step.php:418 src/Step.php:472
-#: ⁨standard input⁩:253 ⁨standard input⁩:164 ⁨standard input⁩:320 ⁨standard input⁩:44
-#: ⁨standard input⁩:66 ⁨standard input⁩:39
+#: tests/ExportImportSummaryTest.php:225 src/FieldOption.php:1597
+#: src/Field.php:925 src/Field.php:1113 src/Field.php:3213 src/Export.php:2003
+#: src/Wizard.php:1916 src/Step.php:418 src/Step.php:472 ⁨standard input⁩:253
+#: ⁨standard input⁩:164 ⁨standard input⁩:320 ⁨standard input⁩:44 ⁨standard input⁩:66
+#: ⁨standard input⁩:39
 #, fuzzy
 msgid "Block"
 msgid_plural "Blocks"
@@ -517,6 +563,14 @@ msgstr ""
 msgid "Check all"
 msgstr ""
 
+#: ⁨standard input⁩:55
+msgid "Check the file"
+msgstr ""
+
+#: ⁨standard input⁩:138
+msgid "Check the file again"
+msgstr ""
+
 #: src/Fields/Checkbox.php:60
 msgid "Checkbox"
 msgstr "Checkbox"
@@ -534,7 +588,7 @@ msgstr ""
 msgid "Child Ticket"
 msgstr "Child Ticket"
 
-#: src/Task.php:70
+#: tests/ExportImportSummaryTest.php:229 src/Task.php:70 src/Export.php:1817
 msgid "Child creation"
 msgstr ""
 
@@ -571,6 +625,10 @@ msgstr ""
 
 #: ⁨standard input⁩:41
 msgid "Choose a template"
+msgstr ""
+
+#: ⁨standard input⁩:130
+msgid "Choose another file"
 msgstr ""
 
 #: src/Fields/Dropdownmeta.php:1070 src/Fields/Dropdown.php:747
@@ -730,6 +788,34 @@ msgstr ""
 
 #: front/stepform.php:49 front/stepform.php:51
 msgid "Continue metademand"
+msgstr ""
+
+#: tests/ExportImportSummaryTest.php:494 src/Export.php:2016
+msgid "Contract type of the Resources plugin"
+msgid_plural "Contract types of the Resources plugin"
+msgstr[0] ""
+msgstr[1] ""
+
+#: tests/ExportImportSummaryTest.php:497 src/Export.php:1990
+#, php-format
+msgid ""
+"Contract types of the Resources plugin already leading to another meta-"
+"demand here, which they keep leading to: %s"
+msgstr ""
+
+#: tests/ExportImportSummaryTest.php:581 src/Export.php:1996
+#, php-format
+msgid ""
+"Contract types of the Resources plugin found by their id, the file coming "
+"from a previous version of the plugin: %s"
+msgstr ""
+
+#: tests/ExportImportSummaryTest.php:546 src/Export.php:1984
+#: src/Export.php:3030
+#, php-format
+msgid ""
+"Contract types of the Resources plugin not found here, their links are not "
+"imported: %s"
 msgstr ""
 
 #: ⁨standard input⁩:51
@@ -1181,10 +1267,13 @@ msgstr ""
 msgid "Enter translation"
 msgstr ""
 
-#: ⁨standard input⁩:62 ⁨standard input⁩:64 ⁨standard input⁩:126 ⁨standard input⁩:74
-#: ⁨standard input⁩:182 ⁨standard input⁩:58 ⁨standard input⁩:100 ⁨standard input⁩:93
+#: ⁨standard input⁩:62 ⁨standard input⁩:64 ⁨standard input⁩:63 ⁨standard input⁩:126
+#: ⁨standard input⁩:74 ⁨standard input⁩:182 ⁨standard input⁩:58 ⁨standard input⁩:100
+#: ⁨standard input⁩:93
 msgid "Entity"
-msgstr ""
+msgid_plural "Entities"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ⁨standard input⁩:98 ⁨standard input⁩:72 ⁨standard input⁩:44
 msgid "Equality operator"
@@ -1215,27 +1304,27 @@ msgstr "Example"
 msgid "Existing childs tickets"
 msgstr ""
 
-#: src/Export.php:87 ⁨standard input⁩:42
+#: src/Export.php:100 ⁨standard input⁩:42
 msgid "Export"
 msgstr ""
 
-#: src/Export.php:189 src/Metademand.php:6321
+#: src/Export.php:202 src/Metademand.php:6321
 msgid "Export JSON"
 msgstr ""
 
-#: src/Export.php:163 src/Export.php:184 src/Metademand.php:6319
+#: src/Export.php:176 src/Export.php:197 src/Metademand.php:6319
 msgid "Export XML"
 msgstr ""
 
-#: src/Export.php:161
+#: src/Export.php:174
 msgid "Export the form to XML format for use with metademands plugin"
 msgstr ""
 
-#: src/Export.php:187
+#: src/Export.php:200
 msgid "Export the metademand to JSON format for use with forms from GLPI"
 msgstr ""
 
-#: src/Export.php:182
+#: src/Export.php:195
 msgid "Export the metademand to XML format for use on another GLPI"
 msgstr ""
 
@@ -1252,9 +1341,10 @@ msgstr ""
 msgid "Father's field"
 msgstr "Father's field"
 
-#: ⁨standard input⁩:72 ⁨standard input⁩:108 ⁨standard input⁩:145 ⁨standard input⁩:96
-#: ⁨standard input⁩:124 ⁨standard input⁩:205 ⁨standard input⁩:103 ⁨standard input⁩:67
-#: ⁨standard input⁩:36 ⁨standard input⁩:51 ⁨standard input⁩:39
+#: tests/ExportImportSummaryTest.php:226 src/Export.php:2004 ⁨standard input⁩:72
+#: ⁨standard input⁩:108 ⁨standard input⁩:145 ⁨standard input⁩:96 ⁨standard input⁩:124
+#: ⁨standard input⁩:205 ⁨standard input⁩:103 ⁨standard input⁩:67 ⁨standard input⁩:36
+#: ⁨standard input⁩:51 ⁨standard input⁩:39
 msgid "Field"
 msgid_plural "Fields"
 msgstr[0] ""
@@ -1277,13 +1367,27 @@ msgstr ""
 msgid "Field type"
 msgstr ""
 
-#: tests/ExportFieldLinksTest.php:320 src/Export.php:2278
+#: tests/ExportImportSummaryTest.php:289 src/Export.php:1883
+#, php-format
+msgid "Fields of a type unknown here, a plugin may be missing: %s"
+msgstr ""
+
+#: tests/ExportFieldLinksTest.php:320 src/Export.php:1938 src/Export.php:3115
 #, php-format
 msgid "Fields of the ticket not imported, no item of that name here: %s"
 msgstr ""
 
+#: tests/ExportImportSummaryTest.php:290 src/Export.php:1889
+#, php-format
+msgid "Fields on objects unknown here, a plugin may be missing: %s"
+msgstr ""
+
 #: ⁨standard input⁩:172
 msgid "Fields to complete"
+msgstr ""
+
+#: ⁨standard input⁩:51
+msgid "File"
 msgstr ""
 
 #: src/Field.php:1353
@@ -1422,7 +1526,7 @@ msgstr ""
 msgid "Groups allowed to enter a demand"
 msgstr "Groups allowed to enter a demand"
 
-#: tests/FieldMemberGroupsTest.php:252 src/Export.php:2288
+#: tests/FieldMemberGroupsTest.php:252 src/Export.php:1944 src/Export.php:3125
 #, php-format
 msgid ""
 "Groups left out of \"Members of these groups\", no group of that name here: "
@@ -1576,7 +1680,7 @@ msgstr ""
 msgid "Illustration"
 msgstr ""
 
-#: ⁨standard input⁩:39 ⁨standard input⁩:52 ⁨standard input⁩:53
+#: ⁨standard input⁩:40 ⁨standard input⁩:46 ⁨standard input⁩:144
 msgid "Import"
 msgstr ""
 
@@ -1852,7 +1956,7 @@ msgstr ""
 msgid "Metademand approver"
 msgstr ""
 
-#: ⁨standard input⁩:44
+#: ⁨standard input⁩:45
 msgid "Metademand file to import"
 msgstr ""
 
@@ -1946,9 +2050,9 @@ msgstr ""
 msgid "My values"
 msgstr ""
 
-#: ⁨standard input⁩:60 ⁨standard input⁩:79 ⁨standard input⁩:68 ⁨standard input⁩:35
-#: ⁨standard input⁩:41 ⁨standard input⁩:51 ⁨standard input⁩:47 ⁨standard input⁩:52
-#: ⁨standard input⁩:45 ⁨standard input⁩:57 ⁨standard input⁩:40
+#: ⁨standard input⁩:60 ⁨standard input⁩:79 ⁨standard input⁩:54 ⁨standard input⁩:68
+#: ⁨standard input⁩:35 ⁨standard input⁩:41 ⁨standard input⁩:51 ⁨standard input⁩:47
+#: ⁨standard input⁩:52 ⁨standard input⁩:45 ⁨standard input⁩:57 ⁨standard input⁩:40
 msgid "Name"
 msgstr ""
 
@@ -2022,11 +2126,19 @@ msgstr ""
 msgid "No equipment founded"
 msgstr ""
 
+#: ⁨standard input⁩:113
+msgid "No error found: the file can be imported"
+msgstr ""
+
 #: src/Wizard.php:784 ⁨standard input⁩:53 ⁨standard input⁩:63
 msgid "No existing forms founded"
 msgstr ""
 
-#: src/Export.php:1435 src/Export.php:1457
+#: tests/ExportImportSummaryTest.php:351 src/Export.php:1492
+msgid "No file is waiting for its import, please select it again"
+msgstr ""
+
+#: src/Export.php:2243 src/Export.php:2265
 msgid "No file specified"
 msgstr ""
 
@@ -2038,7 +2150,7 @@ msgstr ""
 msgid "No limit"
 msgstr ""
 
-#: src/Export.php:1242
+#: src/Export.php:1261
 msgid "No link"
 msgstr ""
 
@@ -2150,6 +2262,7 @@ msgid "Object"
 msgstr "Object"
 
 #: src/Metademand.php:1868 ⁨standard input⁩:92 ⁨standard input⁩:107
+#: ⁨standard input⁩:58
 msgid "Object to create"
 msgstr ""
 
@@ -2179,6 +2292,10 @@ msgstr ""
 #: src/Fields/Basket.php:486 src/Fields/Basket.php:1163
 #: src/Fields/Basket.php:1205 src/Fields/Basket.php:1352
 msgid "On quotation"
+msgstr ""
+
+#: ⁨standard input⁩:136
+msgid "Once the missing objects are created, check the file again"
 msgstr ""
 
 #: src/Field.php:1315
@@ -2864,7 +2981,7 @@ msgstr ""
 msgid "Suggested queries"
 msgstr ""
 
-#: ⁨standard input⁩:41
+#: ⁨standard input⁩:41 ⁨standard input⁩:46
 msgid "Summary"
 msgstr ""
 
@@ -2878,6 +2995,11 @@ msgstr "Synchronise with ticket template"
 
 #: ⁨standard input⁩:40
 msgid "Tag"
+msgstr ""
+
+#: tests/ExportImportSummaryTest.php:296 src/Export.php:1925
+#, php-format
+msgid "Tags pointing at fields missing from the file: %s"
 msgstr ""
 
 #: ⁨standard input⁩:70
@@ -2955,6 +3077,19 @@ msgstr "Textarea"
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
+#: tests/ExportImportSummaryTest.php:456 src/Export.php:1960
+#: src/Export.php:3033
+msgid ""
+"The Resources plugin is not active here: the links to its contract types are "
+"not imported"
+msgstr ""
+
+#: src/Export.php:1954
+msgid ""
+"The categories of the meta-demand are not imported: choose them after the "
+"import"
+msgstr ""
+
 #: src/Task.php:1118 src/TicketTask.php:532 src/Metademand.php:1440
 #: src/Metademand.php:1550
 msgid "The category is related to a demand. Thank you to select another"
@@ -2989,7 +3124,27 @@ msgid ""
 "The fields are not ordered correctly, you will not be able to order them!"
 msgstr ""
 
-#: src/Export.php:1477 src/Export.php:1504
+#: tests/ExportImportSummaryTest.php:375 src/Export.php:1505
+msgid "The file cannot be imported, see the errors of its summary"
+msgstr ""
+
+#: tests/ExportImportSummaryTest.php:288 src/Export.php:1685
+#, php-format
+msgid ""
+"The file comes from a more recent version of the plugin (%1$s) than this one "
+"(%2$s): the settings unknown here are not imported"
+msgstr ""
+
+#: tests/ExportImportSummaryTest.php:314 src/Export.php:1657
+msgid "The file does not give the object the meta-demand creates"
+msgstr ""
+
+#: tests/ExportImportSummaryTest.php:325 src/Export.php:1600
+msgid "The file is not a meta-demand export"
+msgstr ""
+
+#: tests/ExportImportSummaryTest.php:330 src/Export.php:1594
+#: src/Export.php:2285
 msgid "The file is not an XML file"
 msgstr ""
 
@@ -3025,6 +3180,19 @@ msgstr "The line has been updated"
 
 #: ⁨standard input⁩:126 ⁨standard input⁩:169
 msgid "The logical operator of the first condition is not used."
+msgstr ""
+
+#: tests/ExportImportSummaryTest.php:311 src/Export.php:1658
+#, php-format
+msgid "The meta-demand creates an unknown object: %s"
+msgstr ""
+
+#: src/Export.php:1692
+msgid "The meta-demand of the file has no field"
+msgstr ""
+
+#: src/Export.php:1668
+msgid "The meta-demand of the file has no name"
 msgstr ""
 
 #: src/MetademandValidation.php:547
@@ -3087,6 +3255,13 @@ msgstr ""
 
 #: ⁨standard input⁩:48
 msgid "The user must select a defined user of the selected groups"
+msgstr ""
+
+#: src/Export.php:1950
+msgid ""
+"The users, groups and categories of the child objects, the validators and "
+"the step groups are kept by their id: check them after the import if the "
+"file comes from another GLPI"
 msgstr ""
 
 #: src/Metademand.php:5043
@@ -3299,7 +3474,7 @@ msgstr ""
 msgid "Translated"
 msgstr ""
 
-#: ⁨standard input⁩:65
+#: src/Export.php:2020 ⁨standard input⁩:65
 msgid "Translation"
 msgid_plural "Translations"
 msgstr[0] ""
@@ -3334,11 +3509,11 @@ msgstr ""
 msgid "URL"
 msgstr ""
 
-#: src/Export.php:345 src/Export.php:559 src/Export.php:1321
+#: src/Export.php:364 src/Export.php:578 src/Export.php:1340
 msgid "Unable to create the export file"
 msgstr ""
 
-#: src/Export.php:1461
+#: src/Export.php:2269
 msgid "Unable to upload the file"
 msgstr ""
 
@@ -3522,6 +3697,10 @@ msgstr "Value to check"
 #: src/Metademand.php:7764 ⁨standard input⁩:56
 msgctxt "button"
 msgid "Verify metademands global status"
+msgstr ""
+
+#: ⁨standard input⁩:66
+msgid "Version"
 msgstr ""
 
 #: ⁨standard input⁩:40
