@@ -2,12 +2,12 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 # Translators:
 # Kevin HAINRY <kevin.hainry@infotel.com>, 2021
 # Simon Thivet, 2024
 # Xavier CAILLAUD <thetsmr@gmail.com>, 2026
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
@@ -16,14 +16,12 @@ msgstr ""
 "POT-Creation-Date: 2026-11-23 12:31+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2026\n"
-"Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/"
-"96561/fr_FR/)\n"
-"Language: fr_FR\n"
+"Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
-"1000000 == 0 ? 1 : 2;\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #: src/Metademand.php:4166
 #, php-format
@@ -38,13 +36,13 @@ msgstr "%1$s / %2$s champs obligatoires remplis"
 #: tests/ExportImportSummaryTest.php:291 src/Export.php:1895
 #, php-format
 msgid "%1$s attached to no field of the file, not imported: %2$d"
-msgstr ""
+msgstr "%1$s non rattaché à un champ du fichier, non importé : %2$d"
 
 #: tests/ExportImportSummaryTest.php:297 tests/ExportImportSummaryTest.php:298
 #: tests/ExportImportSummaryTest.php:299 src/Export.php:1931
 #, php-format
 msgid "%1$s not found on this GLPI, to set again after the import: %2$s"
-msgstr ""
+msgstr "%1$s introuvable sur ce GLPI, à redéfinir après l'importation : %2$s"
 
 #: src/Field.php:3517
 #, php-format
@@ -55,9 +53,9 @@ msgstr "%1$s: %2$s"
 #, php-format
 msgid "%d error: the file cannot be imported"
 msgid_plural "%d errors: the file cannot be imported"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%d erreur : impossible d'importer le fichier"
+msgstr[1] "%d erreurs : impossible d'importer le fichier"
+msgstr[2] "%d erreurs : impossible d'importer le fichier"
 
 #: ⁨standard input⁩:143
 #, php-format
@@ -79,17 +77,17 @@ msgstr[2] "%d niveaux"
 #, php-format
 msgid "%d link to a child object missing from the file is dropped"
 msgid_plural "%d links to child objects missing from the file are dropped"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%d lien vers l'objet enfant absent du fichier est supprimé"
+msgstr[1] "%d liens vers les objets enfants absents du fichier sont supprimés"
+msgstr[2] "%d liens vers les objets enfants absents du fichier sont supprimés"
 
 #: tests/ExportImportSummaryTest.php:293 src/Export.php:1903
 #, php-format
 msgid "%d link to a field missing from the file is dropped"
 msgid_plural "%d links to fields missing from the file are dropped"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%d lien vers le champ manquant dans le fichier est supprimé"
+msgstr[1] "%d liens vers les champs manquants dans le fichier sont supprimés"
+msgstr[2] "%d liens vers les champs manquants dans le fichier sont supprimés"
 
 #: src/Metademand.php:7802
 #, php-format
@@ -112,8 +110,11 @@ msgstr[2] "%d à compléter"
 msgid "%d warning: the import is possible, with this limit"
 msgid_plural "%d warnings: the import is possible, with these limits"
 msgstr[0] ""
+"%d avertissement : l’importation est possible, mais avec cette limite"
 msgstr[1] ""
+"%d avertissements : l’importation est possible, mais avec ces limites"
 msgstr[2] ""
+"%d avertissements : l’importation est possible, mais avec ces limites"
 
 #: ⁨standard input⁩:70
 #, php-format
@@ -123,11 +124,11 @@ msgstr[0] ""
 "%s enfant utilise des étiquettes qui ne correspondent à aucun champ de la "
 "métademande."
 msgstr[1] ""
-"%s enfants utilisent des étiquettes qui ne correspondent à aucun champ de la "
-"métademande."
+"%s enfants utilisent des étiquettes qui ne correspondent à aucun champ de la"
+" métademande."
 msgstr[2] ""
-"%s enfants utilisent des étiquettes qui ne correspondent à aucun champ de la "
-"métademande."
+"%s enfants utilisent des étiquettes qui ne correspondent à aucun champ de la"
+" métademande."
 
 #: ⁨standard input⁩:44 ⁨standard input⁩:45
 #, php-format
@@ -196,9 +197,8 @@ msgstr "Un formulaire a été complété"
 
 #: tests/ExportImportSummaryTest.php:233 src/Export.php:1678
 #, php-format
-msgid ""
-"A meta-demand named \"%s\" already exists: the import creates another one"
-msgstr ""
+msgid "A meta-demand named \"%s\" already exists: the import creates another one"
+msgstr "Une métademande nommé \"%s\" existe déjà : l'importation en crée un autre"
 
 #: src/NotificationTargetStepform.php:55
 msgid "A new form has been created"
@@ -231,8 +231,8 @@ msgstr[2] "Actions"
 msgid "Activate supervisor validation"
 msgstr "Activer la validation du responsable"
 
-#: ⁨standard input⁩:158 ⁨standard input⁩:165 ⁨standard input⁩:80 ⁨standard input⁩:284
-#: ⁨standard input⁩:288
+#: ⁨standard input⁩:158 ⁨standard input⁩:165 ⁨standard input⁩:80 ⁨standard
+#: input⁩:284 ⁨standard input⁩:288
 msgid "Active"
 msgstr "Active"
 
@@ -251,11 +251,11 @@ msgstr[2] "Acteurs"
 msgid "Add"
 msgstr "Ajouter"
 
-#: ⁨standard input⁩:59 ⁨standard input⁩:170 ⁨standard input⁩:89 ⁨standard input⁩:58
-#: ⁨standard input⁩:70 ⁨standard input⁩:94 ⁨standard input⁩:129 ⁨standard input⁩:38
-#: ⁨standard input⁩:39 ⁨standard input⁩:96 ⁨standard input⁩:98 ⁨standard input⁩:46
-#: ⁨standard input⁩:47 ⁨standard input⁩:63 ⁨standard input⁩:93 ⁨standard input⁩:43
-#: ⁨standard input⁩:67
+#: ⁨standard input⁩:59 ⁨standard input⁩:170 ⁨standard input⁩:89 ⁨standard
+#: input⁩:58 ⁨standard input⁩:70 ⁨standard input⁩:94 ⁨standard input⁩:129
+#: ⁨standard input⁩:38 ⁨standard input⁩:39 ⁨standard input⁩:96 ⁨standard
+#: input⁩:98 ⁨standard input⁩:46 ⁨standard input⁩:47 ⁨standard input⁩:63
+#: ⁨standard input⁩:93 ⁨standard input⁩:43 ⁨standard input⁩:67
 msgctxt "button"
 msgid "Add"
 msgstr "Ajouter"
@@ -333,7 +333,8 @@ msgstr "Ajouter au panier"
 msgid "Add your signature"
 msgstr "Ajouter votre signature"
 
-#: src/Field.php:3143 src/Field.php:3231 src/Field.php:4846 ⁨standard input⁩:195
+#: src/Field.php:3143 src/Field.php:3231 src/Field.php:4846 ⁨standard
+#: input⁩:195
 msgid "Additional label"
 msgstr "Label supplémentaire"
 
@@ -403,8 +404,8 @@ msgstr "Toujours visible"
 
 #: ⁨standard input⁩:172
 msgid ""
-"An inactive field is left out of the wizard, the ticket and the PDF, and its "
-"options have no effect"
+"An inactive field is left out of the wizard, the ticket and the PDF, and its"
+" options have no effect"
 msgstr ""
 "Un champ inactif est omis de l'assistant, du ticket et du PDF, et ses "
 "options sont sans effet."
@@ -442,8 +443,8 @@ msgstr "Comme enfant de"
 msgid "Assign the ticket to these technicians groups"
 msgstr "Attribuer le ticket à ces groupes de techniciens"
 
-#: ⁨standard input⁩:182 ⁨standard input⁩:187 ⁨standard input⁩:55 ⁨standard input⁩:103
-#: ⁨standard input⁩:169
+#: ⁨standard input⁩:182 ⁨standard input⁩:187 ⁨standard input⁩:55 ⁨standard
+#: input⁩:103 ⁨standard input⁩:169
 msgid "Assigned to"
 msgstr "Assigné à"
 
@@ -493,8 +494,8 @@ msgstr "Gabarit vide"
 #: tests/ExportImportSummaryTest.php:225 src/FieldOption.php:1597
 #: src/Field.php:925 src/Field.php:1113 src/Field.php:3213 src/Export.php:2003
 #: src/Wizard.php:1916 src/Step.php:418 src/Step.php:472 ⁨standard input⁩:253
-#: ⁨standard input⁩:164 ⁨standard input⁩:320 ⁨standard input⁩:44 ⁨standard input⁩:66
-#: ⁨standard input⁩:39
+#: ⁨standard input⁩:164 ⁨standard input⁩:320 ⁨standard input⁩:44 ⁨standard
+#: input⁩:66 ⁨standard input⁩:39
 msgid "Block"
 msgid_plural "Blocks"
 msgstr[0] "Bloc"
@@ -530,7 +531,8 @@ msgstr "Bloquer la résolution du ticket parent"
 msgid "Block title"
 msgstr "Titre de bloc"
 
-#: ⁨standard input⁩:102 ⁨standard input⁩:222 ⁨standard input⁩:193 ⁨standard input⁩:196
+#: ⁨standard input⁩:102 ⁨standard input⁩:222 ⁨standard input⁩:193 ⁨standard
+#: input⁩:196
 msgid "Block to use"
 msgstr "Bloc à utiliser"
 
@@ -571,11 +573,11 @@ msgstr "Annuler le formulaire"
 msgid ""
 "Careful all the lines are not confirm, are you sure you want to continue ?"
 msgstr ""
-"Attention toutes les lignes ne sont pas confirmées, êtes-vous sûr de vouloir "
-"continuer ?"
+"Attention toutes les lignes ne sont pas confirmées, êtes-vous sûr de vouloir"
+" continuer ?"
 
-#: ⁨standard input⁩:165 ⁨standard input⁩:93 ⁨standard input⁩:82 ⁨standard input⁩:46
-#: ⁨standard input⁩:48 ⁨standard input⁩:184 ⁨standard input⁩:54
+#: ⁨standard input⁩:165 ⁨standard input⁩:93 ⁨standard input⁩:82 ⁨standard
+#: input⁩:46 ⁨standard input⁩:48 ⁨standard input⁩:184 ⁨standard input⁩:54
 msgid "Category"
 msgid_plural "Categories"
 msgstr[0] "Catégorie"
@@ -600,11 +602,11 @@ msgstr "Tout cocher"
 
 #: ⁨standard input⁩:55
 msgid "Check the file"
-msgstr ""
+msgstr "Vérifiez le fichier"
 
 #: ⁨standard input⁩:138
 msgid "Check the file again"
-msgstr ""
+msgstr "Vérifiez encore le fichier"
 
 #: src/Fields/Checkbox.php:60
 msgid "Checkbox"
@@ -665,7 +667,7 @@ msgstr "Choisissez un gabarit"
 
 #: ⁨standard input⁩:130
 msgid "Choose another file"
-msgstr ""
+msgstr "Choisissez un autre fichier"
 
 #: src/Fields/Dropdownmeta.php:1070 src/Fields/Dropdown.php:747
 #: src/Fields/Yesno.php:185 src/Fields/Dropdownmultiple.php:459
@@ -677,7 +679,8 @@ msgstr "Affichage classique"
 msgid "Classification"
 msgstr "Classification"
 
-#: ⁨standard input⁩:49 ⁨standard input⁩:51 ⁨standard input⁩:63 ⁨standard input⁩:65
+#: ⁨standard input⁩:49 ⁨standard input⁩:51 ⁨standard input⁩:63 ⁨standard
+#: input⁩:65
 msgctxt "button"
 msgid "Clean form"
 msgstr "Vider le formulaire"
@@ -704,9 +707,9 @@ msgstr "Cliquez pour activer ou désactiver le champ"
 msgid "Click to make the field mandatory or optional"
 msgstr "Cliquez pour rendre le champ obligatoire ou facultatif"
 
-#: ⁨standard input⁩:50 ⁨standard input⁩:52 ⁨standard input⁩:96 ⁨standard input⁩:134
-#: ⁨standard input⁩:124 ⁨standard input⁩:40 ⁨standard input⁩:38 ⁨standard input⁩:39
-#: ⁨standard input⁩:59
+#: ⁨standard input⁩:50 ⁨standard input⁩:52 ⁨standard input⁩:96 ⁨standard
+#: input⁩:134 ⁨standard input⁩:124 ⁨standard input⁩:40 ⁨standard input⁩:38
+#: ⁨standard input⁩:39 ⁨standard input⁩:59
 msgid "Close"
 msgstr "Fermer"
 
@@ -723,8 +726,8 @@ msgstr "Couleur"
 msgid "Coming"
 msgstr "A venir"
 
-#: ⁨standard input⁩:46 ⁨standard input⁩:81 ⁨standard input⁩:96 ⁨standard input⁩:113
-#: ⁨standard input⁩:52
+#: ⁨standard input⁩:46 ⁨standard input⁩:81 ⁨standard input⁩:96 ⁨standard
+#: input⁩:113 ⁨standard input⁩:52
 msgid "Comment"
 msgstr "Commentaire"
 
@@ -835,9 +838,9 @@ msgstr "Continuer une métademande"
 #: tests/ExportImportSummaryTest.php:494 src/Export.php:2016
 msgid "Contract type of the Resources plugin"
 msgid_plural "Contract types of the Resources plugin"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Type de contrat du plugin Ressources"
+msgstr[1] "Types de contrats du plugin Ressources"
+msgstr[2] "Types de contrats du plugin Ressources"
 
 #: tests/ExportImportSummaryTest.php:497 src/Export.php:1990
 #, php-format
@@ -845,6 +848,8 @@ msgid ""
 "Contract types of the Resources plugin already leading to another meta-"
 "demand here, which they keep leading to: %s"
 msgstr ""
+"Les types de contrats du plugin Resources entraînent déjà une autre méta-"
+"demande ici, qui continue de mener à : %s"
 
 #: tests/ExportImportSummaryTest.php:581 src/Export.php:1996
 #, php-format
@@ -852,6 +857,8 @@ msgid ""
 "Contract types of the Resources plugin found by their id, the file coming "
 "from a previous version of the plugin: %s"
 msgstr ""
+"Types de contrats du plugin Resources trouvés par leur identifiant, le "
+"fichier provenant d'une version précédente du plugin : %s"
 
 #: tests/ExportImportSummaryTest.php:546 src/Export.php:1984
 #: src/Export.php:3030
@@ -860,6 +867,8 @@ msgid ""
 "Contract types of the Resources plugin not found here, their links are not "
 "imported: %s"
 msgstr ""
+"Les types de contrats du plugin Resources ne se trouvent pas ici, leurs "
+"liens ne sont pas importés :%s"
 
 #: ⁨standard input⁩:51
 msgid "ContractType"
@@ -945,7 +954,8 @@ msgid "Data imported successfully"
 msgstr "Données importées avec succès"
 
 #: src/Fields/Date.php:53 src/Freetablefield.php:224 ⁨standard input⁩:63
-#: ⁨standard input⁩:69 ⁨standard input⁩:46 ⁨standard input⁩:47 ⁨standard input⁩:41
+#: ⁨standard input⁩:69 ⁨standard input⁩:46 ⁨standard input⁩:47 ⁨standard
+#: input⁩:41
 msgid "Date"
 msgid_plural "Dates"
 msgstr[0] "Date"
@@ -991,8 +1001,8 @@ msgstr "Date supérieure ou égale à maintenant"
 msgid "Default (%s)"
 msgstr "Defaut (%s)"
 
-#: src/Fields/Yesno.php:169 src/Fields/Dropdownmultiple.php:434
-#: ⁨standard input⁩:36 ⁨standard input⁩:39 ⁨standard input⁩:122 ⁨standard input⁩:60
+#: src/Fields/Yesno.php:169 src/Fields/Dropdownmultiple.php:434 ⁨standard
+#: input⁩:36 ⁨standard input⁩:39 ⁨standard input⁩:122 ⁨standard input⁩:60
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] "Valeur par défaut"
@@ -1034,15 +1044,16 @@ msgctxt "button"
 msgid "Delete draft"
 msgstr "Supprimer le brouillon"
 
-#: ⁨standard input⁩:118 ⁨standard input⁩:40 ⁨standard input⁩:41 ⁨standard input⁩:45
+#: ⁨standard input⁩:118 ⁨standard input⁩:40 ⁨standard input⁩:41 ⁨standard
+#: input⁩:45
 msgctxt "button"
 msgid "Delete form"
 msgstr "Supprimer le formulaire"
 
-#: ⁨standard input⁩:86 ⁨standard input⁩:119 ⁨standard input⁩:42 ⁨standard input⁩:351
-#: ⁨standard input⁩:344 ⁨standard input⁩:129 ⁨standard input⁩:103 ⁨standard input⁩:104
-#: ⁨standard input⁩:71 ⁨standard input⁩:146 ⁨standard input⁩:148 ⁨standard input⁩:35
-#: ⁨standard input⁩:153 ⁨standard input⁩:155
+#: ⁨standard input⁩:86 ⁨standard input⁩:119 ⁨standard input⁩:42 ⁨standard
+#: input⁩:351 ⁨standard input⁩:344 ⁨standard input⁩:129 ⁨standard input⁩:103
+#: ⁨standard input⁩:104 ⁨standard input⁩:71 ⁨standard input⁩:146 ⁨standard
+#: input⁩:148 ⁨standard input⁩:35 ⁨standard input⁩:153 ⁨standard input⁩:155
 msgctxt "button"
 msgid "Delete permanently"
 msgstr "Supprimer définitivement"
@@ -1086,8 +1097,8 @@ msgstr "Suivi de la demande"
 msgid "Departure date"
 msgstr "Date de départ"
 
-#: ⁨standard input⁩:50 ⁨standard input⁩:82 ⁨standard input⁩:47 ⁨standard input⁩:53
-#: ⁨standard input⁩:59 ⁨standard input⁩:41
+#: ⁨standard input⁩:50 ⁨standard input⁩:82 ⁨standard input⁩:47 ⁨standard
+#: input⁩:53 ⁨standard input⁩:59 ⁨standard input⁩:41
 msgid "Description"
 msgstr "Description"
 
@@ -1115,7 +1126,8 @@ msgid "Devices own by my groups"
 msgstr "Matériels appartenant à mes groupes"
 
 #: ⁨standard input⁩:68
-msgid "Did you know that there is an FAQ article that may be able to help you?"
+msgid ""
+"Did you know that there is an FAQ article that may be able to help you?"
 msgstr ""
 "Savez-vous qu'il existe un article de la FAQ qui peut peut-être vous aider ?"
 
@@ -1159,8 +1171,8 @@ msgstr "Afficher ce bloc caché dans le même bloc"
 msgid "Display this hidden field"
 msgstr "Afficher ce champ caché"
 
-#: ⁨standard input⁩:57 ⁨standard input⁩:76 ⁨standard input⁩:64 ⁨standard input⁩:77
-#: ⁨standard input⁩:46 ⁨standard input⁩:51
+#: ⁨standard input⁩:57 ⁨standard input⁩:76 ⁨standard input⁩:64 ⁨standard
+#: input⁩:77 ⁨standard input⁩:46 ⁨standard input⁩:51
 msgid "Display type of the field"
 msgstr "Type d'affichage du champ"
 
@@ -1181,7 +1193,8 @@ msgstr "Voulez-vous les corriger ?"
 msgctxt "button"
 msgid "Do you want to fix them ? Warning you must check your options after!"
 msgstr ""
-"Voulez-vous les corriger ? Attention vous devrez vérifier les options après !"
+"Voulez-vous les corriger ? Attention vous devrez vérifier les options après "
+"!"
 
 #: ⁨standard input⁩:44
 msgid "Do you want to see him ?"
@@ -1227,8 +1240,8 @@ msgid ""
 "basket listing this type."
 msgstr ""
 "Glissez-déposez les références pour modifier leur ordre dans le panier ; la "
-"modification est enregistrée instantanément. Cet ordre s’applique à tous les "
-"paniers listant ce type d’articles."
+"modification est enregistrée instantanément. Cet ordre s’applique à tous les"
+" paniers listant ce type d’articles."
 
 #: ⁨standard input⁩:80
 msgid "Drag and drop to reorder"
@@ -1313,23 +1326,22 @@ msgid ""
 "Enter adds a value, a pasted list gives one value per line. They can be "
 "changed afterwards."
 msgstr ""
-"La touche Entrée ajoute une valeur ; une liste collée affiche une valeur par "
-"ligne. Ces valeurs peuvent être modifiées ultérieurement."
+"La touche Entrée ajoute une valeur ; une liste collée affiche une valeur par"
+" ligne. Ces valeurs peuvent être modifiées ultérieurement."
 
-#: ⁨standard input⁩:173 ⁨standard input⁩:179 ⁨standard input⁩:49 ⁨standard input⁩:50
-#: ⁨standard input⁩:56 ⁨standard input⁩:57
+#: ⁨standard input⁩:173 ⁨standard input⁩:179 ⁨standard input⁩:49 ⁨standard
+#: input⁩:50 ⁨standard input⁩:56 ⁨standard input⁩:57
 msgid "Enter translation"
 msgstr "Entrer la traduction"
 
-#: ⁨standard input⁩:62 ⁨standard input⁩:64 ⁨standard input⁩:63 ⁨standard input⁩:126
-#: ⁨standard input⁩:74 ⁨standard input⁩:182 ⁨standard input⁩:58 ⁨standard input⁩:100
-#: ⁨standard input⁩:93
-#, fuzzy
+#: ⁨standard input⁩:62 ⁨standard input⁩:64 ⁨standard input⁩:63 ⁨standard
+#: input⁩:126 ⁨standard input⁩:74 ⁨standard input⁩:182 ⁨standard input⁩:58
+#: ⁨standard input⁩:100 ⁨standard input⁩:93
 msgid "Entity"
 msgid_plural "Entities"
 msgstr[0] "Entité"
-msgstr[1] "Entité"
-msgstr[2] "Entité"
+msgstr[1] "Entités"
+msgstr[2] "Entités"
 
 #: ⁨standard input⁩:98 ⁨standard input⁩:72 ⁨standard input⁩:44
 msgid "Equality operator"
@@ -1399,10 +1411,10 @@ msgstr "Échec de la vérification de l'intégrité des tables !"
 msgid "Father's field"
 msgstr "Champ père"
 
-#: tests/ExportImportSummaryTest.php:226 src/Export.php:2004 ⁨standard input⁩:72
-#: ⁨standard input⁩:108 ⁨standard input⁩:145 ⁨standard input⁩:96 ⁨standard input⁩:124
-#: ⁨standard input⁩:205 ⁨standard input⁩:103 ⁨standard input⁩:67 ⁨standard input⁩:36
-#: ⁨standard input⁩:51 ⁨standard input⁩:39
+#: tests/ExportImportSummaryTest.php:226 src/Export.php:2004 ⁨standard
+#: input⁩:72 ⁨standard input⁩:108 ⁨standard input⁩:145 ⁨standard input⁩:96
+#: ⁨standard input⁩:124 ⁨standard input⁩:205 ⁨standard input⁩:103 ⁨standard
+#: input⁩:67 ⁨standard input⁩:36 ⁨standard input⁩:51 ⁨standard input⁩:39
 msgid "Field"
 msgid_plural "Fields"
 msgstr[0] "Champ"
@@ -1422,14 +1434,15 @@ msgstr "Informations du champ"
 msgid "Field name"
 msgstr "Nom du champ"
 
-#: ⁨standard input⁩:89 ⁨standard input⁩:47 ⁨standard input⁩:70 ⁨standard input⁩:42
+#: ⁨standard input⁩:89 ⁨standard input⁩:47 ⁨standard input⁩:70 ⁨standard
+#: input⁩:42
 msgid "Field type"
 msgstr "Type de champ"
 
 #: tests/ExportImportSummaryTest.php:289 src/Export.php:1883
 #, php-format
 msgid "Fields of a type unknown here, a plugin may be missing: %s"
-msgstr ""
+msgstr "Champs de type inconnu ici, un plugin est peut-être manquant : %s"
 
 #: tests/ExportFieldLinksTest.php:320 src/Export.php:1938 src/Export.php:3115
 #, php-format
@@ -1439,7 +1452,7 @@ msgstr "Champs du ticket non importés, aucun élément de ce nom ici : %s"
 #: tests/ExportImportSummaryTest.php:290 src/Export.php:1889
 #, php-format
 msgid "Fields on objects unknown here, a plugin may be missing: %s"
-msgstr ""
+msgstr "Champs des objets inconnus ici, un plugin est peut-être manquant : %s"
 
 #: ⁨standard input⁩:172
 msgid "Fields to complete"
@@ -1447,7 +1460,7 @@ msgstr "Champs à completer"
 
 #: ⁨standard input⁩:51
 msgid "File"
-msgstr ""
+msgstr "Fichier"
 
 #: src/Field.php:1353
 msgid "Files and advanced"
@@ -1571,7 +1584,8 @@ msgstr "Total général (HT)"
 msgid "Grand total (TTC)"
 msgstr "Total général (TTC)"
 
-#: ⁨standard input⁩:75 ⁨standard input⁩:50 ⁨standard input⁩:128 ⁨standard input⁩:49
+#: ⁨standard input⁩:75 ⁨standard input⁩:50 ⁨standard input⁩:128 ⁨standard
+#: input⁩:49
 msgid "Group"
 msgstr "Groupe"
 
@@ -1726,22 +1740,22 @@ msgid ""
 "approves them"
 msgstr ""
 "Si la valeur sélectionnée correspond à la valeur à vérifier, les tickets "
-"enfants liés à cette valeur ne sont créés qu'une fois que chaque utilisateur "
-"sélectionné dans ces champs les a approuvés."
+"enfants liés à cette valeur ne sont créés qu'une fois que chaque utilisateur"
+" sélectionné dans ces champs les a approuvés."
 
 #: src/FieldOption.php:1469
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
-"Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient "
-"obligatoire"
+"Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient"
+" obligatoire"
 
 #: src/FieldOption.php:1529
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
-"Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient "
-"visible"
+"Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient"
+" visible"
 
 #: src/FieldOption.php:1434
 msgid "If the value selected equals the value to check, the task is created"
@@ -1782,7 +1796,8 @@ msgctxt "status"
 msgid "In progress"
 msgstr "En cours"
 
-#: ⁨standard input⁩:168 ⁨standard input⁩:285 ⁨standard input⁩:288 ⁨standard input⁩:291
+#: ⁨standard input⁩:168 ⁨standard input⁩:285 ⁨standard input⁩:288 ⁨standard
+#: input⁩:291
 msgid "Inactive"
 msgstr "Inactif"
 
@@ -1794,8 +1809,8 @@ msgstr "Information"
 msgid "Informations"
 msgstr "Informations"
 
-#: src/Fields/Dropdownobject.php:751 src/FieldParameter.php:792
-#: ⁨standard input⁩:72
+#: src/Fields/Dropdownobject.php:751 src/FieldParameter.php:792 ⁨standard
+#: input⁩:72
 msgid "Informations to display in ticket and PDF"
 msgstr "Informations à afficher dans les tickets et dans le PDF"
 
@@ -1955,8 +1970,9 @@ msgctxt "button"
 msgid "Load draft"
 msgstr "Charger le brouillon"
 
-#: ⁨standard input⁩:100 ⁨standard input⁩:49 ⁨standard input⁩:38 ⁨standard input⁩:51
-#: ⁨standard input⁩:61 ⁨standard input⁩:59 ⁨standard input⁩:37 ⁨standard input⁩:54
+#: ⁨standard input⁩:100 ⁨standard input⁩:49 ⁨standard input⁩:38 ⁨standard
+#: input⁩:51 ⁨standard input⁩:61 ⁨standard input⁩:59 ⁨standard input⁩:37
+#: ⁨standard input⁩:54
 msgctxt "button"
 msgid "Load form"
 msgstr "Charger le formulaire"
@@ -1965,7 +1981,8 @@ msgstr "Charger le formulaire"
 msgid "Loading..."
 msgstr "Chargement.."
 
-#: src/Condition.php:594 ⁨standard input⁩:95 ⁨standard input⁩:65 ⁨standard input⁩:37
+#: src/Condition.php:594 ⁨standard input⁩:95 ⁨standard input⁩:65 ⁨standard
+#: input⁩:37
 msgid "Logical operator"
 msgstr "Opérateur logique"
 
@@ -1993,8 +2010,8 @@ msgstr "Rendre obligatoire ou facultatif"
 msgid "Make this field mandatory"
 msgstr "Rendre ce champ obligatoire"
 
-#: src/Field.php:3356 ⁨standard input⁩:298 ⁨standard input⁩:302 ⁨standard input⁩:305
-#: ⁨standard input⁩:89 ⁨standard input⁩:122
+#: src/Field.php:3356 ⁨standard input⁩:298 ⁨standard input⁩:302 ⁨standard
+#: input⁩:305 ⁨standard input⁩:89 ⁨standard input⁩:122
 msgid "Mandatory"
 msgstr "Obligatoire"
 
@@ -2025,7 +2042,8 @@ msgid "Message sent to a user or a group"
 msgstr "Message envoyé à un utilisateur ou à un groupe"
 
 #: setup.php:322 src/Menu.php:47 src/Metademand.php:134 src/Profile.php:153
-#: src/Config.php:75 ⁨standard input⁩:73 ⁨standard input⁩:109 ⁨standard input⁩:146
+#: src/Config.php:75 ⁨standard input⁩:73 ⁨standard input⁩:109 ⁨standard
+#: input⁩:146
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] "Meta-Demande"
@@ -2056,8 +2074,8 @@ msgstr "La métademande nécessite une validation"
 msgid "Metademand status"
 msgstr "Statut de la métademande"
 
-#: src/MetademandValidation.php:76 src/MetademandValidation.php:574
-#: ⁨standard input⁩:33 ⁨standard input⁩:36 ⁨standard input⁩:37 ⁨standard input⁩:43
+#: src/MetademandValidation.php:76 src/MetademandValidation.php:574 ⁨standard
+#: input⁩:33 ⁨standard input⁩:36 ⁨standard input⁩:37 ⁨standard input⁩:43
 msgid "Metademand validation"
 msgstr "Validation de la métademande"
 
@@ -2138,9 +2156,10 @@ msgstr "Mes métademandes"
 msgid "My values"
 msgstr "Valeurs personnalisées"
 
-#: ⁨standard input⁩:60 ⁨standard input⁩:79 ⁨standard input⁩:54 ⁨standard input⁩:68
-#: ⁨standard input⁩:35 ⁨standard input⁩:41 ⁨standard input⁩:51 ⁨standard input⁩:47
-#: ⁨standard input⁩:52 ⁨standard input⁩:45 ⁨standard input⁩:57 ⁨standard input⁩:40
+#: ⁨standard input⁩:60 ⁨standard input⁩:79 ⁨standard input⁩:54 ⁨standard
+#: input⁩:68 ⁨standard input⁩:35 ⁨standard input⁩:41 ⁨standard input⁩:51
+#: ⁨standard input⁩:47 ⁨standard input⁩:52 ⁨standard input⁩:45 ⁨standard
+#: input⁩:57 ⁨standard input⁩:40
 msgid "Name"
 msgstr "Nom"
 
@@ -2216,7 +2235,7 @@ msgstr "Pas d'équipement trouvé"
 
 #: ⁨standard input⁩:113
 msgid "No error found: the file can be imported"
-msgstr ""
+msgstr "Aucune erreur détectée : le fichier peut être importé"
 
 #: src/Wizard.php:784 ⁨standard input⁩:53 ⁨standard input⁩:63
 msgid "No existing forms founded"
@@ -2225,6 +2244,8 @@ msgstr "Pas de formulaires existants trouvé"
 #: tests/ExportImportSummaryTest.php:351 src/Export.php:1492
 msgid "No file is waiting for its import, please select it again"
 msgstr ""
+"Aucun fichier n'est en attente d'importation, veuillez le sélectionner à "
+"nouveau"
 
 #: src/Export.php:2243 src/Export.php:2265
 msgid "No file specified"
@@ -2262,9 +2283,10 @@ msgstr "Aucune explication ne peut être fournie pour cette différence."
 msgid "No reference of this type"
 msgstr "Aucune référence de ce type"
 
-#: ⁨standard input⁩:95 ⁨standard input⁩:37 ⁨standard input⁩:91 ⁨standard input⁩:192
-#: ⁨standard input⁩:137 ⁨standard input⁩:233 ⁨standard input⁩:83 ⁨standard input⁩:58
-#: ⁨standard input⁩:99 ⁨standard input⁩:73 ⁨standard input⁩:72 ⁨standard input⁩:32
+#: ⁨standard input⁩:95 ⁨standard input⁩:37 ⁨standard input⁩:91 ⁨standard
+#: input⁩:192 ⁨standard input⁩:137 ⁨standard input⁩:233 ⁨standard input⁩:83
+#: ⁨standard input⁩:58 ⁨standard input⁩:99 ⁨standard input⁩:73 ⁨standard
+#: input⁩:72 ⁨standard input⁩:32
 msgid "No results found"
 msgstr "Pas de résultats trouvés"
 
@@ -2349,8 +2371,8 @@ msgstr "OU"
 msgid "Object"
 msgstr "Objet"
 
-#: src/Metademand.php:1868 ⁨standard input⁩:92 ⁨standard input⁩:107
-#: ⁨standard input⁩:58
+#: src/Metademand.php:1868 ⁨standard input⁩:92 ⁨standard input⁩:107 ⁨standard
+#: input⁩:58
 msgid "Object to create"
 msgstr "Objet à créer"
 
@@ -2385,7 +2407,7 @@ msgstr "Sur devis"
 
 #: ⁨standard input⁩:136
 msgid "Once the missing objects are created, check the file again"
-msgstr ""
+msgstr "Une fois les objets manquants créés, vérifiez à nouveau le fichier"
 
 #: src/Field.php:1315
 msgid "One choice among your values"
@@ -2452,7 +2474,8 @@ msgstr[0] "Option"
 msgstr[1] "Options"
 msgstr[2] "Options"
 
-#: src/Field.php:3357 ⁨standard input⁩:50 ⁨standard input⁩:299 ⁨standard input⁩:302
+#: src/Field.php:3357 ⁨standard input⁩:50 ⁨standard input⁩:299 ⁨standard
+#: input⁩:302
 msgid "Optional"
 msgstr "Optionnel"
 
@@ -2553,7 +2576,8 @@ msgstr "Merci de fournir un fichier CSV valide"
 msgid "Plugin setup"
 msgstr "Configuration du plugin"
 
-#: src/Condition.php:585 ⁨standard input⁩:82 ⁨standard input⁩:77 ⁨standard input⁩:49
+#: src/Condition.php:585 ⁨standard input⁩:82 ⁨standard input⁩:77 ⁨standard
+#: input⁩:49
 msgid "Pool"
 msgstr "Groupement"
 
@@ -2561,8 +2585,8 @@ msgstr "Groupement"
 msgid "Preview"
 msgstr "Aperçu"
 
-#: ⁨standard input⁩:95 ⁨standard input⁩:96 ⁨standard input⁩:64 ⁨standard input⁩:62
-#: ⁨standard input⁩:63 ⁨standard input⁩:98 ⁨standard input⁩:68
+#: ⁨standard input⁩:95 ⁨standard input⁩:96 ⁨standard input⁩:64 ⁨standard
+#: input⁩:62 ⁨standard input⁩:63 ⁨standard input⁩:98 ⁨standard input⁩:68
 msgid "Previous"
 msgstr "Précédent"
 
@@ -2787,11 +2811,12 @@ msgstr "Comme le titre"
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: ⁨standard input⁩:345 ⁨standard input⁩:49 ⁨standard input⁩:59 ⁨standard input⁩:34
-#: ⁨standard input⁩:35 ⁨standard input⁩:96 ⁨standard input⁩:58 ⁨standard input⁩:99
-#: ⁨standard input⁩:63 ⁨standard input⁩:136 ⁨standard input⁩:138 ⁨standard input⁩:135
-#: ⁨standard input⁩:137 ⁨standard input⁩:204 ⁨standard input⁩:206 ⁨standard input⁩:77
-#: ⁨standard input⁩:79 ⁨standard input⁩:110
+#: ⁨standard input⁩:345 ⁨standard input⁩:49 ⁨standard input⁩:59 ⁨standard
+#: input⁩:34 ⁨standard input⁩:35 ⁨standard input⁩:96 ⁨standard input⁩:58
+#: ⁨standard input⁩:99 ⁨standard input⁩:63 ⁨standard input⁩:136 ⁨standard
+#: input⁩:138 ⁨standard input⁩:135 ⁨standard input⁩:137 ⁨standard input⁩:204
+#: ⁨standard input⁩:206 ⁨standard input⁩:77 ⁨standard input⁩:79 ⁨standard
+#: input⁩:110
 msgctxt "button"
 msgid "Save"
 msgstr "Sauvegarder"
@@ -2958,8 +2983,8 @@ msgstr ""
 "Afficher la sélection du formulaire lors de la connexion et remplacer le "
 "formulaire de création"
 
-#: ⁨standard input⁩:69 ⁨standard input⁩:70 ⁨standard input⁩:84 ⁨standard input⁩:41
-#: ⁨standard input⁩:42 ⁨standard input⁩:46 ⁨standard input⁩:75
+#: ⁨standard input⁩:69 ⁨standard input⁩:70 ⁨standard input⁩:84 ⁨standard
+#: input⁩:41 ⁨standard input⁩:42 ⁨standard input⁩:46 ⁨standard input⁩:75
 msgid "Show list of available tags"
 msgstr "Afficher la liste des tags disponibles"
 
@@ -3005,7 +3030,8 @@ msgstr ""
 
 #: src/Metademand.php:7769
 msgid "Solve the parent tickets whose child tickets are all closed"
-msgstr "Résoudre les tickets parents dont tous les tickets enfants sont fermés"
+msgstr ""
+"Résoudre les tickets parents dont tous les tickets enfants sont fermés"
 
 #: ⁨standard input⁩:47
 msgid "Son ticket tag"
@@ -3015,8 +3041,8 @@ msgstr "Balise du ticket enfant"
 msgid "Specific dropdown"
 msgstr "Liste déroulante spécifique"
 
-#: ⁨standard input⁩:43 ⁨standard input⁩:42 ⁨standard input⁩:45 ⁨standard input⁩:44
-#: ⁨standard input⁩:41 ⁨standard input⁩:46 ⁨standard input⁩:47
+#: ⁨standard input⁩:43 ⁨standard input⁩:42 ⁨standard input⁩:45 ⁨standard
+#: input⁩:44 ⁨standard input⁩:41 ⁨standard input⁩:46 ⁨standard input⁩:47
 msgid "Specific parameters"
 msgstr "Paramètres spécifiques"
 
@@ -3036,8 +3062,8 @@ msgstr "Démarre un nouveau bloc du formulaire"
 msgid "Starts another metademand after this one"
 msgstr "Lance une autre métademande après celle-ci"
 
-#: ⁨standard input⁩:105 ⁨standard input⁩:45 ⁨standard input⁩:108 ⁨standard input⁩:171
-#: ⁨standard input⁩:174
+#: ⁨standard input⁩:105 ⁨standard input⁩:45 ⁨standard input⁩:108 ⁨standard
+#: input⁩:171 ⁨standard input⁩:174
 msgid "Status"
 msgstr "Statut"
 
@@ -3111,7 +3137,7 @@ msgstr "Etiquette"
 #: tests/ExportImportSummaryTest.php:296 src/Export.php:1925
 #, php-format
 msgid "Tags pointing at fields missing from the file: %s"
-msgstr ""
+msgstr "Balises pointant vers des champs manquants dans le fichier : %s"
 
 #: ⁨standard input⁩:70
 msgid "Takes the whole row"
@@ -3148,11 +3174,11 @@ msgstr "Tâches créées"
 
 #: src/Metademand.php:2206
 msgid ""
-"Tasks tree cannot be changed as unresolved related tickets exist or activate "
-"maintenance mode"
+"Tasks tree cannot be changed as unresolved related tickets exist or activate"
+" maintenance mode"
 msgstr ""
-"L'arborescence des tickets ne peut pas être modifiée car des tickets enfants "
-"existent ou activer le mode maintenance"
+"L'arborescence des tickets ne peut pas être modifiée car des tickets enfants"
+" existent ou activer le mode maintenance"
 
 #: hook.php:633
 msgid "Technician child ticket"
@@ -3193,15 +3219,19 @@ msgstr "Merci de remplir les champs requis"
 #: tests/ExportImportSummaryTest.php:456 src/Export.php:1960
 #: src/Export.php:3033
 msgid ""
-"The Resources plugin is not active here: the links to its contract types are "
-"not imported"
+"The Resources plugin is not active here: the links to its contract types are"
+" not imported"
 msgstr ""
+"Le plugin Ressources n'est pas actif ici : les liens vers ses types de "
+"contrats ne sont pas importés."
 
 #: src/Export.php:1954
 msgid ""
 "The categories of the meta-demand are not imported: choose them after the "
 "import"
 msgstr ""
+"Les catégories de la métademande ne sont pas importées : choisissez-les "
+"après l’importation."
 
 #: src/Task.php:1118 src/TicketTask.php:532 src/Metademand.php:1440
 #: src/Metademand.php:1550
@@ -3242,22 +3272,24 @@ msgstr ""
 
 #: tests/ExportImportSummaryTest.php:375 src/Export.php:1505
 msgid "The file cannot be imported, see the errors of its summary"
-msgstr ""
+msgstr "Impossible d'importer le fichier. Consultez le résumé des erreurs."
 
 #: tests/ExportImportSummaryTest.php:288 src/Export.php:1685
 #, php-format
 msgid ""
-"The file comes from a more recent version of the plugin (%1$s) than this one "
-"(%2$s): the settings unknown here are not imported"
+"The file comes from a more recent version of the plugin (%1$s) than this one"
+" (%2$s): the settings unknown here are not imported"
 msgstr ""
+"Le fichier provient d'une version plus récente du plugin (%1$s) que celle-ci"
+" (%2$s) : les paramètres inconnus ici ne sont pas importés."
 
 #: tests/ExportImportSummaryTest.php:314 src/Export.php:1657
 msgid "The file does not give the object the meta-demand creates"
-msgstr ""
+msgstr "Le fichier ne fournit pas l'objet créé par la métademande"
 
 #: tests/ExportImportSummaryTest.php:325 src/Export.php:1600
 msgid "The file is not a meta-demand export"
-msgstr ""
+msgstr "Le fichier n'est pas une exportation de métademande"
 
 #: tests/ExportImportSummaryTest.php:330 src/Export.php:1594
 #: src/Export.php:2285
@@ -3270,15 +3302,16 @@ msgid ""
 "expected schema: data will be lost. Check that they are not used by another "
 "plugin or by a custom development before running them."
 msgstr ""
-"Les requêtes suivantes suppriment des colonnes ou des tables qui ne font pas "
-"partie du schéma attendu : des données seront perdues. Avant de les "
-"exécuter, vérifiez qu’elles ne sont pas utilisées par un autre plugin ou par "
-"un développement personnalisé."
+"Les requêtes suivantes suppriment des colonnes ou des tables qui ne font pas"
+" partie du schéma attendu : des données seront perdues. Avant de les "
+"exécuter, vérifiez qu’elles ne sont pas utilisées par un autre plugin ou par"
+" un développement personnalisé."
 
 #: front/nextGroup.form.php:88
 #, php-format
 msgid "The form has been sent to the group %s, you can close the window"
-msgstr "Le formulaire a été envoyé au groupe %s, vous pouvez fermer la fenêtre"
+msgstr ""
+"Le formulaire a été envoyé au groupe %s, vous pouvez fermer la fenêtre"
 
 #: front/nextGroup.form.php:82
 #, php-format
@@ -3307,15 +3340,15 @@ msgstr "L'opérateur logique de la première condition n'est pas utilisé."
 #: tests/ExportImportSummaryTest.php:311 src/Export.php:1658
 #, php-format
 msgid "The meta-demand creates an unknown object: %s"
-msgstr ""
+msgstr "La métademande crée un objet inconnu :%s"
 
 #: src/Export.php:1692
 msgid "The meta-demand of the file has no field"
-msgstr ""
+msgstr "La métademande du fichier ne comporte aucun champ"
 
 #: src/Export.php:1668
 msgid "The meta-demand of the file has no name"
-msgstr ""
+msgstr "La métademande du fichier n' pas de nom"
 
 #: src/MetademandValidation.php:547
 msgid "The metademand is validated and affected"
@@ -3345,8 +3378,8 @@ msgid ""
 msgstr ""
 "Les requêtes ci-dessous ne sont que des suggestions basées sur les "
 "différences constatées. Veuillez les examiner, sauvegarder votre base de "
-"données, puis les exécuter manuellement : elles ne sont jamais exécutées par "
-"l’extension."
+"données, puis les exécuter manuellement : elles ne sont jamais exécutées par"
+" l’extension."
 
 #: ⁨standard input⁩:49
 msgid ""
@@ -3372,8 +3405,8 @@ msgid ""
 "The requester chosen cannot be selected: the demand is made for the default "
 "requester."
 msgstr ""
-"Le demandeur choisi ne peut pas être sélectionné : la demande est faite pour "
-"le demandeur par défaut."
+"Le demandeur choisi ne peut pas être sélectionné : la demande est faite pour"
+" le demandeur par défaut."
 
 #: src/FieldOption.php:1484
 msgid "The rules of the escalade plugin will not be taken into account."
@@ -3384,8 +3417,8 @@ msgid ""
 "The ticket cannot be resolved or closed until all child tickets are not "
 "resolved"
 msgstr ""
-"Le ticket ne peut pas être résolu ou fermé tant que tous les tickets enfants "
-"ne sont pas résolus."
+"Le ticket ne peut pas être résolu ou fermé tant que tous les tickets enfants"
+" ne sont pas résolus."
 
 #: ⁨standard input⁩:48
 msgid "The user must select a defined user of the selected groups"
@@ -3399,6 +3432,9 @@ msgid ""
 "the step groups are kept by their id: check them after the import if the "
 "file comes from another GLPI"
 msgstr ""
+"Les utilisateurs, les groupes et les catégories des objets enfants, les "
+"validateurs et les groupes d'étapes sont conservés par leur identifiant : "
+"vérifiez-les après l'importation si le fichier provient d'un autre GLPI."
 
 #: src/Metademand.php:5043
 msgid ""
@@ -3452,7 +3488,8 @@ msgstr "Il y a eu un problème au chargement de votre signature"
 #: src/Wizard.php:1794
 msgid "There was a problem. The step-by-step mode configuration was reset"
 msgstr ""
-"Il y a eu un problème. La configuration du mode Pas à Pas a été réinitialisée"
+"Il y a eu un problème. La configuration du mode Pas à Pas a été "
+"réinitialisée"
 
 #: src/Wizard.php:1544
 msgid "These fields don\\'t respect regex"
@@ -3640,9 +3677,9 @@ msgstr "Traductions: %s"
 msgid "Two-way choice, buttons or switch"
 msgstr "2 Choix : boutons ou interrupteur"
 
-#: ⁨standard input⁩:139 ⁨standard input⁩:236 ⁨standard input⁩:122 ⁨standard input⁩:97
-#: ⁨standard input⁩:45 ⁨standard input⁩:56 ⁨standard input⁩:53 ⁨standard input⁩:43
-#: ⁨standard input⁩:79
+#: ⁨standard input⁩:139 ⁨standard input⁩:236 ⁨standard input⁩:122 ⁨standard
+#: input⁩:97 ⁨standard input⁩:45 ⁨standard input⁩:56 ⁨standard input⁩:53
+#: ⁨standard input⁩:43 ⁨standard input⁩:79
 msgid "Type"
 msgid_plural "Types"
 msgstr[0] "Type"
@@ -3653,7 +3690,8 @@ msgstr[2] "Types"
 msgid "Type of value to check"
 msgstr "Type de valeur à vérifier"
 
-#: ⁨standard input⁩:169 ⁨standard input⁩:70 ⁨standard input⁩:48 ⁨standard input⁩:42
+#: ⁨standard input⁩:169 ⁨standard input⁩:70 ⁨standard input⁩:48 ⁨standard
+#: input⁩:42
 msgid "URL"
 msgstr "URL"
 
@@ -3679,7 +3717,7 @@ msgstr "Prix unitaire (HT)"
 
 #: tests/FreetablePdfTest.php:166 src/MetademandPdf.php:744
 msgid "Unit price (TTC)"
-msgstr ""
+msgstr "Prix unitaire (TTC)"
 
 #: ⁨standard input⁩:31
 msgid "Unknown table"
@@ -3727,8 +3765,8 @@ msgstr "Utiliser une popup de vérification pour les valeurs vides"
 msgid "Use as basket"
 msgstr "Utiliser comme un panier"
 
-#: ⁨standard input⁩:93 ⁨standard input⁩:98 ⁨standard input⁩:211 ⁨standard input⁩:218
-#: ⁨standard input⁩:200
+#: ⁨standard input⁩:93 ⁨standard input⁩:98 ⁨standard input⁩:211 ⁨standard
+#: input⁩:218 ⁨standard input⁩:200
 msgid "Use block"
 msgstr "Utiliser les blocs"
 
@@ -3738,7 +3776,8 @@ msgstr "Utiliser les brouillons"
 
 #: src/Fields/Dropdownobject.php:731 ⁨standard input⁩:64
 msgid "Use id of requester by default"
-msgstr "Utiliser le demandeur en utilisateur par défaut de la liste déroulante"
+msgstr ""
+"Utiliser le demandeur en utilisateur par défaut de la liste déroulante"
 
 #: src/Fields/Dropdownobject.php:732 ⁨standard input⁩:67
 msgid "Use id of supervisor requester by default"
@@ -3782,7 +3821,8 @@ msgstr "Information de l'utilisateur à récupérer"
 msgid "User, group, asset, ticket…"
 msgstr "Utilisateur, groupe, actif, ticket…"
 
-#: ⁨standard input⁩:61 ⁨standard input⁩:62 ⁨standard input⁩:41 ⁨standard input⁩:42
+#: ⁨standard input⁩:61 ⁨standard input⁩:62 ⁨standard input⁩:41 ⁨standard
+#: input⁩:42
 msgctxt "button"
 msgid "Validate"
 msgstr "Valider"
@@ -3822,8 +3862,8 @@ msgstr "Validation des tickets enfants : %s"
 msgid ""
 "Validation request deleted, the held child tickets will not be created: %s"
 msgstr ""
-"Demande de validation supprimée, les tickets enfants concernés ne seront pas "
-"créés : %s"
+"Demande de validation supprimée, les tickets enfants concernés ne seront pas"
+" créés : %s"
 
 #: src/FieldOption.php:1331 src/FieldOption.php:1343 ⁨standard input⁩:35
 #: ⁨standard input⁩:64 ⁨standard input⁩:49
@@ -3843,7 +3883,8 @@ msgstr "Valeur lue à partir d'un annuaire LDAP"
 #: src/Fields/Yesno.php:227 src/Fields/Dropdownobject.php:810
 #: src/Fields/Dropdownmultiple.php:537 src/Fields/Radio.php:225
 #: src/Fields/Checkbox.php:214 src/Condition.php:577 ⁨standard input⁩:99
-#: ⁨standard input⁩:132 ⁨standard input⁩:318 ⁨standard input⁩:75 ⁨standard input⁩:47
+#: ⁨standard input⁩:132 ⁨standard input⁩:318 ⁨standard input⁩:75 ⁨standard
+#: input⁩:47
 msgid "Value to check"
 msgstr "Valeur à vérifier"
 
@@ -3854,7 +3895,7 @@ msgstr "Vérifier le statut global des métademandes"
 
 #: ⁨standard input⁩:66
 msgid "Version"
-msgstr ""
+msgstr "Version"
 
 #: ⁨standard input⁩:40
 msgid "Visibility"
@@ -3912,8 +3953,8 @@ msgid ""
 "Without an illustration of its own, the one of its category, or the default "
 "one, is used"
 msgstr ""
-"En l'absence d'illustration propre, celle de sa catégorie, ou l'illustration "
-"par défaut, est utilisée."
+"En l'absence d'illustration propre, celle de sa catégorie, ou l'illustration"
+" par défaut, est utilisée."
 
 #: src/Field.php:228 src/Ticket_Field.php:57
 msgid "Wizard creation"
@@ -3953,7 +3994,8 @@ msgstr "Vous ne pouvez pas ajouter un champ sans type"
 
 #: src/Fields/Freetable.php:195
 msgid "You can't create a new line when there is an existing one"
-msgstr "Vous ne pouvez pas créer une nouvelle ligne sans valider la précédente"
+msgstr ""
+"Vous ne pouvez pas créer une nouvelle ligne sans valider la précédente"
 
 #: ⁨standard input⁩:57
 msgid "You cannot add new tasks if linked tickets are not solved"
@@ -3968,7 +4010,8 @@ msgstr "Vous ne pouvez pas faire cela pour ce champ"
 
 #: ⁨standard input⁩:194
 msgid "You cannot use this parameter if there is more than one category"
-msgstr "Vous ne pouvez pas utiliser ce paramètre s'il y a plus d'une catégorie"
+msgstr ""
+"Vous ne pouvez pas utiliser ce paramètre s'il y a plus d'une catégorie"
 
 #: src/Wizard.php:1733
 msgid "You do not have access to the form"
