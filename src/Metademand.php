@@ -916,8 +916,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     public static function toThemedForeground($color)
     {
         $color = trim((string) $color);
+        // Put into style attributes: anything but a hexadecimal colour gives no colour, a CSS
+        // declaration would pass through otherwise
         if (!preg_match('/^#[0-9A-Fa-f]{3,8}$/', $color)) {
-            return $color;
+            return '';
         }
 
         return 'color-mix(in srgb, ' . $color . ', var(--tblr-body-color) var(--md-dark-fg-mix, 0%))';
@@ -5015,24 +5017,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         }
 
         foreach ($groups as $validation_fields_ids => $group_tasks) {
-            // The validators are actors of the ticket chosen by the submitter: same
-            // revalidation as the approver of the parent ticket (used_by_ticket 59). A
-            // multiple user field gives several of them; one user in two fields validates once.
-            $validators = [];
-            foreach (array_map('intval', explode(',', (string) $validation_fields_ids)) as $validation_fields_id) {
-                $field_params = $form[$validation_fields_id] ?? [];
-                $field        = Field::getCachedField($validation_fields_id);
-                if ($field !== null) {
-                    $field_params = array_merge($field_params, Field::getAllParamsFromField($field));
-                }
-                $validators = array_merge($validators, self::filterActorValues(
-                    $values[$validation_fields_id] ?? 0,
-                    User::class,
-                    $field_params,
-                ));
-            }
-            $validators = array_values(array_unique($validators));
+            $validators = self::getAcceptedValidators(explode(',', (string) $validation_fields_ids), $values, $form);
 
+            // Never created before their validation: without any validator accepted (the
+            // submitter decides that one), or when it cannot be requested, they are left out
+            // and the parent ticket says so (FieldValidation::checkSubmittedValidators()
+            // refuses such a submission beforehand)
             if ($validators === []
                 || !FieldValidation::hold(
                     $parent_tickets_id,
@@ -5045,18 +5035,49 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $input_field_main,
                     $as_tasks,
                 )) {
+                FieldValidation::recordNotCreated($parent_tickets_id, $group_tasks);
                 Session::addMessageAfterRedirect(
-                    __('The validation of some child tickets could not be requested: they have been created without validation.', 'metademands'),
+                    __('The validation of some child tickets could not be requested: they have not been created.', 'metademands'),
                     false,
-                    WARNING,
+                    ERROR,
                 );
-                continue;
             }
 
             $tasks = array_diff_key($tasks, $group_tasks);
         }
 
         return $tasks;
+    }
+
+    /**
+     * Validators chosen in validator fields: actors of the ticket chosen by the submitter, with
+     * the same revalidation as the approver of the parent ticket (used_by_ticket 59), the users
+     * the pickers offered (filterActorValues()). A multiple user field gives several of them;
+     * one user in two fields validates once.
+     *
+     * @param array<int|string> $validation_fields_ids
+     * @param array<mixed>      $values                posted values, by field id
+     * @param array<mixed>      $form                  fields of the form, by id
+     *
+     * @return list<int>
+     */
+    public static function getAcceptedValidators(array $validation_fields_ids, array $values, array $form = []): array
+    {
+        $validators = [];
+        foreach (array_map('intval', $validation_fields_ids) as $validation_fields_id) {
+            $field_params = $form[$validation_fields_id] ?? [];
+            $field        = Field::getCachedField($validation_fields_id);
+            if ($field !== null) {
+                $field_params = array_merge($field_params, Field::getAllParamsFromField($field));
+            }
+            $validators = array_merge($validators, self::filterActorValues(
+                $values[$validation_fields_id] ?? 0,
+                User::class,
+                $field_params,
+            ));
+        }
+
+        return array_values(array_unique($validators));
     }
 
     /**

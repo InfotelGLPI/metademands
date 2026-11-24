@@ -318,7 +318,8 @@ class ExportFieldLinksTest extends DbTestCase
         $this->hasSessionMessages(WARNING, [
             sprintf(
                 __('Fields of the ticket not imported, no item of that name here: %s', 'metademands'),
-                Group::getTypeName(1) . ' "' . $group_name . '"',
+                // The names of the file are escaped: the messages are displayed as HTML
+                htmlescape(Group::getTypeName(1) . ' "' . $group_name . '"'),
             ),
         ]);
     }

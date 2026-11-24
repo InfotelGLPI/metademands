@@ -700,7 +700,8 @@ class Export extends CommonDBTM
             Session::addMessageAfterRedirect(
                 sprintf(
                     __('Destinations not exported, a metademand creating child tickets only: %s', 'metademands'),
-                    implode(', ', $skipped),
+                    // The messages are displayed as HTML: the names are escaped
+                    implode(', ', array_map('htmlescape', $skipped)),
                 ),
                 false,
                 WARNING,
@@ -3480,7 +3481,8 @@ class Export extends CommonDBTM
                 getItemForItemtype(ContractType::class) instanceof CommonDBTM
                     ? sprintf(
                         __('Contract types of the Resources plugin not found here, their links are not imported: %s', 'metademands'),
-                        implode(', ', $contracttypes_not_found),
+                        // Names read from the file, the messages being displayed as HTML
+                        implode(', ', array_map('htmlescape', $contracttypes_not_found)),
                     )
                     : __('The Resources plugin is not active here: the links to its contract types are not imported', 'metademands'),
                 false,
@@ -3565,7 +3567,8 @@ class Export extends CommonDBTM
             Session::addMessageAfterRedirect(
                 sprintf(
                     __('Fields of the ticket not imported, no item of that name here: %s', 'metademands'),
-                    implode(', ', $not_found),
+                    // Names read from the file, the messages being displayed as HTML
+                    implode(', ', array_map('htmlescape', $not_found)),
                 ),
                 false,
                 WARNING,
@@ -3575,7 +3578,8 @@ class Export extends CommonDBTM
             Session::addMessageAfterRedirect(
                 sprintf(
                     __('Groups left out of "Members of these groups", no group of that name here: %s', 'metademands'),
-                    implode(', ', array_unique($groups_not_found)),
+                    // Names read from the file, the messages being displayed as HTML
+                    implode(', ', array_map('htmlescape', array_unique($groups_not_found))),
                 ),
                 false,
                 WARNING,
