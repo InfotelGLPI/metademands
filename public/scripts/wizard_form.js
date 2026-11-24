@@ -152,7 +152,9 @@
             updateActiveTab(hash.replace('#block', ''));
         } else {
             if (block_id <= 0) {
-                block_id = 1;
+                // The first tab: the information of the form (block 0) when there is one
+                const first = container.querySelector('a.tablinks[id^="ablock"]');
+                block_id = first !== null ? parseInt(first.id.replace('ablock', ''), 10) : 1;
             }
             updateActiveTab(block_id);
             sessionStorage.setItem('loadedblock', 'block' + block_id);

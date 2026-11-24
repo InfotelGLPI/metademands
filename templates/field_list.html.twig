@@ -238,13 +238,17 @@
                             </div>
                         </div>
                         <div class="collapse show" id="md-block-body-{{ panel.id }}">
-                            <div class="md-fields" data-md-fields data-md-rank="{{ panel.id }}">
+                            {#- The information of the form stays alone in its block, before the others
+                             # (Field::moveTo()): its block takes no part in the drag and drop -#}
+                            <div class="md-fields" data-md-fields data-md-rank="{{ panel.id }}"{{ panel.is_form_information ? ' data-md-fields-fixed' }}>
                                 {% for row in panel.rows %}
                                     <div class="md-field{{ row.is_active ? '' : ' md-field-inactive' }}" id="md-field-{{ row.id }}" data-md-field-id="{{ row.id }}"
                                          data-md-type="{{ row.type }}"
                                          data-md-search="{{ (row.label ~ ' ' ~ row.id ~ ' ' ~ row.type_label)|lower }}">
-                                        {% if canedit %}
+                                        {% if canedit and not panel.is_form_information %}
                                             <span class="md-grip" title="{{ __('Move', 'metademands') }}"><i class="ti ti-grip-vertical"></i></span>
+                                        {% endif %}
+                                        {% if canedit %}
                                             <span class="md-check d-none">
                                                 {# raw: massive actions, no core macro #}
                                                 {{ call('Html::getMassiveActionCheckBox', [itemtype, row.id])|raw }}
@@ -349,7 +353,7 @@
                                     </div>
                                 {% endfor %}
                             </div>
-                            {% if add is not null %}
+                            {% if add is not null and not panel.is_form_information %}
                                 <button type="button" class="md-add-here"
                                         data-md-field-add="{{ add.modal_new_id }}"
                                         data-md-field-add-url="{{ add.url_new }}"

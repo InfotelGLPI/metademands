@@ -200,7 +200,7 @@ if (isset($_POST['save_model'])) {
                                     $_POST['field'][$id] = 0;
                                 }
                             }
-                            if ($value['type'] == 'informations'
+                            if (in_array($value['type'], ['informations', 'forminformation'])
                                 || $value['type'] == 'title') {
                                 if (!isset($_POST['field'][$id])) {
                                     $_POST['field'][$id] = 0;

@@ -36,6 +36,7 @@ use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\DBAL\QuerySubQuery;
 use Glpi\RichText\RichText;
+use GlpiPlugin\Metademands\Fields\Forminformation;
 use GlpiPlugin\Servicecatalog\Category;
 use GlpiPlugin\Servicecatalog\Config as ServiceCatalogConfig;
 use Html;
@@ -1901,6 +1902,14 @@ class Wizard extends CommonDBTM
                 foreach ($allfields as $blockid => $blockfields) {
                     $i = 0;
 
+                    // The information of the form: its tab is named by its label
+                    if (self::isFormInformationBlock((int) $blockid, $blockfields)) {
+                        $information = $blockfields[array_search('forminformation', array_column($blockfields, 'type'), true)];
+                        $name = Field::displayField($information['id'], 'name') ?: (string) $information['name'];
+                        $blocks[$blockid] = trim($name) !== '' ? $name : Forminformation::getTypeName(1);
+                        continue;
+                    }
+
                     foreach ($blockfields as $value) {
                         if ($value['type'] == 'title-block' && $value['rank'] == $blockid) {
                             $i++;
@@ -2210,12 +2219,27 @@ class Wizard extends CommonDBTM
             'background_color' => Metademand::toThemedBackground($metademands->fields['background_color'] ?? ''),
             'is_preview' => $preview || $debug,
             'show_model_alert' => ($block == 1 && $use_model == 1),
+            'is_form_information' => self::isFormInformationBlock((int) $block, $line),
             'title_html' => $title_html,
             'fields_html' => $fields_html,
             'subblocks' => $subblocks_html,
         ]);
     }
 
+
+    /**
+     * The block of the information of the form, before the others: nothing to fill in it.
+     *
+     * @param int   $block
+     * @param array $line  fields of the block
+     *
+     * @return bool
+     */
+    public static function isFormInformationBlock(int $block, array $line): bool
+    {
+        return $block === Forminformation::BLOCK
+            && in_array('forminformation', array_column($line, 'type'), true);
+    }
 
     /**
      * Build the title field of a block and enrich its line with the parameters and the
@@ -2831,6 +2855,7 @@ class Wizard extends CommonDBTM
             && $value['type'] != 'title'
             && $value['type'] != 'title-block'
             && $value['type'] != 'informations'
+            && $value['type'] != 'forminformation'
             && $value['type'] != 'checkbox'
             && $value['type'] != 'radio'
             && $value['item'] != 'ITILCategory_Metademands'
@@ -3036,6 +3061,7 @@ class Wizard extends CommonDBTM
                 case 'title':
                 case 'title-block':
                 case 'informations':
+                case 'forminformation':
                 case 'link':
                 case 'basket':
                     break;

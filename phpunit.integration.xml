@@ -76,6 +76,9 @@
         <file>tests/NumberZeroValueTest.php</file>
         <file>tests/LocationLinkedUserTest.php</file>
         <file>tests/ExportImportSummaryTest.php</file>
+        <file>tests/ExportGlpiFormTest.php</file>
+        <file>tests/FormInformationTest.php</file>
+        <file>tests/FieldCommentTooltipTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

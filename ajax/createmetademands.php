@@ -402,7 +402,7 @@ if ($nofreetable == false) {
                                     $_POST['field'][$id] = "";
                                 }
                             }
-                            if ($value['type'] == 'informations'
+                            if (in_array($value['type'], ['informations', 'forminformation'])
                                 || $value['type'] == 'title') {
                                 if (!isset($_POST['field'][$id])) {
                                     $_POST['field'][$id] = 0;

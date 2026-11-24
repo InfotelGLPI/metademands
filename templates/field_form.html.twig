@@ -55,6 +55,8 @@
  #  - ajax_url, params_type, params_item: Ajax reloads driven by the "Type" dropdown
  #  - rank, rank_choices, rank_rand: "Block" dropdown, its blocks named by their title
  #  - titled_blocks:   [{rank, title}] of the blocks that already have a title (new field)
+ #  - is_form_information: the field is the information of the form (no block, no order)
+ #  - has_form_information: the metademand already has one (new field)
  #  - text_hints:      Field::getTextHints(), what the additional label and the comments become
  #  - item_selector:   options of the object selector, or null
  #  - item_fixed:      fixed object (item_fixed_name is displayed), or null
@@ -103,7 +105,9 @@
                             <div class="md-type-group-title">{{ group.label }}</div>
                             <div class="md-type-grid">
                                 {% for type_card in group.types %}
-                                    <button type="button" class="md-type-card"
+                                    {#- One information of the form per metademand (Field::prepareInputForAdd()) -#}
+                                    {% set type_taken = type_card.type == 'forminformation' and has_form_information %}
+                                    <button type="button" class="md-type-card"{{ type_taken ? ' disabled' }}
                                             data-md-type-card="{{ type_card.type }}"
                                             data-md-type-family="{{ group.key }}"
                                             data-md-type-icon="{{ type_card.icon }}"
@@ -117,6 +121,10 @@
                                             {% if type_card.type == 'title-block' %}
                                                 <span class="md-type-desc md-type-taken" data-md-type-taken hidden>
                                                     <i class="ti ti-alert-triangle me-1"></i>{{ __('This block already has a title', 'metademands') }}
+                                                </span>
+                                            {% elseif type_taken %}
+                                                <span class="md-type-desc md-type-taken">
+                                                    <i class="ti ti-alert-triangle me-1"></i>{{ __('This form already has its form information', 'metademands') }}
                                                 </span>
                                             {% endif %}
                                         </span>
@@ -249,7 +257,9 @@
                     {% endif %}
                 </div>
                 {% endif %}
-                <div class="col-6{{ is_new ? ' order-1' : '' }}">
+                {#- Not for the information of the form, alone in a block of its own before the others
+                 # (Field::prepareFormInformationInput()), hidden as well once chosen in the new field form -#}
+                <div class="col-6{{ is_new ? ' order-1' : '' }}" data-md-field-block{{ is_form_information ? ' hidden' }}>
                     <label class="form-label fw-bold">{{ __('Block', 'metademands') }}</label>
                     {#- Every block in the page, named by its title: field_type_picker.js leaves
                      # out the titled ones for a new block title -#}
@@ -287,7 +297,7 @@
                 </div>
                 {#- Not for a block title, always the first field of its block (Field::recalculateOrder()),
                  # hidden as well once chosen in the new field form (field_type_picker.js) -#}
-                {% if not is_title_block %}
+                {% if not is_title_block and not is_form_information %}
                     <div class="col-6" data-md-field-order>
                         <label class="form-label fw-bold">{{ __('Display field after', 'metademands') }}</label>
                         <span id="show_order">{% do call('Dropdown::showFromArray', ['plugin_metademands_fields_id', order.select, {'value': order.value}]) %}</span>

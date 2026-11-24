@@ -56,12 +56,13 @@ class FieldParameter extends CommonDBChild
     public static string $rightname = 'plugin_metademands';
 
     /** Field types that cannot be mandatory: nothing is typed into them */
-    public const NOT_MANDATORY_TYPES = ['title', 'title-block', 'informations', 'link'];
+    public const NOT_MANDATORY_TYPES = ['title', 'title-block', 'informations', 'forminformation', 'link'];
 
     public static $allowed_parameters_types = [
         'title',
         'title-block',
         'informations',
+        'forminformation',
         'text',
         'tel',
         'email',
@@ -393,6 +394,7 @@ class FieldParameter extends CommonDBChild
                 case 'title':
                 case 'title-block':
                 case 'informations':
+                case 'forminformation':
                 case 'text':
                 case 'tel':
                 case 'email':
@@ -452,11 +454,11 @@ class FieldParameter extends CommonDBChild
 
         $show_mandatory  = !in_array($type, self::NOT_MANDATORY_TYPES, true);
         $show_hide_title = $type !== 'title-block';
-        $show_row_display = !in_array($type, ['title', 'title-block']);
+        $show_row_display = !in_array($type, ['title', 'title-block', 'forminformation']);
         $show_is_basket  = $show_row_display && ($params['is_order'] ?? 0) == 1;
 
         $excluded_for_ticket = [
-            'title', 'title-block', 'informations', 'text', 'tel', 'email', 'url',
+            'title', 'title-block', 'informations', 'forminformation', 'text', 'tel', 'email', 'url',
             'checkbox', 'yesno', 'radio', 'number', 'range', 'basket', 'link', 'freetable',
         ];
         $show_used_by_ticket = !in_array($type, $excluded_for_ticket);
@@ -568,7 +570,7 @@ class FieldParameter extends CommonDBChild
 
         }
 
-        $excluded_for_plugin = ['title', 'title-block', 'informations', 'link', 'freetable'];
+        $excluded_for_plugin = ['title', 'title-block', 'informations', 'forminformation', 'link', 'freetable'];
         $show_plugin_fields  = !in_array($type, $excluded_for_plugin) && Plugin::isPluginActive('fields');
         $plugin_fields       = [];
         $plugin_fields_value = 0;

@@ -29,7 +29,11 @@
 
 namespace GlpiPlugin\Metademands\Tests;
 
+use Glpi\Form\QuestionType\QuestionTypeLongText;
+use Glpi\Form\QuestionType\QuestionTypeShortText;
 use Glpi\Tests\DbTestCase;
+use Glpi\Tests\FormBuilder;
+use Glpi\Tests\FormTesterTrait;
 use GlpiPlugin\Metademands\Export;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldCustomvalue;
@@ -52,6 +56,8 @@ use User;
  */
 class ExportImportSummaryTest extends DbTestCase
 {
+    use FormTesterTrait;
+
     private const SESSION_KEY = 'plugin_metademands_pending_import';
 
     /** @var string[] files written by the test */
@@ -432,6 +438,103 @@ class ExportImportSummaryTest extends DbTestCase
         $this->assertCount(1, $tasks);
         $this->assertSame(0, (int) current($tasks)['plugin_metademands_tasks_id']);
         $this->assertSame([], (new \GlpiPlugin\Metademands\MetademandTask())->find(['plugin_metademands_metademands_id' => $new_id]));
+    }
+
+    /**
+     * @return int[] blocks of the fields of a metademand, sorted
+     */
+    private function getBlocks(int $metademands_id): array
+    {
+        $blocks = array_values(array_unique(array_map(
+            'intval',
+            array_column((new Field())->find(['plugin_metademands_metademands_id' => $metademands_id]), 'rank'),
+        )));
+        sort($blocks);
+
+        return $blocks;
+    }
+
+    public function testTheBlocksOfAGlpiFormBeginAtOne(): void
+    {
+        $this->login();
+        $form = $this->createForm(
+            (new FormBuilder('Core form ' . mt_rand()))
+                ->addSection('First section')
+                ->addQuestion('Name', QuestionTypeShortText::class)
+                ->addSection('Second section')
+                ->addQuestion('Comment', QuestionTypeLongText::class),
+        );
+
+        $target = Export::exportAsXMLFromGLPI($form->getID());
+        $this->assertNotEmpty($target);
+        $xml = (string) file_get_contents($target['path']);
+        @unlink($target['path']);
+
+        // The sections ranked 0 and 1 are the blocks 1 and 2, title and question alike
+        $datas = $this->read($xml);
+        $ranks = array_map('intval', array_column($datas['metafields'], 'rank'));
+        $this->assertSame([1, 1, 2, 2], $ranks);
+        $this->assertNotContains(
+            __('The blocks of the file begin at 0, as the sections of a GLPI form: they are numbered from 1', 'metademands'),
+            Export::analyzeImportData($datas, $this->getTestRootEntity(true))['infos'],
+        );
+
+        $new_id = Export::importPendingFile($this->setPendingImport($xml));
+        $this->assertIsInt($new_id);
+        $this->assertSame([1, 2], $this->getBlocks($new_id));
+    }
+
+    public function testAPreviousExportOfAGlpiFormIsNumberedFromOne(): void
+    {
+        $this->login();
+        // As exportAsXMLFromGLPI() wrote it before: the ranks of the sections, from 0
+        $xml = $this->toXml([
+            'version'          => '3.7.3',
+            'name'             => 'Core form ' . mt_rand(),
+            'object_to_create' => 'Ticket',
+            'type'             => \Ticket::DEMAND_TYPE,
+            'metafields'       => [
+                'field1001' => ['id' => 1001, 'type' => 'title-block', 'name' => 'First section', 'rank' => 0],
+                'field11'   => ['id' => 11, 'type' => 'text', 'name' => 'Name', 'rank' => 0, 'order' => 1],
+                'field2002' => ['id' => 2002, 'type' => 'title-block', 'name' => 'Second section', 'rank' => 1],
+                'field12'   => ['id' => 12, 'type' => 'textarea', 'name' => 'Comment', 'rank' => 1, 'order' => 1],
+            ],
+        ]);
+
+        $this->assertContains(
+            __('The blocks of the file begin at 0, as the sections of a GLPI form: they are numbered from 1', 'metademands'),
+            Export::analyzeImportData($this->read($xml), $this->getTestRootEntity(true))['infos'],
+        );
+        $new_id = Export::importPendingFile($this->setPendingImport($xml));
+        $this->assertIsInt($new_id);
+        $this->assertSame([1, 2], $this->getBlocks($new_id));
+    }
+
+    public function testAFileReferringToItsBlocksIsNotRenumbered(): void
+    {
+        $this->login();
+        // An option opens the block 1: shifting the fields alone would open another block
+        $xml = $this->toXml([
+            'version'          => PLUGIN_METADEMANDS_VERSION,
+            'name'             => 'Block references ' . mt_rand(),
+            'object_to_create' => 'Ticket',
+            'type'             => \Ticket::DEMAND_TYPE,
+            'metafields'       => [
+                'field1' => ['id' => 1, 'type' => 'yesno', 'name' => 'Question', 'rank' => 0, 'order' => 1],
+                'field2' => ['id' => 2, 'type' => 'text', 'name' => 'Detail', 'rank' => 1, 'order' => 1],
+            ],
+            'metafieldoptions' => [
+                'fieldoptions1' => ['id' => 1, 'plugin_metademands_fields_id' => 1, 'check_value' => 2, 'hidden_block' => 1],
+            ],
+        ]);
+
+        $this->assertNotContains(
+            __('The blocks of the file begin at 0, as the sections of a GLPI form: they are numbered from 1', 'metademands'),
+            Export::analyzeImportData($this->read($xml), $this->getTestRootEntity(true))['infos'],
+        );
+        $new_id = Export::importPendingFile($this->setPendingImport($xml));
+        $this->assertIsInt($new_id);
+        $this->assertSame([0, 1], $this->getBlocks($new_id));
     }
 
     /**

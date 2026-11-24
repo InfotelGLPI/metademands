@@ -1706,12 +1706,13 @@ select.chained-select {
     margin-bottom: 0;
 }
 
-/* One page form: the blocks are numbered (hidden ones are not counted) */
+/* One page form: the blocks are numbered (hidden ones are not counted, nor the information
+   of the form above them) */
 .md-wizard-layout .tab-nostep {
     counter-reset: md-block;
 }
 
-.md-wizard-layout .tab-nostep > [bloc-id^="bloc"] {
+.md-wizard-layout .tab-nostep > [bloc-id^="bloc"]:not([data-md-form-information]) {
     counter-increment: md-block;
 }
 

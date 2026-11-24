@@ -38,7 +38,11 @@
  */
 
 /** Types never mandatory: the "Mandatory" switch is hidden for them */
-const TITLE_TYPES = ['title', 'title-block', 'informations'];
+const TITLE_TYPES = ['title', 'title-block', 'informations', 'forminformation'];
+/** Types whose comments are their content: the additional label and the comments are unfolded */
+const INFORMATION_TYPES = ['informations', 'forminformation'];
+/** The information of the form: alone in a block of its own, before the others (Field::prepareFormInformationInput()) */
+const FORM_INFORMATION_TYPE = 'forminformation';
 /** Types whose additional label (the label of the end) is mandatory */
 const INTERVAL_TYPES = ['date_interval', 'datetime_interval'];
 /** Types whose custom values are typed in the form, see FieldCustomvalue::hasInitialValues() */
@@ -175,8 +179,13 @@ function refreshBlockTitle(form) {
     const rank_select = form.querySelector('select[name="rank"]');
     const type = form.querySelector('select[name="type"]')?.value ?? '';
     const locked = rank_select?.dataset.mdRankLocked === '1';
-    // A block title always goes first in its block (Field::recalculateOrder())
-    form.querySelector('[data-md-field-order]')?.toggleAttribute('hidden', type === 'title-block');
+    // A block title always goes first in its block (Field::recalculateOrder()), the
+    // information of the form has a block of its own
+    form.querySelector('[data-md-field-order]')?.toggleAttribute(
+        'hidden',
+        type === 'title-block' || type === FORM_INFORMATION_TYPE,
+    );
+    form.querySelector('[data-md-field-block]')?.toggleAttribute('hidden', type === FORM_INFORMATION_TYPE);
     if (rank_select instanceof HTMLSelectElement && !locked) {
         filterTitledBlocks(rank_select, type === 'title-block' ? titled.map((block) => String(block.rank)) : []);
     }
@@ -233,7 +242,7 @@ function chooseType(form, card) {
 
     form.querySelector('[data-md-new-mandatory]')?.toggleAttribute('hidden', TITLE_TYPES.includes(type));
     // The additional label of an interval is mandatory, the comments of an information are its content
-    if (INTERVAL_TYPES.includes(type) || type === 'informations') {
+    if (INTERVAL_TYPES.includes(type) || INFORMATION_TYPES.includes(type)) {
         form.querySelector('[data-md-field-more]')?.setAttribute('open', '');
     }
 

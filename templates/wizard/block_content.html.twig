@@ -33,6 +33,8 @@
  #    background_color : colour the designer picked for the whole meta-demand
  #    is_preview       : true in the designer preview and in debug mode
  #    show_model_alert : true on the first block of a form filled from a public template
+ #    is_form_information : the block of the information of the form (Fields/Forminformation.php),
+ #                       nothing to fill: no "no value" confirmation, not in the summary
  #    title_html       : title field of the block, rendered by Field::displayFieldByType()
  #    fields_html      : fields of the block, rendered by Wizard::displayBlockFields()
  #    subblocks        : list of {id, html}, the sub-blocks opened inside this block
@@ -54,7 +56,7 @@
     {%- set row_style = background ~ 'padding: 0.5rem 0.5rem;padding-top: initial;' -%}
 {%- endif -%}
 
-<div bloc-id="bloc{{ block }}" class="card tab-sc-child-{{ block }}" style="{{ frame }}{{ background }}">
+<div bloc-id="bloc{{ block }}" class="card tab-sc-child-{{ block }}" style="{{ frame }}{{ background }}"{{ is_form_information ? ' data-md-form-information' }}>
     {# raw: title field widget, rendered by Field::displayFieldByType() (getFieldInput(), §3.2) #}
     {{ title_html|raw }}
     <div class="card-body" bloc-hideid="bloc{{ block }}">

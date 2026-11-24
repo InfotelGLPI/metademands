@@ -368,7 +368,11 @@ class Step extends CommonDBChild
         ]);
 
         $field = new Field();
-        $fields = $field->find(["plugin_metademands_metademands_id" => $item->getID()]);
+        // Not the block of the information of the form, which has nothing to fill
+        $fields = $field->find([
+            'plugin_metademands_metademands_id' => $item->getID(),
+            'NOT'                               => ['type' => 'forminformation'],
+        ]);
         $blocks = [];
         $self = new self();
         foreach ($fields as $f) {
@@ -393,6 +397,7 @@ class Step extends CommonDBChild
 
         $fields = new Field();
         $cond['plugin_metademands_metademands_id'] = $item->getID();
+        $cond['NOT'] = ['type' => 'forminformation'];
         $dataf = $fields->find(
             $cond,
             ['rank', 'order'],
@@ -589,7 +594,11 @@ class Step extends CommonDBChild
         ]);
 
         $field  = new Field();
-        $fields = $field->find(['plugin_metademands_metademands_id' => $item->getID()]);
+        // Not the block of the information of the form, which has nothing to fill
+        $fields = $field->find([
+            'plugin_metademands_metademands_id' => $item->getID(),
+            'NOT'                               => ['type' => 'forminformation'],
+        ]);
         $blocks = [];
         $self   = new self();
 
@@ -1321,7 +1330,7 @@ class Step extends CommonDBChild
                                             $_POST['field'][$id] = 0;
                                         }
                                     }
-                                    if ($value['type'] == 'informations'
+                                    if (in_array($value['type'], ['informations', 'forminformation'])
                                         || $value['type'] == 'title') {
                                         if (!isset($_POST['field'][$id])) {
                                             $_POST['field'][$id] = 0;

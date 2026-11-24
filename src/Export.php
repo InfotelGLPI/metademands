@@ -37,6 +37,9 @@ use Document;
 use Entity;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use Glpi\Form\Comment;
+use Glpi\Form\Destination\FormDestination;
+use Glpi\Form\Destination\FormDestinationTicket;
 use Glpi\Form\Form;
 use Glpi\Form\QuestionType\QuestionTypeCheckbox;
 use Glpi\Form\QuestionType\QuestionTypeDateTime;
@@ -52,7 +55,7 @@ use Glpi\Form\QuestionType\QuestionTypeRequester;
 use Glpi\Form\QuestionType\QuestionTypeRequestType;
 use Glpi\Form\QuestionType\QuestionTypeShortText;
 use Glpi\Form\QuestionType\QuestionTypeUrgency;
-use Glpi\Form\Section;
+use GlpiPlugin\Metademands\Fields\Forminformation;
 use GlpiPlugin\Resources\ContractType;
 use Html;
 use Session;
@@ -437,134 +440,268 @@ class Export extends CommonDBTM
         $fields['metafieldcustoms'] = [];
         $fields['metafieldoptions'] = [];
 
-        $metafields = [];
+        // The header of the form, above its sections, becomes the information of the form
+        $header = trim((string) ($fields['header'] ?? ''));
+        unset($fields['header']);
+
+        /** @var array<string, int> $questions_by_uuid question uuid => question id (destination conditions) */
+        $questions_by_uuid = [];
+        /** @var array<int, string> $question_names */
+        $question_names = [];
+        /** @var array<int, array<string, int>> $choices question id => option key => custom value id */
+        $choices = [];
+        /** @var array<int, array<string, string>> $choice_labels question id => option key => label */
+        $choice_labels = [];
+        /** @var array<int, string> $blocks */
+        $blocks = [];
+        /** @var list<array{block: int, comment: array<string, mixed>}> $comments */
+        $comments = [];
         $secid = 0;
         foreach ($sections as $ids => $section) {
+            $secid++;
+            // The sections of a GLPI form are ranked from 0, the blocks of a metademand from 1
+            $block = (int) $section['rank'] + 1;
+            $blocks[$block] = (string) $block;
+            $title_id = $ids . "00" . $secid;
+            $fields['metafields']['field' . $title_id] = [
+                'id'          => $title_id,
+                'entities_id' => $entities_id,
+                'rank'        => $block,
+                'name'        => $section['name'],
+                'type'        => 'title-block',
+                'item'        => '',
+            ];
+            $fields['metafieldparameters']['fieldparameters' . $title_id] = [
+                'plugin_metademands_fields_id' => $title_id,
+                'color'                        => '#000000',
+            ];
+
             $questions = getAllDataFromTable(
                 'glpi_forms_questions',
                 ['forms_sections_id' => $ids],
             );
-
-            $secid++;
-            $metafields['id'] = $ids . "00" . $secid;
-            $metafields['entities_id'] = $entities_id;
-            $metafields['rank'] = $section['rank'];
-            $metafields['name'] = $section['name'];
-            $metafields['type'] = "title-block";
-            $metafields['item'] = "";
-            $fields['metafields']['field' . $ids . "00" . $secid] = $metafields;
-
-            $fields['metafieldparameters']['fieldparameters' . $ids . "00" . $secid]['plugin_metademands_fields_id'] = $ids . "00" . $secid;
-            $fields['metafieldparameters']['fieldparameters' . $ids . "00" . $secid]['color'] = "#000000";
-
             foreach ($questions as $idq => $question) {
-                $itemtype = null;
-                $raw_config = json_decode($question['extra_data'] ?? '', true);
-                if (is_array($raw_config) && isset($raw_config['itemtype'])) {
-                    $itemtype = $raw_config['itemtype'];
-                }
+                $config = json_decode((string) ($question['extra_data'] ?? ''), true);
+                $config = is_array($config) ? $config : [];
+                $itemtype = is_string($config['itemtype'] ?? null) ? $config['itemtype'] : null;
 
-                $metafields['type'] = self::transformFieldTypeFromMetademands($question['type'], $itemtype);
-                if (empty($metafields['type'])) {
+                $type = self::transformFieldTypeFromMetademands($question['type'], $itemtype);
+                // A dropdown question allowing several answers
+                if ($type === 'dropdown_meta' && !empty($config['is_multiple_dropdown'])) {
+                    $type = 'dropdown_multiple';
+                }
+                if (empty($type)) {
                     continue;
                 }
 
-                $metafields['id'] = $idq;
-                $metafields['entities_id'] = $entities_id;
-                $sec = new Section();
-                $sec->getFromDB($question['forms_sections_id']);
-                $metafields['rank'] = $sec->fields['rank'];
-                $metafields['order'] = $question['vertical_rank'] + 1;
-
-                $metafields['name'] = $question['name'];
-                $metafields['item'] = $itemtype;
-
-                if ($metafields['type'] == "dropdown_meta" && empty($itemtype)) {
-                    $metafields['item'] = "other";
-                }
-                if ($metafields['type'] == "dropdown_multiple" && empty($itemtype)) {
-                    $metafields['item'] = "other";
-                }
-                if ($metafields['type'] == "dropdown_object" && empty($itemtype)) {
-                    $metafields['item'] = "User";
+                $item = $itemtype;
+                if (in_array($type, ['dropdown_meta', 'dropdown_multiple'], true) && empty($itemtype)) {
+                    $item = 'other';
+                } elseif ($type === 'dropdown_object' && empty($itemtype)) {
+                    $item = 'User';
+                } elseif (in_array($type, ['radio', 'checkbox'], true)) {
+                    // As the fields of these types created in the plugin
+                    $item = $type;
                 }
 
-                $metafields['comment'] = $question['description'];
-                $fields['metafields']['field' . $idq] = $metafields;
+                $questions_by_uuid[(string) $question['uuid']] = (int) $idq;
+                $question_names[(int) $idq] = (string) $question['name'];
+                $fields['metafields']['field' . $idq] = [
+                    'id'          => $idq,
+                    'entities_id' => $entities_id,
+                    'rank'        => $block,
+                    'order'       => (int) $question['vertical_rank'] + 1,
+                    'name'        => $question['name'],
+                    'type'        => $type,
+                    'item'        => $item,
+                    'comment'     => $question['description'],
+                ];
+                $fields['metafieldparameters']['fieldparameters' . $idq] = [
+                    'plugin_metademands_fields_id' => $idq,
+                    'color'                        => '#000000',
+                    'link_to_user'                 => '0',
+                    'is_mandatory'                 => $question['is_mandatory'],
+                ];
 
-                $fields['metafieldparameters']['fieldparameters' . $idq]['plugin_metademands_fields_id'] = $idq;
-                $fields['metafieldparameters']['fieldparameters' . $idq]['color'] = "#000000";
-                $fields['metafieldparameters']['fieldparameters' . $idq]['link_to_user'] = "0";
-                $fields['metafieldparameters']['fieldparameters' . $idq]['is_mandatory'] = $question['is_mandatory'];
-
-                $customvalues = [];
-
-                if (in_array($metafields['type'], Field::$field_customvalues_types)
-                    || $question['fieldtype'] = 'yesno') {
-                    if (!empty($question['values'])) {
-                        $values = Toolbox::jsonDecode($question['values'], true);
-
-                        $cpt = 0;
-                        foreach ($values as $k => $value) {
-                            $idcv = $idq + $cpt;
-                            $customvalues[$idq][$k]['id'] = $idcv;
-                            $customvalues[$idq][$k]['name'] = $value;
-                            $customvalues[$idq][$k]['rank'] = $cpt;
-                            $customvalues[$idq][$k]['plugin_metademands_fields_id'] = $idq;
-                            $cpt++;
-                        }
-                        $tempid = 0;
-
-                        foreach ($customvalues as $idc => $cnt) {
-                            foreach ($cnt as $i => $customvalue) {
-                                $tempid++;
-                                $fields['metafieldcustoms']['fieldcustoms' . $idc . $tempid] = $customvalue;
-                            }
-                        }
+                // The values of a dropdown, radio or checkbox question (extra_data "options":
+                // key => label), with the default ones
+                if (in_array($type, Field::$field_customvalues_types, true) && is_array($config['options'] ?? null)) {
+                    $defaults = self::getQuestionDefaultKeys($question['default_value'] ?? null);
+                    $rank = 0;
+                    foreach ($config['options'] as $key => $label) {
+                        // Unique in the file, the options of the destinations referring to it
+                        $customvalues_id = (int) $idq * 1000 + $rank + 1;
+                        $choices[(int) $idq][(string) $key] = $customvalues_id;
+                        $choice_labels[(int) $idq][(string) $key] = (string) $label;
+                        $fields['metafieldcustoms']['fieldcustoms' . $customvalues_id] = [
+                            'id'                           => $customvalues_id,
+                            'plugin_metademands_fields_id' => $idq,
+                            'name'                         => (string) $label,
+                            'rank'                         => $rank,
+                            'is_default'                   => in_array((string) $key, $defaults, true) ? 1 : 0,
+                        ];
+                        $rank++;
                     }
                 }
-                $options = [];
-                //TODO
-                //                $conditions = getAllDataFromTable(
-                //                    'glpi_forms_conditions',
-                //                    ['itemtype' => Question::class, 'items_id' => $idq]
-                //                );
-                //                if (count($conditions) > 0) {
-                //
-                //                    $cpt = 0;
-                //                    foreach ($conditions as $key => $val) {
-                //                        //                        $idcd = $idq + $cpt;
-                //                        $options[$idq][$key]['id'] = $val['id'];
-                //
-                //                        $showValue = -1;
-                //                        if ($question['fieldtype'] === 'yesno') {
-                //                            if ($val['show_value'] == 'non') {
-                //                                $showValue = 1;
-                //                            } elseif ($val['show_value'] == 'oui') {
-                //                                $showValue = '2';
-                //                            }
-                //                        } elseif (in_array($metafields['type'], Field::$field_customvalues_types)) {
-                //                            $fieldcustomvalues = new FieldCustomvalue();
-                //                            $fieldcustomvalues->getFromDBByCrit(["name" => $val['show_value']]);
-                //                            $showValue = $fieldcustomvalues->fields['id'] ?? "";
-                //                        }
-                //
-                //                        $options[$idq][$key]['check_value'] = $showValue;
-                //                        $options[$idq][$key]['hidden_link'] = $val['items_id'];
-                //                        $options[$idq][$key]['plugin_metademands_fields_id'] = $val['forms_questions_id'];
-                //                        ;
-                //                        $cpt++;
-                //                    }
-                //                    $tempid = 0;
-                //
-                //                    foreach ($options as $ido => $cnt) {
-                //                        foreach ($cnt as $j => $option) {
-                //                            $tempid++;
-                //                            $fields['metafieldoptions']['fieldoptions' . $ido . $tempid] = $option;
-                //                        }
-                //                    }
-                //                }
             }
+
+            // The comments of the section, among its questions: their visibility conditions may
+            // refer to the questions of the following sections, read once all of them are
+            foreach (getAllDataFromTable(Comment::getTable(), ['forms_sections_id' => $ids]) as $comment) {
+                $comments[] = ['block' => $block, 'comment' => $comment];
+            }
+        }
+
+        // The comments of the form: informations, in their block at their place among the
+        // questions (the vertical ranks of the questions and the comments of a section follow
+        // each other), shown on their visibility conditions when the options express them
+        // exactly (options showing a field, "hidden_link"), always shown otherwise
+        $options_id = 0;
+        $untranslated_comments = [];
+        $comment_id = max([0, ...array_map('intval', array_column($fields['metafields'], 'id'))]);
+        foreach ($comments as ['block' => $block, 'comment' => $comment]) {
+            $comment_id++;
+            $fields['metafields']['field' . $comment_id] = [
+                'id'          => $comment_id,
+                'entities_id' => $entities_id,
+                'rank'        => $block,
+                'order'       => (int) $comment['vertical_rank'] + 1,
+                'name'        => $comment['name'],
+                'type'        => 'informations',
+                'item'        => 'informations',
+                'comment'     => $comment['description'],
+            ];
+            $fields['metafieldparameters']['fieldparameters' . $comment_id] = [
+                'plugin_metademands_fields_id' => $comment_id,
+                'color'                        => '#000000',
+            ];
+
+            $conditions = json_decode((string) ($comment['conditions'] ?? ''), true);
+            [$options, $exact, $description] = self::getOptionsFromFormConditions(
+                (string) ($comment['visibility_strategy'] ?? ''),
+                is_array($conditions) ? $conditions : [],
+                $questions_by_uuid,
+                $question_names,
+                $choices,
+                $choice_labels,
+            );
+            foreach ($options as $option) {
+                $options_id++;
+                $fields['metafieldoptions']['fieldoptions' . $options_id] = $option + [
+                    'id'          => $options_id,
+                    'hidden_link' => $comment_id,
+                ];
+            }
+            if (!$exact) {
+                // Reported by the summary of the import
+                // (not "..._conditions": the import takes the keys holding "condition" for conditions)
+                $fields['metafields']['field' . $comment_id]['untranslated_visibility'] = $description;
+                $untranslated_comments[] = (string) $comment['name'];
+            }
+        }
+        if ($untranslated_comments !== []) {
+            Session::addMessageAfterRedirect(
+                sprintf(
+                    _n(
+                        '%d comment exported without its visibility conditions, its information always shown: see the summary of the import',
+                        '%d comments exported without their visibility conditions, their informations always shown: see the summary of the import',
+                        count($untranslated_comments),
+                        'metademands',
+                    ),
+                    count($untranslated_comments),
+                ),
+                false,
+                WARNING,
+            );
+        }
+
+        // The header of the form: the information of the form, above the blocks as the header
+        // above the sections (first tab when they are tabs). Its title only names its tab, a
+        // header having none. Its id follows the ones of the sections and the questions.
+        if ($header !== '') {
+            $information_id = max([0, ...array_map('intval', array_column($fields['metafields'], 'id'))]) + 1;
+            $fields['metafields'] = [
+                'field' . $information_id => [
+                    'id'          => $information_id,
+                    'entities_id' => $entities_id,
+                    'rank'        => Forminformation::BLOCK,
+                    'order'       => 1,
+                    'name'        => Forminformation::getTypeName(1),
+                    'type'        => 'forminformation',
+                    'item'        => 'forminformation',
+                    'comment'     => $header,
+                ],
+            ] + $fields['metafields'];
+            $fields['metafieldparameters']['fieldparameters' . $information_id] = [
+                'plugin_metademands_fields_id' => $information_id,
+                'color'                        => '#000000',
+                'hide_title'                   => 1,
+            ];
+        }
+
+        // The destinations of the form: the child tickets, created on the conditions of the form
+        // when the options of the metademand express them exactly, always created otherwise
+        $fields['tasks'] = [];
+        $untranslated = [];
+        $skipped = [];
+        foreach (getAllDataFromTable(FormDestination::getTable(), ['forms_forms_id' => $forms_forms_id]) as $destination) {
+            if ($destination['itemtype'] !== FormDestinationTicket::class) {
+                $skipped[] = (string) $destination['name'];
+                continue;
+            }
+            $config = json_decode((string) $destination['config'], true);
+            $task = self::getTaskFromFormDestination($destination, is_array($config) ? $config : [], (int) $entities_id, array_values($blocks));
+
+            $conditions = json_decode((string) ($destination['conditions'] ?? ''), true);
+            [$options, $exact, $description] = self::getOptionsFromFormConditions(
+                (string) ($destination['creation_strategy'] ?? ''),
+                is_array($conditions) ? $conditions : [],
+                $questions_by_uuid,
+                $question_names,
+                $choices,
+                $choice_labels,
+            );
+            foreach ($options as $option) {
+                $options_id++;
+                $fields['metafieldoptions']['fieldoptions' . $options_id] = $option + [
+                    'id'                          => $options_id,
+                    'plugin_metademands_tasks_id' => (int) $destination['id'],
+                ];
+            }
+            if (!$exact) {
+                // Kept on the child object, and reported by the summary of the import
+                $task['comment'] = sprintf(__('GLPI conditions not expressible by the options: %s', 'metademands'), $description);
+                $task['untranslated_conditions'] = $description;
+                // Several child tickets may share a title: the name of the destination tells them apart
+                $task['destination_name'] = (string) $destination['name'];
+                $untranslated[] = $task['name'];
+            }
+            $fields['tasks']['task' . $destination['id']] = $task;
+        }
+        if ($untranslated !== []) {
+            Session::addMessageAfterRedirect(
+                sprintf(
+                    _n(
+                        '%d destination exported without its conditions, its child ticket always created: see the summary of the import',
+                        '%d destinations exported without their conditions, their child tickets always created: see the summary of the import',
+                        count($untranslated),
+                        'metademands',
+                    ),
+                    count($untranslated),
+                ),
+                false,
+                WARNING,
+            );
+        }
+        if ($skipped !== []) {
+            Session::addMessageAfterRedirect(
+                sprintf(
+                    __('Destinations not exported, a metademand creating child tickets only: %s', 'metademands'),
+                    implode(', ', $skipped),
+                ),
+                false,
+                WARNING,
+            );
         }
 
         $xml = new SimpleXMLElement(
@@ -580,6 +717,217 @@ class Export extends CommonDBTM
         }
 
         return $target;
+    }
+
+    /**
+     * Keys of the options selected by default in a dropdown, radio or checkbox question of a
+     * GLPI form: one key, a JSON list or a comma separated list.
+     *
+     * @return list<string>
+     */
+    private static function getQuestionDefaultKeys(mixed $default_value): array
+    {
+        if (!is_string($default_value) || trim($default_value) === '') {
+            return [];
+        }
+        $decoded = json_decode($default_value, true);
+        $keys = is_array($decoded) ? $decoded : explode(',', $default_value);
+
+        return array_values(array_filter(
+            array_map(static fn(mixed $key): string => is_scalar($key) ? trim((string) $key) : '', $keys),
+            static fn(string $key): bool => $key !== '',
+        ));
+    }
+
+    /**
+     * Text of a destination of a GLPI form (title, content), the answers of its questions turned
+     * into field tags of the metademand (#id#, the question ids being the field ids of the
+     * export), the other tags into their text.
+     */
+    private static function convertFormTags(string $html): string
+    {
+        return preg_replace_callback(
+            '/<span\b([^>]*\bdata-form-tag="true"[^>]*)>(.*?)<\/span>/is',
+            static function (array $matches): string {
+                preg_match('/\bdata-form-tag-value="([^"]*)"/', $matches[1], $value);
+                preg_match('/\bdata-form-tag-provider="([^"]*)"/', $matches[1], $provider);
+                if (str_ends_with($provider[1] ?? '', 'AnswerTagProvider')
+                    && preg_match('/^\d+/', $value[1] ?? '', $question_id) === 1) {
+                    return '#' . $question_id[0] . '#';
+                }
+                // A question, section or comment title: its text, without the "#Type: " prefix
+                $text = html_entity_decode(strip_tags($matches[2]), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+                return preg_replace('/^#[^:]*:\s*/u', '', $text) ?? $text;
+            },
+            $html,
+        ) ?? $html;
+    }
+
+    /**
+     * Child ticket of the metademand made of a ticket destination of a GLPI form: its title and
+     * content, its category, entity and type, its actors (one group and one user of each kind,
+     * as a child object holds them). The ids are kept, the export being imported on the GLPI
+     * of the form or on a GLPI holding the same objects (see the summary of the import).
+     *
+     * @param array<string, mixed> $destination row of the destination
+     * @param array<string, mixed> $config      its configuration
+     * @param list<string>         $blocks      blocks of the metademand
+     *
+     * @return array<string, mixed>
+     */
+    private static function getTaskFromFormDestination(array $destination, array $config, int $entities_id, array $blocks): array
+    {
+        $prefix = 'glpi-form-destination-commonitilfield-';
+
+        $title = self::convertFormTags((string) ($config[$prefix . 'titlefield']['value'] ?? ''));
+        $title = trim((string) preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($title), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+        if ($title === '') {
+            $title = (string) $destination['name'];
+        }
+        $title = mb_substr($title, 0, 255);
+
+        // The content generated from all the answers: the answers of every block, as a table
+        $auto_content = !empty($config[$prefix . 'contentfield_auto']);
+        $content = $auto_content ? '' : self::convertFormTags((string) ($config[$prefix . 'contentfield']['value'] ?? ''));
+
+        $entity = $config[$prefix . 'entityfield'] ?? [];
+        $category = $config[$prefix . 'itilcategoryfield'] ?? [];
+        $request_type = $config[$prefix . 'requesttypefield'] ?? [];
+        $actors = static function (string $field, string $itemtype) use ($config, $prefix): int {
+            $actors_config = $config[$prefix . $field] ?? [];
+            if (!in_array('specific_values', (array) ($actors_config['strategies'] ?? []), true)) {
+                return 0;
+            }
+            $ids = (array) ($actors_config['specific_itilactors_ids'][$itemtype] ?? []);
+
+            return (int) (reset($ids) ?: 0);
+        };
+
+        return [
+            'id'                             => (int) $destination['id'],
+            'name'                           => $title,
+            'completename'                   => $title,
+            'type'                           => Task::TICKET_TYPE,
+            'level'                          => 1,
+            'plugin_metademands_tasks_id'    => 0,
+            'entities_id'                    => $entities_id,
+            'is_recursive'                   => 0,
+            'useBlock'                       => $auto_content ? 1 : 0,
+            'block_use'                      => json_encode($auto_content ? $blocks : []),
+            'formatastable'                  => 1,
+            'block_parent_ticket_resolution' => 1,
+            'comment'                        => '',
+            'tickettask'                     => [
+                'entities_id'         => ($entity['strategy'] ?? '') === 'specific_value'
+                    ? (int) ($entity['specific_entity_id'] ?? $entities_id)
+                    : $entities_id,
+                'content'             => $content,
+                'itilcategories_id'   => ($category['strategy'] ?? '') === 'specific_value'
+                    ? (int) ($category['specific_itilcategory_id'] ?? 0)
+                    : 0,
+                'type'                => ($request_type['strategy'] ?? '') === 'specific_value'
+                    ? (int) ($request_type['specific_request_type'] ?? \Ticket::DEMAND_TYPE)
+                    : \Ticket::DEMAND_TYPE,
+                'groups_id_assign'    => $actors('assigneefield', \Group::class),
+                'users_id_assign'     => $actors('assigneefield', \User::class),
+                'groups_id_observer'  => $actors('observerfield', \Group::class),
+                'users_id_observer'   => $actors('observerfield', \User::class),
+                'groups_id_requester' => $actors('requesterfield', \Group::class),
+                'users_id_requester'  => $actors('requesterfield', \User::class),
+            ],
+        ];
+    }
+
+    /**
+     * Options of the metademand creating the child ticket of a destination of a GLPI form on its
+     * conditions, or showing the information of a comment of the form on its visibility ones. A
+     * child object (a field) linked to options is created (shown) when one of them is met (OR),
+     * so that the conditions are expressed exactly when they are:
+     * - none (always created, always shown);
+     * - "created if" ("visible if") one condition, or conditions all joined by OR;
+     * - "created unless" ("hidden if") one condition, or conditions all joined by AND (not A and
+     *   not B…);
+     * on a value of a question with values: equals / contains, and their negations ("is not"
+     * options).
+     * Otherwise no option is returned: the child ticket is always created, the field always shown.
+     *
+     * @param list<array<string, mixed>>       $conditions
+     * @param array<string, int>               $questions_by_uuid
+     * @param array<int, string>               $question_names
+     * @param array<int, array<string, int>>    $choices       question id => option key => custom value id
+     * @param array<int, array<string, string>> $choice_labels question id => option key => label
+     *
+     * @return array{0: list<array{plugin_metademands_fields_id: int, check_value: int, is_negated: int}>, 1: bool, 2: string}
+     *               options, whether they express the conditions exactly, conditions as a text
+     */
+    private static function getOptionsFromFormConditions(
+        string $strategy,
+        array $conditions,
+        array $questions_by_uuid,
+        array $question_names,
+        array $choices,
+        array $choice_labels,
+    ): array {
+        $strategies = [
+            'created_if'     => __('Created if', 'metademands'),
+            'created_unless' => __('Created unless', 'metademands'),
+            'visible_if'     => __('Shown if', 'metademands'),
+            'hidden_if'      => __('Hidden if', 'metademands'),
+        ];
+        if ($conditions === [] || !isset($strategies[$strategy])) {
+            return [[], true, ''];
+        }
+
+        $unless = in_array($strategy, ['created_unless', 'hidden_if'], true);
+        $operators = [
+            'equals'       => '=',
+            'not_equals'   => '≠',
+            'contains'     => __('contains'),
+            'not_contains' => __('does not contain'),
+        ];
+        $options = [];
+        $exact = true;
+        $texts = [];
+        foreach (array_values($conditions) as $index => $condition) {
+            $operator = (string) ($condition['value_operator'] ?? '');
+            $logic = strtolower((string) ($condition['logic_operator'] ?? 'and'));
+            $questions_id = $questions_by_uuid[(string) ($condition['item_uuid'] ?? '')] ?? 0;
+            $value = $condition['value'] ?? null;
+            $key = is_scalar($value) ? (string) $value : '';
+
+            $texts[] = ($index > 0 ? ($logic === 'or' ? __('or', 'metademands') : __('and', 'metademands')) . ' ' : '')
+                . ($question_names[$questions_id] ?? '?') . ' '
+                . ($operators[$operator] ?? match ($operator) {
+                    'empty'     => __('is empty', 'metademands'),
+                    'not_empty' => __('is not empty', 'metademands'),
+                    default     => $operator,
+                })
+                . ($key !== '' ? ' ' . ($choice_labels[$questions_id][$key] ?? $key) : '');
+
+            // A chain the options join as they do: OR for "created if", AND for "created unless"
+            if ($index > 0 && $logic !== ($unless ? 'and' : 'or')) {
+                $exact = false;
+            }
+            $customvalues_id = $choices[$questions_id][$key] ?? null;
+            if (($condition['item_type'] ?? '') !== 'question'
+                || !isset($operators[$operator])
+                || $customvalues_id === null) {
+                $exact = false;
+                continue;
+            }
+            $negated = in_array($operator, ['not_equals', 'not_contains'], true);
+            $options[] = [
+                'plugin_metademands_fields_id' => $questions_id,
+                'check_value'                  => $customvalues_id,
+                // "Created unless A and B" is "created if not A or not B"
+                'is_negated'                   => (int) ($negated !== $unless),
+            ];
+        }
+
+        $text = $strategies[$strategy] . ' ' . implode(' ', $texts);
+
+        return $exact ? [$options, true, $text] : [[], false, $text];
     }
 
     public static function toXml(SimpleXMLElement &$parent, array &$data)
@@ -1127,6 +1475,16 @@ class Export extends CommonDBTM
         foreach ($fields as $field) {
             $fieldId = $field['id'];
 
+            // The information of the form is the header of the GLPI form, shown above its
+            // sections as it is above the blocks (exportAsXMLFromGLPI() reads it back)
+            if ($field['type'] === 'forminformation') {
+                if ((int) ($field['is_active'] ?? 1) === 1) {
+                    $header = ($field['comment'] ?? '') . ($field['label2'] ?? '');
+                    $form['header'] = $header !== '' ? $header : null;
+                }
+                continue;
+            }
+
             $params = [];
             $fieldmeta = new Field();
             if ($fieldmeta->getFromDB($fieldId)) {
@@ -1146,7 +1504,9 @@ class Export extends CommonDBTM
                     "uuid" => $prefix . $rank,
                     "name" => "Section " . $rank,
                     "description" => null,
-                    "rank" => $rank,
+                    // The blocks of a metademand are numbered from 1, the sections of a GLPI
+                    // form ranked from 0 (as exportAsXMLFromGLPI() reads them back)
+                    "rank" => max(0, (int) $rank - 1),
                     "visibility_strategy" => "",
                     "conditions" => [],
                 ];
@@ -1813,9 +2173,21 @@ class Export extends CommonDBTM
         // Texts whose tags point at fields: the import points them at the new fields
         $texts       = [];
         $task_counts = [];
+        // Child tickets of the destinations of a GLPI form whose conditions the options could
+        // not express (getOptionsFromFormConditions()): always created
+        $untranslated_tasks = [];
         foreach ($tasks as $task) {
             $label               = sprintf('%1$s (%2$s)', __('Child creation', 'metademands'), Task::getTaskTypeName((int) ($task['type'] ?? 0)));
             $task_counts[$label] = ($task_counts[$label] ?? 0) + 1;
+            if (is_string($task['untranslated_conditions'] ?? null) && $task['untranslated_conditions'] !== '') {
+                $untranslated_tasks[] = sprintf(
+                    __('Child object "%1$s" always created, its GLPI conditions not being expressible by the options: %2$s', 'metademands'),
+                    is_string($task['destination_name'] ?? null) && $task['destination_name'] !== ''
+                        ? $task['destination_name']
+                        : (is_string($task['name'] ?? null) ? $task['name'] : ''),
+                    $task['untranslated_conditions'],
+                );
+            }
             if (!self::isKeptReference($task['plugin_metademands_tasks_id'] ?? 0, $tasks_ids)) {
                 $lost_task_links++;
             }
@@ -1919,6 +2291,18 @@ class Export extends CommonDBTM
                 $lost_task_links,
             );
         }
+        array_push($summary['warnings'], ...$untranslated_tasks);
+        // Informations of the comments of a GLPI form whose visibility conditions the options
+        // could not express (exportAsXMLFromGLPI()): always shown
+        foreach ($fields as $field) {
+            if (is_string($field['untranslated_visibility'] ?? null) && $field['untranslated_visibility'] !== '') {
+                $summary['warnings'][] = sprintf(
+                    __('Information "%1$s" always shown, its GLPI conditions not being expressible by the options: %2$s', 'metademands'),
+                    is_string($field['name'] ?? null) ? $field['name'] : '',
+                    $field['untranslated_visibility'],
+                );
+            }
+        }
         if ($unknown_tags !== []) {
             ksort($unknown_tags);
             $summary['warnings'][] = sprintf(
@@ -1948,6 +2332,9 @@ class Export extends CommonDBTM
 
         if ($found_items > 0) {
             $summary['infos'][] = __('The users, groups and categories of the child objects, the validators and the step groups are kept by their id: check them after the import if the file comes from another GLPI', 'metademands');
+        }
+        if (self::hasBlocksFromZero($datas)) {
+            $summary['infos'][] = __('The blocks of the file begin at 0, as the sections of a GLPI form: they are numbered from 1', 'metademands');
         }
         $categories = is_string($datas['itilcategories_id'] ?? null) ? json_decode($datas['itilcategories_id'], true) : null;
         if (is_array($categories) && $categories !== []) {
@@ -2066,6 +2453,67 @@ class Export extends CommonDBTM
         $rows = $datas[$key] ?? null;
 
         return is_array($rows) ? array_filter($rows, 'is_array') : [];
+    }
+
+    /**
+     * Whether the blocks of the file begin at 0: a GLPI form exported by the previous versions
+     * (exportAsXMLFromGLPI() kept the ranks of its sections, numbered from 0). A block 0 is no
+     * block in a metademand, but the one of its form information (Forminformation::BLOCK),
+     * left where it is. Only a file whose options, child objects and steps refer to no block
+     * is concerned, so that shifting its fields keeps it consistent.
+     *
+     * @param array<mixed> $datas
+     */
+    private static function hasBlocksFromZero(array $datas): bool
+    {
+        $from_zero = false;
+        foreach (self::getImportRows($datas, 'metafields') as $field) {
+            if (is_numeric($field['rank'] ?? null) && (int) $field['rank'] === 0
+                && ($field['type'] ?? '') !== 'forminformation') {
+                $from_zero = true;
+                break;
+            }
+        }
+        if (!$from_zero || self::getImportRows($datas, 'step') !== []) {
+            return false;
+        }
+
+        $refers = static fn(mixed $blocks): bool => is_array($blocks)
+            ? $blocks !== []
+            : !in_array(trim((string) $blocks), ['', '[]', '0'], true);
+        foreach (self::getImportRows($datas, 'metafieldoptions') as $option) {
+            if ((int) ($option['hidden_block'] ?? 0) > 0 || $refers($option['childs_blocks'] ?? null)) {
+                return false;
+            }
+        }
+        foreach (self::getImportRows($datas, 'tasks') as $task) {
+            if ($refers($task['block_use'] ?? null)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Blocks of the file numbered from 1 when they begin at 0 (hasBlocksFromZero()).
+     *
+     * @param array<mixed> $datas
+     *
+     * @return array<mixed>
+     */
+    private static function shiftBlocksFromZero(array $datas): array
+    {
+        if (!self::hasBlocksFromZero($datas)) {
+            return $datas;
+        }
+        foreach (self::getImportRows($datas, 'metafields') as $key => $field) {
+            if (is_numeric($field['rank'] ?? null) && ($field['type'] ?? '') !== 'forminformation') {
+                $datas['metafields'][$key]['rank'] = (int) $field['rank'] + 1;
+            }
+        }
+
+        return $datas;
     }
 
     /**
@@ -2311,6 +2759,7 @@ class Export extends CommonDBTM
             Session::addMessageAfterRedirect((string) $error, false, ERROR);
             return false;
         }
+        $datas = self::shiftBlocksFromZero($datas);
         $metademand = new Metademand();
         $oldId = $datas['id'] ?? 0;
         unset($datas['id']);

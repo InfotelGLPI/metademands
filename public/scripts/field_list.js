@@ -775,7 +775,8 @@ function bindSortable(list) {
     if (typeof window.sortable !== 'function' || list.querySelector('.md-grip') === null) {
         return;
     }
-    const containers = list.querySelectorAll('[data-md-fields]');
+    // Not the block of the information of the form, alone in it (Field::moveTo())
+    const containers = list.querySelectorAll('[data-md-fields]:not([data-md-fields-fixed])');
     window.sortable(containers, {
         items: '.md-field',
         handle: '.md-grip',

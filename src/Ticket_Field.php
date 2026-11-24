@@ -300,6 +300,7 @@ class Ticket_Field extends CommonDBTM
         if (isset($check_value)) {
             switch ($type) {
                 case 'informations':
+                case 'forminformation':
                 case 'title-block':
                 case 'basket':
                 case 'upload':

@@ -177,7 +177,7 @@ class Basketline extends CommonDBTM
             }
 
             //hide blocks
-            if ($v['type'] == 'informations' || $v['type'] == 'title-block' || $v['type'] == 'title') {
+            if (in_array($v['type'], ['informations', 'forminformation']) || $v['type'] == 'title-block' || $v['type'] == 'title') {
                 continue;
             }
 
@@ -281,7 +281,7 @@ class Basketline extends CommonDBTM
 
         foreach ($content as $values) {
 
-            if ($values['item'] == "informations") {
+            if (in_array($values['item'], ["informations", "forminformation"])) {
                 continue;
             }
             //TODO drop if empty datas ??

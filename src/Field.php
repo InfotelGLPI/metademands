@@ -61,6 +61,7 @@ use GlpiPlugin\Metademands\Fields\Dropdownmeta;
 use GlpiPlugin\Metademands\Fields\Dropdownmultiple;
 use GlpiPlugin\Metademands\Fields\Dropdownobject;
 use GlpiPlugin\Metademands\Fields\Email;
+use GlpiPlugin\Metademands\Fields\Forminformation;
 use GlpiPlugin\Metademands\Fields\Freetable;
 use GlpiPlugin\Metademands\Fields\Information;
 use GlpiPlugin\Metademands\Fields\Ldapdropdown;
@@ -132,6 +133,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         'title',
         'title-block',
         'informations',
+        'forminformation',
         'text',
         'tel',
         'email',
@@ -159,6 +161,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         'title',
         'title-block',
         'informations',
+        'forminformation',
     ];
 
     public static $field_customvalues_types = [
@@ -703,8 +706,11 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
         if ($ID < 1) {
             $type_list = self::$field_types;
+        } elseif ($this->fields["type"] == 'forminformation') {
+            // Fixed: alone in a block of its own, it would stay there as another type
         } elseif (in_array($this->fields["type"], self::$field_title_types)) {
-            $type_list = self::$field_title_types;
+            // The information of the form is added as such (one per metademand, in its block)
+            $type_list = array_values(array_diff(self::$field_title_types, ['forminformation']));
         } elseif (in_array($this->fields["type"], self::$field_customvalues_types)) {
             if (in_array($this->fields["item"], Dropdownmultiple::$dropdown_multiple_objects)) {
                 $type_list = ["dropdown_multiple"];
@@ -827,6 +833,13 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'item_fixed_name'        => $item_fixed === null ? '' : self::getFieldItemsName($this->fields['type'], $item_fixed),
             'params_item'            => $params_item,
             'is_title_block'         => ($this->fields['type'] ?? '') === 'title-block',
+            // Neither block nor order: alone in a block of its own, before the others
+            'is_form_information'    => ($this->fields['type'] ?? '') === 'forminformation',
+            // One per metademand: its card is not offered once there is one
+            'has_form_information'   => $ID < 1 && countElementsInTable(self::getTable(), [
+                'plugin_metademands_metademands_id' => $this->fields['plugin_metademands_metademands_id'],
+                'type'                              => 'forminformation',
+            ]) > 0,
             // The blocks that already have a title: a new field cannot be a second one
             'titled_blocks'          => $ID < 1 ? $blocks['titled'] : [],
             'text_hints'             => self::getTextHints(),
@@ -1108,9 +1121,16 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 }
             }
 
+            // The block of the information of the form: nothing is added, moved in or out
+            $is_form_information = (int) $idblock === Forminformation::BLOCK
+                && in_array('forminformation', array_column($blockdata, 'type'), true);
+
             $panels[] = [
                 'id' => $idblock,
-                'name' => $blocks[$idblock] ?? (__('Block', 'metademands') . ' ' . $idblock),
+                'name' => $is_form_information
+                    ? Forminformation::getTypeName(1)
+                    : ($blocks[$idblock] ?? (__('Block', 'metademands') . ' ' . $idblock)),
+                'is_form_information' => $is_form_information,
                 'fix_orders' => $fix_orders,
                 'warning_count' => count(array_filter($rows, static fn(array $row): bool => $row['has_warning'])),
                 'rows' => $rows,
@@ -1224,6 +1244,10 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 'label2'  => __('Content of the information block, after the comments', 'metademands'),
                 'comment' => __('Content of the information block', 'metademands'),
             ],
+            'forminformation'   => [
+                'label2'  => __('Content of the information block, after the comments', 'metademands'),
+                'comment' => __('Content of the information block', 'metademands'),
+            ],
             'date_interval'     => $interval,
             'datetime_interval' => $interval,
             'link'              => ['label2' => __('Text of the button, when the link is shown as a button', 'metademands')] + $default,
@@ -1242,6 +1266,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'title' => 'ti-heading',
             'title-block' => 'ti-layout-navbar',
             'informations' => 'ti-info-circle',
+            'forminformation' => 'ti-info-square-rounded',
             'text' => 'ti-cursor-text',
             'tel' => 'ti-phone',
             'email' => 'ti-mail',
@@ -1274,7 +1299,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
      * other plugins go to the last one
      */
     private const FIELD_TYPE_FAMILIES = [
-        'layout'   => ['title-block', 'title', 'informations'],
+        'layout'   => ['forminformation', 'title-block', 'title', 'informations'],
         'text'     => ['text', 'textarea', 'email', 'tel', 'url', 'signature'],
         'choice'   => ['yesno', 'radio', 'checkbox', 'dropdown_meta', 'dropdown_multiple'],
         'glpi'     => ['dropdown', 'dropdown_object', 'dropdown_ldap'],
@@ -1305,6 +1330,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'title-block'       => __('Starts a new block of the form', 'metademands'),
             'title'             => __('Heading of a section in a block', 'metademands'),
             'informations'      => __('Help or warning shown to the requester', 'metademands'),
+            'forminformation'   => __('Presentation of the form, above its first block (first tab when the blocks are tabs)', 'metademands'),
             'text'              => __('Short answer on one line', 'metademands'),
             'textarea'          => __('Long answer, rich text possible', 'metademands'),
             'email'             => __('Checked email address', 'metademands'),
@@ -1500,6 +1526,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             case 'title':
             case 'title-block':
             case 'informations':
+            case 'forminformation':
             case 'text':
             case 'tel':
             case 'email':
@@ -2301,7 +2328,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         }
 
         // start wrapper div classes
-        if ($data['type'] == 'title') {
+        if ($data['type'] == 'title' || $data['type'] == 'forminformation') {
             $data['row_display'] = 1;
             $data['is_mandatory'] = 0;
         }
@@ -2316,7 +2343,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             && Session::getCurrentInterface() != 'central') {
             $class .= " itilmeta";
         }
-        if ($data['type'] != 'informations') {
+        if (!in_array($data['type'], ['informations', 'forminformation'], true)) {
             $class = "form-group ";
         }
         $bottomclass = "";
@@ -2380,7 +2407,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         // same flag stays valid for the closing branch further down.
         $render_label = ($data['type'] != "title"
             && $data['type'] != "title-block"
-            && $data['type'] != "informations");
+            && $data['type'] != "informations"
+            && $data['type'] != "forminformation");
         $hide_title_zero = (isset($data['hide_title']) && $data['hide_title'] == 0);
         $hidden_zero = ($hidden == 0);
 
@@ -2401,12 +2429,16 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             if (empty($comment = self::displayField($data['id'], 'comment'))) {
                 $comment = $data['comment'];
             }
+            // The comment is shown in a tooltip next to the label (getTextHints()), but in the
+            // text inputs, whose placeholder it is. A textarea shows it in a tooltip too when its
+            // editor is a rich one only: "use_richtext" is a parameter of the textareas, unset
+            // (0) for the other types, whose tooltip it hid.
             if ($data['type'] != "text"
                 && $data['type'] != "tel"
                 && $data['type'] != "email"
                 && $data['type'] != "url"
                 && !empty($comment)) {
-                if ($data['use_richtext'] != 0) {
+                if ($data['type'] != 'textarea' || $data['use_richtext'] != 0) {
                     $show_comment_tooltip = true;
                     $comment_tooltip = RichText::getSafeHtml($comment);
                 }
@@ -2443,6 +2475,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
 
         $show_label2_alert = ($has_label2
             && $data['type'] != 'informations'
+            && $data['type'] != 'forminformation'
             && $data['type'] != 'datetime_interval'
             && $data['type'] != 'date_interval');
         // Widget: getFieldInput() echoes the widget internally but the parent_field case
@@ -2529,6 +2562,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 return Titleblock::class;
             case 'informations':
                 return Information::class;
+            case 'forminformation':
+                return Forminformation::class;
             case 'text':
                 return Text::class;
             case 'tel':
@@ -2626,6 +2661,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         switch ($data['type']) {
             case 'title-block':
             case 'informations':
+            case 'forminformation':
             case 'title':
                 $class::showWizardField($data, $namefield, $value, $on_order, $preview, $config_url);
                 break;
@@ -3006,6 +3042,13 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
         }
 
+        if (($input['type'] ?? '') === 'forminformation') {
+            $input = $this->prepareFormInformationInput($input, (int) ($input['plugin_metademands_metademands_id'] ?? 0));
+            if ($input === false) {
+                return false;
+            }
+        }
+
         //      $meta = new Metademand();
 
         //      if ($meta->getFromDB($input['plugin_metademands_metademands_id'])
@@ -3047,10 +3090,88 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         if (isset($input["type"]) && $input["type"] == "radio") {
             $input["item"] = "radio";
         }
+        if (($input['type'] ?? $this->fields['type'] ?? '') === 'forminformation') {
+            $input = $this->prepareFormInformationInput(
+                $input,
+                (int) ($input['plugin_metademands_metademands_id'] ?? $this->fields['plugin_metademands_metademands_id'] ?? 0),
+            );
+            if ($input === false) {
+                return false;
+            }
+        }
 
         // The parent runs checkAttachedItemChangesAllowed(): moving the row to another
         // parent requires CREATE on the new one and PURGE on the old one.
         return parent::prepareInputForUpdate($input);
+    }
+
+    /**
+     * The information of the form goes in its block, before the others, and there is one per
+     * metademand.
+     *
+     * @param array $input
+     * @param int   $metademands_id
+     *
+     * @return array|false
+     */
+    private function prepareFormInformationInput(array $input, int $metademands_id)
+    {
+        global $DB;
+
+        $criteria = [
+            'plugin_metademands_metademands_id' => $metademands_id,
+            'type'                              => 'forminformation',
+        ];
+        if (!$this->isNewItem()) {
+            $criteria['NOT'] = ['id' => $this->getID()];
+        }
+        $existing = $DB->request([
+            'SELECT' => ['name'],
+            'FROM'   => self::getTable(),
+            'WHERE'  => $criteria,
+            'LIMIT'  => 1,
+        ])->current();
+        if ($existing !== null) {
+            // Given back to the form displayed after the redirect (restoreSavedInput())
+            $_SESSION['glpi_plugin_metademands_fields'][$this->isNewItem() ? 0 : $this->getID()] = $input;
+            Session::addMessageAfterRedirect(
+                sprintf(__('This form already has its form information: %s', 'metademands'), $existing['name']),
+                false,
+                ERROR,
+            );
+            return false;
+        }
+
+        // Its block is its own: fields left in a block 0 (imports of GLPI forms before their
+        // sections were numbered from 1) are moved to another block first
+        $others = countElementsInTable(self::getTable(), [
+            'plugin_metademands_metademands_id' => $metademands_id,
+            'rank'                              => Forminformation::BLOCK,
+            'NOT'                               => ['type' => 'forminformation'],
+        ]);
+        if ($others > 0) {
+            $_SESSION['glpi_plugin_metademands_fields'][$this->isNewItem() ? 0 : $this->getID()] = $input;
+            Session::addMessageAfterRedirect(
+                sprintf(
+                    _n(
+                        'Block %1$s has %2$d field: move it to another block before adding the form information',
+                        'Block %1$s has %2$d fields: move them to another block before adding the form information',
+                        $others,
+                        'metademands',
+                    ),
+                    Forminformation::BLOCK,
+                    $others,
+                ),
+                false,
+                ERROR,
+            );
+            return false;
+        }
+
+        $input['rank']  = Forminformation::BLOCK;
+        $input['order'] = 1;
+
+        return $input;
     }
 
     public function cleanDBonPurge()
@@ -3640,6 +3761,11 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         // The wizard shows the title of a block only when it is its first field
         // (Wizard::displayBlockContent()): a block title saved by a form always goes first
         if (($input['type'] ?? '') === 'title-block') {
+            $input['plugin_metademands_fields_id'] = 0;
+        }
+        // Alone in its block, whatever block the form posted (prepareFormInformationInput())
+        if (($input['type'] ?? '') === 'forminformation') {
+            $input['rank']                         = Forminformation::BLOCK;
             $input['plugin_metademands_fields_id'] = 0;
         }
 
@@ -4681,7 +4807,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
      */
     public function moveTo(int $rank, int $previous_fields_id): bool
     {
-        if ($this->isNewItem() || $rank < 1) {
+        // The information of the form stays alone in its block, before the others
+        if ($this->isNewItem() || $rank < 1 || $this->fields['type'] === 'forminformation') {
             return false;
         }
 
