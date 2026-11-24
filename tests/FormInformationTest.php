@@ -204,6 +204,31 @@ class FormInformationTest extends DbTestCase
         $this->assertContains('forminformation', FieldParameter::NOT_MANDATORY_TYPES);
     }
 
+    public function testANewInformationTakesTheWholeRowWithoutTitle(): void
+    {
+        $metademand = $this->createMetademand();
+        $parameters = function (string $type, array $input = []) use ($metademand): array {
+            $field = $this->createItem(Field::class, [
+                'plugin_metademands_metademands_id' => $metademand->getID(),
+                'entities_id'                       => 0,
+                'type'                              => $type,
+                'item'                              => $type === 'text' ? '' : $type,
+                'name'                              => strtoupper($type),
+                'rank'                              => 1,
+            ], ['item', 'rank']);
+            // As the new field form adds them (front/field.form.php)
+            $parameter = $this->createItem(FieldParameter::class, ['plugin_metademands_fields_id' => $field->getID(), 'is_mandatory' => 0] + $input);
+
+            return [(int) $parameter->fields['row_display'], (int) $parameter->fields['hide_title']];
+        };
+
+        $this->assertSame([1, 1], $parameters('informations'));
+        $this->assertSame([1, 1], $parameters('forminformation'));
+        $this->assertSame([0, 0], $parameters('text'));
+        // A copy, the duplication or the import give their own
+        $this->assertSame([0, 0], $parameters('informations', ['row_display' => 0, 'hide_title' => 0]));
+    }
+
     public function testTheListShowsItsBlockFirstAndFixed(): void
     {
         $metademand = $this->createMetademand();

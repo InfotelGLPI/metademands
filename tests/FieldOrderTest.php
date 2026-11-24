@@ -128,4 +128,45 @@ class FieldOrderTest extends DbTestCase
         ], ['order']);
         $this->assertSame(['TITLE', 'FIRST', 'SECOND', 'LAST'], array_values(array_column($rows, 'name')));
     }
+
+    public function testTheFixOfABlockKeepsItsOrderWithItsTitleFirst(): void
+    {
+        global $DB;
+
+        // Orders with gaps and the title, created last, placed in the middle: the fix renumbered
+        // the fields in the order of their ids, the title ended last
+        $DB->update(Field::getTable(), ['order' => 10], ['id' => $this->fields['FIRST']->getID()]);
+        $DB->update(Field::getTable(), ['order' => 30], ['id' => $this->fields['SECOND']->getID()]);
+        $DB->update(Field::getTable(), ['order' => 40], ['id' => $this->fields['LAST']->getID()]);
+        $title = $this->createItem(Field::class, [
+            'plugin_metademands_metademands_id' => $this->metademand->getID(),
+            'type'                              => 'title-block',
+            'name'                              => 'TITLE',
+            'rank'                              => 2,
+            'order'                             => 20,
+            'entities_id'                       => $this->getTestRootEntity(true),
+        ]);
+        $block = fn(): array => array_values((new Field())->find([
+            'plugin_metademands_metademands_id' => $this->metademand->getID(),
+            'rank'                              => 2,
+        ], ['order']));
+        $this->assertTrue(Field::needsOrderFix($block()));
+
+        Field::fixBlockOrders($this->metademand->getID(), 2);
+
+        $rows = $block();
+        $this->assertSame(['TITLE', 'FIRST', 'SECOND', 'LAST'], array_column($rows, 'name'));
+        $this->assertSame([1, 2, 3, 4], array_map('intval', array_column($rows, 'order')));
+        // Each field after the previous one
+        $this->assertSame(
+            [0, $title->getID(), $this->fields['FIRST']->getID(), $this->fields['SECOND']->getID()],
+            array_map('intval', array_column($rows, 'plugin_metademands_fields_id')),
+        );
+        $this->assertFalse(Field::needsOrderFix($rows));
+
+        // Sequential orders but a title that is not first need the fix as well
+        $DB->update(Field::getTable(), ['order' => 2], ['id' => $title->getID()]);
+        $DB->update(Field::getTable(), ['order' => 1], ['id' => $this->fields['FIRST']->getID()]);
+        $this->assertTrue(Field::needsOrderFix($block()));
+    }
 }
