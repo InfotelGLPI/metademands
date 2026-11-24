@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Menu;
 use GlpiPlugin\Metademands\Ticket_Field;
 use GlpiPlugin\Metademands\TicketField;
@@ -47,7 +48,8 @@ if (isset($_POST["add"])) {
 
     Html::back();
 } elseif (isset($_POST["update"])) {
-    $_POST['value'] = $_POST[$_POST['field']];
+    // As the add: the value widget is named after the field, absent while none is chosen
+    $_POST['value'] = isset($_POST['field']) && is_string($_POST['field']) ? ($_POST[$_POST['field']] ?? '') : '';
     // With -1 the requested right was never evaluated; bind the control to the posted row.
     $ticketField->check((int) $_POST['id'], UPDATE);
     $ticketField->update($_POST);
@@ -59,10 +61,21 @@ if (isset($_POST["add"])) {
     $ticketField->delete($_POST, 1);
     $ticketField->redirectToList();
 } elseif (isset($_POST['template_sync'])) {
-    // Syncing mandatory template fields is a configuration change: require the plugin update right.
-    Session::checkRight(Metademand::$rightname, UPDATE);
-    // With the template chosen in the tab, the one of the metademand by default
-    TicketField::updateMandatoryTicketFields($_POST, (int) ($_POST['_templates_id'] ?? 0));
+    // The fields of that very metademand are rewritten: its own update right, its entity included.
+    // A missing id is denied (can() does not evaluate the right of a new item).
+    $metademands_id = (int) ($_POST['id'] ?? 0);
+    $meta           = new Metademand();
+    if ($metademands_id <= 0 || !$meta->can($metademands_id, UPDATE)) {
+        throw new AccessDeniedHttpException();
+    }
+    // With the template chosen in the tab, the one of the metademand by default; only a template
+    // the picker offered (TicketField::isOfferedTemplate())
+    $templates_id = (int) ($_POST['_templates_id'] ?? 0);
+    if ($templates_id > 0 && !TicketField::isOfferedTemplate($meta, $templates_id)) {
+        Session::addMessageAfterRedirect(__('This template cannot be used for this metademand', 'metademands'), false, ERROR);
+        Html::back();
+    }
+    TicketField::updateMandatoryTicketFields(['id' => $metademands_id] + $_POST, $templates_id);
     Html::back();
 } else {
     $ticketField->checkGlobal(READ);

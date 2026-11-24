@@ -243,7 +243,8 @@ class FieldMemberGroupsTest extends DbTestCase
         $this->hasSessionMessages(WARNING, [
             sprintf(
                 __('Groups left out of "Members of these groups", no group of that name here: %s', 'metademands'),
-                '"' . $others_name . '"',
+                // The names of the file are escaped: the messages are displayed as HTML
+                htmlescape('"' . $others_name . '"'),
             ),
         ]);
     }

@@ -32,6 +32,7 @@ namespace GlpiPlugin\Metademands;
 use CommonDBTM;
 use CommonITILValidation;
 use DBConnection;
+use Glpi\RichText\RichText;
 use Html;
 use ITILFollowup;
 use Migration;
@@ -600,6 +601,102 @@ class FieldValidation extends CommonDBTM
         $tasks = json_decode($this->fields['tickets_to_create'] ?? '', true);
 
         return is_array($tasks) ? $tasks : [];
+    }
+
+    /**
+     * Say on the parent ticket which child tickets were not created, their validation not
+     * having been requested (Metademand::holdTasksForFieldValidation()).
+     *
+     * @param array<array<string, mixed>> $tasks the child tickets left out
+     */
+    public static function recordNotCreated(int $tickets_id, array $tasks): void
+    {
+        $names = array_values(array_filter(array_map(
+            static fn(array $task): string => trim(RichText::getTextFromHtml((string) ($task['tickettasks_name'] ?? ''))),
+            $tasks,
+        )));
+        if ($tickets_id <= 0 || $names === []) {
+            return;
+        }
+
+        (new ITILFollowup())->add([
+            'itemtype'      => \Ticket::class,
+            'items_id'      => $tickets_id,
+            'content'       => '<p>' . htmlescape(sprintf(
+                __('These child tickets have not been created, their validation could not be requested: %s', 'metademands'),
+                implode(', ', $names),
+            )) . '</p>',
+            'is_private'    => 0,
+            '_disablenotif' => true,
+        ]);
+    }
+
+    /**
+     * A submission may not leave child tickets waiting for validators without any: for each
+     * option of a value posted whose child tickets wait for validators chosen in the form,
+     * at least one of them must be a user the pickers offered. The fields to fill are named in
+     * an error message otherwise.
+     *
+     * @param array<mixed> $values posted values, by field id
+     *
+     * @return bool false when the submission is refused
+     */
+    public static function checkSubmittedValidators(int $metademands_id, array $values): bool
+    {
+        $fields = (new Field())->find(['plugin_metademands_metademands_id' => $metademands_id, 'is_active' => 1]);
+        if ($fields === []) {
+            return true;
+        }
+        $validator_fields = self::getValidatorFieldChoices($metademands_id);
+        if ($validator_fields === []) {
+            return true;
+        }
+
+        // An option on any value but one applies to each other value
+        $options = FieldOption::findApplied(['plugin_metademands_fields_id' => array_keys($fields)]);
+        $missing = [];
+        foreach ($options as $data) {
+            $validation_fields_ids = array_values(array_filter(
+                FieldOption::getValidationFieldsIds($data),
+                static fn(int $id) => isset($validator_fields[$id]),
+            ));
+            $fields_id = (int) $data['plugin_metademands_fields_id'];
+            if ($validation_fields_ids === []
+                || !isset($fields[$fields_id])
+                || !Ticket_Field::isCheckValueOKFieldsLinks($values[$fields_id] ?? null, $data['check_value'], $fields[$fields_id]['type'])) {
+                continue;
+            }
+            // Child tickets of that value, as getHeldTaskFields() holds them
+            $has_children = false;
+            foreach ($options as $same_value) {
+                if ((int) $same_value['plugin_metademands_tasks_id'] > 0
+                    && (int) $same_value['plugin_metademands_fields_id'] === $fields_id
+                    && $same_value['check_value'] == $data['check_value']) {
+                    $has_children = true;
+                    break;
+                }
+            }
+            if ($has_children && Metademand::getAcceptedValidators($validation_fields_ids, $values) === []) {
+                foreach ($validation_fields_ids as $validation_fields_id) {
+                    $name = Field::displayField($validation_fields_id, 'name');
+                    $missing[$validation_fields_id] = $name !== '' ? $name : (string) ($fields[$validation_fields_id]['name'] ?? '');
+                }
+            }
+        }
+
+        if ($missing === []) {
+            return true;
+        }
+        Session::addMessageAfterRedirect(
+            sprintf(
+                __('Choose who validates the requested items in: %s', 'metademands'),
+                htmlescape(implode(', ', $missing)),
+            ),
+            false,
+            ERROR,
+        );
+
+        return false;
     }
 
     /**

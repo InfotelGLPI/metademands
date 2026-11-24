@@ -502,15 +502,44 @@ class FieldValidationTest extends DbTestCase
         $this->assertSame(FieldValidation::REFUSED, (int) $this->getHeld($parent_id)->fields['status']);
     }
 
-    public function testWithoutValidatorTheChildTicketsAreCreatedAtOnce(): void
+    /**
+     * The submitter decides whether a validator is accepted (an empty field, a user the picker
+     * did not offer): the held child tickets are then never created without their validation.
+     */
+    public function testWithoutValidatorTheHeldChildTicketsAreNotCreated(): void
     {
-        $parent_id = $this->submit(self::YES, 0);
+        foreach ([0, 999999] as $manager) {
+            $parent_id = $this->submit(self::YES, $manager);
 
-        $this->assertSame(['EQUIPTASK', 'OTHERTASK'], $this->getChildNames($parent_id));
-        $this->assertSame(1, $this->countSubTaskSlots($parent_id));
-        $this->assertSame(0, countElementsInTable(TicketValidation::getTable(), ['tickets_id' => $parent_id]));
-        $this->hasSessionMessages(WARNING, [
-            'The validation of some child tickets could not be requested: they have been created without validation.',
-        ]);
+            $this->assertSame(['OTHERTASK'], $this->getChildNames($parent_id));
+            $this->assertSame(0, $this->countSubTaskSlots($parent_id));
+            $this->assertSame(0, countElementsInTable(TicketValidation::getTable(), ['tickets_id' => $parent_id]));
+            $this->assertFalse(FieldValidation::hasWaiting($parent_id));
+            $this->hasSessionMessages(ERROR, [
+                'The validation of some child tickets could not be requested: they have not been created.',
+            ]);
+            // The parent ticket says so
+            $followups = getAllDataFromTable(\ITILFollowup::getTable(), ['itemtype' => Ticket::class, 'items_id' => $parent_id]);
+            $this->assertCount(1, $followups);
+            $this->assertStringContainsString('EQUIPTASK', html_entity_decode(reset($followups)['content']));
+        }
+    }
+
+    public function testTheSubmissionNeedsAnAcceptedValidator(): void
+    {
+        $values = fn(int $equipment, int $manager): array => [
+            $this->form['equipment'] => $equipment,
+            $this->form['manager']   => $manager,
+        ];
+
+        $this->assertFalse(FieldValidation::checkSubmittedValidators($this->form['metademand'], $values(self::YES, 0)));
+        $this->hasSessionMessages(ERROR, ['Choose who validates the requested items in: Manager']);
+        $this->assertFalse(FieldValidation::checkSubmittedValidators($this->form['metademand'], $values(self::YES, 999999)));
+        $this->hasSessionMessages(ERROR, ['Choose who validates the requested items in: Manager']);
+
+        $tech_id = getItemByTypeName(User::class, 'tech', true);
+        $this->assertTrue(FieldValidation::checkSubmittedValidators($this->form['metademand'], $values(self::YES, $tech_id)));
+        // Nothing waits for a validator without equipment
+        $this->assertTrue(FieldValidation::checkSubmittedValidators($this->form['metademand'], $values(self::NO, 0)));
     }
 }

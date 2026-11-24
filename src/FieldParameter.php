@@ -709,7 +709,8 @@ class FieldParameter extends CommonDBChild
             return false;
         }
 
-        if (empty($input['color'])) {
+        // A colour ends up in style attributes: a hexadecimal one only, black otherwise
+        if (empty($input['color']) || !self::isHexColor($input['color'])) {
             $input['color'] = "#000000";
         }
 
@@ -740,10 +741,23 @@ class FieldParameter extends CommonDBChild
         if (isset($input["_blank_picture"])) {
             $input['icon'] = 'NULL';
         }
+        // A colour ends up in style attributes: anything but a hexadecimal one keeps the stored one
+        if (array_key_exists('color', $input) && !self::isHexColor($input['color'])) {
+            unset($input['color']);
+        }
 
         // The parent runs checkAttachedItemChangesAllowed(): moving the row to another
         // parent requires CREATE on the new one and PURGE on the old one.
         return parent::prepareInputForUpdate($input);
+    }
+
+    /**
+     * A colour of the parameters (title, block title, information), as the colour inputs post
+     * it and as the massive action accepts it: #rgb to #rrggbbaa.
+     */
+    public static function isHexColor(mixed $color): bool
+    {
+        return is_string($color) && preg_match('/^#[0-9A-Fa-f]{3,8}$/', $color) === 1;
     }
 
     public function post_addItem()

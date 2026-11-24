@@ -30,6 +30,7 @@
 use GlpiPlugin\Metademands\Basketline;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldOption;
+use GlpiPlugin\Metademands\FieldValidation;
 use GlpiPlugin\Metademands\Fields\Basket;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
@@ -448,6 +449,15 @@ if ($nofreetable == false) {
                                 $KO = true;
                             }
                             //                            $content = array_merge($content, $check['content']);
+                        }
+                        // Child tickets waiting for validators chosen in the form: at least one
+                        // the pickers offered, the fields are named otherwise
+                        if ($KO === false
+                            && !FieldValidation::checkSubmittedValidators(
+                                (int) $_POST['form_metademands_id'],
+                                is_array($_POST['field']) ? $_POST['field'] : [],
+                            )) {
+                            $KO = true;
                         }
                         if ($KO === false) {
                             // Save requester user

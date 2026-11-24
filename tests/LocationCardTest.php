@@ -136,7 +136,7 @@ class LocationCardTest extends DbTestCase
     /**
      * @param array<string, mixed> $extra
      */
-    private function renderContent(Location $location, bool $format_as_table, array $extra = []): string
+    private function renderContent(Location $location, bool $format_as_table, array $extra = [], int $fields_id = 0): string
     {
         $result = [1 => ['content' => '', 'display' => false]];
         Dropdown::displayFieldItems(
@@ -145,7 +145,8 @@ class LocationCardTest extends DbTestCase
             '',
             'Site',
             $extra + [
-                'id'                 => 1,
+                // A field showing the card: the address of a location its list offered only
+                'id'                 => $fields_id > 0 ? $fields_id : $this->createLocationField($this->createMetademand())->getID(),
                 'rank'               => 1,
                 'type'               => 'dropdown',
                 'item'               => Location::class,
@@ -244,6 +245,28 @@ class LocationCardTest extends DbTestCase
 
         $content = $this->renderContent($location, true, ['show_location_card' => 0]);
         $this->assertStringEndsWith('<td colspan="1">HQ</td>', $content);
+    }
+
+    /**
+     * A submission replaying the id of a location the list did not offer: no address in the
+     * ticket content (nor in the PDF, which reads the same lines)
+     */
+    public function testTheTicketContentCarriesNoAddressOfALocationOutOfTheField(): void
+    {
+        $field   = $this->createLocationField($this->createMetademand());
+        $outside = $this->createLocation([
+            'name'         => 'Elsewhere',
+            'entities_id'  => getItemByTypeName(\Entity::class, '_test_child_2', true),
+            'is_recursive' => 0,
+        ]);
+        $this->setEntity('_test_child_1', false);
+
+        $this->assertSame([], Dropdown::getLocationContentLines(Field::getAllParamsFromField($field) + [
+            'value' => (string) $outside->getID(),
+        ]));
+        $content = $this->renderContent($outside, true, [], $field->getID());
+        $this->assertStringNotContainsString('Address', $content);
+        $this->assertStringNotContainsString('Paris', $content);
     }
 
     public function testTheEndpointRendersTheCardOfAnOfferedLocationWithoutTheLocationRight(): void

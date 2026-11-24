@@ -148,6 +148,16 @@ class Config extends CommonDBTM implements ProvideTranslationsInterface
     }
 
     /**
+     * Writing the configuration requires what its form requires (front/config.form.php): the
+     * update right on the GLPI configuration, the plugin right is not enough. Its translations
+     * (ajax/translations.php) are checked against it.
+     */
+    public static function canUpdate(): bool
+    {
+        return Session::haveRight(\Config::$rightname, UPDATE);
+    }
+
+    /**
      * Restrict the icon columns to a plain icon class token: they are echoed into HTML class
      * attributes by the service catalog and the wizard, so a crafted value would break out of
      * the attribute (stored XSS). Same allow-list as Metademand and FieldCustomvalue.

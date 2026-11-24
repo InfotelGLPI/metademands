@@ -987,12 +987,40 @@ class TicketField extends CommonDBChild
             return null;
         }
 
+        // A template chosen in the tab: only one its picker offered
+        if ($templates_id > 0 && !self::isOfferedTemplate($meta, $templates_id)) {
+            return null;
+        }
         $templates_id = $templates_id > 0 ? $templates_id : self::getMetademandTemplateId($meta);
         if ($templates_id <= 0 || !$tt->getFromDBWithData($templates_id, true)) {
             $tt->getEmpty();
         }
 
         return $tt;
+    }
+
+    /**
+     * Whether the template chosen in the "Parent ticket fields" tab may be synchronised with:
+     * the template of the metademand (getMetademandTemplateId()), or one its picker offered, a
+     * template of the object to create visible from the active entities.
+     */
+    public static function isOfferedTemplate(Metademand $meta, int $templates_id): bool
+    {
+        if ($templates_id <= 0) {
+            return false;
+        }
+        if ($templates_id === self::getMetademandTemplateId($meta)) {
+            return true;
+        }
+        $item = getItemForItemtype((string) ($meta->fields['object_to_create'] ?? ''));
+        if (!$item instanceof \CommonITILObject) {
+            return false;
+        }
+        $tt = getItemForItemtype($item::getTemplateClass());
+
+        return $tt instanceof \ITILTemplate
+            && $tt->getFromDB($templates_id)
+            && Session::haveAccessToEntity((int) $tt->fields['entities_id'], (bool) $tt->fields['is_recursive']);
     }
 
     /**

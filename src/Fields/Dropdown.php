@@ -1036,8 +1036,10 @@ class Dropdown extends CommonDBTM
             return [];
         }
 
-        $location = new Location();
-        if (!$location->getFromDB((int) $field['value'])) {
+        // Only a location the list of the field offered (its entities, root and depth): the
+        // posted id of another one shows no address, in the ticket nor in the PDF
+        $location = self::getOfferedLocation((int) ($field['id'] ?? 0), (int) $field['value']);
+        if ($location === null) {
             return [];
         }
 
