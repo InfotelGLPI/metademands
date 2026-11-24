@@ -475,7 +475,8 @@ class FieldOption extends CommonDBChild
                             $data = [Dropdown::EMPTY_VALUE];
                             foreach ($fields_data as $id => $value) {
                                 if ($value['item'] != "ITILCategory_Metademands"
-                                    && $value['item'] != "informations") {
+                                    && $value['item'] != "informations"
+                                    && $value['item'] != "forminformation") {
                                     $data[$id] = $value['rank'] . " - " . urldecode(
                                         html_entity_decode($value['name']),
                                     );
@@ -1024,6 +1025,7 @@ class FieldOption extends CommonDBChild
         switch ($params['type']) {
             case 'title-block':
             case 'informations':
+            case 'forminformation':
             case 'number':
             case 'range':
             case 'freetable':
@@ -1180,6 +1182,7 @@ class FieldOption extends CommonDBChild
         switch ($params['type']) {
             case 'title-block':
             case 'informations':
+            case 'forminformation':
             case 'basket':
             case 'link':
             case 'upload':
@@ -1272,6 +1275,7 @@ class FieldOption extends CommonDBChild
             switch ($params['type']) {
                 case 'title-block':
                 case 'informations':
+                case 'forminformation':
                 case 'range':
                 case 'number':
                 case 'freetable':
@@ -1457,7 +1461,8 @@ class FieldOption extends CommonDBChild
             $data = [Dropdown::EMPTY_VALUE];
             foreach ($fields_data as $fields_id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands"
-                    && $value['item'] != "informations") {
+                    && $value['item'] != "informations"
+                    && $value['item'] != "forminformation") {
                     $data[$fields_id] = $value['rank'] . " - " . urldecode(
                         html_entity_decode($value['name']),
                     );
@@ -2046,6 +2051,7 @@ class FieldOption extends CommonDBChild
         switch ($data['type']) {
             case 'title-block':
             case 'informations':
+            case 'forminformation':
             case 'link':
             case 'upload':
             case 'datetime_interval':
@@ -2100,6 +2106,7 @@ class FieldOption extends CommonDBChild
         switch ($data['type']) {
             case 'title-block':
             case 'informations':
+            case 'forminformation':
             case 'number':
             case 'range':
             case 'freetable':
@@ -2511,6 +2518,7 @@ class FieldOption extends CommonDBChild
         switch ($data['type']) {
             case 'title-block':
             case 'informations':
+            case 'forminformation':
             case 'number':
             case 'range':
             case 'freetable':
@@ -2566,6 +2574,7 @@ class FieldOption extends CommonDBChild
         switch ($data['type']) {
             case 'title-block':
             case 'informations':
+            case 'forminformation':
             case 'number':
             case 'range':
             case 'freetable':
@@ -2633,6 +2642,7 @@ class FieldOption extends CommonDBChild
         switch ($data['type']) {
             case 'title-block':
             case 'informations':
+            case 'forminformation':
             case 'range':
             case 'number':
             case 'freetable':

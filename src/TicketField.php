@@ -236,7 +236,7 @@ class TicketField extends CommonDBChild
         foreach ($fields as $field) {
             if ($field['type'] == 'title'
                 || $field['type'] == 'title-block'
-                || $field['type'] == 'informations'
+                || in_array($field['type'], ['informations', 'forminformation'])
                 || $field['type'] == 'upload'
                 || $field['type'] == 'basket'
                 || $field['type'] == 'signature') {

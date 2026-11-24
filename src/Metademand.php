@@ -4352,6 +4352,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     continue;
                 }
 
+                // The information of the form presents it to the requester, it is not part of
+                // the request (Fields/Forminformation.php)
+                if ($field['type'] == 'forminformation') {
+                    continue;
+                }
+
                 if ($hide_no_field) {
                     if ($field['type'] == 'radio'
                         && ($field['value'] == ""

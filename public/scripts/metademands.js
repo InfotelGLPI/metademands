@@ -1270,8 +1270,9 @@ function plugin_metademands_wizard_showStep(root_doc, arrayDatas)
  */
 function plugin_metademands_wizard_stepHasInput(div)
 {
-    // Block not found: keep previous behaviour (do not prompt, let navigation proceed)
-    if (!div) {
+    // Block not found: keep previous behaviour (do not prompt, let navigation proceed).
+    // The information of the form has nothing to fill (Fields/Forminformation.php).
+    if (!div || div.hasAttribute('data-md-form-information')) {
         return true;
     }
 

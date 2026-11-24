@@ -190,7 +190,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                                     $post[$id] = 0;
                                 }
                             }
-                            if ($value['type'] == 'informations'
+                            if (in_array($value['type'], ['informations', 'forminformation'])
                                 || $value['type'] == 'title'
                                 || $value['type'] == 'title-block') {
                                 $post[$id] = "";

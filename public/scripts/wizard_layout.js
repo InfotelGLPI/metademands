@@ -44,7 +44,8 @@
  */
 
 const WIZARD_SELECTOR = '.md-wizard[data-md-wizard-layout]';
-const BLOCK_SELECTOR = ':scope > [bloc-id^="bloc"]';
+/** The blocks of the summary: not the information of the form, above them, with nothing to fill */
+const BLOCK_SELECTOR = ':scope > [bloc-id^="bloc"]:not([data-md-form-information])';
 /** Yes / no fields of the "buttons" display (Fields\Yesno::BUTTONS_DISPLAY) */
 const YESNO_SELECTOR = 'select.yesno.md-yesno-buttons';
 /** Elements added by this module, ignored by its mutation observer */

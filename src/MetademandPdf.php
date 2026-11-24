@@ -805,6 +805,10 @@ class MetademandPdf extends \TCPDF
                 if ($with_basket && $elt['is_basket'] == false) {
                     continue;
                 }
+                // The information of the form is not part of the request, nor its block
+                if ($elt['type'] == 'forminformation') {
+                    continue;
+                }
                 if (isset($fields[$key])
                     || $elt['type'] == 'title'
                     || $elt['type'] == 'title-block'
@@ -884,7 +888,7 @@ class MetademandPdf extends \TCPDF
                         && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
                         continue;
                     }
-                    if ($elt['type'] == 'informations') {
+                    if (in_array($elt['type'], ['informations', 'forminformation'])) {
                         continue;
                     }
                     if ($elt['type'] == 'number'
