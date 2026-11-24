@@ -1021,6 +1021,18 @@ document.addEventListener('click', (event) => {
     }
 });
 
+// Enter in the new number of a block posts it with the button of that block: the inputs of every
+// block belong to the same form, whose implicit submission would take the button of the first one
+document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' || event.isComposing
+        || !(event.target instanceof HTMLInputElement)
+        || !event.target.matches('[data-md-renumber-block]')) {
+        return;
+    }
+    event.preventDefault();
+    event.target.closest('.input-group')?.querySelector('button[type="submit"]')?.click();
+});
+
 /**
  * @param {ParentNode} root
  */

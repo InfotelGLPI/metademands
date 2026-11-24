@@ -713,6 +713,16 @@ class FieldParameter extends CommonDBChild
             $input['color'] = "#000000";
         }
 
+        // An information takes the whole row with its title hidden, unless told otherwise (the
+        // copies of a field, the duplication and the import give their own parameters)
+        $field = new Field();
+        if (isset($input['plugin_metademands_fields_id'])
+            && $field->getFromDB((int) $input['plugin_metademands_fields_id'])
+            && in_array($field->fields['type'], ['informations', 'forminformation'], true)) {
+            $input['row_display'] ??= 1;
+            $input['hide_title']  ??= 1;
+        }
+
         return $input;
     }
 

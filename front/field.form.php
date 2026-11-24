@@ -228,21 +228,22 @@ if (isset($_POST["add_another"])) {
     $meta = new Metademand();
     $meta->check((int) $_POST["plugin_metademands_metademands_id"], UPDATE);
 
-    $field = new Field();
-    if ($field_values = $field->find([
-        "plugin_metademands_metademands_id" => (int) $_POST["plugin_metademands_metademands_id"],
-        'rank' => (int) $_POST["rank"],
-    ])) {
-        $orders = [];
-        foreach ($field_values as $k => $field_value) {
-            $orders[$k]['order'] = $field_value['order'];
-        }
+    // In their current order, the block title first: the fields were renumbered in the order of
+    // their ids, which sent the title anywhere
+    Field::fixBlockOrders((int) $_POST["plugin_metademands_metademands_id"], (int) $_POST["rank"]);
+    Html::back();
+} elseif (isset($_POST["renumber_block"])) {
+    // Every field of a block and what names the block: the parent is what must be authorised
+    $meta = new Metademand();
+    $meta->check((int) $_POST["plugin_metademands_metademands_id"], UPDATE);
 
-        $neworders = Field::fixOrders($orders);
-        foreach ($neworders as $id => $neworder) {
-            $field->update(['id' => $id, 'order' => $neworder['order']]);
-        }
-    }
+    // The button of the block posts its number, the new one is typed next to it
+    $from = (int) ($_POST["rank"] ?? -1);
+    Field::renumberBlock(
+        (int) $_POST["plugin_metademands_metademands_id"],
+        $from,
+        (int) ($_POST["new_rank"][$from] ?? 0),
+    );
     Html::back();
 } elseif (isset($_POST["purge"])) {
     // delete($input, 1) is a purge, and the identifier comes from the client: control the purge

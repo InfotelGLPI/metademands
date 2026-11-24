@@ -571,9 +571,12 @@ class Export extends CommonDBTM
                 'item'        => 'informations',
                 'comment'     => $comment['description'],
             ];
+            // The whole row, its name shown as the title of the comment in the GLPI form
             $fields['metafieldparameters']['fieldparameters' . $comment_id] = [
                 'plugin_metademands_fields_id' => $comment_id,
                 'color'                        => '#000000',
+                'row_display'                  => 1,
+                'hide_title'                   => 0,
             ];
 
             $conditions = json_decode((string) ($comment['conditions'] ?? ''), true);

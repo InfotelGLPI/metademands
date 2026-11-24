@@ -32,7 +32,9 @@
  # public/scripts/field_list.js.
  #
  # panels      - blocks: id, name, rows, fix_orders, warning_count, is_conditional,
- #               condition_sources (id, label of the fields that show the block)
+ #               condition_sources (id, label of the fields that show the block),
+ #               is_form_information (the block of the form information, fixed)
+ # max_block   - highest block number (Field::MAX_FIELDS), for "Change the block number"
  # to_complete - fields with a warning: id, label, warnings
  # type_filter - type => label of the types present in the list
  #}
@@ -224,6 +226,33 @@
                                 </span>
                             {% endif %}
                             <div class="ms-auto d-flex gap-1">
+                                {#- Its fields and what names the block take another, free, number
+                                 # (Field::renumberBlock()); not the block of the form information -#}
+                                {% if canedit and not panel.is_form_information %}
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-sm btn-ghost-secondary" data-bs-toggle="dropdown"
+                                                data-bs-auto-close="outside" aria-expanded="false"
+                                                title="{{ __('Change the block number', 'metademands') }}"
+                                                aria-label="{{ __('Change the block number', 'metademands') }}">
+                                            <i class="ti ti-hash"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-end p-3 md-renumber-block">
+                                            <label class="form-label" for="md-renumber-block-{{ meta_id }}-{{ panel.id }}">
+                                                {{ __('New number of block %d', 'metademands')|format(panel.id) }}
+                                            </label>
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" class="form-control" id="md-renumber-block-{{ meta_id }}-{{ panel.id }}"
+                                                       form="md-renumber-block-{{ meta_id }}" name="new_rank[{{ panel.id }}]"
+                                                       min="1" max="{{ max_block }}" data-md-renumber-block>
+                                                <button type="submit" class="btn btn-primary" form="md-renumber-block-{{ meta_id }}"
+                                                        name="rank" value="{{ panel.id }}">
+                                                    {{ _x('button', 'Save') }}
+                                                </button>
+                                            </div>
+                                            <div class="form-text">{{ __('A free number: the blocks already used are refused', 'metademands') }}</div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                                 {% if canedit and panel.fix_orders %}
                                     <button type="submit" form="md-fix-orders-{{ meta_id }}" name="rank" value="{{ panel.id }}"
                                             class="btn btn-sm btn-warning"
@@ -396,6 +425,14 @@
             <form id="md-fix-orders-{{ meta_id }}" method="post" action="{{ form_url }}">
                 <input type="hidden" name="plugin_metademands_metademands_id" value="{{ meta_id }}">
                 <input type="hidden" name="fixorders" value="1">
+                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+            </form>
+            {#- Posted by the "Change the block number" button of a block, with the number typed
+             # next to it (inputs owned through their form attribute: the blocks sit in the form
+             # of the massive actions) -#}
+            <form id="md-renumber-block-{{ meta_id }}" method="post" action="{{ form_url }}">
+                <input type="hidden" name="plugin_metademands_metademands_id" value="{{ meta_id }}">
+                <input type="hidden" name="renumber_block" value="1">
                 <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
             </form>
         {% endif %}

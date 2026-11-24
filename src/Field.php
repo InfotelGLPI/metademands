@@ -45,6 +45,7 @@ use DbUtils;
 use Document;
 use Entity;
 use Glpi\DBAL\QueryExpression;
+use Glpi\DBAL\QuerySubQuery;
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\Features\Clonable;
 use Glpi\ItemTranslation\Context\ProvideTranslationsInterface;
@@ -958,12 +959,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         // Blocks a field shows depending on its value (FieldOption::hidden_block)
         $conditional_blocks = [];
         foreach ($block_fields as $idblock => $blockdata) {
-            $orders = [];
-            foreach ($blockdata as $value) {
-                $orders[] = $value['order'];
-            }
-
-            $fix_orders = self::isSequentialFromOne($orders) == false;
+            // Orders with gaps, or a block title that is not first (fixBlockOrders())
+            $fix_orders = self::needsOrderFix($blockdata);
 
             $rows = [];
             if (is_array($blockdata) && count($blockdata) > 0) {
@@ -1180,6 +1177,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             'massive_container' => 'massMetaFields' . $rand,
             'purge_form_id' => 'purgeMetaField' . $rand,
             'panels' => $panels,
+            // Highest number of a block, for the "Change the block number" of each block
+            'max_block' => self::MAX_FIELDS,
             'to_complete' => $to_complete,
             'type_filter' => $type_filter,
         ]);
@@ -4864,6 +4863,152 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
     }
 
     /**
+     * Give a block another number, its fields at once, and everything that names the block
+     * by its number: the options showing it or opening it as child blocks, the blocks used by
+     * the child objects, the steps of the step-by-step mode and the step forms in progress.
+     * Only a free number is accepted (no field in it); the block of the information of the
+     * form keeps its own (Forminformation::BLOCK).
+     *
+     * @param int $metademands_id
+     * @param int $from           number of the block
+     * @param int $to             its new number
+     *
+     * @return bool false when refused (message in session)
+     */
+    public static function renumberBlock(int $metademands_id, int $from, int $to): bool
+    {
+        global $DB;
+
+        $error = static function (string $message): bool {
+            Session::addMessageAfterRedirect($message, false, ERROR);
+
+            return false;
+        };
+
+        if ($to < 1 || $to > self::MAX_FIELDS) {
+            return $error(sprintf(__('The number of a block goes from 1 to %d', 'metademands'), self::MAX_FIELDS));
+        }
+        if ($from === $to) {
+            return true;
+        }
+
+        $fields = (new self())->find(['plugin_metademands_metademands_id' => $metademands_id, 'rank' => $from]);
+        if ($fields === []) {
+            return $error(sprintf(__('Block %d has no field', 'metademands'), $from));
+        }
+        if (in_array('forminformation', array_column($fields, 'type'), true)) {
+            return $error(__('The block of the form information keeps its number', 'metademands'));
+        }
+        if (countElementsInTable(self::getTable(), ['plugin_metademands_metademands_id' => $metademands_id, 'rank' => $to]) > 0) {
+            return $error(sprintf(__('Block %d already has fields: choose a free block number', 'metademands'), $to));
+        }
+
+        $DB->beginTransaction();
+        try {
+            foreach (array_keys($fields) as $fields_id) {
+                $field = new self();
+                if (!$field->update(['id' => $fields_id, 'rank' => $to])) {
+                    throw new \RuntimeException('Field ' . $fields_id . ' not moved');
+                }
+            }
+
+            // Options of the fields of the metademand: the block they show, their child blocks
+            foreach ($DB->request([
+                'SELECT' => ['id', 'hidden_block', 'childs_blocks'],
+                'FROM'   => FieldOption::getTable(),
+                'WHERE'  => ['plugin_metademands_fields_id' => new QuerySubQuery([
+                    'SELECT' => 'id',
+                    'FROM'   => self::getTable(),
+                    'WHERE'  => ['plugin_metademands_metademands_id' => $metademands_id],
+                ])],
+            ]) as $option) {
+                $changes = [];
+                if ((int) $option['hidden_block'] === $from) {
+                    $changes['hidden_block'] = $to;
+                }
+                $childs_blocks = self::renumberBlockInJson((string) $option['childs_blocks'], $from, $to);
+                if ($childs_blocks !== null) {
+                    $changes['childs_blocks'] = $childs_blocks;
+                }
+                if ($changes !== []) {
+                    $DB->update(FieldOption::getTable(), $changes, ['id' => $option['id']]);
+                }
+            }
+
+            // Blocks whose fields the child objects use
+            foreach ($DB->request([
+                'SELECT' => ['id', 'block_use'],
+                'FROM'   => Task::getTable(),
+                'WHERE'  => ['plugin_metademands_metademands_id' => $metademands_id],
+            ]) as $task) {
+                $block_use = self::renumberBlockInJson((string) $task['block_use'], $from, $to);
+                if ($block_use !== null) {
+                    $DB->update(Task::getTable(), ['block_use' => $block_use], ['id' => $task['id']]);
+                }
+            }
+
+            // Steps of the step-by-step mode, and the step forms waiting for that block
+            foreach ([Step::getTable(), Stepform::getTable()] as $table) {
+                $DB->update(
+                    $table,
+                    ['block_id' => $to],
+                    ['plugin_metademands_metademands_id' => $metademands_id, 'block_id' => $from],
+                );
+            }
+
+            $DB->commit();
+        } catch (\Throwable $e) {
+            $DB->rollBack();
+            trigger_error(sprintf(
+                'metademands: block %d of metademand %d could not be renumbered %d: %s',
+                $from,
+                $metademands_id,
+                $to,
+                $e->getMessage(),
+            ), E_USER_WARNING);
+
+            return $error(sprintf(__('Block %1$d could not be renumbered %2$d', 'metademands'), $from, $to));
+        }
+
+        Session::addMessageAfterRedirect(sprintf(__('Block %1$d is now block %2$d', 'metademands'), $from, $to));
+
+        return true;
+    }
+
+    /**
+     * A JSON list of block numbers (possibly nested, numbers or strings) with one renumbered,
+     * keeping the type of each value.
+     *
+     * @return string|null the new JSON, null when unchanged
+     */
+    private static function renumberBlockInJson(string $json, int $from, int $to): ?string
+    {
+        $value = json_decode($json, true);
+        if (!is_array($value)) {
+            return null;
+        }
+        $changed = false;
+        $walk = static function (mixed $item) use (&$walk, &$changed, $from, $to): mixed {
+            if (is_array($item)) {
+                return array_map($walk, $item);
+            }
+            if (is_int($item) && $item === $from) {
+                $changed = true;
+                return $to;
+            }
+            if (is_string($item) && ctype_digit($item) && (int) $item === $from) {
+                $changed = true;
+                return (string) $to;
+            }
+
+            return $item;
+        };
+        $renumbered = $walk($value);
+
+        return $changed ? (string) json_encode($renumbered) : null;
+    }
+
+    /**
      * @param array $params
      */
     public function reorder(array $params)
@@ -4934,6 +5079,56 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             }
         }
         return true;
+    }
+
+    /**
+     * Number the fields of a block from 1 in their current order, each one following the
+     * previous one ("Display field after"), its title first: the wizard shows the title of a
+     * block only as its first field (Wizard::displayBlockContent()).
+     *
+     * @param int $metademands_id
+     * @param int $rank           the block
+     */
+    public static function fixBlockOrders(int $metademands_id, int $rank): void
+    {
+        $fields = (new self())->find(
+            ['plugin_metademands_metademands_id' => $metademands_id, 'rank' => $rank],
+            ['order', 'id'],
+        );
+        $is_title = static fn(array $field): bool => $field['type'] === 'title-block';
+        // Keyed by id: the titles, then the other fields, each in their current order
+        $ordered = array_filter($fields, $is_title) + array_filter($fields, static fn(array $field): bool => !$is_title($field));
+
+        $count       = 1;
+        $previous_id = 0;
+        foreach ($ordered as $id => $values) {
+            if ((int) $values['order'] !== $count || (int) $values['plugin_metademands_fields_id'] !== $previous_id) {
+                $field = new self();
+                $field->getFromDB($id);
+                $field->fields['order']                        = $count;
+                $field->fields['plugin_metademands_fields_id'] = $previous_id;
+                $field->updateInDB(['order', 'plugin_metademands_fields_id']);
+            }
+            $previous_id = (int) $id;
+            $count++;
+        }
+    }
+
+    /**
+     * Whether a block needs fixBlockOrders(): its orders do not follow each other from 1, or its
+     * title is not its first field.
+     *
+     * @param array $fields the fields of the block, in their order
+     */
+    public static function needsOrderFix(array $fields): bool
+    {
+        $fields = array_values($fields);
+        if (!self::isSequentialFromOne(array_map(static fn(array $field): int => (int) $field['order'], $fields))) {
+            return true;
+        }
+        $titles = array_keys(array_column($fields, 'type'), 'title-block', true);
+
+        return $titles !== [] && $titles !== range(0, count($titles) - 1);
     }
 
     public static function fixOrders(array $data)
