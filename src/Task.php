@@ -308,7 +308,12 @@ class Task extends CommonDBChild
         if ($ID > 0) {
 
             $this->check($ID, READ);
-            //            $metademand->getFromDB($this->fields['plugin_metademands_metademands_id']);
+            // The meta-demand of the task, not the posted parent (ajax/viewsubitem.php loads it
+            // unchecked): the form lists its fields, its blocks and its tasks
+            $item = new Metademand();
+            if (!$item->getFromDB((int) $this->fields['plugin_metademands_metademands_id'])) {
+                return false;
+            }
         } else {
             // Create item
             $options['itemtype'] = get_class($item);
@@ -1092,6 +1097,120 @@ class Task extends CommonDBChild
 
 
     /**
+     * Whether a task belongs to a metademand: the parent of a task is one of its siblings
+     */
+    public static function isTaskOfMetademand(int $tasks_id, int $metademands_id): bool
+    {
+        return $tasks_id > 0 && $metademands_id > 0 && countElementsInTable(self::getTable(), [
+            'id'                                => $tasks_id,
+            'plugin_metademands_metademands_id' => $metademands_id,
+        ]) > 0;
+    }
+
+    /**
+     * Whether the entity, the users and the groups a task (or its ticket / mail definition)
+     * gives to the objects it creates are ones the form offers: an entity of the session, the
+     * users and groups of its entities. The objects are created later, in the session of
+     * whoever submits the form, which no longer checks them.
+     *
+     * Only the values the input sets or changes are checked: a stored one stays usable when
+     * the active entities of the designer change. A value outside is dropped rather than the
+     * whole input refused, the import and the duplication of a form creating tasks as well:
+     * a user or a group is emptied, an entity keeps the stored one (the active one on add).
+     *
+     * @param array<string, mixed>      $input
+     * @param array<string, mixed>|null $stored the fields of the updated row, null on add
+     * @param list<string>              $users  user columns of the class
+     * @param list<string>              $groups group columns of the class
+     * @param bool                      $with_entity whether the entity of the class is read (the one of a
+     *                                               ticket task is not, the task's is)
+     *
+     * @return array<string, mixed> the input without the values outside
+     */
+    public static function filterTaskTargets(array $input, ?array $stored, array $users = [], array $groups = [], bool $with_entity = true): array
+    {
+        $changed = static function (string $key) use ($input, $stored): ?int {
+            if (!array_key_exists($key, $input) || is_array($input[$key])) {
+                return null;
+            }
+            $value = (int) $input[$key];
+            if ($value < 0 || ($stored !== null && (int) ($stored[$key] ?? 0) === $value)) {
+                return null;
+            }
+            return $value;
+        };
+
+        $dropped = false;
+        if ($with_entity && ($entities_id = $changed('entities_id')) !== null && !Session::haveAccessToEntity($entities_id)) {
+            if ($stored !== null) {
+                unset($input['entities_id']);
+            } else {
+                $input['entities_id'] = (int) ($_SESSION['glpiactive_entity'] ?? 0);
+            }
+            $dropped = true;
+        }
+        foreach ($users as $key) {
+            if (($users_id = $changed($key)) !== null && $users_id > 0 && !self::isReachableUser($users_id)) {
+                $input[$key] = 0;
+                $dropped = true;
+            }
+        }
+        foreach ($groups as $key) {
+            if (($groups_id = $changed($key)) !== null && $groups_id > 0 && !self::isReachableGroup($groups_id)) {
+                $input[$key] = 0;
+                $dropped = true;
+            }
+        }
+        if ($dropped) {
+            Session::addMessageAfterRedirect(
+                __('An entity, a user or a group outside your entities was not kept', 'metademands'),
+                false,
+                WARNING,
+            );
+        }
+
+        return $input;
+    }
+
+    /**
+     * A user with a profile in one of the active entities, as the user dropdowns offer them
+     */
+    private static function isReachableUser(int $users_id): bool
+    {
+        if (!(new \User())->getFromDB($users_id)) {
+            return false;
+        }
+
+        return array_intersect(
+            \Profile_User::getUserEntities($users_id, true),
+            (array) ($_SESSION['glpiactiveentities'] ?? []),
+        ) !== [];
+    }
+
+    /**
+     * A group of the active entities (its own or an ancestor's, recursive)
+     */
+    private static function isReachableGroup(int $groups_id): bool
+    {
+        $group = new \Group();
+        if (!$group->getFromDB($groups_id)) {
+            return false;
+        }
+
+        return Session::haveAccessToEntity(
+            (int) $group->fields['entities_id'],
+            (bool) $group->fields['is_recursive'],
+        );
+    }
+
+    public function prepareInputForUpdate($input)
+    {
+        $input = self::filterTaskTargets($input, $this->fields);
+
+        return parent::prepareInputForUpdate($input);
+    }
+
+    /**
      * @param $input
      *
      * @return array|bool
@@ -1101,6 +1220,7 @@ class Task extends CommonDBChild
         if (isset($input['link_metademands_id']) && empty($input['link_metademands_id'])) {
             return [];
         }
+        $input = self::filterTaskTargets($input, null);
 
         // cannot update a used metademand category
         if (isset($input['itilcategories_id']) && !empty($input['itilcategories_id'])) {

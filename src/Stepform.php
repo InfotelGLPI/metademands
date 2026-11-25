@@ -52,6 +52,47 @@ class Stepform extends CommonDBTM
     public static string $rightname = 'plugin_metademands';
 
     /**
+     * A step form is read by its actors (Step::canActOnStepform()) and by the designers of its
+     * meta-demand: the table carries no entity, the core checked the right of the class only.
+     * It is written by the step flow only (Step::nextUser()), never through a generic route.
+     */
+    public function canViewItem(): bool
+    {
+        return $this->isOwnStepform();
+    }
+
+    public function canCreateItem(): bool
+    {
+        return false;
+    }
+
+    public function canUpdateItem(): bool
+    {
+        return false;
+    }
+
+    public function canDeleteItem(): bool
+    {
+        return $this->isOwnStepform();
+    }
+
+    public function canPurgeItem(): bool
+    {
+        return $this->isOwnStepform();
+    }
+
+    private function isOwnStepform(): bool
+    {
+        $id = (int) ($this->fields['id'] ?? 0);
+        if ($id > 0 && Step::canActOnStepform($id)) {
+            return true;
+        }
+        $metademands_id = (int) ($this->fields['plugin_metademands_metademands_id'] ?? 0);
+
+        return $metademands_id > 0 && (new Metademand())->can($metademands_id, UPDATE);
+    }
+
+    /**
      * functions mandatory
      * getTypeName(), canCreate(), canView()
      *

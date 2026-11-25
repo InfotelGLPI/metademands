@@ -31,6 +31,7 @@ use Glpi\Event;
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Metademands\Interticketfollowup;
+use GlpiPlugin\Metademands\Metademand;
 
 // This controller had no page guard at all: the only control was carried by check(-1, CREATE),
 // which boils down to the global right bit anyway.
@@ -41,15 +42,18 @@ $fup = new Interticketfollowup();
 // class_exists() accepts any autoloadable class of the core, of another plugin or of vendor/, and
 // the posted itemtype decides which table is read and written downstream: control the value, not
 // its existence. Only the ITIL objects the timeline of which can carry this form are legitimate.
-if (!isset($_POST['itemtype'])
-    || !in_array($_POST['itemtype'], [\Ticket::class, \Change::class, \Problem::class], true)) {
+// The followups link the tickets of a meta-demand: a Change or a Problem was checked under its id
+// while the followup was written on the Ticket of the same id
+if (!isset($_POST['itemtype']) || $_POST['itemtype'] !== \Ticket::class) {
     throw new BadRequestHttpException();
 }
-$track = new $_POST['itemtype']();
+$track = new \Ticket();
 
 // The followup is attached to this object and notifies its actors, so the posted identifier has to
-// be confronted with the session - neither the entity nor the actor list was checked before.
-if (!$track->can((int) ($_POST["tickets_id"] ?? 0), READ)) {
+// be confronted with the session - neither the entity nor the actor list was checked before. The
+// id checked is the id written.
+$_POST['tickets_id'] = Metademand::getPostedId($_POST['tickets_id'] ?? null);
+if (!$track->can($_POST['tickets_id'], READ)) {
     throw new AccessDeniedHttpException();
 }
 
@@ -69,8 +73,17 @@ if (isset($_POST["add"])) {
         // timelines and the notifications spread it over the whole metademand
         // (Interticketfollowup::getRelatedTickets()), so the ticket it is written from no longer
         // shows it once per son.
-        $fup->check(-1, CREATE, $_POST);
-        $fup->add($_POST);
+        // The inputs of the form only: an "id" made add() clone that followup (Clonable, no right
+        // checked on it) onto this ticket, whatever its entity, and the author, the date and the
+        // notifications were taken from the request
+        $input = [
+            'itemtype'   => \Ticket::class,
+            'tickets_id' => $_POST['tickets_id'],
+            'targets_id' => (int) $_POST['targets_id'],
+            'content'    => $_POST['content'] ?? '',
+        ] + array_intersect_key($_POST, array_flip(['_content', '_prefix_content', '_tag_content']));
+        $fup->check(-1, CREATE, $input);
+        $fup->add($input);
 
         Event::log(
             $fup->getField('tickets_id'),

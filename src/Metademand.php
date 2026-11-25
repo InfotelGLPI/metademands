@@ -39,6 +39,7 @@ use DbUtils;
 use Dropdown;
 use Glpi\DBAL\QueryExpression;
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use Glpi\Exception\Http\BadRequestHttpException;
 use Glpi\Form\Category;
 use Glpi\Form\ServiceCatalog\ServiceCatalogLeafInterface;
 use Glpi\ItemTranslation\Context\ProvideTranslationsInterface;
@@ -983,6 +984,29 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     }
 
     /**
+     * The identifier of an existing row posted by a form: a plain positive integer, nothing
+     * else. The same value must then serve the right check and the action: check() reads
+     * "5x12" as 512 (getFromDB(), Toolbox::cleanInteger()) while (int) gives 5, and a string
+     * such as "/512" is even taken for a new item by CommonDBTM::isNewID(), whose creation
+     * right is then evaluated instead, before delete() or update() load the row 512.
+     *
+     * @param mixed $id
+     *
+     * @throws BadRequestHttpException for anything but a positive integer
+     */
+    public static function getPostedId($id): int
+    {
+        $id = is_int($id) || is_string($id)
+            ? filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
+            : false;
+        if ($id === false) {
+            throw new BadRequestHttpException();
+        }
+
+        return $id;
+    }
+
+    /**
      * Assert that the current session may act on a client-provided ticket identifier.
      *
      * tickets_id, current_ticket_id and ancestor_tickets_id all reach this class from $_GET
@@ -1263,15 +1287,9 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             return 0;
         }
 
-        $resource = new Resource();
-        if (!$resource->getFromDB($resources_id)) {
-            return 0;
-        }
-
-        return Session::haveAccessToEntity(
-            $resource->fields['entities_id'] ?? 0,
-            $resource->fields['is_recursive'] ?? 0,
-        ) ? $resources_id : 0;
+        // The right of the resources plugin on that resource, its entity included: the entity
+        // alone let any submitter link (and display) HR records
+        return (new Resource())->can($resources_id, READ) ? $resources_id : 0;
     }
 
     /**
@@ -1341,6 +1359,145 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         return self::isDeviceOwnedBy($item, self::resolveMyDevicesOwner($posted_values, $fields_values))
             ? [$itemtype => [$items_id]]
             : null;
+    }
+
+    /**
+     * The values of the list fields of a form, as their dropdowns offer them: the values name
+     * objects by id, which the ticket content, the PDF, the associated items and the wizard
+     * then display by their names. A value no dropdown offered (another entity, another user's
+     * device, any ticket...) is emptied.
+     *
+     * @param array<int|string, array<string, mixed>> $fields definitions of the fields, by id
+     * @param array<int|string, mixed>                $values posted values, by field id
+     *
+     * @return array<int|string, mixed>
+     */
+    public static function filterOfferedValues(array $fields, array $values): array
+    {
+        foreach ($values as $fields_id => $value) {
+            if (isset($fields[$fields_id]) && is_array($fields[$fields_id])) {
+                $values[$fields_id] = self::filterOfferedValue($fields[$fields_id], $value, $values);
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * The value of one list field, as its dropdown offers it (filterOfferedValues())
+     *
+     * @param array<string, mixed>     $field         definition of the field
+     * @param mixed                    $value         posted value, scalar or list
+     * @param array<int|string, mixed> $posted_values values of the whole form (linked fields)
+     *
+     * @return mixed the value, or its offered part; '' (or []) when nothing is offered
+     */
+    public static function filterOfferedValue(array $field, $value, array $posted_values = [])
+    {
+        $type = (string) ($field['type'] ?? '');
+        $item = (string) ($field['item'] ?? '');
+        if (!in_array($type, ['dropdown', 'dropdown_object', 'dropdown_multiple', 'dropdown_meta'], true)
+            || $value === null || $value === '' || $value === 0 || $value === '0' || $value === []) {
+            return $value;
+        }
+
+        if ($type === 'dropdown_meta') {
+            // "My devices": "<itemtype>_<id>" of a device of the user the field lists
+            if ($item === 'mydevices') {
+                return self::filterMyDeviceValue($value, $posted_values, $field) !== null ? $value : '';
+            }
+            // Its own values otherwise (custom values, urgency...)
+            return $value;
+        }
+
+        if ($item === User::class || $item === \Group::class) {
+            $accepted = self::filterActorValues($value, $item, $field);
+            if ($item === User::class) {
+                // The supervisors the user fields preselect, wherever they are: the one of the
+                // submitter, the one of the user of the linked field (ajax/umanagerUpdate.php)
+                $supervisors = [];
+                $user        = new User();
+                if ($user->getFromDB((int) Session::getLoginUserID())) {
+                    $supervisors[] = (int) $user->fields['users_id_supervisor'];
+                }
+                $link_to_user = (int) ($field['link_to_user'] ?? 0);
+                $linked_users_id = $link_to_user > 0 && is_scalar($posted_values[$link_to_user] ?? null)
+                    ? (int) $posted_values[$link_to_user]
+                    : 0;
+                if ($linked_users_id > 0
+                    && Config::canCurrentUserViewRequester($linked_users_id, $link_to_user)
+                    && $user->getFromDB($linked_users_id)) {
+                    $supervisors[] = (int) $user->fields['users_id_supervisor'];
+                }
+                foreach (is_array($value) ? $value : [$value] as $users_id) {
+                    if (is_scalar($users_id) && (int) $users_id > 0
+                        && in_array((int) $users_id, $supervisors, true)
+                        && !in_array((int) $users_id, $accepted, true)) {
+                        $accepted[] = (int) $users_id;
+                    }
+                }
+            }
+        } elseif (is_a($item, CommonDBTM::class, true)) {
+            $accepted = [];
+            foreach (is_array($value) ? $value : [$value] as $items_id) {
+                if (is_scalar($items_id) && (int) $items_id > 0
+                    && self::isOfferedItem($item, (int) $items_id, (int) ($field['id'] ?? 0))) {
+                    $accepted[] = (int) $items_id;
+                }
+            }
+        } else {
+            return $value;
+        }
+
+        if (is_array($value)) {
+            return $accepted;
+        }
+
+        return $accepted !== [] ? $accepted[0] : '';
+    }
+
+    /**
+     * Whether a dropdown of a form offers this object: one of the active entities, neither
+     * deleted nor a template; a ticket, a problem or a change the session may read; a
+     * location under the root and within the depth of its field
+     */
+    private static function isOfferedItem(string $itemtype, int $items_id, int $fields_id): bool
+    {
+        if ($itemtype === \Entity::class) {
+            return Session::haveAccessToEntity($items_id);
+        }
+        if ($itemtype === \Location::class && $fields_id > 0) {
+            $parameter = new FieldParameter();
+            if ($parameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fields_id])) {
+                $allowed_ids = Fields\Dropdown::getAllowedLocationIds(
+                    (int) ($parameter->fields['root_items_id'] ?? 0),
+                    (int) ($parameter->fields['location_depth'] ?? 0),
+                );
+                if ($allowed_ids !== null && !in_array($items_id, $allowed_ids, true)) {
+                    return false;
+                }
+            }
+        }
+
+        $item = getItemForItemtype($itemtype);
+        if (!$item instanceof CommonDBTM || !$item->getFromDB($items_id)) {
+            return false;
+        }
+        if ($item instanceof \CommonITILObject) {
+            return $item->can($items_id, READ);
+        }
+        if (($item->maybeDeleted() && $item->fields['is_deleted'])
+            || ($item->maybeTemplate() && $item->fields['is_template'])) {
+            return false;
+        }
+        if ($item->isEntityAssign()) {
+            return Session::haveAccessToEntity(
+                (int) ($item->fields['entities_id'] ?? 0),
+                $item->maybeRecursive() && $item->fields['is_recursive'],
+            );
+        }
+
+        return true;
     }
 
     /**
@@ -1470,13 +1627,19 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             $input['force_create_tasks'] = 1;
         }
 
+        // The meta-demand whose definition post_addItem() copies: a template the session may read
+        // only, never a posted id (the fields of any form of any entity were copied)
+        unset($input['metademands_oldID']);
         $template = new self();
         if (isset($this->input['id_template'])) {
-            if ($template->getFromDBByCrit([
-                'id' => $this->input['id_template'],
-                'is_template' => 1,
-            ])) {
-                $input["metademands_oldID"] = $this->input['id_template'];
+            $template_id = is_scalar($this->input['id_template']) ? (int) $this->input['id_template'] : 0;
+            if ($template_id > 0
+                && $template->getFromDBByCrit([
+                    'id' => $template_id,
+                    'is_template' => 1,
+                ])
+                && $template->can($template_id, READ)) {
+                $input["metademands_oldID"] = $template_id;
                 unset($input['id']);
                 unset($input['withtemplate']);
             }
@@ -2819,7 +2982,10 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         $metademand_initial = new self();
         $metademand_initial->getFromDB($metademands_id);
 
+        // A Ticket, a Problem or a Change only: the stored value names the class instantiated
+        // and given the answers of the form
         if (!$metademand_initial->fields['object_to_create']
+            || !in_array($metademand_initial->fields['object_to_create'], self::getTypes(true), true)
             || !getItemForItemtype($metademand_initial->fields['object_to_create'])) {
             return false;
         }
@@ -2860,6 +3026,14 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         $itilcategory = 0;
         if (isset($values['field_plugin_servicecatalog_itilcategories_id'])) {
             $itilcategory = $values['field_plugin_servicecatalog_itilcategories_id'];
+            // One of the categories of the meta-demand only, as its category field offers them
+            $categories = json_decode((string) ($metademand_initial->fields['itilcategories_id'] ?? ''), true);
+            if (!is_scalar($itilcategory)
+                || ((int) $itilcategory > 0 && is_array($categories) && $categories !== []
+                    && !in_array((int) $itilcategory, array_map('intval', $categories), true))) {
+                $itilcategory = 0;
+                $values['field_plugin_servicecatalog_itilcategories_id'] = 0;
+            }
         }
 
         if (count($metademands_data)) {
@@ -2893,6 +3067,11 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     if ($metademand->fields['is_order'] == 0) {
                         if (count($line['form'])
                             && isset($values['fields'])) {
+                            // The list fields name objects by id: only the ones their dropdowns
+                            // offered reach the ticket content, the PDF and the associated items
+                            if (is_array($values['fields'])) {
+                                $values['fields'] = self::filterOfferedValues($line['form'], $values['fields']);
+                            }
                             $forms_id = 0;
                             if (isset($_SESSION['plugin_metademands'][$form_metademands_id]['form_to_compare'])) {
                                 $forms_id = $_SESSION['plugin_metademands'][$form_metademands_id]['form_to_compare'];
@@ -2964,6 +3143,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                     $itilcategory = $value;
                                 }
                             }
+                        }
+                        // One of the categories of the meta-demand only, as its field offers them
+                        $categories = json_decode((string) ($metademand_initial->fields['itilcategories_id'] ?? ''), true);
+                        if (!is_scalar($itilcategory)
+                            || ((int) $itilcategory > 0 && is_array($categories) && $categories !== []
+                                && !in_array((int) $itilcategory, array_map('intval', $categories), true))) {
+                            $itilcategory = 0;
                         }
 
                         $parent_fields = self::formatFields($line['form'], $metademands_id, $values_form, $options);
@@ -3484,6 +3670,17 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             if (!$object->can($current_ticket_id, UPDATE)) {
                                 throw new AccessDeniedHttpException();
                             }
+                            // The rule of the wizard (Wizard::showWizardSteps()), replayed where the
+                            // ticket is rewritten: the right to modify a form, a meta-demand
+                            // accepting modifications, a ticket created by this meta-demand
+                            if (!Session::haveRight(Profile::RIGHT_UPDATEMETA, READ)
+                                || !$metademand->fields['can_update']
+                                || countElementsInTable(Ticket_Metademand::getTable(), [
+                                    'tickets_id'                        => $current_ticket_id,
+                                    'plugin_metademands_metademands_id' => $metademand->getID(),
+                                ]) === 0) {
+                                throw new AccessDeniedHttpException();
+                            }
                             $inputUpdate['id'] = $current_ticket_id;
                             $inputUpdate['content'] = $input['content'];
                             $inputUpdate['name'] = $input['name'];
@@ -3509,19 +3706,31 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
 
                         //delete drafts
                         if (isset($_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_drafts_id'])) {
+                            // The draft of the submitter, by its integer id (the session slot is
+                            // fed by several endpoints)
                             $draft = new Draft();
-                            $draft->deleteByCriteria(
-                                ['id' => $_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_drafts_id']],
-                            );
+                            $draft->deleteByCriteria([
+                                'id'       => (int) $_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_drafts_id'],
+                                'users_id' => (int) Session::getLoginUserID(),
+                            ]);
                         }
                         //Link object to forms_id
                         if (isset($_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_forms_id'])) {
+                            // The form saved by the submitter for this object only: a public model
+                            // of another user, loaded into the same slot, was bound to this ticket
+                            // and purged with it
                             $form = new Form();
-                            $form->update([
-                                'id' => $_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_forms_id'],
-                                'items_id' => $parent_tickets_id,
-                                'itemtype' => $object_class,
-                            ]);
+                            $forms_id = (int) $_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_forms_id'];
+                            if ($forms_id > 0
+                                && $form->getFromDB($forms_id)
+                                && (int) $form->fields['users_id'] === (int) Session::getLoginUserID()
+                                && (int) $form->fields['is_model'] === 0) {
+                                $form->update([
+                                    'id' => $forms_id,
+                                    'items_id' => $parent_tickets_id,
+                                    'itemtype' => $object_class,
+                                ]);
+                            }
                             unset($_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_forms_id']);
                         }
                         $inputField = [];
@@ -3885,11 +4094,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                             }
 
                                             if (!empty($parent_fields_content['content'])) {
-                                                $content .= self::renderContentSection(
+                                                // The answers of the form: never read as placeholders by
+                                                // resolvePlaceholders() below, which restores them
+                                                $content .= (string) self::protectPlaceholderValue(self::renderContentSection(
                                                     _n('Parent tickets', 'Parent tickets', 1, 'metademands'),
                                                     $parent_fields_content['content'],
                                                     true,
-                                                );
+                                                ));
                                             }
 
                                             $metatask = new Task();
@@ -5070,14 +5281,59 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             if ($field !== null) {
                 $field_params = array_merge($field_params, Field::getAllParamsFromField($field));
             }
+            $posted = $values[$validation_fields_id] ?? 0;
+            // A read-only field preset with the supervisor: that supervisor only, whatever the
+            // browser posts (the submitter chose who validated, himself included)
+            if ((int) ($field_params['readonly'] ?? 0) === 1
+                && (int) ($field_params['default_use_id_requester_supervisor'] ?? 0) === 1) {
+                $posted = array_values(array_intersect(
+                    array_map('intval', is_array($posted) ? $posted : [$posted]),
+                    self::getPresetSupervisors($field_params, $values),
+                ));
+                if ($posted === []) {
+                    continue;
+                }
+            }
             $validators = array_merge($validators, self::filterActorValues(
-                $values[$validation_fields_id] ?? 0,
+                $posted,
                 User::class,
                 $field_params,
             ));
         }
 
         return array_values(array_unique($validators));
+    }
+
+    /**
+     * The supervisors a user field preselects (default_use_id_requester_supervisor): the one of
+     * the submitter, the one of the user of its linked field; never the submitter himself
+     *
+     * @param array<string, mixed>     $field_params
+     * @param array<int|string, mixed> $values posted values, by field id
+     *
+     * @return list<int>
+     */
+    private static function getPresetSupervisors(array $field_params, array $values): array
+    {
+        $supervisors = [];
+        $user        = new User();
+        if ($user->getFromDB((int) Session::getLoginUserID())) {
+            $supervisors[] = (int) $user->fields['users_id_supervisor'];
+        }
+        $link_to_user    = (int) ($field_params['link_to_user'] ?? 0);
+        $linked_users_id = $link_to_user > 0 && is_scalar($values[$link_to_user] ?? null)
+            ? (int) $values[$link_to_user]
+            : 0;
+        if ($linked_users_id > 0
+            && Config::canCurrentUserViewRequester($linked_users_id, $link_to_user)
+            && $user->getFromDB($linked_users_id)) {
+            $supervisors[] = (int) $user->fields['users_id_supervisor'];
+        }
+
+        return array_values(array_diff(
+            array_filter($supervisors, static fn(int $id) => $id > 0),
+            [(int) Session::getLoginUserID()],
+        ));
     }
 
     /**
@@ -6950,19 +7206,51 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         return $res;
     }
 
+    /**
+     * The text between the first $start and the $end that follows it, '' when there is none or
+     * when it is empty. The rest of the text was returned without $end: the callers replace
+     * "[" . $match . "]" until no match is left, the text never changed and they looped forever
+     * ("[]", or a "[" never closed, typed in an answer).
+     */
     public static function getBetween($string, $start = "", $end = "")
     {
-        if ($string != null && str_contains($string, $start)) { // required if $start not exist in $string
-            $startCharCount = strpos($string, $start) + strlen($start);
-            $firstSubStr = substr($string, $startCharCount, strlen($string));
-            $endCharCount = strpos($firstSubStr, $end);
-            if ($endCharCount == 0) {
-                $endCharCount = strlen($firstSubStr);
-            }
-            return substr($firstSubStr, 0, $endCharCount);
-        } else {
+        if ($string == null || !str_contains($string, $start)) { // required if $start not exist in $string
             return '';
         }
+        $startCharCount = strpos($string, $start) + strlen($start);
+        $firstSubStr = substr($string, $startCharCount);
+        $endCharCount = strpos($firstSubStr, $end);
+        if ($endCharCount === false || $endCharCount === 0) {
+            return '';
+        }
+
+        return substr($firstSubStr, 0, $endCharCount);
+    }
+
+    /**
+     * Characters of the placeholder syntax ([a|b] alternations, #id# tokens) in a value put
+     * into a text being resolved: replaced by characters of a private use area until the text
+     * is resolved, so that an answer is never read as a placeholder (a "#5.email#" answer gave
+     * the email of the user of the field 5, a "[]" one looped forever).
+     */
+    private const PLACEHOLDER_PROTECTED = ['#' => "\u{E000}", '[' => "\u{E001}", ']' => "\u{E002}"];
+
+    /** Passes over the alternations of a text, a bound against any text that would not shrink */
+    public const PLACEHOLDER_MAX_PASSES = 100;
+
+    /**
+     * @param mixed $value
+     *
+     * @return mixed the value, its placeholder characters protected when a string
+     */
+    public static function protectPlaceholderValue($value)
+    {
+        return is_string($value) ? strtr($value, self::PLACEHOLDER_PROTECTED) : $value;
+    }
+
+    public static function restorePlaceholderValues(string $text): string
+    {
+        return strtr($text, array_flip(self::PLACEHOLDER_PROTECTED));
     }
 
     /**
@@ -6974,7 +7262,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
      *
      * @return array|string|string[]
      */
-    public static function getContentForUser($field, $users_id, $entities_id, $title, $line, $bypass = false)
+    public static function getContentForUser($field, $users_id, $entities_id, $title, $line, $bypass = false, bool $protect = false)
     {
         if ($bypass === true && is_numeric($title)) {
             return str_replace("#" . $title . "#", "", $line);
@@ -6982,6 +7270,13 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         if (!is_array($users_id)) {
             $users_id = [$users_id];
         }
+        // The value of a user is typed by that user (name, first name...): protected from the
+        // placeholder syntax when the text is being resolved (resolvePlaceholders())
+        $replace = static fn($value) => str_replace(
+            "#" . $title . "#",
+            $protect ? self::protectPlaceholderValue((string) $value) : $value,
+            $line,
+        );
 
         switch ($field) {
             case "login":
@@ -6991,7 +7286,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $user->getFromDB($usr);
                     $value = $user->fields['name'];
                     if ($value != null) {
-                        return str_replace("#" . $title . "#", $value, $line);
+                        return $replace($value);
                     }
                 }
                 break;
@@ -7002,7 +7297,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $user->getFromDB($usr);
                     $value = $user->fields['realname'] ?? "";
                     if ($value != null) {
-                        return str_replace("#" . $title . "#", $value, $line);
+                        return $replace($value);
                     }
                 }
                 break;
@@ -7013,7 +7308,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $user->getFromDB($usr);
                     $value = $user->fields['firstname'] ?? "";
                     if ($value != null) {
-                        return str_replace("#" . $title . "#", $value, $line);
+                        return $replace($value);
                     }
                 }
                 break;
@@ -7024,14 +7319,14 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $user->getFromDBByCrit(['users_id' => $usr, 'is_default' => 1]);
                     $value = $user->fields['email'];
                     if ($value != null) {
-                        return str_replace("#" . $title . "#", $value, $line);
+                        return $replace($value);
                     }
                 }
                 break;
             case "entity":
                 $value = Dropdown::getDropdownName("glpi_entities", $entities_id);
                 if ($value != null) {
-                    return str_replace("#" . $title . "#", $value, $line);
+                    return $replace($value);
                 }
                 break;
         }
@@ -7101,7 +7396,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             if (isset($values['fields'][$token])) {
                 $value = self::renderFieldValue($token, $values, $is_content, $formatastable);
                 if ($value != null) {
-                    $text = str_replace("#" . $token . "#", $value, $text);
+                    // An answer is never read as a placeholder (restored by resolvePlaceholders())
+                    $text = str_replace("#" . $token . "#", self::protectPlaceholderValue($value), $text);
                 }
             } else {
                 $sub = explode(".", $token);
@@ -7116,10 +7412,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                             $entities_id,
                             $token,
                             $text,
+                            false,
+                            true,
                         );
                     }
                 }
-                $text = self::getContentForUser($token, $requester_users_id, $entities_id, $token, $text, true);
+                $text = self::getContentForUser($token, $requester_users_id, $entities_id, $token, $text, true, true);
             }
         }
 
@@ -7147,6 +7445,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
         ?int $formatastable = null
     ): string {
         $text ??= '';
+        $passes = 0;
         do {
             $match = self::getBetween($text, '[', ']');
             if (empty($match)) {
@@ -7168,7 +7467,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     foreach (explode("#", $segment) as $token) {
                         if (isset($values['fields'][$token])) {
                             $value = self::renderFieldValue($token, $values, $is_content, $formatastable);
-                            $str = str_replace("#" . $token . "#", $value, $str);
+                            $str = str_replace("#" . $token . "#", (string) self::protectPlaceholderValue($value), $str);
                             if (!is_null($value) && !empty($value)) {
                                 $find = true;
                             }
@@ -7185,10 +7484,12 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                                         $entities_id,
                                         $token,
                                         $str,
+                                        false,
+                                        true,
                                     );
                                 }
                             }
-                            $str = self::getContentForUser($token, $requester_users_id, $entities_id, $token, $str, true);
+                            $str = self::getContentForUser($token, $requester_users_id, $entities_id, $token, $str, true, true);
                         }
                     }
                     if ($find == true) {
@@ -7202,7 +7503,7 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
                     $text = str_replace("[" . $match . "]", "<@" . $str . "@>", $text);
                 }
             }
-        } while (!empty($match));
+        } while (!empty($match) && ++$passes < self::PLACEHOLDER_MAX_PASSES);
 
         if ($text != null) {
             $text = str_replace("<@", "[", $text);
@@ -7217,7 +7518,8 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
             );
         }
 
-        return $text;
+        // The answers put into the text get their own characters back
+        return self::restorePlaceholderValues($text);
     }
 
     /**
@@ -7382,8 +7684,8 @@ HTML;
                     }
                 }
 
-                // return the entries to ajax call
-                return json_encode($metas);
+                // return the entries to ajax call, inert even if read as HTML
+                return json_encode($metas, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
         }
     }

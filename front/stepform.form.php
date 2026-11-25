@@ -28,6 +28,7 @@
  */
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
+use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Stepform;
 
 // plugin_metademands_cancelform is the right the plugin defines for exactly this action,
@@ -51,7 +52,7 @@ if (!isset($_GET["withtemplate"])) {
 
 if (isset($_POST['delete_form_from_list'])) {
 
-    $stepforms_id = (int) $_POST['plugin_metademands_stepforms_id'];
+    $stepforms_id = Metademand::getPostedId($_POST['plugin_metademands_stepforms_id'] ?? null);
     $step = new Stepform();
     if (Session::haveRight(Stepform::$rightname, DELETE)) {
         $step->check($stepforms_id, DELETE);
@@ -63,7 +64,7 @@ if (isset($_POST['delete_form_from_list'])) {
 
 } elseif (isset($_POST['delete_form_from_metademands'])) {
 
-    $stepforms_id = (int) $_POST['plugin_metademands_stepforms_id'];
+    $stepforms_id = Metademand::getPostedId($_POST['plugin_metademands_stepforms_id'] ?? null);
     $step = new Stepform();
     if (Session::haveRight(Stepform::$rightname, DELETE)) {
         $step->check($stepforms_id, DELETE);

@@ -33,6 +33,7 @@ use CommonDBChild;
 use CommonITILActor;
 use DBConnection;
 use Glpi\Application\View\TemplateRenderer;
+use Glpi\RichText\RichText;
 use GLPIMailer;
 use GLPINetwork;
 use Html;
@@ -51,6 +52,22 @@ class MailTask extends CommonDBChild
 
     public static string $itemtype = Task::class;
     public static string $items_id = 'plugin_metademands_tasks_id';
+
+    public function prepareInputForAdd($input)
+    {
+        // Recipients the form offers only: the mail leaves with each submission of the form
+        $input = Task::filterTaskTargets($input, null, ['users_id_recipient'], ['groups_id_recipient']);
+
+        return parent::prepareInputForAdd($input);
+    }
+
+    public function prepareInputForUpdate($input)
+    {
+        $input = Task::filterTaskTargets($input, $this->fields, ['users_id_recipient'], ['groups_id_recipient']);
+
+        // The mail task stays attached to its task (CommonDBChild)
+        return parent::prepareInputForUpdate($input);
+    }
 
     /**
      * functions mandatory
@@ -237,7 +254,9 @@ class MailTask extends CommonDBChild
 
         $mail->subject($title);
 
-        $mail->html($body);
+        // The body carries the answers of the form, substituted into the template of the task:
+        // only safe HTML leaves with the GLPI sender (no script, no form, no event handler)
+        $mail->html(RichText::getSafeHtml((string) $body));
 
         if (!$mmail->Send()) {
             Session::addMessageAfterRedirect(

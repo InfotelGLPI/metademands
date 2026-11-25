@@ -86,6 +86,9 @@ if (isset($_POST['quantity']) && is_array($_POST['quantity'])) {
 if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
     // Saving a form binds it to the posted meta-demand: enforce the same access check as
     // ajax/createmetademands.php (prevents cross-entity/rights enumeration and writes by id).
+    // One id, a plain positive integer, for the checks and the rows written ("12.9" was
+    // checked as 129, its group restriction looked up as no row, and stored as 13)
+    $_POST['metademands_id'] = Metademand::getPostedId($_POST['metademands_id'] ?? null);
     if (
         !$metademands->getFromDB($_POST['metademands_id'])
         || !($metademands->canCreate() || Group::isUserHaveRight($_POST['metademands_id']))

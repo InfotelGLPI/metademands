@@ -117,7 +117,16 @@ if (isset($_POST['fields_id'])
 }
 $allowed_ids = Dropdown::getAllowedLocationIds($root_items_id, $location_depth);
 // The location of the user is only preselected when the field offers it
-if ($allowed_ids !== null && !in_array((int) $val, $allowed_ids, true)) {
+$val = is_scalar($val) ? (int) $val : 0;
+if ($allowed_ids !== null && !in_array($val, $allowed_ids, true)) {
+    $val = 0;
+}
+// and the location displayed by its name (posted, or kept by the wizard for the field) is one
+// of the active entities, as the dropdown offers them
+if ($val > 0 && countElementsInTable(
+    Location::getTable(),
+    ['id' => $val] + getEntitiesRestrictCriteria(Location::getTable(), '', $_SESSION['glpiactiveentities'] ?? [], true),
+) === 0) {
     $val = 0;
 }
 

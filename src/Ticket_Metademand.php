@@ -85,6 +85,38 @@ class Ticket_Metademand extends CommonDBTM
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
+    /**
+     * A link is read with its ticket; only the submission of a form writes one, never a
+     * generic route (REST API, generic form route): the table carries no entity
+     */
+    public function canViewItem(): bool
+    {
+        $tickets_id = (int) ($this->fields['tickets_id'] ?? 0);
+
+        // can() on an id 0 would evaluate the creation of a ticket
+        return $tickets_id > 0 && (new \Ticket())->can($tickets_id, READ);
+    }
+
+    public function canCreateItem(): bool
+    {
+        return false;
+    }
+
+    public function canUpdateItem(): bool
+    {
+        return false;
+    }
+
+    public function canDeleteItem(): bool
+    {
+        return false;
+    }
+
+    public function canPurgeItem(): bool
+    {
+        return false;
+    }
+
     public static function getIcon()
     {
         return "ti ti-link";
@@ -243,13 +275,9 @@ class Ticket_Metademand extends CommonDBTM
         if (!$withtemplate) {
             if ($item->getType() == Metademand::class) {
                 if ($_SESSION['glpishow_count_on_tabs']) {
-                    $query = self::countTicketsInTable($item->getID());
-                    $iterator  = $DB->request($query);
-                    $numrows = count($iterator);
-
                     return self::createTabEntry(
                         __('Linked opened tickets', 'metademands'),
-                        $numrows,
+                        count(self::getVisibleOpenedTicketIds($item)),
                     );
                 }
                 return __('Linked opened tickets', 'metademands');
@@ -258,6 +286,32 @@ class Ticket_Metademand extends CommonDBTM
         return '';
     }
 
+
+    /**
+     * The opened tickets of a meta-demand the session may read: the tab is drawn on the
+     * meta-demand itself only (another object of the same id served as its host), and the
+     * tickets of the other users are listed to whoever may read them
+     *
+     * @return list<int>
+     */
+    private static function getVisibleOpenedTicketIds(CommonGLPI $item): array
+    {
+        global $DB;
+
+        if (!$item instanceof Metademand || !$item->can($item->getID(), READ)) {
+            return [];
+        }
+
+        $ticket = new \Ticket();
+        $ids    = [];
+        foreach ($DB->request(self::countTicketsInTable($item->getID())) as $data) {
+            if ($ticket->can((int) $data['id'], READ)) {
+                $ids[] = (int) $data['id'];
+            }
+        }
+
+        return $ids;
+    }
 
     /**
      * @param $meta_id
@@ -331,17 +385,10 @@ class Ticket_Metademand extends CommonDBTM
             return false;
         }
 
-        $query = self::countTicketsInTable($item->getID());
-        $iterator  = $DB->request($query);
-        $numrows = count($iterator);
+        $tickets_ids = self::getVisibleOpenedTicketIds($item);
 
-        if ($numrows > 0) {
+        if ($tickets_ids !== []) {
             $rand = mt_rand();
-
-            $tickets_ids = [];
-            foreach ($iterator as $data) {
-                $tickets_ids[] = $data['id'];
-            }
 
             // Ticket::commonListHeader() and Ticket::showShort() print their rows: the
             // template calls them inside the table it owns.
@@ -482,6 +529,7 @@ class Ticket_Metademand extends CommonDBTM
                 foreach ($line['tasks'] as $key => $l) {
                     if ($l['type'] != Task::MAIL_TYPE) {
                         //replace #id# in title with the value
+                        $placeholder_passes = 0;
                         do {
                             $match = Metademand::getBetween($l['tickettasks_name'], '[', ']');
                             if (empty($match)) {
@@ -583,7 +631,7 @@ class Ticket_Metademand extends CommonDBTM
                                 }
                                 //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                             }
-                        } while (!empty($match));
+                        } while (!empty($match) && ++$placeholder_passes < Metademand::PLACEHOLDER_MAX_PASSES);
 
                         $line['tasks'][$key]['tickettasks_name'] = str_replace("<@", "[", $line['tasks'][$key]['tickettasks_name']);
                         $line['tasks'][$key]['tickettasks_name'] = str_replace("@>", "]", $line['tasks'][$key]['tickettasks_name']);
@@ -632,6 +680,7 @@ class Ticket_Metademand extends CommonDBTM
 
 
                         //replace #id# in content with the value
+                        $placeholder_passes = 0;
                         do {
                             $match = Metademand::getBetween($l['content'], '[', ']');
                             if (empty($match) && $l['content'] != null) {
@@ -752,7 +801,7 @@ class Ticket_Metademand extends CommonDBTM
                                 }
                                 //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                             }
-                        } while (!empty($match));
+                        } while (!empty($match) && ++$placeholder_passes < Metademand::PLACEHOLDER_MAX_PASSES);
 
                         if ($line['tasks'][$key]['content'] != null) {
                             $line['tasks'][$key]['content'] = str_replace("<@", "[", $line['tasks'][$key]['content']);
@@ -852,6 +901,7 @@ class Ticket_Metademand extends CommonDBTM
                             );
                         }
                         //replace #id# in title with the value
+                        $placeholder_passes = 0;
                         do {
                             $match = Metademand::getBetween($l['tickettasks_name'], '[', ']');
                             if (empty($match)) {
@@ -885,7 +935,7 @@ class Ticket_Metademand extends CommonDBTM
                                             if ($field_object->getFromDB($explodeTitle2[0])) {
                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                     $users_id = $values['fields'][$explodeTitle2[0]];
-                                                    $line['tasks'][$key]['tickettasks_name'] = Metademand::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
+                                                    $line['tasks'][$key]['tickettasks_name'] = Metademand::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $line['tasks'][$key]['tickettasks_name']);
                                                 }
                                             }
                                         }
@@ -931,7 +981,7 @@ class Ticket_Metademand extends CommonDBTM
                                                 if ($field_object->getFromDB($explodeTitle2[0])) {
                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                         $users_id = $values['fields'][$explodeTitle2[0]];
-                                                        $str = Metademand::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
+                                                        $str = Metademand::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $str);
                                                     }
                                                 }
                                             }
@@ -953,8 +1003,9 @@ class Ticket_Metademand extends CommonDBTM
                                 }
                                 //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                             }
-                        } while (!empty($match));
+                        } while (!empty($match) && ++$placeholder_passes < Metademand::PLACEHOLDER_MAX_PASSES);
                         //replace #id# for content
+                        $placeholder_passes = 0;
                         do {
                             $match = Metademand::getBetween($son_ticket_data['content'], '[', ']');
                             if (empty($match) && $son_ticket_data['content'] != null) {
@@ -992,7 +1043,7 @@ class Ticket_Metademand extends CommonDBTM
                                             if ($field_object->getFromDB($explodeContent2[0])) {
                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                     $users_id = $values['fields'][$explodeContent2[0]];
-                                                    $line['tasks'][$key]['content'] = Metademand::getContentForUser($explodeContent2[1], $users_id, $content, $son_ticket_data['content']);
+                                                    $line['tasks'][$key]['content'] = Metademand::getContentForUser($explodeContent2[1], $users_id, $_SESSION['glpiactive_entity'], $content, $son_ticket_data['content']);
                                                 }
                                             }
                                         }
@@ -1043,7 +1094,7 @@ class Ticket_Metademand extends CommonDBTM
                                                 if ($field_object->getFromDB($explodeContent2[0])) {
                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                         $users_id = $values['fields'][$explodeContent2[0]];
-                                                        $str = Metademand::getContentForUser($explodeContent2[1], $users_id, $content, $str);
+                                                        $str = Metademand::getContentForUser($explodeContent2[1], $users_id, $_SESSION['glpiactive_entity'], $content, $str);
                                                     }
                                                 }
                                             }
@@ -1069,7 +1120,7 @@ class Ticket_Metademand extends CommonDBTM
                                 }
                                 //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                             }
-                        } while (!empty($match));
+                        } while (!empty($match) && ++$placeholder_passes < Metademand::PLACEHOLDER_MAX_PASSES);
 
                         if ($line['tasks'][$key]['content'] != null) {
                             $line['tasks'][$key]['content'] = str_replace("<@", "[", $line['tasks'][$key]['content']);
@@ -1116,7 +1167,7 @@ class Ticket_Metademand extends CommonDBTM
                                         if ($field_object->getFromDB($explodeContent2[0])) {
                                             if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                 $users_id = $values['fields'][$explodeContent2[0]];
-                                                $line['tasks'][$key]['content'] = Metademand::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
+                                                $line['tasks'][$key]['content'] = Metademand::getContentForUser($explodeContent2[1], $users_id, $_SESSION['glpiactive_entity'], $content, $line['tasks'][$key]['content']);
                                             }
                                         }
                                     }
@@ -1202,6 +1253,7 @@ class Ticket_Metademand extends CommonDBTM
 
                 foreach ($line['tasks'] as $key => $l) {
                     //replace #id# in title with the value
+                    $placeholder_passes = 0;
                     do {
                         if (isset($resource_id)) {
                             $resource = new Resource();
@@ -1312,7 +1364,7 @@ class Ticket_Metademand extends CommonDBTM
                             }
                             //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                         }
-                    } while (!empty($match));
+                    } while (!empty($match) && ++$placeholder_passes < Metademand::PLACEHOLDER_MAX_PASSES);
 
                     $line['tasks'][$key]['tickettasks_name'] = str_replace("<@", "[", $line['tasks'][$key]['tickettasks_name']);
                     $line['tasks'][$key]['tickettasks_name'] = str_replace("@>", "]", $line['tasks'][$key]['tickettasks_name']);
@@ -1364,6 +1416,7 @@ class Ticket_Metademand extends CommonDBTM
                     }
 
                     //replace #id# in content with the value
+                    $placeholder_passes = 0;
                     do {
                         $match = Metademand::getBetween($l['content'], '[', ']');
                         if (empty($match)) {
@@ -1477,7 +1530,7 @@ class Ticket_Metademand extends CommonDBTM
                             }
                             //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                         }
-                    } while (!empty($match));
+                    } while (!empty($match) && ++$placeholder_passes < Metademand::PLACEHOLDER_MAX_PASSES);
 
                     $line['tasks'][$key]['content'] = str_replace("<@", "[", $line['tasks'][$key]['content']);
                     $line['tasks'][$key]['content'] = str_replace("@>", "]", $line['tasks'][$key]['content']);

@@ -65,6 +65,19 @@ function freelinesParams(field_id, params)
 // metademandfreelinesparams.time = $timetype;
 
 
+/**
+ * The values of a list column are text typed by the designer: escaped before they are put
+ * into the HTML of the options
+ *
+ * @param {*} value
+ * @returns {string}
+ */
+function mdFreelinesEscape(value) {
+    return String(value).replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[c]));
+}
+
 function addLine(metademandfreelinesparams)
 {
 
@@ -104,7 +117,7 @@ function addLine(metademandfreelinesparams)
                     $.each(dropdown_values_fields, function (indexv, values) {
                         $.each(values, function (indexd, valued) {
                             if (index == indexv) {
-                                select_options += '<option value=\"' + valued + '\">' + valued + '</option>';
+                                select_options += '<option value=\"' + mdFreelinesEscape(valued) + '\">' + mdFreelinesEscape(valued) + '</option>';
                             }
                         });
                     });
@@ -147,7 +160,7 @@ function addLine(metademandfreelinesparams)
                     $.each(dropdown_values_fields, function (indexv, values) {
                         $.each(values, function (indexd, valued) {
                             if (index == indexv) {
-                                select_options += '<option value=\"' + valued + '\">' + valued + '</option>';
+                                select_options += '<option value=\"' + mdFreelinesEscape(valued) + '\">' + mdFreelinesEscape(valued) + '</option>';
                             }
                         });
                     });
@@ -319,7 +332,7 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
                     $.each(dropdown_values_fields, function (indexv, values) {
                         $.each(values, function (indexd, valued) {
                             if (index == indexv) {
-                                select_options += '<option value=\"' + valued + '\">' + valued + '</option>';
+                                select_options += '<option value=\"' + mdFreelinesEscape(valued) + '\">' + mdFreelinesEscape(valued) + '</option>';
                             }
                         });
                     });
@@ -378,7 +391,7 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
                     $.each(dropdown_values_fields, function (indexv, values) {
                         $.each(values, function (indexd, valued) {
                             if (index == indexv) {
-                                select_options += '<option value=\"' + valued + '\">' + valued + '</option>';
+                                select_options += '<option value=\"' + mdFreelinesEscape(valued) + '\">' + mdFreelinesEscape(valued) + '</option>';
                             }
                         });
                     });
@@ -438,7 +451,7 @@ function confirmUpdateLine(node, nb, typepost, field_id, newparams)
                     $.each(dropdown_values_fields, function (indexv, values) {
                         $.each(values, function (indexd, valued) {
                             if (index == indexv) {
-                                select_options += '<option value=\"' + valued + '\">' + valued + '</option>';
+                                select_options += '<option value=\"' + mdFreelinesEscape(valued) + '\">' + mdFreelinesEscape(valued) + '</option>';
                             }
                         });
                     });

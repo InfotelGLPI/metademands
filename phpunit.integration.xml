@@ -81,6 +81,7 @@
         <file>tests/FieldCommentTooltipTest.php</file>
         <file>tests/RenumberBlockTest.php</file>
         <file>tests/SecurityReportFixesTest.php</file>
+        <file>tests/SecurityReport2FixesTest.php</file>
       </testsuite>
    </testsuites>
 </phpunit>

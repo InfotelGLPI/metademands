@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldOption;
 
@@ -76,7 +77,8 @@ if (isset($_POST["add"]) || isset($_POST["update"]) || isset($_POST["purge"])) {
         }
 
         // With -1 the requested right was never evaluated; bind the control to the posted row.
-        $field->check((int) $_POST['id'], UPDATE);
+        $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
+        $field->check($_POST['id'], UPDATE);
 
         if ($field->update($_POST)) {
 
@@ -94,7 +96,8 @@ if (isset($_POST["add"]) || isset($_POST["update"]) || isset($_POST["purge"])) {
     } elseif (isset($_POST["purge"])) {
 
         // Same defect, and delete($input, 1) is a purge.
-        $field->check((int) $_POST['id'], PURGE);
+        $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
+        $field->check($_POST['id'], PURGE);
         $field->delete($_POST, 1);
         Html::back();
 

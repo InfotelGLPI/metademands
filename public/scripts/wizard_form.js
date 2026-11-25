@@ -222,7 +222,7 @@
 
         $.ajax({
             url: input.dataset.mdUserUrl,
-            data: {id: source.value},
+            data: {id: source.value, fields_id: input.dataset.mdUserField},
             success: function (response) {
                 const values = typeof response === 'string' ? JSON.parse(response) : response;
 

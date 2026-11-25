@@ -61,8 +61,13 @@ switch ($_POST['action']) {
                 $condition = ['is_incident' => 1];
         }
         $restrict = getEntitiesRestrictCriteria('glpi_itilcategories', '', $entities_id, false);
+        // The preselected category is one the dropdown offers, displayed by its name
+        $value = is_scalar($_POST['itilcategories_id'] ?? null) ? (int) $_POST['itilcategories_id'] : 0;
+        if ($value > 0 && countElementsInTable('glpi_itilcategories', ['id' => $value] + $condition + $restrict) === 0) {
+            $value = 0;
+        }
         $opt = [
-            'value' => $_POST['itilcategories_id'],
+            'value' => $value,
             'condition' => $condition + $restrict,
         ];
 
@@ -83,8 +88,14 @@ switch ($_POST['action']) {
             'users_id_assign' => \CommonITILActor::ASSIGN,
         ];
         $right = (new \Ticket())->getDefaultActorRightSearch($actor_types[$_POST['action']]);
+        // The preselected user is displayed with its name and card: a user of the entity only,
+        // as the dropdown offers them
+        $value = is_scalar($_POST[$_POST['action']] ?? null) ? (int) $_POST[$_POST['action']] : 0;
+        if ($value > 0 && !in_array($entities_id, array_map('intval', Profile_User::getUserEntities($value, true)), true)) {
+            $value = 0;
+        }
         User::dropdown(['name' => $_POST['action'],
-            'value' => isset($_POST[$_POST['action']]) ? $_POST[$_POST['action']] : 0,
+            'value' => $value,
             'entity' =>  $entities_id,
             'right' =>  $right]);
         break;
@@ -100,8 +111,13 @@ switch ($_POST['action']) {
         ];
         $condition = $group_conditions[$_POST['action']] ?? [];
         $restrict = getEntitiesRestrictCriteria('glpi_groups', '', $entities_id, false);
+        // The preselected group is one the dropdown offers, displayed by its name
+        $value = is_scalar($_POST[$_POST['action']] ?? null) ? (int) $_POST[$_POST['action']] : 0;
+        if ($value > 0 && countElementsInTable('glpi_groups', ['id' => $value] + $condition + $restrict) === 0) {
+            $value = 0;
+        }
         \Dropdown::show('Group', ['name' => $_POST['action'],
-            'value' => isset($_POST[$_POST['action']]) ? $_POST[$_POST['action']] : 0,
+            'value' => $value,
             'entity' => $entities_id,
             'condition' => $condition + $restrict]);
         break;

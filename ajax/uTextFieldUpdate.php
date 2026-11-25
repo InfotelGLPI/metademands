@@ -32,7 +32,9 @@ use GlpiPlugin\Metademands\Config;
 $AJAX_INCLUDE = 1;
 
 if (strpos($_SERVER['PHP_SELF'], "uTextFieldUpdate.php")) {
-    header("Content-Type: text/html; charset=UTF-8");
+    // JSON, never HTML: the values come from the user record (phone, registration number...),
+    // which the user edits himself, and the route answers a plain GET
+    header("Content-Type: application/json; charset=UTF-8");
     Html::header_nocache();
 }
 
@@ -68,4 +70,4 @@ if (
         22 => $user->getField('registration_number'),
     ];
 }
-echo json_encode($data);
+echo json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);

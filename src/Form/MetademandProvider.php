@@ -37,6 +37,7 @@ use Glpi\FuzzyMatcher\PartialMatchStrategy;
 use GlpiPlugin\Metademands\Metademand;
 use Override;
 use GlpiPlugin\Metademands\Group;
+use GlpiPlugin\Metademands\Profile;
 use Session;
 
 /** @implements LeafProviderInterface<MetademandProvider> */
@@ -73,6 +74,14 @@ final class MetademandProvider implements LeafProviderInterface
     #[Override]
     public function getItems(ItemRequest $item_request): array
     {
+        // The rights the wizard asks for (front/wizard.form.php): the catalog listed the forms
+        // to any connected user, the provider being registered whatever the profile
+        if (!Session::haveRight(Metademand::$rightname, READ)
+            && !Session::haveRight(Profile::RIGHT_CREATEMETA, READ)
+            && !Session::haveRight(Profile::RIGHT_FILLFORM, READ)) {
+            return [];
+        }
+
         $category_id = $item_request->getCategoryID();
         $filter = $item_request->getFilter();
         $parameters = $item_request->getFormAccessParameters();

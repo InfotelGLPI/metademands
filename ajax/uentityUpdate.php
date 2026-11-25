@@ -118,6 +118,13 @@ if (isset($_POST['entities_id']) && $_POST['entities_id'] > 0) {
     $val = $_POST['entities_id'];
 }
 
+// The entity displayed by its name (posted, or kept by the wizard for the field) is one the
+// dropdown offers: an active entity
+$val = is_scalar($val) ? (int) $val : 0;
+if ($val > 0 && !Session::haveAccessToEntity($val)) {
+    $val = 0;
+}
+
 // [S3] Normalize the reflected form field name: it is echoed back as the name attribute
 // of the dropdown rendered below (shared rule for the whole u*Update.php family).
 $_POST['field'] = Config::normalizePostedFieldName($_POST['field'] ?? '');

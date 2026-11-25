@@ -39,10 +39,12 @@ if (isset($_POST['add'])) {
     $translation->check(-1, CREATE, $_POST);
     $translation->add($_POST);
 } elseif (isset($_POST['update'])) {
-    $translation->check((int) $_POST['id'], UPDATE);
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
+    $translation->check($_POST['id'], UPDATE);
     $translation->update($_POST);
 } elseif (isset($_POST['purge'])) {
-    $translation->check((int) $_POST['id'], PURGE);
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
+    $translation->check($_POST['id'], PURGE);
     $translation->delete($_POST, 1);
 }
 Html::back();

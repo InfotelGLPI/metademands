@@ -52,6 +52,47 @@ class Form extends CommonDBTM
 
     public static string $rightname = 'plugin_metademands';
 
+    /**
+     * A saved form belongs to its author; a public model is read in its entities too. The
+     * forms are written by the wizard only (ajax/addform.php, updateform.php...), never through
+     * a generic route (REST API, generic form route), which checked the entity only.
+     */
+    public function canViewItem(): bool
+    {
+        if ($this->isOwnForm()) {
+            return true;
+        }
+
+        return (int) ($this->fields['is_model'] ?? 0) === 1
+            && (int) ($this->fields['is_private'] ?? 1) === 0
+            && parent::canViewItem();
+    }
+
+    public function canCreateItem(): bool
+    {
+        return false;
+    }
+
+    public function canUpdateItem(): bool
+    {
+        return false;
+    }
+
+    public function canDeleteItem(): bool
+    {
+        return $this->isOwnForm();
+    }
+
+    public function canPurgeItem(): bool
+    {
+        return $this->isOwnForm();
+    }
+
+    private function isOwnForm(): bool
+    {
+        return (int) ($this->fields['users_id'] ?? 0) > 0
+            && (int) $this->fields['users_id'] === (int) Session::getLoginUserID();
+    }
 
     public static function install(Migration $migration)
     {

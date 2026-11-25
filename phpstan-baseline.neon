@@ -3044,12 +3044,6 @@ parameters:
 			path: src/Ticket_Metademand.php
 
 		-
-			message: '#^Static method GlpiPlugin\\Metademands\\Metademand\:\:getContentForUser\(\) invoked with 4 parameters, 5\-6 required\.$#'
-			identifier: arguments.count
-			count: 5
-			path: src/Ticket_Metademand.php
-
-		-
 			message: '#^Undefined variable\: \$line$#'
 			identifier: variable.undefined
 			count: 4

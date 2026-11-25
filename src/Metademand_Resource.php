@@ -293,13 +293,10 @@ class Metademand_Resource extends CommonDBTM
         // The identifier reaches us straight from the caller's options, so refuse a resource the
         // session may not read instead of recomposing its data into the fragment. An unknown or
         // out-of-scope identifier simply contributes nothing.
-        if (!$resource->getFromDB($options['resources_id'] ?? 0)) {
-            return '';
-        }
-        if (!Session::haveAccessToEntity(
-            $resource->fields['entities_id'] ?? 0,
-            $resource->fields['is_recursive'] ?? 0,
-        )) {
+        $resources_id = (int) ($options['resources_id'] ?? 0);
+        // The right of the resources plugin on that resource, its entity included: the entity
+        // alone displayed HR records (contract, dates, manager) to any submitter
+        if ($resources_id <= 0 || !class_exists(Resource::class) || !$resource->can($resources_id, READ)) {
             return '';
         }
 

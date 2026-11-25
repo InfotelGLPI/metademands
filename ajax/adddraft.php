@@ -61,7 +61,10 @@ if (isset($_POST['save_draft'])) {
     // ajax/addform.php (prevents cross-entity/rights enumeration and writes by id). The
     // ownership check further down only guards overwriting an existing draft, not the
     // choice of the target meta-demand.
-    $metademands_id = (int) ($_POST['metademands_id'] ?? 0);
+    // The id checked is the id the draft is stored under, read from $_POST below: a plain
+    // positive integer ("12.9" was checked as 12 and stored as 13)
+    $_POST['metademands_id'] = Metademand::getPostedId($_POST['metademands_id'] ?? null);
+    $metademands_id = $_POST['metademands_id'];
     if (
         !$metademands->getFromDB($metademands_id)
         || !($metademands->canCreate() || Group::isUserHaveRight($metademands_id))

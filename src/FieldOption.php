@@ -840,6 +840,12 @@ class FieldOption extends CommonDBChild
         }
         if ($ID > 0) {
             $this->check($ID, UPDATE);
+            // The field of the option, not the posted parent (ajax/viewsubitem.php loads it
+            // unchecked): the form displays its labels, values and conditions
+            $item = new Field();
+            if (!$item->getFromDB((int) $this->fields['plugin_metademands_fields_id'])) {
+                return false;
+            }
         } else {
             $options['plugin_metademands_fields_id'] = $options['parent']->getField('id');
             // Create item

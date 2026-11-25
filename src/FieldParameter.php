@@ -873,6 +873,46 @@ class FieldParameter extends CommonDBChild
     }
 
     /**
+     * The criteria the custom options of a field add to the list of its items: only the
+     * options named after a column of the items, with an integer value (the yes / no flags
+     * of a group field: is_requester, is_watcher, is_assign).
+     *
+     * Any other key is dropped: the options are stored as the designer (or an imported file)
+     * posts them, and a numeric key or a logical operator (OR, AND, NOT) of the criteria
+     * would be read by GLPI 11 as a raw SQL expression.
+     *
+     * @param class-string<\CommonDBTM>|string $itemtype the type of the listed items
+     * @param mixed                            $custom   custom options, serialized or not
+     *
+     * @return array<string, int>
+     */
+    public static function getItemCriteria(string $itemtype, $custom): array
+    {
+        global $DB;
+
+        $options = is_array($custom) ? $custom : self::_unserialize($custom);
+        $item    = getItemForItemtype($itemtype);
+        if (!is_array($options) || !$item instanceof \CommonDBTM) {
+            return [];
+        }
+
+        $criteria = [];
+        foreach ($options as $key => $value) {
+            if (
+                !is_string($key)
+                || preg_match('/^[a-z][a-z0-9_]*$/', $key) !== 1
+                || !is_scalar($value)
+                || !$DB->fieldExists($item::getTable(), $key)
+            ) {
+                continue;
+            }
+            $criteria[$key] = (int) $value;
+        }
+
+        return $criteria;
+    }
+
+    /**
      * Whether the user is a member of one of the groups.
      *
      * @param int[] $groups_ids

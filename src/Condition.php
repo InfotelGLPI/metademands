@@ -1057,6 +1057,12 @@ class Condition extends CommonDBChild
         }
         if ($ID > 0) {
             $this->check($ID, UPDATE);
+            // The meta-demand of the condition, not the posted parent (ajax/viewsubitem.php
+            // loads it unchecked): the form lists the names of its fields
+            $item = new Metademand();
+            if (!$item->getFromDB((int) $this->fields['plugin_metademands_metademands_id'])) {
+                return false;
+            }
         } else {
             $options['itemtype'] = get_class($item);
             $options['plugin_metademands_metademands_id'] = $item->getID();

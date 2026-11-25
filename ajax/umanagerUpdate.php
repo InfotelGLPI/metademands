@@ -111,7 +111,21 @@ if (isset($_POST['users_id'])
 
 if (isset($_POST['fields_id'])
     && isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']])) {
-    $val = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
+    // The value the wizard keeps for the field is any value posted for it before (a draft, a
+    // step): displayed with its name and its card, it is the supervisor read above or a user
+    // the field offers only, as its picker does (Config::isOfferedByUserField())
+    $supervisor  = (int) $val;
+    $session_val = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
+    $val         = 0;
+    if (is_scalar($session_val) && (int) $session_val > 0) {
+        $session_val = (int) $session_val;
+        if (
+            $session_val === $supervisor
+            || Config::canCurrentUserViewRequester($session_val, (int) $_POST['fields_id'], true)
+        ) {
+            $val = $session_val;
+        }
+    }
 }
 
 // [S3] Normalize the reflected form field name: it is echoed back as the name attribute

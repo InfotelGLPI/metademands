@@ -84,6 +84,8 @@ class Url extends CommonDBTM
             // Prefilled from the linked "User" field by public/scripts/wizard_form.js
             // (initUserPrefill). Html::input() escapes the attributes.
             $opt['data-md-user-source'] = $namefield . "[" . $data['link_to_user'] . "]";
+            // The User field offering the user: the route only reads a user that field may offer
+            $opt['data-md-user-field']  = (int) $data['link_to_user'];
             $opt['data-md-user-key']    = $data['used_by_ticket'];
             $opt['data-md-user-url']    = PLUGIN_METADEMANDS_WEBDIR . '/ajax/uTextFieldUpdate.php';
         }

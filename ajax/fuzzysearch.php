@@ -31,7 +31,16 @@ use GlpiPlugin\Metademands\Metademand;
 
 $AJAX_INCLUDE = 1;
 
-header("Content-Type: text/html; charset=UTF-8");
+$action = $_POST['action'] ?? $_GET['action'] ?? '';
+$type   = $_POST['type'] ?? $_GET['type'] ?? '';
+
+// The search box markup is HTML; the list of the forms is JSON, never served as HTML: it
+// carries the names and comments of the forms and the route answers a plain GET
+header(
+    $action === 'getHtml'
+        ? "Content-Type: text/html; charset=UTF-8"
+        : "Content-Type: application/json; charset=UTF-8",
+);
 Html::header_nocache();
 
 // Gate on the same rights as the wizard entry point (see front/wizard.form.php), whose
@@ -43,6 +52,4 @@ Session::checkSeveralRightsOr([
     'plugin_metademands_createmeta' => READ,
 ]);
 
-$action = $_POST['action'] ?? $_GET['action'] ?? '';
-$type   = $_POST['type'] ?? $_GET['type'] ?? '';
 echo Metademand::fuzzySearch($action, $type);

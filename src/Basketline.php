@@ -42,6 +42,9 @@ use Toolbox;
  */
 class Basketline extends CommonDBTM
 {
+    // Stored values of the plugin: no generic access (REST API, generic routes)
+    use InternalStorageTrait;
+
     public static string $rightname = 'plugin_metademands';
 
 

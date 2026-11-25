@@ -30,6 +30,7 @@
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Draft;
 use GlpiPlugin\Metademands\Draft_Value;
+use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
 
@@ -50,8 +51,12 @@ $metademands = new Metademand();
 $wizard      = new Wizard();
 $draft      = new Draft();
 
-// Drafts are personal: only the owner may load one (prevents IDOR).
-$draft_id = (int) ($_POST['plugin_metademands_drafts_id'] ?? 0);
+// Drafts are personal: only the owner may load one (prevents IDOR). The ids checked are the
+// ids then read from $_POST by the loader and the session keys: plain positive integers
+// (an array of ids was checked as 1 and loaded as a list)
+$_POST['plugin_metademands_drafts_id'] = Metademand::getPostedId($_POST['plugin_metademands_drafts_id'] ?? null);
+$_POST['metademands_id']               = Metademand::getPostedId($_POST['metademands_id'] ?? null);
+$draft_id = $_POST['plugin_metademands_drafts_id'];
 if (!$draft->getFromDB($draft_id) || (int) $draft->fields['users_id'] !== Session::getLoginUserID()) {
     throw new AccessDeniedHttpException();
 }
@@ -60,13 +65,14 @@ if (!$draft->getFromDB($draft_id) || (int) $draft->fields['users_id'] !== Sessio
 // draft's own meta-demand) and require entity access on it, before it keys any
 // $_SESSION state. Same guard as ajax/loadform.php: prevents rehydrating the
 // session of an unrelated meta-demand with the values of another form.
-$metademands_id = (int) ($_POST['metademands_id'] ?? 0);
+$metademands_id = $_POST['metademands_id'];
 if ((int) $draft->fields['plugin_metademands_metademands_id'] !== $metademands_id
     || !$metademands->getFromDB($metademands_id)
     || !Session::haveAccessToEntity(
         $metademands->fields['entities_id'],
         $metademands->fields['is_recursive'],
-    )) {
+    )
+    || !($metademands->canCreate() || Group::isUserHaveRight($metademands_id))) {
     throw new AccessDeniedHttpException();
 }
 

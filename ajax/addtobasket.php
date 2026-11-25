@@ -30,6 +30,7 @@
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Basketline;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
 
@@ -48,7 +49,9 @@ $wizard = new Wizard();
 $metademands = new Metademand();
 $fields = new Field();
 
-if (!$metademands->getFromDB($form_metademands_id) || !$metademands->can($form_metademands_id, READ)) {
+if (!$metademands->getFromDB($form_metademands_id) || !$metademands->can($form_metademands_id, READ)
+    // The groups the form is restricted to, as on the wizard
+    || !($metademands->canCreate() || Group::isUserHaveRight($form_metademands_id))) {
     throw new AccessDeniedHttpException();
 }
 

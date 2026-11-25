@@ -49,7 +49,7 @@
             {% endif %}
 
             {% set group_rows = group_rows|merge([{
-                'field'      : '<span class="fw-medium">' ~ handler.getName() ~ '</span>',
+                'field'      : '<span class="fw-medium">' ~ handler.getName()|e ~ '</span>',
                 'default'    : default_value,
                 'translation': _self.getTranslationInput(handler, item_translation, lang),
             }]) %}
@@ -60,7 +60,7 @@
         {% set category = handlers|first.getCategory() %}
         {% if category %}
             {% set modal_entries = modal_entries|merge([{
-                'field'        : '<span class="text-muted fw-semibold small">' ~ category ~ '</span>',
+                'field'        : '<span class="text-muted fw-semibold small">' ~ category|e ~ '</span>',
                 'field_colspan': 3,
             }]) %}
         {% endif %}

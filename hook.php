@@ -29,6 +29,7 @@
 
 use Glpi\DBAL\QueryExpression;
 use Glpi\DBAL\QueryFunction;
+use Glpi\DBAL\QuerySubQuery;
 use GlpiPlugin\Metademands\Basketline;
 use GlpiPlugin\Metademands\Basketobject;
 use GlpiPlugin\Metademands\BasketobjectInjection;
@@ -463,8 +464,9 @@ function plugin_metademands_item_purge($item)
 {
 
     if ($item instanceof Ticket) {
+        // The forms saved for this ticket, never a model (shared with other users)
         $temp = new Form();
-        $temp->deleteByCriteria(['items_id' =>  $item->getID(), 'itemtype' => 'Ticket']);
+        $temp->deleteByCriteria(['items_id' =>  $item->getID(), 'itemtype' => 'Ticket', 'is_model' => 0]);
 
         $temp = new Ticket_Task();
         $temp->deleteByCriteria(['tickets_id' =>  $item->getID()]);
@@ -1141,13 +1143,79 @@ function plugin_metademands_getDropdown()
 function plugin_metademands_addDefaultWhere($itemtype)
 {
 
+    // The lists of the generic routes (search, REST API) apply the right of the class and, when
+    // the table has one, its entity column: the tables below have none, they are restricted to
+    // the rows their parent makes visible
+    $in_entities = static fn(string $table): QuerySubQuery => new QuerySubQuery([
+        'SELECT' => 'id',
+        'FROM'   => $table,
+        'WHERE'  => getEntitiesRestrictCriteria($table, '', '', true),
+    ]);
+    $users_id = (int) Session::getLoginUserID();
+
     switch ($itemtype) {
         case Draft::class:
             // A draft is private to its author: scope the listing to the
             // connected user. Qualify the column so the WHERE stays
             // unambiguous should the search later join another table that
             // also exposes a `users_id` column.
-            return [Draft::getTableField('users_id') => (int) Session::getLoginUserID()];
+            return [Draft::getTableField('users_id') => $users_id];
+
+        case Form::class:
+            // A saved form belongs to its author, a public model is shared in its entities
+            return [
+                'OR' => [
+                    Form::getTableField('users_id') => $users_id,
+                    'AND' => [
+                        Form::getTableField('is_model')   => 1,
+                        Form::getTableField('is_private') => 0,
+                    ],
+                ],
+            ];
+
+        case Stepform::class:
+            // The step forms of their actors (Step::canActOnStepform())
+            $actors = [
+                Stepform::getTableField('users_id')      => $users_id,
+                Stepform::getTableField('users_id_dest') => $users_id,
+                Stepform::getTableField('id')            => new QuerySubQuery([
+                    'SELECT' => 'plugin_metademands_stepforms_id',
+                    'FROM'   => Stepform_Actor::getTable(),
+                    'WHERE'  => ['users_id' => $users_id],
+                ]),
+            ];
+            $groups = array_map('intval', (array) ($_SESSION['glpigroups'] ?? []));
+            if ($groups !== []) {
+                $actors[] = [
+                    Stepform::getTableField('users_id_dest')  => 0,
+                    Stepform::getTableField('groups_id_dest') => $groups,
+                ];
+            }
+            return ['OR' => $actors];
+
+        case Ticket_Metademand::class:
+        case Ticket_Task::class:
+        case MetademandValidation::class:
+            // Links and validations of the tickets of the active entities
+            return [$itemtype::getTableField('tickets_id') => $in_entities(Ticket::getTable())];
+
+        case FieldParameter::class:
+        case FieldOption::class:
+        case FieldCustomvalue::class:
+        case Freetablefield::class:
+            // Design of the fields of the active entities
+            return [$itemtype::getTableField('plugin_metademands_fields_id') => $in_entities(Field::getTable())];
+
+        case Condition::class:
+        case Step::class:
+            return [$itemtype::getTableField('plugin_metademands_metademands_id') => $in_entities(Metademand::getTable())];
+
+        case MailTask::class:
+            return [MailTask::getTableField('plugin_metademands_tasks_id') => new QuerySubQuery([
+                'SELECT' => 'id',
+                'FROM'   => Task::getTable(),
+                'WHERE'  => ['plugin_metademands_metademands_id' => $in_entities(Metademand::getTable())],
+            ])];
     }
     return [];
 }

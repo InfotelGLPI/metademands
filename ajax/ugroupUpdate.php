@@ -120,14 +120,10 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
 
         $options = FieldParameter::_unserialize($fieldparameter->fields['custom']);
 
-        foreach ($options as $type_group => $values) {
-            if ($type_group != 'user_group') {
-                $cond[$type_group] = $values;
-            } else {
-                if (count($requester_groups) > 0) {
-                    $cond["`glpi_groups`.`id`"] = $requester_groups;
-                }
-            }
+        // The flags of the field only, never a key of the stored options as such
+        $cond = FieldParameter::getItemCriteria(Group::class, $options) + $cond;
+        if (is_array($options) && array_key_exists('user_group', $options) && count($requester_groups) > 0) {
+            $cond["`glpi_groups`.`id`"] = $requester_groups;
         }
     }
 }
@@ -159,6 +155,19 @@ if (isset($_POST['groups_id']) && $_POST['groups_id'] > 0) {
 }
 
 if (is_array($val)) {
+    $val = 0;
+}
+
+// The group displayed by its name (posted, or kept by the wizard for the field) is one the
+// dropdown offers: of the active entities, matching the conditions of the field
+if ((int) $val > 0 && countElementsInTable(
+    Group::getTable(),
+    array_merge(
+        [Group::getTableField('id') => (int) $val],
+        $cond,
+        getEntitiesRestrictCriteria(Group::getTable(), '', $_SESSION['glpiactiveentities'] ?? [], true),
+    ),
+) === 0) {
     $val = 0;
 }
 

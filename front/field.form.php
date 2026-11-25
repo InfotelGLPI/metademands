@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldCustomvalue;
 use GlpiPlugin\Metademands\FieldParameter;
@@ -41,18 +42,26 @@ $field = new Field();
 $fieldparameter = new FieldParameter();
 $fieldcustomvalues = new FieldCustomvalue();
 
-if (isset($_POST['existing_field_id'])) {
-    if ($field->getFromDB($_POST['existing_field_id'])) {
-        $input = $field->fields;
-        unset($input['id']);
-        unset($input['entities_id']);
-        unset($input['is_recursive']);
-        unset($input['rank']);
-        unset($input['order']);
-        unset($input['plugin_metademands_fields_id']);
-        unset($input['plugin_metademands_metademands_id']);
-        $_POST = array_merge($_POST, $input);
+// "Add an existing field": the copy of a field the session may read, on an addition only. It is
+// loaded apart from $field, on which the right checks below run: loaded into $field, it became
+// the row a check on a new or a malformed id was evaluated against
+$existing_field_id = (int) ($_POST['existing_field_id'] ?? 0);
+unset($_POST['existing_field_id']);
+if ($existing_field_id > 0 && (isset($_POST['add']) || isset($_POST['add_another']))) {
+    $source = new Field();
+    if (!$source->can($existing_field_id, READ)) {
+        throw new AccessDeniedHttpException();
     }
+    $_POST['existing_field_id'] = $existing_field_id;
+    $input = $source->fields;
+    unset($input['id']);
+    unset($input['entities_id']);
+    unset($input['is_recursive']);
+    unset($input['rank']);
+    unset($input['order']);
+    unset($input['plugin_metademands_fields_id']);
+    unset($input['plugin_metademands_metademands_id']);
+    $_POST = array_merge($_POST, $input);
 }
 
 if (isset($_POST['item']) && isset($_POST['type'])
@@ -202,8 +211,10 @@ if (isset($_POST["add_another"])) {
     }
 
     // Bind the control to the row actually written: with -1 the right was never evaluated and the
-    // parent metademand of the posted id was never confronted with the session.
-    $field->check((int) $_POST['id'], UPDATE);
+    // parent metademand of the posted id was never confronted with the session. One id, a plain
+    // positive integer, for the control and the write.
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
+    $field->check($_POST['id'], UPDATE);
     // The edit form never moves a field to another metademand.
     $_POST['plugin_metademands_metademands_id'] = $field->fields['plugin_metademands_metademands_id'];
 
@@ -247,11 +258,13 @@ if (isset($_POST["add_another"])) {
     Html::back();
 } elseif (isset($_POST["purge"])) {
     // delete($input, 1) is a purge, and the identifier comes from the client: control the purge
-    // right on that very row so that its parent metademand decides.
-    $field->check((int) $_POST['id'], PURGE);
+    // right on that very row so that its parent metademand decides, and purge that very row.
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
+    $field->check($_POST['id'], PURGE);
+    $metademands_id = (int) $field->fields['plugin_metademands_metademands_id'];
     $field->delete($_POST, 1);
     Metademand::addLog($_POST, Metademand::LOG_DELETE);
-    Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/metademand.form.php?id=" . $_POST['plugin_metademands_metademands_id']);
+    Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/metademand.form.php?id=" . $metademands_id);
 } else {
     $field->checkGlobal(READ);
     Html::header(Field::getTypeName(2), '', "helpdesk", Menu::class);

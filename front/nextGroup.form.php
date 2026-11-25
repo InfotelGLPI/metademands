@@ -58,10 +58,10 @@ $userName = "";
 if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
 
     if (isset($_POST['update_stepform'])) {
-        $_SESSION ['plugin_metademands'][$user_id]['update_stepform'] = $_POST['update_stepform'];
+        $_SESSION['plugin_metademands_step'][$user_id]['update_stepform'] = $_POST['update_stepform'];
     }
     if (isset($_POST['next_groups_id'])) {
-        $_SESSION ['plugin_metademands'][$user_id]['groups_id_dest'] = $_POST['next_groups_id'];
+        $_SESSION['plugin_metademands_step'][$user_id]['groups_id_dest'] = $_POST['next_groups_id'];
         $res = $group->getFromDBByCrit(['id' => (int) $_POST['next_groups_id']]);
         // Group names are stored unescaped (GLPI 10+/11); this legacy echo path
         // is not Twig-autoescaped, so neutralize the value before it is embedded
@@ -73,7 +73,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
     }
     if (isset($_POST['next_users_id'])
         && $_POST['next_users_id'] != 0) {
-        $_SESSION ['plugin_metademands'][$user_id]['users_id_dest'] = $_POST['next_users_id'];
+        $_SESSION['plugin_metademands_step'][$user_id]['users_id_dest'] = $_POST['next_users_id'];
         // Same treatment as the group name above: user names are stored unescaped and this
         // legacy echo path is not Twig-autoescaped, so neutralize the value before it is
         // interpolated into the confirmation alert.
@@ -99,12 +99,12 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
         $KO = Step::nextUser();
     } finally {
         foreach (['update_stepform', 'groups_id_dest', 'users_id_dest'] as $staged_key) {
-            unset($_SESSION['plugin_metademands'][$user_id][$staged_key]);
+            unset($_SESSION['plugin_metademands_step'][$user_id][$staged_key]);
         }
     }
 
     if ($KO === false) {
-        $_SESSION['plugin_metademands'][$user_id]['redirect_wizard'] = true;
+        $_SESSION['plugin_metademands_step'][$user_id]['redirect_wizard'] = true;
         Html::popHeader(__('Next recipient', 'metademands'), '', true);
         $display = "<div class='alert alert-info alert-info d-flex'>";
         $display .= "$msg";

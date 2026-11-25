@@ -31,6 +31,7 @@ use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Freetablefield;
 use GlpiPlugin\Metademands\Menu;
+use GlpiPlugin\Metademands\Metademand;
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
@@ -141,8 +142,11 @@ if (isset($_POST["add"])) {
 
     // check(-1, ...) never evaluates UPDATE: bind the control to each identifier of the batch.
     foreach ($inputs as $key => $input) {
-        $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
-        $fieldcustom->check((int) $input['id'], UPDATE);
+        // One id, a plain positive integer, for the control and the write; the column stays in
+        // its field
+        $input['id'] = Metademand::getPostedId($input['id'] ?? null);
+        $fieldcustom->check($input['id'], UPDATE);
+        $input['plugin_metademands_fields_id'] = $fieldcustom->fields['plugin_metademands_fields_id'];
         $fieldcustom->update($input);
     }
 
@@ -151,7 +155,7 @@ if (isset($_POST["add"])) {
     // The delete button carries the column id (templates/fields/freetable_fields.html.twig).
     // Same defect as fieldcustomvalue.form.php: the neighbouring ranks were decremented before any
     // control. Authorise the purge first, on the targeted row itself.
-    $fieldcustom->check((int) $_POST['delete'], PURGE);
+    $fieldcustom->check(Metademand::getPostedId($_POST['delete'] ?? null), PURGE);
     // Rank and parent field come from the row, never from the request
     $input = [
         'id'                           => $fieldcustom->getID(),

@@ -37,6 +37,11 @@ $regex_value_max_length = 500;
 $group = new Group();
 
 if (isset($_POST["add_groups"])) {
+    // The meta-demand checked below (its parent, by check()) and written with the groups: one
+    // plain positive integer ("5.7" was checked as 57 and stored as 6)
+    $_POST['plugin_metademands_metademands_id'] = Metademand::getPostedId(
+        $_POST['plugin_metademands_metademands_id'] ?? null,
+    );
     if (isset($_POST['groups_id'])) {
         $group->check(-1, UPDATE, $_POST);
 

@@ -70,6 +70,31 @@ class Export extends CommonDBTM
 {
     public static string $rightname = 'plugin_metademands';
 
+    /**
+     * The class reads the table of another class (getTable()): no generic creation, update or
+     * deletion through it (REST API, generic form route), which skipped the checks and the
+     * validations of that class
+     */
+    public function canCreateItem(): bool
+    {
+        return false;
+    }
+
+    public function canUpdateItem(): bool
+    {
+        return false;
+    }
+
+    public function canDeleteItem(): bool
+    {
+        return false;
+    }
+
+    public function canPurgeItem(): bool
+    {
+        return false;
+    }
+
     /** Upper bound accepted for an imported meta-demand XML document, in bytes. */
     private const MAX_IMPORT_XML_BYTES = 5 * 1024 * 1024;
 
@@ -2917,6 +2942,13 @@ class Export extends CommonDBTM
             $fields[$k]["plugin_metademands_metademands_id"] = $newIDMeta;
             $fields[$k]["date_creation"] = $_SESSION['glpi_currenttime'];
             $fields[$k]["date_mod"] = $_SESSION['glpi_currenttime'];
+            // The columns of a field only: an option key of the file ("_unique_block_title"...)
+            // drove the controls of Field::prepareInputForAdd()
+            $fields[$k] = array_filter(
+                $fields[$k],
+                static fn($key) => !str_starts_with((string) $key, '_'),
+                ARRAY_FILTER_USE_KEY,
+            );
 
             $metaField = new Field();
             $newIDField = $metaField->add($fields[$k]);
@@ -2944,6 +2976,9 @@ class Export extends CommonDBTM
                 foreach ($fieldstranslations as $fieldstranslation) {
                     unset($fieldstranslation['id']);
                     $fieldstranslation['items_id'] = $newIDField;
+                    // The translation of this field: the file chose the itemtype of the shared
+                    // translation table, and could set a label on any object of that id
+                    $fieldstranslation['itemtype'] = Field::class;
                     // Backward compatibility: old XML used 'field'+'value', new uses 'key'+'translations'
                     if (isset($fieldstranslation['field']) && !isset($fieldstranslation['key'])) {
                         $fieldstranslation['key'] = $fieldstranslation['field'];
@@ -3591,6 +3626,8 @@ class Export extends CommonDBTM
                 $meta_translation = new MetademandTranslation();
                 unset($trans['id']);
                 $trans['items_id'] = $newIDMeta;
+                // The translation of this meta-demand, whatever itemtype the file gives
+                $trans['itemtype'] = Metademand::class;
                 // Backward compatibility: old XML used 'field'+'value', new uses 'key'+'translations'
                 if (isset($trans['field']) && !isset($trans['key'])) {
                     $trans['key'] = $trans['field'];

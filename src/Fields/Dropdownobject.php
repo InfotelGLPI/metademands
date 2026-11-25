@@ -582,15 +582,8 @@ class Dropdownobject extends CommonDBTM
                 $field = "";
 
                 if (!empty($data['custom_values'])) {
-                    $options = FieldParameter::_unserialize($data['custom_values']);
-                    foreach ($options as $k => $val) {
-                        if (!empty($ret = Field::displayField($data["id"], "custom" . $k))) {
-                            $options[$k] = $ret;
-                        }
-                    }
-                    foreach ($options as $type_group => $val) {
-                        $cond[$type_group] = $val;
-                    }
+                    // Only options named after a column of the items, never a key as such
+                    $cond = FieldParameter::getItemCriteria((string) $data['item'], $data['custom_values']);
                 }
 
                 if ($data['item'] == 'Ticket') {
@@ -837,10 +830,8 @@ class Dropdownobject extends CommonDBTM
                 $name = "check_value";
                 $cond = [];
                 if (!empty($params['custom_values'])) {
-                    $options = FieldParameter::_unserialize($params['custom_values']);
-                    foreach ($options as $type_group => $values) {
-                        $cond[$type_group] = $values;
-                    }
+                    // The flags of the group field only, never a key of its options as such
+                    $cond = FieldParameter::getItemCriteria(Group::class, $params['custom_values']);
                 }
                 Group::dropdown(['name' => $name,
                     'entity' => $_SESSION['glpiactiveentities'],

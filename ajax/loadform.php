@@ -30,6 +30,7 @@
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Form;
 use GlpiPlugin\Metademands\Form_Value;
+use GlpiPlugin\Metademands\Group;
 use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Wizard;
 
@@ -54,7 +55,11 @@ $form      = new Form();
 
 // Only the owner may load a form, except public models (is_model && !is_private)
 // which are meant to be shared. Prevents IDOR on other users' private forms.
-$form_id = (int) ($_POST['plugin_metademands_forms_id'] ?? 0);
+// The ids checked are the ids then read from $_POST by the loader and the session keys: plain
+// positive integers (an array of ids was checked as 1 and loaded as a list)
+$_POST['plugin_metademands_forms_id'] = Metademand::getPostedId($_POST['plugin_metademands_forms_id'] ?? null);
+$_POST['metademands_id']              = Metademand::getPostedId($_POST['metademands_id'] ?? null);
+$form_id = $_POST['plugin_metademands_forms_id'];
 if (
     !$form->getFromDB($form_id)
     || ((int) $form->fields['users_id'] !== Session::getLoginUserID()
@@ -74,13 +79,14 @@ if (
 // form's own meta-demand) and require entity access on it, before it keys any
 // $_SESSION state. Prevents polluting the session of an unrelated meta-demand
 // via a mismatched metademands_id.
-$metademands_id = (int) ($_POST['metademands_id'] ?? 0);
+$metademands_id = $_POST['metademands_id'];
 if ((int) $form->fields['plugin_metademands_metademands_id'] !== $metademands_id
     || !$metademands->getFromDB($metademands_id)
     || !Session::haveAccessToEntity(
         $metademands->fields['entities_id'],
         $metademands->fields['is_recursive'],
-    )) {
+    )
+    || !($metademands->canCreate() || Group::isUserHaveRight($metademands_id))) {
     throw new AccessDeniedHttpException();
 }
 

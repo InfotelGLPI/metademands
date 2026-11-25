@@ -54,7 +54,10 @@ $form = new Form();
 
 if (isset($_POST['save_model'])) {
     $users_id = Session::getLoginUserID();
-    $form_id  = (int) ($_POST['plugin_metademands_forms_id'] ?? 0);
+    // The ownership is checked on this id and every write below reads $_POST: one plain
+    // positive integer ("5.7" was checked as the form 5 and updated as the form 57)
+    $_POST['plugin_metademands_forms_id'] = Metademand::getPostedId($_POST['plugin_metademands_forms_id'] ?? null);
+    $form_id  = $_POST['plugin_metademands_forms_id'];
     if (!$form->getFromDB($form_id) || (int) $form->fields['users_id'] !== $users_id) {
         throw new AccessDeniedHttpException();
     }
