@@ -49,7 +49,12 @@ if (isset($_POST["add"])) {
         // Creation right: since Task no longer overrides canCreateItem(), this resolves the parent
         // metademand carried by the input and applies its entity boundary.
         $task->check(-1, CREATE, $_POST);
-        $_POST['plugin_metademands_tasks_id'] = isset($_POST['parent_tasks_id']) ? $_POST['parent_tasks_id'] : 0;
+        // A parent task of the same metademand only
+        $parent_task = (int) ($_POST['parent_tasks_id'] ?? 0);
+        $_POST['plugin_metademands_tasks_id'] = $parent_task > 0
+            && Task::isTaskOfMetademand($parent_task, (int) ($_POST['plugin_metademands_metademands_id'] ?? 0))
+            ? $parent_task
+            : 0;
 
         if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
             $_POST['block_use'] = json_encode([]);
@@ -105,43 +110,58 @@ if (isset($_POST["add"])) {
 
 } elseif (isset($_POST["update"])) {
     // Bind the control to the row actually written: with -1 the requested right was never
-    // evaluated and the parent metademand was never confronted with the session.
-    $task->check((int) $_POST['id'], UPDATE);
+    // evaluated and the parent metademand was never confronted with the session. One id, a
+    // plain positive integer, for the control and for the writes (check() reads "5x12" as 512,
+    // (int) as 5).
+    $tasks_id = Metademand::getPostedId($_POST['id'] ?? null);
+    $task->check($tasks_id, UPDATE);
 
     $input = $_POST;
     $input['type'] = $_POST['taskType'] ?? 0;
     $input['content'] = $_POST['content'];
+    // The task stays in its metademand
+    $input['plugin_metademands_metademands_id'] = $task->fields['plugin_metademands_metademands_id'];
     if ($input['type'] == Task::MAIL_TYPE) {
-        $input['id'] = $_POST['mailtask_id'];
+        $input['id'] = Metademand::getPostedId($_POST['mailtask_id'] ?? null);
         // The control above is on the Task, the write below on another class whose identifier is
         // client supplied: authorise the MailTask on its own id, then replay the parent/child
         // relation at the sink so that a notification task of another metademand cannot be
         // hijacked through this form.
-        $mailtask->check((int) $input['id'], UPDATE);
+        $mailtask->check($input['id'], UPDATE);
         if ((int) $mailtask->fields['plugin_metademands_tasks_id'] !== (int) $task->getID()) {
             throw new AccessDeniedHttpException();
         }
+        // The mail task stays attached to this task
+        $input['plugin_metademands_tasks_id'] = $tasks_id;
         if ($mailtask->update($input)) {
             if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
                 $input['block_use'] = json_encode([]);
             } else {
                 $input['block_use'] = json_encode($_POST['block_use']);
             }
-            $input['id'] = $_POST['id'];
+            $input['id'] = $tasks_id;
             $input['_no_message_link'] = 0;
+            // No parent task on this form: the task keeps its own
+            $input['plugin_metademands_tasks_id'] = $task->fields['plugin_metademands_tasks_id'];
             $task->update($input);
         }
     } else {
-        $input['id'] = $_POST['tickettask_id'];
+        $input['id'] = Metademand::getPostedId($_POST['tickettask_id'] ?? null);
         // Same reasoning as the MailTask branch above.
-        $tickettask->check((int) $input['id'], UPDATE);
+        $tickettask->check($input['id'], UPDATE);
         if ((int) $tickettask->fields['plugin_metademands_tasks_id'] !== (int) $task->getID()) {
             throw new AccessDeniedHttpException();
         }
+        // The ticket task stays attached to this task: the posted value would re-attach it to
+        // the task of another metademand, whose child tickets it would then define
+        $input['plugin_metademands_tasks_id'] = $tasks_id;
         if ($tickettask->isMandatoryField($input) && $tickettask->update($input)) {
 
-            $tasks_id = $_POST['id'];
-            $parent_task = $_POST['parent_tasks_id'] ?? 0;
+            $parent_task = (int) ($_POST['parent_tasks_id'] ?? 0);
+            // A parent task of the same metademand only
+            if ($parent_task > 0 && !Task::isTaskOfMetademand($parent_task, (int) $task->fields['plugin_metademands_metademands_id'])) {
+                $parent_task = (int) $task->fields['plugin_metademands_tasks_id'];
+            }
             unset($input['content']);
             if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
                 $input['block_use'] = json_encode([]);
@@ -172,8 +192,9 @@ if (isset($_POST["add"])) {
 
     Html::back();
 } elseif (isset($_POST["purge"])) {
-    // Deletion right, bound to the posted row rather than to a new id.
-    $task->check((int) $_POST['id'], DELETE);
+    // Deletion right, bound to the posted row rather than to a new id; the same id deleted
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
+    $task->check($_POST['id'], DELETE);
     $task->delete($_POST);
     Html::back();
 }

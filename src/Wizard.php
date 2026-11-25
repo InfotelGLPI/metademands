@@ -55,6 +55,31 @@ class Wizard extends CommonDBTM
     public static $rightname = 'plugin_metademands';
 
     /**
+     * The class reads the table of another class (getTable()): no generic creation, update or
+     * deletion through it (REST API, generic form route), which skipped the checks and the
+     * validations of that class
+     */
+    public function canCreateItem(): bool
+    {
+        return false;
+    }
+
+    public function canUpdateItem(): bool
+    {
+        return false;
+    }
+
+    public function canDeleteItem(): bool
+    {
+        return false;
+    }
+
+    public function canPurgeItem(): bool
+    {
+        return false;
+    }
+
+    /**
      * __contruct function where initialize some variables
      *
      * @global array $CFG_GLPI
@@ -531,8 +556,16 @@ class Wizard extends CommonDBTM
             $title = $meta->fields['hide_title'] ? 0 : 1;
         }
 
+        // The groups the form is restricted to, decided before anything of the form is built
+        // (its title and comment, its public models, its drafts): checked further down only, they
+        // were displayed above the refusal
+        $group_denied = $parameters['step'] > Metademand::STEP_LIST
+            && $parameters['preview'] == 0
+            && !$meta->isNewItem()
+            && !Group::isUserHaveRight($meta->getID());
+
         $models_and_drafts = null;
-        if ($parameters['step'] > Metademand::STEP_LIST && $title == 0) {
+        if ($parameters['step'] > Metademand::STEP_LIST && $title == 0 && !$group_denied) {
             $models_and_drafts = self::getModelsAndDraftsContext($parameters, false);
         }
 
@@ -608,7 +641,7 @@ class Wizard extends CommonDBTM
             }
         } elseif ($parameters['step'] > Metademand::STEP_LIST) {
             $template_vars['header'] = 'form';
-            if ($title == 1) {
+            if ($title == 1 && !$group_denied) {
                 $template_vars['metademand_title'] = self::getMetademandTitleContext($meta, $parameters);
             }
 
@@ -1316,7 +1349,13 @@ class Wizard extends CommonDBTM
                         $fields = $line['form'];
                         foreach ($fields as $fid => $field) {
                             if (isset($parameters['defaultvalues'][$fid])) {
-                                $fields[$fid]['value'] = $parameters['defaultvalues'][$fid];
+                                // A value of the URL, displayed by its name: one the dropdown of
+                                // the field offers only
+                                $fields[$fid]['value'] = Metademand::filterOfferedValue(
+                                    $field,
+                                    $parameters['defaultvalues'][$fid],
+                                    is_array($parameters['defaultvalues']) ? $parameters['defaultvalues'] : [],
+                                );
                             }
                         }
                         if ($block > 0) {
@@ -1707,7 +1746,7 @@ class Wizard extends CommonDBTM
         $user_id = Session::getLoginUserID();
         // PLUGIN_METADEMANDS_WEBDIR already starts with root_doc (setup.php)
         $url = PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php";
-        if (isset($_SESSION['plugin_metademands'][$user_id]['redirect_wizard'])) {
+        if (isset($_SESSION['plugin_metademands_step'][$user_id]['redirect_wizard'])) {
             if (Plugin::isPluginActive('servicecatalog')
                 && Session::haveRight("plugin_servicecatalog", READ)) {
                 if (method_exists(ServiceCatalogConfig::class, 'getMultiEntityRedirection') && ServiceCatalogConfig::getConfig()->getMultiEntityRedirection()) {
@@ -1723,7 +1762,7 @@ class Wizard extends CommonDBTM
                     }
                 }
             }
-            unset($_SESSION['plugin_metademands'][$user_id]);
+            unset($_SESSION['plugin_metademands_step'][$user_id]);
             Html::redirect($url);
         }
         $debug = (isset($_SESSION['glpi_use_mode'])

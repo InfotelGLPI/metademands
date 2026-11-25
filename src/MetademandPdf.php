@@ -1549,7 +1549,11 @@ class MetademandPdf extends \TCPDF
         //Construction du chemin du fichier
         //      $filename = "metademand_" . $idTicket . ".pdf";
         $filename = $name . ".pdf";
-        $this->Output(GLPI_DOC_DIR . "/_uploads/" . $filename, 'F');
+        // Staged under a name of its own: the name of the entity and of the form was shared by
+        // the submissions of the same form, which could swap their PDFs. The core strips the
+        // prefix from the name of the document (Document::moveUploadedDocument()).
+        $prefix = str_replace('.', '', uniqid('', true));
+        $this->Output(GLPI_DOC_DIR . "/_uploads/" . $prefix . $filename, 'F');
 
         //Création du document
         $doc = new Document();
@@ -1558,7 +1562,8 @@ class MetademandPdf extends \TCPDF
         // Document::add() parameterizes its query and stores the value as given: escaping
         // it here would write the backslashes literally into the document name.
         $input["name"] = $filename;
-        $input["upload_file"] = $filename;
+        $input["upload_file"] = $prefix . $filename;
+        $input["_prefix_filename"] = [$prefix];
         $input["mime"] = "application/pdf";
         $input["date_mod"] = date("Y-m-d H:i:s");
         $input["users_id"] = Session::getLoginUserID();

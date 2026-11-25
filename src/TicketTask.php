@@ -48,6 +48,10 @@ class TicketTask extends CommonDBChild
     public static $itemtype = Task::class;
     public static $items_id = 'plugin_metademands_tasks_id';
 
+    /** Actors given to the child tickets (Task::filterTaskTargets()) */
+    private const USER_COLUMNS  = ['users_id_assign', 'users_id_requester', 'users_id_observer'];
+    private const GROUP_COLUMNS = ['groups_id_assign', 'groups_id_requester', 'groups_id_observer'];
+
     /**
      * functions mandatory
      * getTypeName(), canCreate(), canView()
@@ -538,7 +542,18 @@ class TicketTask extends CommonDBChild
             }
         }
 
-        return $input;
+        // The actors of the child tickets: those the form offers (its entity column is not read)
+        $input = Task::filterTaskTargets($input, $this->fields, self::USER_COLUMNS, self::GROUP_COLUMNS, false);
+
+        // The ticket task stays attached to its task (CommonDBChild)
+        return parent::prepareInputForUpdate($input);
+    }
+
+    public function prepareInputForAdd($input)
+    {
+        $input = Task::filterTaskTargets($input, null, self::USER_COLUMNS, self::GROUP_COLUMNS, false);
+
+        return parent::prepareInputForAdd($input);
     }
 
     /**

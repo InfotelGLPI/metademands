@@ -326,6 +326,12 @@ class Interticketfollowup extends CommonITILObject
         $item      = $options['item'];
         $itemtypes = [];
 
+        // The followups link the tickets of a meta-demand: the hook also runs for the changes
+        // and the problems, whose ids are not ticket ids
+        if (!$item instanceof \Ticket) {
+            return $itemtypes;
+        }
+
         $metaValidation = new MetademandValidation();
         $ticket_task    = new Ticket_Task();
         if ($item->fields['id'] > 0 && (($metaValidation->getFromDBByCrit(['tickets_id' => $item->fields['id']])
@@ -477,6 +483,12 @@ class Interticketfollowup extends CommonITILObject
     {
         $self   = new self();
         $ticket = $item['item'];
+
+        // The timeline of a ticket only: the hook also runs for the changes and the problems,
+        // whose ids are not ticket ids
+        if (!$ticket instanceof \Ticket) {
+            return $item;
+        }
 
         $items_id         = $item['item']->fields['id'];
         $origin_time_line = $item['timeline'];

@@ -533,12 +533,9 @@ class Basket extends CommonDBTM
         $cond = [];
 
         if (!empty($params['custom_values'])) {
-            $options = $params['custom_values'];
-            if (is_array($options)) {
-                foreach ($options as $type_group => $values) {
-                    $cond[$type_group] = $values;
-                }
-            }
+            // The options of a basket field are its display flags, keyed by number: only an
+            // option named after a column of the objects, never a key as such
+            $cond = FieldParameter::getItemCriteria(Basketobject::class, $params['custom_values']);
         }
         $cond['plugin_metademands_basketobjecttypes_id'] = $params['item'];
 
@@ -876,8 +873,19 @@ class Basket extends CommonDBTM
     {
         $materials = $fields['field'] ?? [];
         $quantities = $fields['quantity'] ?? [];
-        $meta_id = $fields['metademands_id'] ?? 0;
+        // The meta-demand ajax/createmetademands.php checked, not another posted one
+        $meta_id = (int) ($fields['form_metademands_id'] ?? $fields['metademands_id'] ?? 0);
         $has_materials = is_array($materials) && count($materials) > 0;
+        if ($has_materials) {
+            // The fields of that meta-demand only, with the values their dropdowns offer: any
+            // field id of the instance was loaded and its value resolved into a name
+            $definitions = [];
+            foreach ((new Field())->find(['plugin_metademands_metademands_id' => $meta_id]) as $row) {
+                $definitions[$row['id']] = $row;
+            }
+            $materials     = Metademand::filterOfferedValues($definitions, array_intersect_key($materials, $definitions));
+            $has_materials = count($materials) > 0;
+        }
 
         $metademands = new Metademand();
         $has_meta = $metademands->getFromDB($meta_id);

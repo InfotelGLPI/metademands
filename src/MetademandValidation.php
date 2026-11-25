@@ -85,11 +85,39 @@ class MetademandValidation extends CommonDBTM
     }
 
     /**
-     * @return bool
+     * The validations are created by the submission of a form only (Metademand::addObjects()),
+     * never through a generic route: the right of a validator is READ, and a validation
+     * created by hand drove the creation of the child tickets it lists.
      */
     public static function canCreate(): bool
     {
-        return Session::haveRight(self::$rightname, READ);
+        return false;
+    }
+
+    public static function canUpdate(): bool
+    {
+        return false;
+    }
+
+    public static function canDelete(): bool
+    {
+        return false;
+    }
+
+    public static function canPurge(): bool
+    {
+        return false;
+    }
+
+    /**
+     * A validation is read with its ticket
+     */
+    public function canViewItem(): bool
+    {
+        $tickets_id = (int) ($this->fields['tickets_id'] ?? 0);
+
+        // can() on an id 0 would evaluate the creation of a ticket
+        return $tickets_id > 0 && (new \Ticket())->can($tickets_id, READ);
     }
 
 
@@ -149,9 +177,6 @@ class MetademandValidation extends CommonDBTM
     public function showForm($ID, $options = [])
     {
         if (!$this->canview()) {
-            return false;
-        }
-        if (!$this->cancreate()) {
             return false;
         }
         Html::requireJs('tinymce');

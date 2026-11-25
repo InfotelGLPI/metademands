@@ -73,6 +73,14 @@ final class MetademandProvider implements LeafProviderInterface
     #[Override]
     public function getItems(ItemRequest $item_request): array
     {
+        // The rights the wizard asks for (front/wizard.form.php): the catalog listed the forms
+        // to any connected user, the provider being registered whatever the profile
+        if (!Session::haveRight(Metademand::$rightname, READ)
+            && !Session::haveRight('plugin_metademands_createmeta', READ)
+            && !Session::haveRight('plugin_metademands_fillform', READ)) {
+            return [];
+        }
+
         $category_id = $item_request->getCategoryID();
         $filter = $item_request->getFilter();
         $parameters = $item_request->getFormAccessParameters();

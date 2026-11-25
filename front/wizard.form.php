@@ -149,7 +149,13 @@ if (isset($_GET['id'])) {
     $_GET['tickets_id'] = "0";
 }
 
-if (isset($_GET['metademands_id'])) {
+// One id, an integer, for the entity check below and the form the wizard then loads: "5x7" was
+// checked as the meta-demand 57 (getFromDB() keeps every digit) while the fields of the 5 were
+// displayed, and an id matching no row skipped the check
+$_GET['metademands_id'] = is_scalar($_GET['metademands_id'] ?? null) ? (int) $_GET['metademands_id'] : 0;
+$_POST['metademands_id'] = is_scalar($_POST['metademands_id'] ?? null) ? (int) $_POST['metademands_id'] : 0;
+
+if ($_GET['metademands_id'] > 0) {
     if ($metademands->getFromDB($_GET['metademands_id'])) {
         if (!Session::haveAccessToEntity($metademands->fields['entities_id'], $metademands->fields['is_recursive'])) {
             $message = __('This metademand cannot be used with this entity', 'metademands');

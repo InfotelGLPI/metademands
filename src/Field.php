@@ -2313,9 +2313,20 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
         }
         // If values are saved in session we retrieve it
         if (isset($_SESSION['plugin_metademands'][$metademands->getID()]['fields'])) {
-            foreach ($_SESSION['plugin_metademands'][$metademands->getID()]['fields'] as $id => $value) {
+            $session_values = $_SESSION['plugin_metademands'][$metademands->getID()]['fields'];
+            foreach ($session_values as $id => $value) {
                 if (strval($data['id']) === strval($id)) {
-                    $data['value'] = $value;
+                    // Any value posted before for the field (a draft, a step), displayed by its
+                    // name: one its dropdown offers only
+                    $data['value'] = Metademand::filterOfferedValue(
+                        $data,
+                        $value,
+                        is_array($session_values) ? $session_values : [],
+                    );
+                    // The widgets of the field read the session too (Fields\Dropdownobject...)
+                    if ($data['value'] !== $value) {
+                        $_SESSION['plugin_metademands'][$metademands->getID()]['fields'][$id] = $data['value'];
+                    }
                 } elseif ($data['id'] . '-2' === $id) {
                     $data['value-2'] = $value;
                 }
@@ -3029,7 +3040,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 // Given back to the form displayed after the redirect (restoreSavedInput())
                 $_SESSION['glpi_plugin_metademands_fields'][0] = $input;
                 Session::addMessageAfterRedirect(
-                    sprintf(__('Block %1$s already has a block title: %2$s', 'metademands'), $rank, $titles[$rank]),
+                    sprintf(__s('Block %1$s already has a block title: %2$s', 'metademands'), (int) $rank, htmlescape((string) $titles[$rank])),
                     false,
                     ERROR,
                 );
@@ -3130,7 +3141,7 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
             // Given back to the form displayed after the redirect (restoreSavedInput())
             $_SESSION['glpi_plugin_metademands_fields'][$this->isNewItem() ? 0 : $this->getID()] = $input;
             Session::addMessageAfterRedirect(
-                sprintf(__('This form already has its form information: %s', 'metademands'), $existing['name']),
+                sprintf(__s('This form already has its form information: %s', 'metademands'), htmlescape((string) $existing['name'])),
                 false,
                 ERROR,
             );
@@ -3631,8 +3642,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                         // Not a yes / no, or a field that cannot be mandatory (title, information...)
                         $ma->addMessage(sprintf(
                             __('%1$s: %2$s', 'metademands'),
-                            $field->fields['name'] ?? $id,
-                            __('You cannot do this for this field', 'metademands'),
+                            htmlescape((string) ($field->fields['name'] ?? $id)),
+                            __s('You cannot do this for this field', 'metademands'),
                         ));
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
                         continue;

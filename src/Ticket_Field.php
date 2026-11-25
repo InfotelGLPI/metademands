@@ -32,7 +32,6 @@ namespace GlpiPlugin\Metademands;
 use CommonDBTM;
 use DBConnection;
 use Migration;
-use Session;
 use Toolbox;
 
 /**
@@ -40,6 +39,9 @@ use Toolbox;
  */
 class Ticket_Field extends CommonDBTM
 {
+    // The answers of every ticket: no generic access (REST API, generic routes)
+    use InternalStorageTrait;
+
     public $itemtype = Metademand::class;
 
     public static $rightname = 'plugin_metademands';
@@ -55,22 +57,6 @@ class Ticket_Field extends CommonDBTM
     public static function getTypeName($nb = 0)
     {
         return __('Wizard creation', 'metademands');
-    }
-
-    /**
-     * @return bool|int
-     */
-    public static function canView(): bool
-    {
-        return Session::haveRight(self::$rightname, READ);
-    }
-
-    /**
-     * @return bool
-     */
-    public static function canCreate(): bool
-    {
-        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
     public static function install(Migration $migration)

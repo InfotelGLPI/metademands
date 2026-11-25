@@ -56,9 +56,12 @@ if ($next_groups_id > 0) {
     // check any authenticated requester could enumerate the membership of arbitrary groups
     // (including groups in entities they cannot access). Validate the group against the
     // caller's own perimeter, mirroring ajax/showfieldsbyentity.php.
+    // The members of a group the modal offers for the step being forwarded only
+    // (Step::getNextGroupsForBlock()), not of any group of the entities
     $group = new Group();
     if (!$group->getFromDB($next_groups_id)
-        || !Session::haveAccessToEntity($group->fields['entities_id'], $group->fields['is_recursive'])) {
+        || !Session::haveAccessToEntity($group->fields['entities_id'], $group->fields['is_recursive'])
+        || !Step::isOfferedNextGroup($next_groups_id)) {
         throw new AccessDeniedHttpException();
     }
 

@@ -30,6 +30,7 @@
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\Condition;
 use GlpiPlugin\Metademands\Field;
+use GlpiPlugin\Metademands\Metademand;
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
@@ -105,6 +106,8 @@ if (isset($_POST['add'])) {
 
     Html::back();
 } elseif (isset($_POST['update'])) {
+    // One id, a plain positive integer, for the control and the write below
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
     if (isset($_POST['check_item'])) {
         $input = [
             '_no_message_link' => '',
@@ -141,7 +144,7 @@ if (isset($_POST['add'])) {
             $input['check_value'] = $_POST['check_value'];
         }
     }
-    $condition->check((int) $_POST['id'], UPDATE);
+    $condition->check($_POST['id'], UPDATE);
     // The edit form never moves a condition to another metademand.
     $input['plugin_metademands_metademands_id'] = $condition->fields['plugin_metademands_metademands_id'];
     $res = $condition->update($input);

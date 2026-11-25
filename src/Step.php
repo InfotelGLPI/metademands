@@ -876,11 +876,14 @@ class Step extends CommonDBChild
 
         $block_id = (int) ($_POST['block_id'] ?? 0);
         if ($block_id > 0) {
-            $_SESSION['plugin_metademands'][$user_id] = array_intersect_key(
+            // A session key of its own: under plugin_metademands, the slot of the user id was
+            // also the slot of the meta-demand of that id, whose submission read the staged
+            // step form id back
+            $_SESSION['plugin_metademands_step'][$user_id] = array_intersect_key(
                 $_POST,
                 array_flip(self::STEP_SESSION_KEYS),
             );
-            $_SESSION['plugin_metademands'][$user_id]['block_id'] = $block_id;
+            $_SESSION['plugin_metademands_step'][$user_id]['block_id'] = $block_id;
 
             $url = PLUGIN_METADEMANDS_WEBDIR . '/front/nextGroup.form.php?block_id=' . $block_id;
             $return = Ajax::createIframeModalWindow(
@@ -939,8 +942,8 @@ class Step extends CommonDBChild
 
         $nextGroups = [];
         //        $rand = mt_rand();
-        if (isset($_SESSION['plugin_metademands'][$user_id])) {
-            $meta_id = $_SESSION['plugin_metademands'][$user_id]['metademands_id'];
+        if (isset($_SESSION['plugin_metademands_step'][$user_id])) {
+            $meta_id = $_SESSION['plugin_metademands_step'][$user_id]['metademands_id'];
             $conf->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id]);
         }
         $block_id = 0;
@@ -949,7 +952,7 @@ class Step extends CommonDBChild
         }
 
         $form_action = PLUGIN_METADEMANDS_WEBDIR . "/front/nextGroup.form.php";
-        $session_set = isset($_SESSION['plugin_metademands'][$user_id]);
+        $session_set = isset($_SESSION['plugin_metademands_step'][$user_id]);
 
         // Hidden fields shared by both branches, only emitted when a session payload exists
         $common_hidden = [];
@@ -959,7 +962,7 @@ class Step extends CommonDBChild
                 $common_hidden['plugin_metademands_stepforms_id']
                     = $_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id'];
             }
-            $post = $_SESSION['plugin_metademands'][$user_id];
+            $post = $_SESSION['plugin_metademands_step'][$user_id];
             foreach (
                 [
                     'tickets_id', 'resources_id', 'resources_step', 'block_id', 'form_name',
@@ -1056,7 +1059,8 @@ class Step extends CommonDBChild
         $users = [];
         foreach ($groupUsers as $grpUsr) {
             $res = $user->getFromDBByCrit(['id' => $grpUsr['users_id']]);
-            if ($res) {
+            // The accounts a step can be forwarded to: neither deleted nor disabled
+            if ($res && !$user->isDeleted() && $user->isActive()) {
                 $users[$grpUsr['users_id']] = getUserName($grpUsr['users_id'], 0, true);
             }
         }
@@ -1077,6 +1081,23 @@ class Step extends CommonDBChild
      *
      * @return array<int, string> groups_id => group name
      */
+    /**
+     * Whether the "next recipient" modal being shown offers the group: the step it was opened
+     * for is the one staged by showStep() in the session
+     */
+    public static function isOfferedNextGroup(int $groups_id): bool
+    {
+        $staged = $_SESSION['plugin_metademands_step'][Session::getLoginUserID()] ?? null;
+        if ($groups_id <= 0 || !is_array($staged)) {
+            return false;
+        }
+
+        return array_key_exists(
+            $groups_id,
+            self::getNextGroupsForBlock((int) ($staged['metademands_id'] ?? 0), (int) ($staged['block_id'] ?? 0)),
+        );
+    }
+
     private static function getNextGroupsForBlock($metademands_id, $block_id): array
     {
         $self  = new self();
@@ -1218,29 +1239,54 @@ class Step extends CommonDBChild
             // form, verify the current user is entitled to advance it before any
             // session mutation or DB write. Prevents hijacking another user's
             // workflow step by posting an arbitrary step form id.
-            if (!empty($_POST['plugin_metademands_stepforms_id'])
-                && !self::canActOnStepform($_POST['plugin_metademands_stepforms_id'])) {
-                throw new AccessDeniedHttpException(
-                    'You are not allowed to forward this step form.',
-                );
+            // The step form and the meta-demand are read from $_POST below, for the session keys
+            // as for the rows written: both as plain positive integers, the ids checked being
+            // the ids written ("5.7" was checked as the step form 5 and loaded as 57 by update())
+            if (!empty($_POST['plugin_metademands_stepforms_id'])) {
+                $_POST['plugin_metademands_stepforms_id'] = Metademand::getPostedId($_POST['plugin_metademands_stepforms_id']);
+                if (!self::canActOnStepform($_POST['plugin_metademands_stepforms_id'])) {
+                    throw new AccessDeniedHttpException(
+                        'You are not allowed to forward this step form.',
+                    );
+                }
             }
+            $_POST['metademands_id'] = Metademand::getPostedId($_POST['metademands_id'] ?? null);
 
             // The meta-demand comes straight from the POST and drives
             // constructMetademands(), the session keys and the row finally written.
             // Bind it to the caller's entity here, at the sink shared by
             // ajax/nextUser.php and front/nextGroup.form.php: the page guard on those
-            // two entry points gates the profile, not the entities it may reach.
-            $metademands_id = (int) ($_POST['metademands_id'] ?? 0);
+            // two entry points gates the profile, not the entities it may reach. An active step
+            // by step form only; a new step form, started by its requester, under the groups
+            // the form is restricted to, as a submission (the recipients of the next steps,
+            // checked by canActOnStepform() above, need not belong to them).
+            $metademands_id = $_POST['metademands_id'];
             if (
                 !$metademands->getFromDB($metademands_id)
                 || !Session::haveAccessToEntity(
                     $metademands->fields['entities_id'],
                     $metademands->fields['is_recursive'],
                 )
+                || (int) $metademands->fields['is_active'] !== 1
+                || (int) $metademands->fields['step_by_step_mode'] !== 1
+                || (empty($_POST['plugin_metademands_stepforms_id']) && !Group::isUserHaveRight($metademands_id))
             ) {
                 throw new AccessDeniedHttpException(
                     'You are not allowed to access this metademand.',
                 );
+            }
+
+            // An existing step form is forwarded within its own meta-demand
+            if (!empty($_POST['plugin_metademands_stepforms_id'])) {
+                $stepform = new Stepform();
+                if (
+                    !$stepform->getFromDB($_POST['plugin_metademands_stepforms_id'])
+                    || (int) $stepform->fields['plugin_metademands_metademands_id'] !== $metademands_id
+                ) {
+                    throw new AccessDeniedHttpException(
+                        'You are not allowed to forward this step form.',
+                    );
+                }
             }
 
             // canActOnStepform() above protects the ROW being advanced, not the destination
@@ -1252,7 +1298,7 @@ class Step extends CommonDBChild
             $next_groups_id = (int) ($_POST['next_groups_id'] ?? 0);
             if ($next_groups_id > 0) {
                 $allowed_groups = self::getNextGroupsForBlock(
-                    $_POST['metademands_id'] ?? 0,
+                    $_POST['metademands_id'],
                     $_POST['block_id'] ?? 0,
                 );
                 if (!isset($allowed_groups[$next_groups_id])) {
@@ -1263,14 +1309,14 @@ class Step extends CommonDBChild
                 $_POST['next_groups_id'] = $next_groups_id;
             }
 
-            $next_users_id = (int) ($_SESSION['plugin_metademands'][$user_id]['users_id_dest'] ?? 0);
+            $next_users_id = (int) ($_SESSION['plugin_metademands_step'][$user_id]['users_id_dest'] ?? 0);
             if ($next_users_id > 0) {
-                if (!self::isAllowedNextUser($next_users_id, $next_groups_id, $_POST['metademands_id'] ?? 0)) {
+                if (!self::isAllowedNextUser($next_users_id, $next_groups_id, $_POST['metademands_id'])) {
                     throw new AccessDeniedHttpException(
                         'You are not allowed to forward this step form to this user.',
                     );
                 }
-                $_SESSION['plugin_metademands'][$user_id]['users_id_dest'] = $next_users_id;
+                $_SESSION['plugin_metademands_step'][$user_id]['users_id_dest'] = $next_users_id;
             }
 
             $nblines = 0;
@@ -1280,7 +1326,7 @@ class Step extends CommonDBChild
                 if (isset($_POST['field'])) {
                     $post = $_POST['field'];
                 } else {
-                    $post = $_SESSION['plugin_metademands'][$user_id]['field'];
+                    $post = $_SESSION['plugin_metademands_step'][$user_id]['field'];
                 }
                 $nblines = 1;
             }
@@ -1393,8 +1439,8 @@ class Step extends CommonDBChild
                     $inputs['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
                     $inputs['date'] = date('Y-m-d H:i:s');
                     $nbday = 7;
-                    if (isset($_SESSION['plugin_metademands'][$user_id]['users_id_dest'])) {
-                        $inputs['users_id_dest'] = $_SESSION['plugin_metademands'][$user_id]['users_id_dest'];
+                    if (isset($_SESSION['plugin_metademands_step'][$user_id]['users_id_dest'])) {
+                        $inputs['users_id_dest'] = $_SESSION['plugin_metademands_step'][$user_id]['users_id_dest'];
                     }
                     if ($nbday == 0) {
                         $inputs['reminder_date'] = null;
@@ -1462,7 +1508,7 @@ class Step extends CommonDBChild
                                     'users_id' => $inputs['users_id_dest'],
                                 ]);
                             }
-                            unset($_SESSION['plugin_metademands'][$user_id]);
+                            unset($_SESSION['plugin_metademands_step'][$user_id]);
 
                             $metademands_data = Metademand::constructMetademands(
                                 $_POST['metademands_id'],

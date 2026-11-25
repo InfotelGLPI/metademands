@@ -578,18 +578,22 @@ function plugin_metademands_wizard_validateForm(metademandparams)
 
         fields_mandatory_unique.sort((a, b) => a - b);
         //json_all_meta_fields
+        // The labels are text: the dialog of alert() renders its message as HTML
+        const escapeLabel = (label) => String(label).replace(/[&<>"']/g, (c) => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+        }[c]));
         var alert_mandatory_fields = [];
         $.each(fields_mandatory_unique, function (k, v) {
             $.each(metademandparams.json_all_meta_fields, function (key, value) {
                 if (v == key) {
-                    alert_mandatory_fields.push(value);
+                    alert_mandatory_fields.push(escapeLabel(value));
                 }
             });
         });
         $.each(fields_mandatory_unique_regex, function (k, v) {
             $.each(metademandparams.json_all_meta_fields, function (key, value) {
                 if (v == key) {
-                    alert_mandatory_fields.push(metademandparams.msg_regex + " : " +value);
+                    alert_mandatory_fields.push(metademandparams.msg_regex + " : " + escapeLabel(value));
                 }
             });
         });

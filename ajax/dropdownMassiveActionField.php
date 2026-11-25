@@ -30,15 +30,26 @@
 use Glpi\Application\View\TemplateRenderer;
 use Glpi\Exception\Http\BadRequestHttpException;
 use Glpi\Exception\Http\NotFoundHttpException;
+use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\TicketField;
 
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
-global $CFG_GLPI;
+global $CFG_GLPI, $DB;
+
+// The widget of the value of a field of the parent ticket (TicketField::showForm()): the screen
+// of a designer, on the types a meta-demand creates. Any account able to update one itemtype
+// (a self-service user creating tickets) had the name of any user or object displayed by id.
+Session::checkCentralAccess();
+Session::checkRightsOr(Metademand::$rightname, [CREATE, UPDATE]);
 
 $dbu = new DbUtils();
-if (!isset($_POST["itemtype"]) || !($item = $dbu->getItemForItemtype($_POST['itemtype']))) {
+if (
+    !isset($_POST["itemtype"])
+    || !in_array($_POST["itemtype"], Metademand::getTypes(true), true)
+    || !($item = $dbu->getItemForItemtype($_POST['itemtype']))
+) {
     throw new NotFoundHttpException();
 }
 
@@ -71,6 +82,36 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
             throw new BadRequestHttpException();
         }
         $linked_item->checkGlobal(READ);
+    }
+
+    // The preselected value of a field pointing to another table is displayed by its name: an
+    // object of the active entities only
+    $value_table = (string) ($search['table'] ?? '');
+    if (
+        $value_table !== ''
+        && $value_table !== $dbu->getTableForItemType($_POST['itemtype'])
+        && isset($_POST['value'])
+        && is_scalar($_POST['value'])
+        && ctype_digit((string) $_POST['value'])
+        && (int) $_POST['value'] > 0
+    ) {
+        $value_id = (int) $_POST['value'];
+        if ($value_table === User::getTable()) {
+            $visible = array_intersect(
+                Profile_User::getUserEntities($value_id, true),
+                (array) ($_SESSION['glpiactiveentities'] ?? []),
+            ) !== [];
+        } elseif ($DB->tableExists($value_table) && $DB->fieldExists($value_table, 'entities_id')) {
+            $visible = countElementsInTable(
+                $value_table,
+                ['id' => $value_id] + getEntitiesRestrictCriteria($value_table, '', '', true),
+            ) > 0;
+        } else {
+            $visible = true;
+        }
+        if (!$visible) {
+            $_POST['value'] = 0;
+        }
     }
 
     // $FIELDNAME_PRINTED was never set: no branch of the

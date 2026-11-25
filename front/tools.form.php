@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Metademand;
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Metademands\FieldOption;
 use GlpiPlugin\Metademands\Ticket_Metademand;
@@ -42,7 +43,8 @@ if (isset($_POST["purge_emptyoptions"])) {
     $field = new FieldOption();
     // Same defect as the controllers listed by the audit: check(-1, ...) never evaluated the
     // requested right, and delete($input, 1) is a purge.
-    $field->check((int) $_POST["id"], PURGE);
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
+    $field->check($_POST['id'], PURGE);
     $field->delete($_POST, 1);
     Session::addMessageAfterRedirect(__('Empty option has been deleted', 'metademands'));
     Html::back();

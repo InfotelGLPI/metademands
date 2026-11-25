@@ -51,13 +51,15 @@ if (isset($_POST["add"])) {
     // As the add: the value widget is named after the field, absent while none is chosen
     $_POST['value'] = isset($_POST['field']) && is_string($_POST['field']) ? ($_POST[$_POST['field']] ?? '') : '';
     // With -1 the requested right was never evaluated; bind the control to the posted row.
-    $ticketField->check((int) $_POST['id'], UPDATE);
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
+    $ticketField->check($_POST['id'], UPDATE);
     $ticketField->update($_POST);
 
     Html::back();
 } elseif (isset($_POST["purge"])) {
     // delete($input, 1) is a purge, bound to the posted row.
-    $ticketField->check((int) $_POST['id'], PURGE);
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
+    $ticketField->check($_POST['id'], PURGE);
     $ticketField->delete($_POST, 1);
     $ticketField->redirectToList();
 } elseif (isset($_POST['template_sync'])) {

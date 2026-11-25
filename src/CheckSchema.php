@@ -41,6 +41,31 @@ use Plugin;
 class CheckSchema extends CommonDBTM
 {
     public static $rightname = 'plugin_metademands';
+
+    /**
+     * The class reads the table of another class (getTable()): no generic creation, update or
+     * deletion through it (REST API, generic form route), which skipped the checks and the
+     * validations of that class
+     */
+    public function canCreateItem(): bool
+    {
+        return false;
+    }
+
+    public function canUpdateItem(): bool
+    {
+        return false;
+    }
+
+    public function canDeleteItem(): bool
+    {
+        return false;
+    }
+
+    public function canPurgeItem(): bool
+    {
+        return false;
+    }
     private $table = "";
 
     /**

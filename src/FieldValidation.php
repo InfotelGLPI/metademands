@@ -52,6 +52,9 @@ use User;
  */
 class FieldValidation extends CommonDBTM
 {
+    // Stored values of the plugin: no generic access (REST API, generic routes)
+    use InternalStorageTrait;
+
     public static $rightname = 'plugin_metademands';
 
     public const WAITING  = 0;

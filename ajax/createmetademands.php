@@ -57,6 +57,15 @@ Session::checkSeveralRightsOr([
     'plugin_metademands_fillform' => READ,
 ]);
 
+// The meta-demands checked below are the ones then read from $_POST (constructMetademands(),
+// session keys, rows written): integers, the same value everywhere ("5x7" was checked as 57 and
+// its fields read as the 5's)
+foreach (['metademands_id', 'form_metademands_id'] as $key) {
+    if (isset($_POST[$key])) {
+        $_POST[$key] = is_scalar($_POST[$key]) ? (int) $_POST[$key] : 0;
+    }
+}
+
 $KO = false;
 $step = ($_POST['step'] ?? 0) + 1;
 $metademands = new Metademand();

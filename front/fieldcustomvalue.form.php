@@ -31,6 +31,7 @@ use GlpiPlugin\Metademands\Field;
 use GlpiPlugin\Metademands\FieldCustomvalue;
 use GlpiPlugin\Metademands\FieldParameter;
 use GlpiPlugin\Metademands\Menu;
+use GlpiPlugin\Metademands\Metademand;
 
 if (empty($_GET["id"])) {
     $_GET["id"] = "";
@@ -83,6 +84,11 @@ if (isset($_POST["add"])) {
     }
     Html::back();
 } elseif (isset($_POST["update"])) {
+    // The field whose parameters are written, as a plain positive integer: the parameters are
+    // looked up and written with it
+    if (!empty($_POST['plugin_metademands_fields_id'])) {
+        $_POST['plugin_metademands_fields_id'] = Metademand::getPostedId($_POST['plugin_metademands_fields_id']);
+    }
 
     if ($_POST['type'] == "link"
         || $_POST['type'] == "number"
@@ -133,6 +139,8 @@ if (isset($_POST["add"])) {
         $inputs = [];
         if (is_array($ids) && count($ids) > 0) {
             foreach ($ids as $k => $id) {
+                // One id per value, a plain positive integer, for its control and its write
+                $id = Metademand::getPostedId($id);
                 $inputs[$id]['id'] = $id;
                 if (isset($names[$id])) {
                     $inputs[$id]['name'] = $names[$id];
@@ -155,7 +163,7 @@ if (isset($_POST["add"])) {
         // The control was made on $_POST with a new id: it authorised nothing and did not even look
         // at the rows being written. Bind it to each identifier of the batch instead.
         foreach ($inputs as $key => $input) {
-            $fieldcustom->check((int) $input['id'], UPDATE);
+            $fieldcustom->check($input['id'], UPDATE);
             // The edit form never moves a value to another field.
             $input['plugin_metademands_fields_id'] = $fieldcustom->fields['plugin_metademands_fields_id'];
             $fieldcustom->update($input);
@@ -164,15 +172,19 @@ if (isset($_POST["add"])) {
 
     Html::back();
 } elseif (isset($_POST["delete"])) {
-    $input['id'] = $_POST['customvalues_id'];
-    $input['plugin_metademands_fields_id'] = $_POST['plugin_metademands_fields_id'];
     // The neighbouring ranks used to be decremented before any control, so even a correct check
-    // left a partial corruption behind. Authorise the purge first, on the targeted row itself.
-    $fieldcustom->check((int) $input['id'], PURGE);
+    // left a partial corruption behind. Authorise the purge first, on the targeted row itself,
+    // then renumber its field and purge that very row: the field and the rank are the ones of
+    // the row, never the posted ones (another field, of another entity)
+    $customvalues_id = Metademand::getPostedId($_POST['customvalues_id'] ?? null);
+    $fieldcustom->check($customvalues_id, PURGE);
+    $input = [
+        'id'                           => $customvalues_id,
+        'plugin_metademands_fields_id' => (int) $fieldcustom->fields['plugin_metademands_fields_id'],
+    ];
 
-    //TODO update ranks
-    $condition_del = ["plugin_metademands_fields_id" => $_POST["plugin_metademands_fields_id"]];
-    $condition_del['rank'] = ['>', $_POST['rank']];
+    $condition_del = ["plugin_metademands_fields_id" => $input['plugin_metademands_fields_id']];
+    $condition_del['rank'] = ['>', (int) $fieldcustom->fields['rank']];
     $updateRank = $fieldcustom->find($condition_del, "rank");
     if (count($updateRank) > 0) {
         foreach ($updateRank as $update) {
@@ -190,9 +202,10 @@ if (isset($_POST["add"])) {
     // This branch renumbers every custom value of a field at once: there is no single row to bind
     // the control to, so the parent field is what must be authorised.
     $field = new Field();
-    $field->check((int) $_POST["plugin_metademands_fields_id"], UPDATE);
+    $fields_id = Metademand::getPostedId($_POST["plugin_metademands_fields_id"] ?? null);
+    $field->check($fields_id, UPDATE);
 
-    if ($field->getFromDB((int) $_POST["plugin_metademands_fields_id"])) {
+    if ($field->getFromDB($fields_id)) {
         $params = Field::getAllParamsFromField($field);
         $custom_values = $params['custom_values'];
         $newranks = FieldCustomvalue::fixRanks($custom_values);

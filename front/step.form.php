@@ -64,18 +64,22 @@ if (isset($_POST["add"])) {
     }
     Html::back();
 } elseif (isset($_POST["delete"])) {
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
     $meta->check($_POST['id'], DELETE);
     $meta->delete($_POST);
     $meta->redirectToList();
 } elseif (isset($_POST["restore"])) {
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
     $meta->check($_POST['id'], PURGE);
     $meta->restore($_POST);
     $meta->redirectToList();
 } elseif (isset($_POST["purge"])) {
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
     $meta->check($_POST['id'], PURGE);
     $meta->delete($_POST, 1);
     $meta->redirectToList();
 } elseif (isset($_POST["update"])) {
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
     $meta->check($_POST['id'], UPDATE);
     $meta->update($_POST);
     Html::back();

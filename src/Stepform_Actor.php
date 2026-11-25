@@ -38,6 +38,9 @@ use Migration;
  */
 class Stepform_Actor extends CommonDBTM
 {
+    // Stored values of the plugin: no generic access (REST API, generic routes)
+    use InternalStorageTrait;
+
     public static $rightname = "plugin_metademands";
 
     public static function install(Migration $migration)

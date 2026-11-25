@@ -76,6 +76,38 @@ class Ticket_Task extends CommonDBTM
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
+    /**
+     * A link is read with its ticket; only the submission of a form writes one, never a
+     * generic route (REST API, generic form route): the table carries no entity
+     */
+    public function canViewItem(): bool
+    {
+        $tickets_id = (int) ($this->fields['tickets_id'] ?? 0);
+
+        // can() on an id 0 would evaluate the creation of a ticket
+        return $tickets_id > 0 && (new \Ticket())->can($tickets_id, READ);
+    }
+
+    public function canCreateItem(): bool
+    {
+        return false;
+    }
+
+    public function canUpdateItem(): bool
+    {
+        return false;
+    }
+
+    public function canDeleteItem(): bool
+    {
+        return false;
+    }
+
+    public function canPurgeItem(): bool
+    {
+        return false;
+    }
+
     public static function install(Migration $migration)
     {
         global $DB;

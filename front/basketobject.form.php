@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Metademands\Metademand;
 use GlpiPlugin\Metademands\Basketobject;
 
 if (empty($_GET["id"])) {
@@ -46,24 +47,28 @@ if (isset($_POST["add"])) {
 
 } elseif (isset($_POST["delete"])) {
 
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
     $material->check($_POST['id'], DELETE);
     $material->delete($_POST);
     $material->redirectToList();
 
 } elseif (isset($_POST["restore"])) {
 
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
     $material->check($_POST['id'], PURGE);
     $material->restore($_POST);
     $material->redirectToList();
 
 } elseif (isset($_POST["purge"])) {
 
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
     $material->check($_POST['id'], PURGE);
     $material->delete($_POST, 1);
     $material->redirectToList();
 
 } elseif (isset($_POST["update"])) {
 
+    $_POST['id'] = Metademand::getPostedId($_POST['id'] ?? null);
     $material->check($_POST['id'], UPDATE);
     $material->update($_POST);
     Html::back();
