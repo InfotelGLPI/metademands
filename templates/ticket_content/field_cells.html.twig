@@ -35,6 +35,8 @@
  #                               - new_row starts the cell on a new row (second
  #                                 half of an interval field);
  #                               - link renders the value as an anchor to itself;
+ #                               - url renders the value as an anchor to this URL
+ #                                 (the ticket chosen in a Ticket field...);
  #                               - image renders the value, a picture URL, as an
  #                                 image (nothing when empty);
  #                               - value_only renders the value cell alone, without
@@ -70,6 +72,8 @@
             {%- if format_as_table %}<tr>{% for text in row %}<td>{{ text }}</td>{% endfor %}</tr>{% else %}{{ row|join }}{% endif -%}
         {%- endfor -%}
         {%- if format_as_table %}</table>{% endif -%}
+    {%- elseif cell.url|default('') is not empty -%}
+        <a href="{{ cell.url }}" data-mce-href="{{ cell.url }}">{{ cell.value }}</a>
     {%- elseif cell.link|default(false) -%}
         <a href="{{ cell.value }}" data-mce-href="{{ cell.value }}">{{ cell.value }}</a>
     {%- elseif cell.image|default(false) -%}

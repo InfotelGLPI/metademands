@@ -127,6 +127,41 @@ class FieldListTest extends DbTestCase
     }
 
     /**
+     * The number of a block comes before its name: a badge in the header of the block, "#N | name" as title of
+     * the preview of the block.
+     */
+    public function testBlockNumberIsShownBeforeItsName(): void
+    {
+        $this->login();
+        [$metademand] = $this->createMetademandWithFields();
+        foreach (['title-block' => 'Requester informations', 'text' => 'Requester'] as $type => $name) {
+            $this->createItem(Field::class, [
+                'plugin_metademands_metademands_id' => $metademand->getID(),
+                'type'                              => $type,
+                'name'                              => $name,
+                'rank'                              => 2,
+                'order'                             => $type === 'title-block' ? 1 : 2,
+                'entities_id'                       => $this->getTestRootEntity(true),
+            ], ['order']);
+        }
+
+        $_SESSION['glpiactiveprofile'][Metademand::$rightname] = ALLSTANDARDRIGHT;
+        $html = $this->renderFields($metademand);
+
+        $this->assertMatchesRegularExpression(
+            '/<span class="badge[^"]*md-block-number"[^>]*>#2<\/span>\s*<h3 class="card-title m-0">Requester informations<\/h3>/',
+            $html,
+        );
+        // Also in the list of the blocks, on the left
+        $this->assertMatchesRegularExpression(
+            '/data-md-block-goto="2">\s*<span class="badge[^"]*md-block-number"[^>]*>#2<\/span>\s*<span class="text-truncate">Requester informations<\/span>/',
+            $html,
+        );
+        $this->assertStringContainsString('data-md-block-name="#2 | Requester informations"', $html);
+        $this->assertStringNotContainsString('Requester informations #2', $html);
+    }
+
+    /**
      * The list is filtered in the browser: a search criteria left in the session by the
      * former search form neither hides fields nor the offer to fix their orders.
      */

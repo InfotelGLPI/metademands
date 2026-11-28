@@ -932,7 +932,8 @@ class Field extends CommonDBChild implements ProvideTranslationsInterface
                 if ($value['type'] == 'title-block' && $value['rank'] == $blockid) {
                     $i++;
                     if ($i > 0) {
-                        $blocks[$blockid] = $value['name'] . " #$blockid";
+                        // The number of the block is shown before its name (templates/field_list.html.twig)
+                        $blocks[$blockid] = $value['name'];
                     }
                 }
                 if ($i == 0) {

@@ -158,8 +158,14 @@ $_POST['metademands_id'] = is_scalar($_POST['metademands_id'] ?? null) ? (int) $
 
 if ($_GET['metademands_id'] > 0) {
     if ($metademands->getFromDB($_GET['metademands_id'])) {
-        if (!Session::haveAccessToEntity($metademands->fields['entities_id'], $metademands->fields['is_recursive'])) {
-            $message = __('This metademand cannot be used with this entity', 'metademands');
+        // Inactive, in the trashbin or a template (#377): neither displayed nor created, but rendered by the "Preview"
+        // button of its designers (render). The creation itself (step create_metademands) also comes through here,
+        // without render: refused to everybody.
+        $is_unavailable = !$metademands->canBeFilled(!empty($_GET['render']));
+        if ($is_unavailable || !Session::haveAccessToEntity($metademands->fields['entities_id'], $metademands->fields['is_recursive'])) {
+            $message = $is_unavailable
+                ? __('This form is not available', 'metademands')
+                : __('This metademand cannot be used with this entity', 'metademands');
             Session::addMessageAfterRedirect($message, false, ERROR);
 
 

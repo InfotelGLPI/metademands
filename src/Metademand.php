@@ -984,6 +984,35 @@ class Metademand extends CommonDBTM implements ServiceCatalogLeafInterface, Prov
     }
 
     /**
+     * Check that the form can be filled (#377): an inactive meta-demand, one in the trashbin or a template is not
+     * opened from its URL, nor a ticket created from it, whoever asks. The step form of a request already sent
+     * (loaded by its next actor, ajax/loadstepform.php) is still completed: only the new requests stop.
+     *
+     * @param bool $designer_preview Rendering asked by the "Preview" button of the "Wizard creation" tab (or the
+     *                               checks of the form it shows): allowed to the designers (update right on it)
+     *
+     * @return bool
+     */
+    public function canBeFilled(bool $designer_preview = false): bool
+    {
+        if (
+            (int) $this->fields['is_active'] === 1
+            && (int) $this->fields['is_deleted'] === 0
+            && (int) ($this->fields['is_template'] ?? 0) === 0
+        ) {
+            return true;
+        }
+        if (
+            (int) ($this->fields['is_template'] ?? 0) === 0
+            && (int) ($_SESSION['plugin_metademands'][$this->getID()]['plugin_metademands_stepforms_id'] ?? 0) > 0
+        ) {
+            return true;
+        }
+
+        return $designer_preview && $this->can($this->getID(), UPDATE);
+    }
+
+    /**
      * The identifier of an existing row posted by a form: a plain positive integer, nothing
      * else. The same value must then serve the right check and the action: check() reads
      * "5x12" as 512 (getFromDB(), Toolbox::cleanInteger()) while (int) gives 5, and a string

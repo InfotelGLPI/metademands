@@ -164,6 +164,8 @@ if ($nofreetable == false) {
             !$metademands->getFromDB($_POST['form_metademands_id'])
             || !($metademands->canCreate() || Group::isUserHaveRight($_POST['form_metademands_id']))
             || !Session::haveAccessToEntity($metademands->fields['entities_id'], $metademands->fields['is_recursive'])
+            // Inactive, in the trashbin or a template (#377): the preview of its designers only
+            || !$metademands->canBeFilled(true)
         ) {
             throw new AccessDeniedHttpException();
         }
@@ -211,7 +213,10 @@ if ($nofreetable == false) {
                 || !Session::haveAccessToEntity(
                     $metademands->fields['entities_id'],
                     $metademands->fields['is_recursive'],
-                )) {
+                )
+                // Inactive, in the trashbin or a template (#377): the checks of the preview of its designers only, the
+                // ticket is not created (front/wizard.form.php, step create_metademands)
+                || !$metademands->canBeFilled(true)) {
                 throw new AccessDeniedHttpException();
             }
 

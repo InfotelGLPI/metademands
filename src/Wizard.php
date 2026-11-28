@@ -1954,8 +1954,9 @@ class Wizard extends CommonDBTM
                             $i++;
                             if ($i > 0) {
                                 $name = empty(Field::displayField($value['id'], 'name')) ? $value['name'] : Field::displayField($value['id'], 'name');
+                                // The number of the block first, for the designer
                                 if ($debug || $preview) {
-                                    $name .= " #$blockid";
+                                    $name = "#$blockid | " . $name;
                                 }
                                 $blocks[$blockid] = $name;
                             }

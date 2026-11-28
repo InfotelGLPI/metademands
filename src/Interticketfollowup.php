@@ -334,10 +334,13 @@ class Interticketfollowup extends CommonITILObject
 
         $metaValidation = new MetademandValidation();
         $ticket_task    = new Ticket_Task();
+        // A ticket of a meta-demand having other tickets: sons of tasks, or of tasks of type meta-demand (no
+        // Ticket_Task row, see getFirstTicket())
         if ($item->fields['id'] > 0 && (($metaValidation->getFromDBByCrit(['tickets_id' => $item->fields['id']])
               && $metaValidation->fields['validate'] == MetademandValidation::TICKET_CREATION)
              || $ticket_task->find(['tickets_id' => $item->fields['id']])
-             || $ticket_task->find(['parent_tickets_id' => $item->fields['id']]))
+             || $ticket_task->find(['parent_tickets_id' => $item->fields['id']])
+             || self::getRelatedTickets($item->fields['id']) !== [])
             && $_SESSION['glpiactiveprofile']['interface'] == 'central'
             && ($item->fields['status'] != \Ticket::SOLVED
                 && $item->fields['status'] != \Ticket::CLOSED)
@@ -364,25 +367,73 @@ class Interticketfollowup extends CommonITILObject
 
 
     /**
-     * @param $tickets_id
+     * First ticket of the meta-demand a ticket belongs to: the family of its inter ticket followups.
      *
-     * @return mixed
+     * The family is the one Ticket::getSonTickets() builds from that first ticket. Going up from a ticket:
+     * - a son ticket of a task (Ticket_Task) leads to its parent ticket;
+     * - a ticket of a meta-demand is the first ticket, unless it was created by a task of type meta-demand of
+     *   another ticket (the parent of its meta-demand row) or launched from another meta-demand (self-parented row,
+     *   son of that ticket in the core links): it leads to that ticket.
+     *
+     * @param int $tickets_id
+     *
+     * @return int|false False when the ticket belongs to no meta-demand
      */
     public static function getFirstTicket($tickets_id)
     {
-        $ticket_metademand      = new Ticket_Metademand();
-        $ticket_metademand_data = $ticket_metademand->getFromDBByCrit(['tickets_id' => $tickets_id]);
-        if ($ticket_metademand_data) {
-            return $tickets_id;
-        } else {
+        $tickets_id = (int) $tickets_id;
+        $first_tickets_id = false;
+        $seen = [];
+        while ($tickets_id > 0 && !isset($seen[$tickets_id])) {
+            $seen[$tickets_id] = true;
+
+            $ticket_metademand = new Ticket_Metademand();
+            if ($ticket_metademand->getFromDBByCrit(['tickets_id' => $tickets_id])) {
+                $first_tickets_id = $tickets_id;
+                $parent_tickets_id = (int) $ticket_metademand->fields['parent_tickets_id'];
+                if ($parent_tickets_id <= 0 || $parent_tickets_id === $tickets_id) {
+                    $parent_tickets_id = self::getLaunchingTicket($tickets_id);
+                }
+                $tickets_id = $parent_tickets_id;
+                continue;
+            }
+
             $ticket_task = new Ticket_Task();
-            $ticket_task->getFromDBByCrit(['tickets_id' => $tickets_id]);
-            if (isset($ticket_task->fields['parent_tickets_id'])
-                && $ticket_task->fields['parent_tickets_id'] > 0) {
-                return self::getFirstTicket($ticket_task->fields['parent_tickets_id']);
+            if (
+                $ticket_task->getFromDBByCrit(['tickets_id' => $tickets_id])
+                && (int) $ticket_task->fields['parent_tickets_id'] > 0
+            ) {
+                $tickets_id = (int) $ticket_task->fields['parent_tickets_id'];
+                continue;
+            }
+            break;
+        }
+
+        return $first_tickets_id;
+    }
+
+    /**
+     * Ticket of a meta-demand that launched the meta-demand of a ticket: its mother in the core links (SON_OF),
+     * when that mother belongs to a meta-demand (see Ticket::getSonTickets())
+     *
+     * @param int $tickets_id
+     *
+     * @return int 0 when there is none
+     */
+    private static function getLaunchingTicket(int $tickets_id): int
+    {
+        $ticket_ticket = new \Ticket_Ticket();
+        foreach ($ticket_ticket->find(['tickets_id_1' => $tickets_id, 'link' => \Ticket_Ticket::SON_OF]) as $link) {
+            $mother_id = (int) $link['tickets_id_2'];
+            if (
+                countElementsInTable(Ticket_Metademand::getTable(), ['tickets_id' => $mother_id]) > 0
+                || countElementsInTable(Ticket_Task::getTable(), ['tickets_id' => $mother_id]) > 0
+            ) {
+                return $mother_id;
             }
         }
-        return false;
+
+        return 0;
     }
 
 

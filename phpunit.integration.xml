@@ -13,6 +13,8 @@
          <file>tests/MailTaskTest.php</file>
          <file>tests/ChildTicketBlocksTest.php</file>
          <file>tests/TicketContentCellsTest.php</file>
+         <file>tests/InterticketFollowupTest.php</file>
+         <file>tests/MetademandAvailabilityTest.php</file>
          <file>tests/TicketTaskFormTest.php</file>
          <file>tests/FieldOptionListTest.php</file>
         <file>tests/TaskListTest.php</file>

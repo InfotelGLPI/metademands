@@ -263,6 +263,34 @@ class TicketContentCellsTest extends DbTestCase
     }
 
     /**
+     * A Ticket field (linked ticket...) renders the title of the chosen ticket followed by its id, as a link to the
+     * ticket (full URL: the content is sent by notifications).
+     */
+    public function testTicketFieldRendersTheTitleWithItsIdAsALink(): void
+    {
+        global $CFG_GLPI;
+
+        $ticket = $this->createItem(\Ticket::class, [
+            'name'        => self::XSS_LABEL,
+            'content'     => 'Ticket chosen in the form',
+            'entities_id' => $this->getTestRootEntity(true),
+        ]);
+        $url = htmlescape($CFG_GLPI['url_base'] . \Ticket::getFormURLWithID($ticket->getID(), false));
+        $text = htmlescape(self::XSS_LABEL) . ' (' . $ticket->getID() . ')';
+
+        foreach ([true, false] as $format_as_table) {
+            $content = $this->renderContent(Dropdownobject::class, 'Label', (string) $ticket->getID(), $format_as_table, ['item' => \Ticket::class]);
+
+            $this->assertStringNotContainsString('<img', $content);
+            $this->assertStringContainsString('<a href="' . $url . '" data-mce-href="' . $url . '">' . $text . '</a>', $content);
+        }
+
+        // A ticket purged since: no link
+        $content = $this->renderContent(Dropdownobject::class, 'Label', '999999999', true, ['item' => \Ticket::class]);
+        $this->assertStringNotContainsString('<a ', $content);
+    }
+
+    /**
      * Dropdownmeta renders the name of the chosen ITIL value.
      */
     public function testDropdownmetaRendersThePriorityName(): void

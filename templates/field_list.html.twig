@@ -168,6 +168,10 @@
                         {% for panel in panels %}
                             <a href="#md-block-{{ panel.id }}" class="list-group-item list-group-item-action d-flex align-items-center gap-1"
                                data-md-block-goto="{{ panel.id }}">
+                                {#- The number of the block before its name, like in the header of the block -#}
+                                {% if not panel.is_form_information %}
+                                    <span class="badge bg-blue text-blue-fg md-block-number" title="{{ __('Block', 'metademands') }} {{ panel.id }}">#{{ panel.id }}</span>
+                                {% endif %}
                                 <span class="text-truncate">{{ panel.name }}</span>
                                 <span class="ms-auto d-flex gap-1">
                                     {% if panel.warning_count > 0 %}
@@ -195,14 +199,18 @@
                 {% endif %}
 
                 {% for panel in panels %}
+                    {#- The number of the block before its name (title of the preview column, public/scripts/field_list.js) -#}
                     <div class="card md-block mb-3" id="md-block-{{ panel.id }}" data-md-block="{{ panel.id }}"
-                         data-md-block-name="{{ panel.name }}">
+                         data-md-block-name="{{ panel.is_form_information ? panel.name : '#' ~ panel.id ~ ' | ' ~ panel.name }}">
                         <div class="card-header py-2 d-flex flex-wrap align-items-center gap-2">
                             <button type="button" class="btn btn-sm btn-ghost-secondary p-1" data-bs-toggle="collapse"
                                     data-bs-target="#md-block-body-{{ panel.id }}" aria-expanded="true"
                                     title="{{ __('Fold / unfold', 'metademands') }}">
                                 <i class="ti ti-chevron-down md-chevron"></i>
                             </button>
+                            {% if not panel.is_form_information %}
+                                <span class="badge bg-blue text-blue-fg md-block-number" title="{{ __('Block', 'metademands') }} {{ panel.id }}">#{{ panel.id }}</span>
+                            {% endif %}
                             <h3 class="card-title m-0">{{ panel.name }}</h3>
                             <span class="badge bg-secondary-lt" title="{{ _n('Field', 'Fields', 2, 'metademands') }}">
                                 <i class="ti ti-forms me-1"></i><span data-md-block-count="{{ panel.id }}">{{ panel.rows|length }}</span>

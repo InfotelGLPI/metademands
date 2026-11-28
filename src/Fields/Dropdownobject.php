@@ -1041,6 +1041,7 @@ class Dropdownobject extends CommonDBTM
 
     public static function displayFieldItems(&$result, $formatAsTable, $title_style, $label, $field, $return_value, $lang, $is_order = false)
     {
+        global $CFG_GLPI;
 
         $colspan = $is_order ? 6 : 1;
         $result[$field['rank']]['display'] = true;
@@ -1073,6 +1074,25 @@ class Dropdownobject extends CommonDBTM
                     );
 
                     break;
+                case 'Ticket':
+                    // Ticket chosen in the form (linked ticket...): its title followed by its id, linked to the ticket
+                    $ticket = new \Ticket();
+                    if ($ticket->getFromDB((int) $field['value'])) {
+                        $result[$field['rank']]['content'] .= Field::renderContentCells(
+                            (bool) $formatAsTable,
+                            (string) $title_style,
+                            [[
+                                'label'   => (string) $label,
+                                'value'   => sprintf('%s (%d)', $ticket->fields['name'], $ticket->getID()),
+                                // The content is stored in the ticket and sent by notifications: full URL
+                                'url'     => $CFG_GLPI['url_base'] . \Ticket::getFormURLWithID($ticket->getID(), false),
+                                'colspan' => $colspan,
+                            ]],
+                        );
+                        break;
+                    }
+                    // A ticket purged since: rendered like the other items
+                    // no break
                 default:
                     $result[$field['rank']]['content'] .= Field::renderContentCells(
                         (bool) $formatAsTable,
